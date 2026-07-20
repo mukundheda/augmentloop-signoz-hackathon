@@ -1,0 +1,17 @@
+# Local SigNoz deployment via Foundry, Docker Compose, MCP server enabled.
+#
+# After `foundryctl cast -f casting.yaml`, mint a SigNoz API key
+# (SigNoz UI -> Settings -> API Keys) and point an MCP client (e.g. Claude Code)
+# at http://localhost:8000/mcp with a per-request `SIGNOZ-API-KEY` header.
+# See docs/concepts/mcp-server.md in the Foundry repo for the full walkthrough.
+apiVersion: v1alpha1
+kind: Installation
+metadata:
+  name: signoz
+spec:
+  deployment:
+    mode: docker
+    flavor: compose
+  mcp:
+    spec:
+      enabled: true
