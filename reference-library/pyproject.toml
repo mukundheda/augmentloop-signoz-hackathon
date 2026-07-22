@@ -1,0 +1,33 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "gradebook"
+version = "0.0.1"
+description = "Gradebook reference library: record math-graded, priced AI decisions as the standard OpenTelemetry gen_ai.evaluation.result event, with augmentloop.grade.source + augmentloop.cost.usd extensions (see docs/conventions.md)."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+# Core depends on the OTel API only. The SDK (providers/exporters) is supplied by
+# whoever wires telemetry (the app, SigNoz setup, or the test), never by this library.
+dependencies = [
+  "opentelemetry-api>=1.27",
+]
+
+[project.optional-dependencies]
+test = [
+  "opentelemetry-sdk>=1.27",
+  "pytest>=8",
+]
+# For examples/emit_one_decision.py: emit to the live SigNoz stack over OTLP/HTTP.
+live = [
+  "opentelemetry-sdk>=1.27",
+  "opentelemetry-exporter-otlp-proto-http>=1.27",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/gradebook"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
