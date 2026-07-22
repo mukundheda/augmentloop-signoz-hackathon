@@ -2,7 +2,7 @@
 
 Team AugmentLoop's entry for the [Agents of SigNoz](https://wemakedevs.org/hackathons/signoz) hackathon (WeMakeDevs x SigNoz, July 20-26 2026), Track 01: AI & Agent Observability.
 
-**Status:** Day 1. Concept lock in progress; this README gets rewritten when the build is named.
+**Status:** Building **Gradebook** - a report-card layer for AI decisions, shown on SigNoz. See `CONTEXT.md` for the glossary and issue #3 for the full spec. This README gets a full rewrite before submission.
 
 ## Team
 
