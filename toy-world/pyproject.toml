@@ -1,0 +1,29 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "toyworld"
+version = "0.0.1"
+description = "Toy world demo harness (T3): replay a tiny road network's AI driver decisions through the Gradebook library into SigNoz. Deterministic, no API keys."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+# gradebook is installed separately from ../reference-library (see README);
+# declared here so a missing install fails loud at import, not mid-replay.
+dependencies = [
+  "gradebook",
+  "opentelemetry-sdk>=1.27",
+  "opentelemetry-exporter-otlp-proto-http>=1.27",
+]
+
+[project.optional-dependencies]
+test = [
+  "pytest>=8",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/toyworld"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
