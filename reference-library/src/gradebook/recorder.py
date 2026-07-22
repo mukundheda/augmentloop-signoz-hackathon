@@ -1,21 +1,80 @@
-"""The public recording seam: `record_decision`.
+"""The public recording seams: `record_decision` and the deferred-grade pair
+`capture_decision` / `record_reality_grade`.
 
-Applies the conventions doc's contract for one math-graded decision: grade it,
-and emit one standard `gen_ai.evaluation.result` event carrying the standard
-score slots plus Gradebook's mandatory grade-source extension. The emitted
-telemetry - not this signature - is the contract.
+Applies the conventions doc's contract: grade a decision, and emit one standard
+`gen_ai.evaluation.result` event carrying the standard score slots plus
+Gradebook's mandatory grade-source extension. A reality grade arrives later
+than its decision, so it additionally span-links back to the decision span and
+always carries `gen_ai.response.id` (conventions doc section 6, span-link
+Role 1). The emitted telemetry - not these signatures - is the contract.
 """
 
 from __future__ import annotations
 
 import operator
+from dataclasses import dataclass
 from typing import Any, Callable, Optional
 
 from opentelemetry import trace
 
 from . import conventions as conv
 from . import pricing
-from .grading import math_grade
+from .grading import CORRECT, INCORRECT, GradeSource, math_grade
+
+
+class MissingResponseIdError(ValueError):
+    """Raised when a decision is captured for deferred grading with no response id.
+
+    Section 6 of the conventions doc: a deferred grade MUST set
+    `gen_ai.response.id` as the always-present correlation fallback. Fail at
+    capture time, when the caller can still supply it, not at grading time when
+    the decision context is long gone.
+    """
+
+
+@dataclass(frozen=True)
+class DecisionRef:
+    """A durable handle to a decision awaiting a real-world verdict.
+
+    Captures exactly what section 6 requires the late grade to carry: the
+    decision span's context (for the span link) and the completion id (for
+    `gen_ai.response.id`). Both fields are primitives-or-serializable so a ref
+    can cross a process boundary (webhook, cron sweep) via `from_ids`.
+    """
+
+    span_context: trace.SpanContext
+    response_id: str
+
+    @classmethod
+    def from_ids(cls, *, trace_id: int, span_id: int, response_id: str) -> "DecisionRef":
+        """Rebuild a ref from persisted primitive ids in another process."""
+        return cls(
+            span_context=trace.SpanContext(
+                trace_id=trace_id,
+                span_id=span_id,
+                is_remote=True,
+                trace_flags=trace.TraceFlags(trace.TraceFlags.SAMPLED),
+            ),
+            response_id=response_id,
+        )
+
+
+def capture_decision(*, response_id: Optional[str]) -> DecisionRef:
+    """Capture the currently-active decision span for later reality grading.
+
+    Call this inside the decision's flow (while the model-call span is the
+    active span). The returned ref is everything `record_reality_grade` needs,
+    now or in another process.
+    """
+    if response_id is None:
+        raise MissingResponseIdError(
+            "a deferred grade MUST carry gen_ai.response.id (conventions "
+            "section 6); supply the completion id at capture time"
+        )
+    return DecisionRef(
+        span_context=trace.get_current_span().get_span_context(),
+        response_id=response_id,
+    )
 
 
 def record_decision(
@@ -77,6 +136,75 @@ def record_decision(
         # Optional: set only when provided, so we never emit empty/None values.
         if response_id is not None:
             span.set_attribute(conv.RESPONSE_ID, response_id)
+        if decision_type is not None:
+            span.set_attribute(conv.DECISION_TYPE, decision_type)
+        if explanation is not None:
+            span.set_attribute(conv.EXPLANATION, explanation)
+    finally:
+        span.end()
+
+
+def record_reality_grade(
+    ref: DecisionRef,
+    *,
+    name: str,
+    correct: bool,
+    model: Optional[str] = None,
+    input_tokens: Optional[int] = None,
+    output_tokens: Optional[int] = None,
+    decision_type: Optional[str] = None,
+    explanation: Optional[str] = None,
+    tracer_provider: Optional[trace.TracerProvider] = None,
+) -> None:
+    """Grade a previously-captured decision by its real-world outcome.
+
+    Emits the same standard `gen_ai.evaluation.result` event as
+    `record_decision`, stamped `augmentloop.grade.source = "reality"`, with the
+    two section-6 mandatory correlations: a span link back to the decision span
+    and the decision's `gen_ai.response.id`.
+
+    Args:
+        ref: The handle captured at decision time (`capture_decision`) or
+            rebuilt across a process boundary (`DecisionRef.from_ids`).
+        name: What was graded (`gen_ai.evaluation.name`), e.g. "clip.kept".
+        correct: The real-world verdict; a reality grade is binary.
+        model / input_tokens / output_tokens: Optional; when all are known the
+            decision is priced from the same single pricing table. When absent,
+            no cost attribute is emitted (cost is only attached "where cost is
+            known" - never a fabricated zero).
+        decision_type: Optional kind of decision (`augmentloop.decision.type`).
+        explanation: Optional free-form reason (`gen_ai.evaluation.explanation`).
+        tracer_provider: SDK provider to emit through; defaults to the globally
+            configured one. Injected by tests to capture the event in memory.
+    """
+    provider = tracer_provider or trace.get_tracer_provider()
+    tracer = provider.get_tracer("gradebook")
+
+    cost_usd: Optional[float] = None
+    if model is not None and input_tokens is not None and output_tokens is not None:
+        cost_usd = pricing.price(model, input_tokens, output_tokens)
+
+    # Span-link Role 1 (section 6): the late grade links to the decision span
+    # it judges. Links must be supplied at span creation in OTel.
+    span = tracer.start_span(
+        conv.EVENT_NAME, links=[trace.Link(ref.span_context)]
+    )
+    try:
+        span.set_attribute(conv.EVAL_NAME, name)
+        span.set_attribute(conv.SCORE_VALUE, 1.0 if correct else 0.0)
+        span.set_attribute(conv.SCORE_LABEL, CORRECT if correct else INCORRECT)
+        span.set_attribute(conv.GRADE_SOURCE, GradeSource.REALITY.value)
+        # Section 6 MUST: the always-present correlation fallback.
+        span.set_attribute(conv.RESPONSE_ID, ref.response_id)
+
+        if cost_usd is not None:
+            span.set_attribute(conv.COST_USD, cost_usd)
+        if model is not None:
+            span.set_attribute(conv.REQUEST_MODEL, model)
+        if input_tokens is not None:
+            span.set_attribute(conv.INPUT_TOKENS, input_tokens)
+        if output_tokens is not None:
+            span.set_attribute(conv.OUTPUT_TOKENS, output_tokens)
         if decision_type is not None:
             span.set_attribute(conv.DECISION_TYPE, decision_type)
         if explanation is not None:
