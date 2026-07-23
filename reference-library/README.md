@@ -10,12 +10,30 @@ The conventions doc is language-agnostic and is the real contract; this library
 is a convenience for Python callers. Any stack that emits the same event is
 compliant.
 
-## Scope (walking skeleton, ticket #5)
+## Scope
 
-The thinnest complete path: one **math-graded** decision, priced from a single
-per-model pricing table, emitted as one standard event. Reality/AI-judge grade
-sources and deferred span-links (conventions §6) extend this same seam in later
-tickets.
+**Walking skeleton (ticket #5):** the thinnest complete path - one
+**math-graded** decision, priced from a single per-model pricing table, emitted
+as one standard event.
+
+**Reality grades (ticket #8):** a decision captured now (`capture_decision`)
+can be graded later by its real-world outcome (`record_reality_grade`). The
+late grade emits the same standard event stamped `reality`, span-links back to
+the decision span (conventions §6, span-link Role 1), and always carries
+`gen_ai.response.id`. `DecisionRef.from_ids` rebuilds the handle across a
+process boundary (webhook, cron sweep).
+
+The AI-judge grade source extends this same seam in later tickets.
+
+```python
+from gradebook import capture_decision, record_reality_grade
+
+# Inside the decision flow (model-call span active):
+ref = capture_decision(response_id="resp_123")
+
+# ...later, possibly in another process, when the outcome is known:
+record_reality_grade(ref, name="clip.kept", correct=True)
+```
 
 ## Usage
 
