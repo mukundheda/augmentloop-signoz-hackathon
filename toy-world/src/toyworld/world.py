@@ -38,8 +38,11 @@ class JourneyOutcome:
     """The real-world verdict on one driver's journey, arriving after the fact.
 
     In replay mode this is part of the recording; in live mode it comes from
-    the simulation clock. `on_time` grades the journey-closing decision via the
-    reality source (spec user story 7).
+    the simulation clock. `on_time` grades whichever decision the recording
+    holds responsible via `graded_response_id` - deliberately the wrong turn
+    that made the driver late (e.g. driver-3's J1), not necessarily the
+    journey-closing junction. Reality grades attach to causes, not to whatever
+    happened last (spec user story 7).
     """
 
     driver: str
