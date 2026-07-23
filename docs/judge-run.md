@@ -47,8 +47,9 @@ is normal). Wait until `docker ps` shows the long-running containers healthy:
 docker ps --format "{{.Names}}\t{{.Status}}"
 ```
 
-Casting writes a `pours/` directory (the materialized compose files) and may
-rewrite `casting.yaml.lock`; both are generated output, ignore them.
+Casting writes a `pours/` directory (the materialized compose files,
+gitignored) and may reformat `casting.yaml.lock` - see the troubleshooting
+table for when that lock change should and should not be committed.
 
 ## 3. Create the admin account - REQUIRED before any telemetry flows
 
