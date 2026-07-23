@@ -9,15 +9,29 @@ import pytest
 from toyworld import replay
 
 
-def _run(world, outcomes, recording_path):
+def _run(world, outcomes, recording_path, world_metrics=None, outcomes_metrics=None):
     world_provider, world_exporter = world
     outcomes_provider, outcomes_exporter = outcomes
     summary = replay(
         recording_path,
         world_provider=world_provider,
         outcomes_provider=outcomes_provider,
+        world_meter_provider=world_metrics[0] if world_metrics else None,
+        outcomes_meter_provider=outcomes_metrics[0] if outcomes_metrics else None,
     )
     return summary, world_exporter, outcomes_exporter
+
+
+def _metrics_by_name(metric_reader) -> dict:
+    data = metric_reader.get_metrics_data()
+    out = {}
+    if data is None:
+        return out
+    for resource_metrics in data.resource_metrics:
+        for scope_metrics in resource_metrics.scope_metrics:
+            for metric in scope_metrics.metrics:
+                out[metric.name] = metric
+    return out
 
 
 def test_every_decision_is_recorded_and_math_graded(world, outcomes, recording_path):
@@ -124,6 +138,28 @@ def test_replay_is_deterministic(world, outcomes, recording_path):
         ]
 
     assert fingerprint(world_a) == fingerprint(world_b)
+
+
+def test_replay_emits_aggregate_metrics_matching_the_summary(
+    world, outcomes, recording_path, world_metrics, outcomes_metrics
+):
+    """Ticket #7: the metrics ride the same replay call as the events, so the
+    counter's total matches summary.decisions exactly - no separate code path
+    to drift out of sync."""
+    summary, _, _ = _run(world, outcomes, recording_path, world_metrics, outcomes_metrics)
+
+    _, world_reader = world_metrics
+    _, outcomes_reader = outcomes_metrics
+
+    world_points = _metrics_by_name(world_reader)["gradebook.decisions.graded"].data.data_points
+    assert sum(p.value for p in world_points) == summary.decisions
+
+    cost_points = _metrics_by_name(world_reader)["gradebook.decision.cost.usd"].data.data_points
+    assert sum(p.sum for p in cost_points) == pytest.approx(summary.total_cost_usd)
+
+    outcomes_points = _metrics_by_name(outcomes_reader)["gradebook.decisions.graded"].data.data_points
+    assert sum(p.value for p in outcomes_points) == summary.outcomes
+    assert all(p.attributes["augmentloop.grade.source"] == "reality" for p in outcomes_points)
 
 
 def test_cost_per_correct_is_the_headline_division(world, outcomes, recording_path):

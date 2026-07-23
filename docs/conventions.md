@@ -161,6 +161,36 @@ If the semconv version is bumped, re-run the #2 verify and reconcile this list b
 
 ---
 
+## 10. Aggregate metrics (T4 observatory extension, ticket #7)
+
+Sections 1-9 govern the per-decision **event**. This section adds two OpenTelemetry **metric** instruments, emitted alongside every event, so SigNoz's native metrics UI has something to chart and alert on - not just event/log search over spans.
+
+| Instrument | Kind | Unit | Attributes |
+|---|---|---|---|
+| `gradebook.decisions.graded` | Counter | `1` | `augmentloop.grade.source`, `gen_ai.evaluation.score.label`, `gen_ai.request.model` (if known), `augmentloop.decision.type` (if known) |
+| `gradebook.decision.cost.usd` | Histogram | `usd` | same as above |
+
+- The counter increments by 1 for every grade recorded, regardless of whether cost is known.
+- The histogram records a value only when `augmentloop.cost.usd` is known on that grade (same "never a fabricated zero" rule as the event attribute, Section 3.2).
+- Attributes deliberately reuse the same names as the event (Sections 2-3, 7) - a dashboard groups spans and metrics by one shared vocabulary, not two.
+- Both instruments are recorded **while the event's span is the current span**, so the SDK's default `TraceBasedExemplarFilter` attaches an exemplar (the originating trace id + span id) to each data point. A spike on a metric chart is one click from the exact decision that caused it.
+- The **aggregation** dashboards need (cost per correct decision, correct-rate by model) is a query-time `sum`/`count`/division over these instruments in SigNoz, filtered to `augmentloop.grade.source` in (`math`, `reality`) for anything in the headline (ADR 0001) - never computed in this library. Section 5's seam decision extends to metrics: record raw numbers here, aggregate them in SigNoz.
+
+### 10.1 Known gap: SigNoz has no exemplar support (verified, not a config problem)
+
+We record both instruments while the event's span is current specifically so the OpenTelemetry SDK's default exemplar filter attaches a trace/span id to each data point (Section 10 above). In this SigNoz version, that exemplar is recorded correctly by the SDK but **dropped before it ever reaches ClickHouse** - confirmed four independent ways:
+
+1. Live schema: zero `trace_id`/`span_id`/exemplar columns anywhere under `signoz_metrics`/`signoz_meter` (exhaustive `system.columns` search).
+2. Collector config: none of the three metrics exporters do any exemplar handling.
+3. Source code: `signozclickhousemetrics`'s ClickHouse exporter never calls `.Exemplars()` on incoming datapoints - the value is dropped before it's ever written, not filtered out by a missing flag.
+4. Maintainers: github.com/SigNoz/signoz/discussions/1795 (Dec 2022) confirms no exemplar support and recommends the "View Traces" pivot as the workaround; a follow-up ask (discussions/9604, Nov 2025) is still unanswered as of this ticket.
+
+**Decision:** keep emitting the exemplar (it costs nothing and is SDK-correct - a future SigNoz version may start reading it). Do not claim a literal exemplar link in blog/screencast copy. The click-through substitute is time-range + shared-attribute filtering into Traces (e.g. jump to the Traces tab, filter by the same `gen_ai.response.id` or timestamp window a metric spike came from) - this is the same workaround the maintainers themselves point to, not a workaround we invented.
+
+This gap is separate from, but related to, the service-map limitation in the T3 toy-world ticket (SigNoz's dependency graph reads in-trace parent/child spans, never cross-trace span `links`) - both are cases where SigNoz's native UI can't yet visualize a correlation the telemetry itself carries correctly.
+
+---
+
 ## Cross-references
 
 - ADR [0001](adr/0001-machine-checked-grades-only-in-the-headline-metric.md) - machine-checked grades only in the headline metric.
@@ -168,3 +198,4 @@ If the semconv version is bumped, re-run the #2 verify and reconcile this list b
 - [CONTEXT.md](../CONTEXT.md) - glossary (Decision, Grade, Grade source, Cost, Span link roles).
 - Spec #3 - the product build (six layers); this doc is the Foundation layer's recording contract.
 - Verify #2 - Day-1 technical verifies; froze the names above and confirmed token auto-capture.
+- Ticket #7 - the T4 observatory (dashboard + alerts); Section 10 above is this ticket's recording-contract extension.

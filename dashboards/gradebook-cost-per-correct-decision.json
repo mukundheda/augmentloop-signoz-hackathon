@@ -1,0 +1,622 @@
+{
+  "description": "Gradebook T4 observatory: the headline cost-per-correct-decision metric (ADR 0001, math+reality grade sources only), per-model right-sizing evidence, correct-rate for the grade-quality-drop alert, cost-over-time for the spend-spike alert, and a clearly-labeled AI-judge secondary view that never counts toward the headline. Built for issue #7 (T4).",
+  "layout": [
+    {
+      "h": 4,
+      "i": "panel-1-headline-cost-per-correct",
+      "moved": false,
+      "static": false,
+      "w": 4,
+      "x": 0,
+      "y": 0
+    },
+    {
+      "h": 7,
+      "i": "panel-2-cost-per-correct-by-model",
+      "moved": false,
+      "static": false,
+      "w": 6,
+      "x": 4,
+      "y": 0
+    },
+    {
+      "h": 7,
+      "i": "panel-3-correct-rate-by-model",
+      "moved": false,
+      "static": false,
+      "w": 6,
+      "x": 10,
+      "y": 0
+    },
+    {
+      "h": 7,
+      "i": "panel-4-cost-over-time",
+      "moved": false,
+      "static": false,
+      "w": 6,
+      "x": 0,
+      "y": 7
+    },
+    {
+      "h": 4,
+      "i": "panel-5-ai-judge-secondary",
+      "moved": false,
+      "static": false,
+      "w": 4,
+      "x": 8,
+      "y": 14
+    }
+  ],
+  "panelMap": {},
+  "tags": [
+    "gradebook",
+    "signoz-hackathon"
+  ],
+  "title": "Gradebook: Cost per Correct Decision",
+  "variables": {},
+  "version": "v5",
+  "widgets": [
+    {
+      "contextLinks": {
+        "linksData": null
+      },
+      "description": "Headline metric (ADR 0001): sum(augmentloop.cost.usd) / count(decisions) where gen_ai.evaluation.score.label='correct' AND augmentloop.grade.source in (math, reality). AI-judge grades are never mixed into this number.",
+      "id": "panel-1-headline-cost-per-correct",
+      "legendPosition": "bottom",
+      "nullZeroValues": "zero",
+      "opacity": "1",
+      "panelTypes": "value",
+      "query": {
+        "builder": {
+          "queryData": [
+            {
+              "aggregations": [
+                {
+                  "metricName": "gradebook.decision.cost.usd.sum",
+                  "spaceAggregation": "sum",
+                  "timeAggregation": "latest"
+                }
+              ],
+              "dataSource": "metrics",
+              "disabled": true,
+              "expression": "A",
+              "filter": {
+                "expression": "gen_ai.evaluation.score.label = 'correct' AND augmentloop.grade.source IN ('math','reality')"
+              },
+              "functions": [],
+              "groupBy": [],
+              "having": [],
+              "legend": "Total cost (correct, math+reality)",
+              "limit": 100,
+              "orderBy": [
+                {
+                  "columnName": "__result",
+                  "order": "desc"
+                }
+              ],
+              "queryName": "A",
+              "stepInterval": null
+            },
+            {
+              "aggregations": [
+                {
+                  "metricName": "gradebook.decisions.graded",
+                  "spaceAggregation": "sum",
+                  "timeAggregation": "latest"
+                }
+              ],
+              "dataSource": "metrics",
+              "disabled": true,
+              "expression": "B",
+              "filter": {
+                "expression": "gen_ai.evaluation.score.label = 'correct' AND augmentloop.grade.source IN ('math','reality')"
+              },
+              "functions": [],
+              "groupBy": [],
+              "having": [],
+              "legend": "Correct decisions (math+reality)",
+              "limit": 100,
+              "orderBy": [
+                {
+                  "columnName": "__result",
+                  "order": "desc"
+                }
+              ],
+              "queryName": "B",
+              "stepInterval": null
+            }
+          ],
+          "queryFormulas": [
+            {
+              "disabled": false,
+              "expression": "A/B",
+              "legend": "Cost per Correct Decision",
+              "queryName": "F1"
+            }
+          ]
+        },
+        "id": "panel-1-headline-cost-per-correct-query",
+        "queryType": "builder"
+      },
+      "selectedLogFields": [
+        {
+          "fieldContext": "log",
+          "name": "timestamp",
+          "signal": "logs",
+          "type": "log"
+        },
+        {
+          "fieldContext": "log",
+          "name": "body",
+          "signal": "logs",
+          "type": "log"
+        }
+      ],
+      "selectedTracesFields": [
+        {
+          "fieldContext": "resource",
+          "fieldDataType": "string",
+          "name": "service.name",
+          "signal": "traces"
+        },
+        {
+          "fieldContext": "span",
+          "fieldDataType": "string",
+          "name": "name",
+          "signal": "traces"
+        }
+      ],
+      "softMax": 0,
+      "softMin": 0,
+      "timePreferance": "GLOBAL_TIME",
+      "title": "Cost per Correct Decision",
+      "yAxisUnit": "none"
+    },
+    {
+      "contextLinks": {
+        "linksData": null
+      },
+      "description": "Same headline formula grouped by gen_ai.request.model. This is the right-sizing evidence: same task, cheaper model, correctness held, cost per correct decision drops.",
+      "id": "panel-2-cost-per-correct-by-model",
+      "legendPosition": "bottom",
+      "nullZeroValues": "zero",
+      "opacity": "1",
+      "panelTypes": "bar",
+      "query": {
+        "builder": {
+          "queryData": [
+            {
+              "aggregations": [
+                {
+                  "metricName": "gradebook.decision.cost.usd.sum",
+                  "spaceAggregation": "sum",
+                  "timeAggregation": "latest"
+                }
+              ],
+              "dataSource": "metrics",
+              "disabled": true,
+              "expression": "A",
+              "filter": {
+                "expression": "gen_ai.evaluation.score.label = 'correct' AND augmentloop.grade.source IN ('math','reality')"
+              },
+              "functions": [],
+              "groupBy": [
+                {
+                  "dataType": "string",
+                  "key": "gen_ai.request.model",
+                  "type": "tag"
+                }
+              ],
+              "having": [],
+              "legend": "{{gen_ai.request.model}} cost",
+              "limit": 100,
+              "orderBy": [
+                {
+                  "columnName": "__result",
+                  "order": "desc"
+                }
+              ],
+              "queryName": "A",
+              "stepInterval": null
+            },
+            {
+              "aggregations": [
+                {
+                  "metricName": "gradebook.decisions.graded",
+                  "spaceAggregation": "sum",
+                  "timeAggregation": "latest"
+                }
+              ],
+              "dataSource": "metrics",
+              "disabled": true,
+              "expression": "B",
+              "filter": {
+                "expression": "gen_ai.evaluation.score.label = 'correct' AND augmentloop.grade.source IN ('math','reality')"
+              },
+              "functions": [],
+              "groupBy": [
+                {
+                  "dataType": "string",
+                  "key": "gen_ai.request.model",
+                  "type": "tag"
+                }
+              ],
+              "having": [],
+              "legend": "{{gen_ai.request.model}} correct",
+              "limit": 100,
+              "orderBy": [
+                {
+                  "columnName": "__result",
+                  "order": "desc"
+                }
+              ],
+              "queryName": "B",
+              "stepInterval": null
+            }
+          ],
+          "queryFormulas": [
+            {
+              "disabled": false,
+              "expression": "A/B",
+              "legend": "{{gen_ai.request.model}}",
+              "queryName": "F1"
+            }
+          ]
+        },
+        "id": "panel-2-cost-per-correct-by-model-query",
+        "queryType": "builder"
+      },
+      "selectedLogFields": [
+        {
+          "fieldContext": "log",
+          "name": "timestamp",
+          "signal": "logs",
+          "type": "log"
+        },
+        {
+          "fieldContext": "log",
+          "name": "body",
+          "signal": "logs",
+          "type": "log"
+        }
+      ],
+      "selectedTracesFields": [
+        {
+          "fieldContext": "resource",
+          "fieldDataType": "string",
+          "name": "service.name",
+          "signal": "traces"
+        },
+        {
+          "fieldContext": "span",
+          "fieldDataType": "string",
+          "name": "name",
+          "signal": "traces"
+        }
+      ],
+      "softMax": 0,
+      "softMin": 0,
+      "timePreferance": "GLOBAL_TIME",
+      "title": "Cost per Correct Decision, by Model",
+      "yAxisUnit": "none"
+    },
+    {
+      "contextLinks": {
+        "linksData": null
+      },
+      "description": "count(correct, math+reality) / count(all math+reality grades) x 100, grouped by model. Feeds the grade-quality-drop alert baseline.",
+      "id": "panel-3-correct-rate-by-model",
+      "legendPosition": "bottom",
+      "nullZeroValues": "zero",
+      "opacity": "1",
+      "panelTypes": "bar",
+      "query": {
+        "builder": {
+          "queryData": [
+            {
+              "aggregations": [
+                {
+                  "metricName": "gradebook.decisions.graded",
+                  "spaceAggregation": "sum",
+                  "timeAggregation": "latest"
+                }
+              ],
+              "dataSource": "metrics",
+              "disabled": true,
+              "expression": "A",
+              "filter": {
+                "expression": "gen_ai.evaluation.score.label = 'correct' AND augmentloop.grade.source IN ('math','reality')"
+              },
+              "functions": [],
+              "groupBy": [
+                {
+                  "dataType": "string",
+                  "key": "gen_ai.request.model",
+                  "type": "tag"
+                }
+              ],
+              "having": [],
+              "legend": "{{gen_ai.request.model}} correct",
+              "limit": 100,
+              "orderBy": [
+                {
+                  "columnName": "__result",
+                  "order": "desc"
+                }
+              ],
+              "queryName": "A",
+              "stepInterval": null
+            },
+            {
+              "aggregations": [
+                {
+                  "metricName": "gradebook.decisions.graded",
+                  "spaceAggregation": "sum",
+                  "timeAggregation": "latest"
+                }
+              ],
+              "dataSource": "metrics",
+              "disabled": true,
+              "expression": "B",
+              "filter": {
+                "expression": "augmentloop.grade.source IN ('math','reality')"
+              },
+              "functions": [],
+              "groupBy": [
+                {
+                  "dataType": "string",
+                  "key": "gen_ai.request.model",
+                  "type": "tag"
+                }
+              ],
+              "having": [],
+              "legend": "{{gen_ai.request.model}} total",
+              "limit": 100,
+              "orderBy": [
+                {
+                  "columnName": "__result",
+                  "order": "desc"
+                }
+              ],
+              "queryName": "B",
+              "stepInterval": null
+            }
+          ],
+          "queryFormulas": [
+            {
+              "disabled": false,
+              "expression": "(A/B)*100",
+              "legend": "{{gen_ai.request.model}}",
+              "queryName": "F1"
+            }
+          ]
+        },
+        "id": "panel-3-correct-rate-by-model-query",
+        "queryType": "builder"
+      },
+      "selectedLogFields": [
+        {
+          "fieldContext": "log",
+          "name": "timestamp",
+          "signal": "logs",
+          "type": "log"
+        },
+        {
+          "fieldContext": "log",
+          "name": "body",
+          "signal": "logs",
+          "type": "log"
+        }
+      ],
+      "selectedTracesFields": [
+        {
+          "fieldContext": "resource",
+          "fieldDataType": "string",
+          "name": "service.name",
+          "signal": "traces"
+        },
+        {
+          "fieldContext": "span",
+          "fieldDataType": "string",
+          "name": "name",
+          "signal": "traces"
+        }
+      ],
+      "softMax": 0,
+      "softMin": 0,
+      "timePreferance": "GLOBAL_TIME",
+      "title": "Correct Rate (%) by Model",
+      "yAxisUnit": "percent"
+    },
+    {
+      "contextLinks": {
+        "linksData": null
+      },
+      "description": "sum(augmentloop.cost.usd) over time, split math vs reality grade source. Feeds the spend-spike alert.",
+      "id": "panel-4-cost-over-time",
+      "legendPosition": "bottom",
+      "nullZeroValues": "zero",
+      "opacity": "1",
+      "panelTypes": "graph",
+      "query": {
+        "builder": {
+          "queryData": [
+            {
+              "aggregations": [
+                {
+                  "metricName": "gradebook.decision.cost.usd.sum",
+                  "spaceAggregation": "sum",
+                  "timeAggregation": "latest"
+                }
+              ],
+              "dataSource": "metrics",
+              "disabled": false,
+              "expression": "A",
+              "filter": {
+                "expression": "augmentloop.grade.source = 'math'"
+              },
+              "functions": [],
+              "groupBy": [],
+              "having": [],
+              "legend": "math",
+              "limit": 100,
+              "orderBy": [
+                {
+                  "columnName": "__result",
+                  "order": "desc"
+                }
+              ],
+              "queryName": "A",
+              "stepInterval": 3600
+            },
+            {
+              "aggregations": [
+                {
+                  "metricName": "gradebook.decision.cost.usd.sum",
+                  "spaceAggregation": "sum",
+                  "timeAggregation": "latest"
+                }
+              ],
+              "dataSource": "metrics",
+              "disabled": false,
+              "expression": "B",
+              "filter": {
+                "expression": "augmentloop.grade.source = 'reality'"
+              },
+              "functions": [],
+              "groupBy": [],
+              "having": [],
+              "legend": "reality",
+              "limit": 100,
+              "orderBy": [
+                {
+                  "columnName": "__result",
+                  "order": "desc"
+                }
+              ],
+              "queryName": "B",
+              "stepInterval": 3600
+            }
+          ],
+          "queryFormulas": []
+        },
+        "id": "panel-4-cost-over-time-query",
+        "queryType": "builder"
+      },
+      "selectedLogFields": [
+        {
+          "fieldContext": "log",
+          "name": "timestamp",
+          "signal": "logs",
+          "type": "log"
+        },
+        {
+          "fieldContext": "log",
+          "name": "body",
+          "signal": "logs",
+          "type": "log"
+        }
+      ],
+      "selectedTracesFields": [
+        {
+          "fieldContext": "resource",
+          "fieldDataType": "string",
+          "name": "service.name",
+          "signal": "traces"
+        },
+        {
+          "fieldContext": "span",
+          "fieldDataType": "string",
+          "name": "name",
+          "signal": "traces"
+        }
+      ],
+      "softMax": 0,
+      "softMin": 0,
+      "timePreferance": "GLOBAL_TIME",
+      "title": "Cost Over Time, by Grade Source",
+      "yAxisUnit": "none"
+    },
+    {
+      "contextLinks": {
+        "linksData": null
+      },
+      "description": "Decisions graded with augmentloop.grade.source = ai_judge. Per ADR 0001, these NEVER count toward the headline cost-per-correct-decision number. Expected empty until an ai_judge grader ships (no ai_judge grade source is emitted anywhere in the codebase yet, as of ticket #7) - an empty panel here is correct, not a bug.",
+      "id": "panel-5-ai-judge-secondary",
+      "legendPosition": "bottom",
+      "nullZeroValues": "zero",
+      "opacity": "1",
+      "panelTypes": "value",
+      "query": {
+        "builder": {
+          "queryData": [
+            {
+              "aggregations": [
+                {
+                  "metricName": "gradebook.decisions.graded",
+                  "spaceAggregation": "sum",
+                  "timeAggregation": "latest"
+                }
+              ],
+              "dataSource": "metrics",
+              "disabled": false,
+              "expression": "A",
+              "filter": {
+                "expression": "augmentloop.grade.source = 'ai_judge'"
+              },
+              "functions": [],
+              "groupBy": [],
+              "having": [],
+              "legend": "ai_judge decisions",
+              "limit": 100,
+              "orderBy": [
+                {
+                  "columnName": "__result",
+                  "order": "desc"
+                }
+              ],
+              "queryName": "A",
+              "stepInterval": null
+            }
+          ],
+          "queryFormulas": []
+        },
+        "id": "panel-5-ai-judge-secondary-query",
+        "queryType": "builder"
+      },
+      "selectedLogFields": [
+        {
+          "fieldContext": "log",
+          "name": "timestamp",
+          "signal": "logs",
+          "type": "log"
+        },
+        {
+          "fieldContext": "log",
+          "name": "body",
+          "signal": "logs",
+          "type": "log"
+        }
+      ],
+      "selectedTracesFields": [
+        {
+          "fieldContext": "resource",
+          "fieldDataType": "string",
+          "name": "service.name",
+          "signal": "traces"
+        },
+        {
+          "fieldContext": "span",
+          "fieldDataType": "string",
+          "name": "name",
+          "signal": "traces"
+        }
+      ],
+      "softMax": 0,
+      "softMin": 0,
+      "timePreferance": "GLOBAL_TIME",
+      "title": "AI-Estimated Quality (secondary view, NOT in headline)",
+      "yAxisUnit": "none"
+    }
+  ]
+}

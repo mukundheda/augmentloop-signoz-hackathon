@@ -16,8 +16,10 @@ from dataclasses import dataclass
 from typing import Any, Callable, Optional
 
 from opentelemetry import trace
+from opentelemetry.metrics import MeterProvider
 
 from . import conventions as conv
+from . import metrics as gb_metrics
 from . import pricing
 from .grading import CORRECT, INCORRECT, GradeSource, math_grade
 
@@ -90,6 +92,7 @@ def record_decision(
     explanation: Optional[str] = None,
     checker: Callable[[Any, Any], bool] = operator.eq,
     tracer_provider: Optional[trace.TracerProvider] = None,
+    meter_provider: Optional[MeterProvider] = None,
 ) -> None:
     """Record one math-graded decision as a `gen_ai.evaluation.result` event.
 
@@ -108,6 +111,9 @@ def record_decision(
         checker: How to compare `chosen` and `correct`; equality by default.
         tracer_provider: SDK provider to emit through; defaults to the globally
             configured one. Injected by tests to capture the event in memory.
+        meter_provider: SDK provider for the aggregate metrics (conventions doc
+            section 10); defaults to the globally configured one. Injected by
+            tests to capture data points in memory.
     """
     provider = tracer_provider or trace.get_tracer_provider()
     tracer = provider.get_tracer("gradebook")
@@ -118,8 +124,10 @@ def record_decision(
     # A leaf event span. With no explicit context it auto-parents to the active
     # operation span (the model-call span) when recording happens in that flow -
     # conventions doc section 2 ("SHOULD be parented to the operation span").
-    span = tracer.start_span(conv.EVENT_NAME)
-    try:
+    # `start_as_current_span` also makes it the current span for the metrics
+    # recorded below, so the default TraceBasedExemplarFilter can attach an
+    # exemplar pointing back at it (section 10).
+    with tracer.start_as_current_span(conv.EVENT_NAME) as span:
         # Standard slots + our two mandatory extensions (always present).
         span.set_attribute(conv.EVAL_NAME, name)
         span.set_attribute(conv.SCORE_VALUE, grade.value)
@@ -140,8 +148,15 @@ def record_decision(
             span.set_attribute(conv.DECISION_TYPE, decision_type)
         if explanation is not None:
             span.set_attribute(conv.EXPLANATION, explanation)
-    finally:
-        span.end()
+
+        gb_metrics.record(
+            grade_source=grade.source.value,
+            grade_label=grade.label,
+            cost_usd=cost_usd,
+            model=model,
+            decision_type=decision_type,
+            meter_provider=meter_provider,
+        )
 
 
 def record_reality_grade(
@@ -155,6 +170,7 @@ def record_reality_grade(
     decision_type: Optional[str] = None,
     explanation: Optional[str] = None,
     tracer_provider: Optional[trace.TracerProvider] = None,
+    meter_provider: Optional[MeterProvider] = None,
 ) -> None:
     """Grade a previously-captured decision by its real-world outcome.
 
@@ -176,6 +192,9 @@ def record_reality_grade(
         explanation: Optional free-form reason (`gen_ai.evaluation.explanation`).
         tracer_provider: SDK provider to emit through; defaults to the globally
             configured one. Injected by tests to capture the event in memory.
+        meter_provider: SDK provider for the aggregate metrics (conventions doc
+            section 10); defaults to the globally configured one. Injected by
+            tests to capture data points in memory.
     """
     provider = tracer_provider or trace.get_tracer_provider()
     tracer = provider.get_tracer("gradebook")
@@ -184,15 +203,19 @@ def record_reality_grade(
     if model is not None and input_tokens is not None and output_tokens is not None:
         cost_usd = pricing.price(model, input_tokens, output_tokens)
 
+    grade_label = CORRECT if correct else INCORRECT
+
     # Span-link Role 1 (section 6): the late grade links to the decision span
     # it judges. Links must be supplied at span creation in OTel.
-    span = tracer.start_span(
+    # `start_as_current_span` makes this span current for the metrics recorded
+    # below, so the default TraceBasedExemplarFilter can exemplar-link back to
+    # it (section 10) - a second, independent hop from the section-6 link.
+    with tracer.start_as_current_span(
         conv.EVENT_NAME, links=[trace.Link(ref.span_context)]
-    )
-    try:
+    ) as span:
         span.set_attribute(conv.EVAL_NAME, name)
         span.set_attribute(conv.SCORE_VALUE, 1.0 if correct else 0.0)
-        span.set_attribute(conv.SCORE_LABEL, CORRECT if correct else INCORRECT)
+        span.set_attribute(conv.SCORE_LABEL, grade_label)
         span.set_attribute(conv.GRADE_SOURCE, GradeSource.REALITY.value)
         # Section 6 MUST: the always-present correlation fallback.
         span.set_attribute(conv.RESPONSE_ID, ref.response_id)
@@ -209,5 +232,12 @@ def record_reality_grade(
             span.set_attribute(conv.DECISION_TYPE, decision_type)
         if explanation is not None:
             span.set_attribute(conv.EXPLANATION, explanation)
-    finally:
-        span.end()
+
+        gb_metrics.record(
+            grade_source=GradeSource.REALITY.value,
+            grade_label=grade_label,
+            cost_usd=cost_usd,
+            model=model,
+            decision_type=decision_type,
+            meter_provider=meter_provider,
+        )

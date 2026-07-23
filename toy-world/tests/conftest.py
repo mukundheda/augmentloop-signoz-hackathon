@@ -8,6 +8,8 @@ exactly as `python -m toyworld` wires them.
 from pathlib import Path
 
 import pytest
+from opentelemetry.sdk.metrics import MeterProvider
+from opentelemetry.sdk.metrics.export import InMemoryMetricReader
 from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import SimpleSpanProcessor
 from opentelemetry.sdk.trace.export.in_memory_span_exporter import (
@@ -24,6 +26,11 @@ def _pair() -> tuple[TracerProvider, InMemorySpanExporter]:
     return provider, exporter
 
 
+def _metric_pair() -> tuple[MeterProvider, InMemoryMetricReader]:
+    reader = InMemoryMetricReader()
+    return MeterProvider(metric_readers=[reader]), reader
+
+
 @pytest.fixture
 def world():
     return _pair()
@@ -32,6 +39,16 @@ def world():
 @pytest.fixture
 def outcomes():
     return _pair()
+
+
+@pytest.fixture
+def world_metrics():
+    return _metric_pair()
+
+
+@pytest.fixture
+def outcomes_metrics():
+    return _metric_pair()
 
 
 @pytest.fixture
