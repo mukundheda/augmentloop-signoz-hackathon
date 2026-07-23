@@ -176,6 +176,19 @@ Sections 1-9 govern the per-decision **event**. This section adds two OpenTeleme
 - Both instruments are recorded **while the event's span is the current span**, so the SDK's default `TraceBasedExemplarFilter` attaches an exemplar (the originating trace id + span id) to each data point. A spike on a metric chart is one click from the exact decision that caused it.
 - The **aggregation** dashboards need (cost per correct decision, correct-rate by model) is a query-time `sum`/`count`/division over these instruments in SigNoz, filtered to `augmentloop.grade.source` in (`math`, `reality`) for anything in the headline (ADR 0001) - never computed in this library. Section 5's seam decision extends to metrics: record raw numbers here, aggregate them in SigNoz.
 
+### 10.1 Known gap: SigNoz has no exemplar support (verified, not a config problem)
+
+We record both instruments while the event's span is current specifically so the OpenTelemetry SDK's default exemplar filter attaches a trace/span id to each data point (Section 10 above). In this SigNoz version, that exemplar is recorded correctly by the SDK but **dropped before it ever reaches ClickHouse** - confirmed four independent ways:
+
+1. Live schema: zero `trace_id`/`span_id`/exemplar columns anywhere under `signoz_metrics`/`signoz_meter` (exhaustive `system.columns` search).
+2. Collector config: none of the three metrics exporters do any exemplar handling.
+3. Source code: `signozclickhousemetrics`'s ClickHouse exporter never calls `.Exemplars()` on incoming datapoints - the value is dropped before it's ever written, not filtered out by a missing flag.
+4. Maintainers: github.com/SigNoz/signoz/discussions/1795 (Dec 2022) confirms no exemplar support and recommends the "View Traces" pivot as the workaround; a follow-up ask (discussions/9604, Nov 2025) is still unanswered as of this ticket.
+
+**Decision:** keep emitting the exemplar (it costs nothing and is SDK-correct - a future SigNoz version may start reading it). Do not claim a literal exemplar link in blog/screencast copy. The click-through substitute is time-range + shared-attribute filtering into Traces (e.g. jump to the Traces tab, filter by the same `gen_ai.response.id` or timestamp window a metric spike came from) - this is the same workaround the maintainers themselves point to, not a workaround we invented.
+
+This gap is separate from, but related to, the service-map limitation in the T3 toy-world ticket (SigNoz's dependency graph reads in-trace parent/child spans, never cross-trace span `links`) - both are cases where SigNoz's native UI can't yet visualize a correlation the telemetry itself carries correctly.
+
 ---
 
 ## Cross-references

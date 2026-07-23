@@ -1,0 +1,90 @@
+{
+  "alert": "Gradebook Spend Spike",
+  "alertType": "METRIC_BASED_ALERT",
+  "description": "Fires when the Gradebook build's total decision cost (sum of augmentloop.cost.usd, via gradebook.decision.cost.usd, all grade sources) exceeds $1.00 within a rolling 30-minute window. Baseline: lifetime accumulated cost across all toy-world test runs to date is ~$0.003 (10 correct decisions out of 17 graded, math+reality). The Gradebook design targets ~3k model calls/day on Haiku/Flash-tier models in LIVE mode (~a few dollars/day per the build spec), so $1 in any 30-minute window is well above sustained normal usage and flags a runaway loop (e.g. an uncapped LIVE-mode run against a frontier model, or a per-run budget cap failing).",
+  "ruleType": "threshold_rule",
+  "condition": {
+    "compositeQuery": {
+      "queries": [
+        {
+          "type": "builder_query",
+          "spec": {
+            "name": "A",
+            "stepInterval": 60,
+            "signal": "metrics",
+            "source": "",
+            "aggregations": [
+              {
+                "metricName": "gradebook.decision.cost.usd.sum",
+                "temporality": "",
+                "timeAggregation": "increase",
+                "spaceAggregation": "sum"
+              }
+            ],
+            "filter": {
+              "expression": ""
+            },
+            "groupBy": [],
+            "order": [
+              {
+                "key": {
+                  "name": "__result"
+                },
+                "direction": "desc"
+              }
+            ],
+            "limit": 100,
+            "legend": "cost"
+          }
+        }
+      ],
+      "panelType": "graph",
+      "queryType": "builder"
+    },
+    "selectedQueryName": "A",
+    "thresholds": {
+      "kind": "basic",
+      "spec": [
+        {
+          "name": "critical",
+          "target": 1,
+          "targetUnit": "",
+          "recoveryTarget": null,
+          "matchType": "in_total",
+          "op": "above",
+          "channels": [
+            "blog-demo-email"
+          ]
+        }
+      ]
+    }
+  },
+  "labels": {
+    "severity": "critical",
+    "team": "gradebook"
+  },
+  "annotations": {
+    "description": "Gradebook decision cost has burned ${{$value}} in the last 30 minutes, above the ${{$threshold}} spend-spike threshold.",
+    "summary": "Gradebook spend spike"
+  },
+  "disabled": false,
+  "version": "v5",
+  "evaluation": {
+    "kind": "rolling",
+    "spec": {
+      "evalWindow": "30m",
+      "frequency": "1m"
+    }
+  },
+  "schemaVersion": "v2alpha1",
+  "notificationSettings": {
+    "groupBy": [],
+    "renotify": {
+      "enabled": true,
+      "interval": "30m",
+      "alertStates": [
+        "firing"
+      ]
+    }
+  }
+}

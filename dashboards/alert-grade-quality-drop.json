@@ -1,0 +1,128 @@
+{
+  "alert": "Gradebook Grade Quality Drop",
+  "alertType": "METRIC_BASED_ALERT",
+  "description": "Fires when the correct-decision rate (count(correct) / count(all), filtered to augmentloop.grade.source in math+reality per ADR 0001 - ai_judge grades never count toward this either) drops below 50% over a rolling 30-minute window. Baseline: lifetime accumulated rate across toy-world test runs is ~58.8% (10/17 correct). 50% is below coin-flip performance for a route/quote-extraction decision the engine can grade objectively, catching a real quality regression (e.g. a right-sizing reroute to a cheaper model that silently broke correctness).",
+  "ruleType": "threshold_rule",
+  "condition": {
+    "compositeQuery": {
+      "queries": [
+        {
+          "type": "builder_query",
+          "spec": {
+            "name": "A",
+            "stepInterval": 60,
+            "signal": "metrics",
+            "source": "",
+            "aggregations": [
+              {
+                "metricName": "gradebook.decisions.graded",
+                "temporality": "",
+                "timeAggregation": "increase",
+                "spaceAggregation": "sum"
+              }
+            ],
+            "filter": {
+              "expression": "gen_ai.evaluation.score.label = 'correct' AND augmentloop.grade.source IN ('math','reality')"
+            },
+            "groupBy": [],
+            "order": [
+              {
+                "key": {
+                  "name": "__result"
+                },
+                "direction": "desc"
+              }
+            ],
+            "limit": 100,
+            "legend": "correct"
+          }
+        },
+        {
+          "type": "builder_query",
+          "spec": {
+            "name": "B",
+            "stepInterval": 60,
+            "signal": "metrics",
+            "source": "",
+            "aggregations": [
+              {
+                "metricName": "gradebook.decisions.graded",
+                "temporality": "",
+                "timeAggregation": "increase",
+                "spaceAggregation": "sum"
+              }
+            ],
+            "filter": {
+              "expression": "augmentloop.grade.source IN ('math','reality')"
+            },
+            "groupBy": [],
+            "order": [
+              {
+                "key": {
+                  "name": "__result"
+                },
+                "direction": "desc"
+              }
+            ],
+            "limit": 100,
+            "legend": "total"
+          }
+        },
+        {
+          "type": "builder_formula",
+          "spec": {
+            "name": "F1",
+            "expression": "(A/B)*100"
+          }
+        }
+      ],
+      "panelType": "graph",
+      "queryType": "builder"
+    },
+    "selectedQueryName": "F1",
+    "thresholds": {
+      "kind": "basic",
+      "spec": [
+        {
+          "name": "critical",
+          "target": 50,
+          "targetUnit": "%",
+          "recoveryTarget": null,
+          "matchType": "in_total",
+          "op": "below",
+          "channels": [
+            "blog-demo-email"
+          ]
+        }
+      ]
+    }
+  },
+  "labels": {
+    "severity": "critical",
+    "team": "gradebook"
+  },
+  "annotations": {
+    "description": "Gradebook correct-decision rate is {{$value}}%, below the {{$threshold}}% grade-quality-drop threshold.",
+    "summary": "Gradebook grade quality drop"
+  },
+  "disabled": false,
+  "version": "v5",
+  "evaluation": {
+    "kind": "rolling",
+    "spec": {
+      "evalWindow": "30m",
+      "frequency": "1m"
+    }
+  },
+  "schemaVersion": "v2alpha1",
+  "notificationSettings": {
+    "groupBy": [],
+    "renotify": {
+      "enabled": true,
+      "interval": "30m",
+      "alertStates": [
+        "firing"
+      ]
+    }
+  }
+}
