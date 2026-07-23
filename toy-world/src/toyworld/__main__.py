@@ -6,6 +6,11 @@ services are emitted - `toy-world` (journeys + decisions) and
 `toy-world-outcomes` (the late reality grades) - so both appear in SigNoz and
 the deferred grade demonstrably crosses a service boundary.
 
+`python -m toyworld --live` (ticket #9) instead runs every roster model over
+the same junctions through real OpenRouter calls, under a per-run budget cap
+(`--budget`, default $0.50), to populate the model-vs-model comparison. Live
+mode needs `OPENROUTER_API_KEY` and the `[live]` extra; replay needs neither.
+
 Endpoint defaults to http://localhost:4318; override with
 OTEL_EXPORTER_OTLP_ENDPOINT. The run also prints a summary so the numbers can
 be eyeballed against the dashboards.
@@ -13,6 +18,7 @@ be eyeballed against the dashboards.
 
 from __future__ import annotations
 
+import argparse
 import os
 from pathlib import Path
 
@@ -52,7 +58,16 @@ def _meter_provider(resource: Resource) -> MeterProvider:
     )
 
 
-def main() -> None:
+def _print_per_model(by_model: dict) -> None:
+    print("per model:")
+    for model, row in by_model.items():
+        print(
+            f"  {model}: {row['correct']:.0f}/{row['decisions']:.0f} correct, "
+            f"${row['cost_usd']:.6f}"
+        )
+
+
+def _run_replay() -> None:
     world_resource = Resource.create({"service.name": "toy-world"})
     outcomes_resource = Resource.create({"service.name": "toy-world-outcomes"})
 
@@ -81,15 +96,65 @@ def main() -> None:
     )
     if summary.cost_per_correct_usd is not None:
         print(f"cost per correct decision: ${summary.cost_per_correct_usd:.6f}")
-    print("per model:")
-    for model, row in summary.by_model.items():
-        print(
-            f"  {model}: {row['correct']:.0f}/{row['decisions']:.0f} correct, "
-            f"${row['cost_usd']:.6f}"
-        )
+    _print_per_model(summary.by_model)
     print("Open SigNoz -> Traces: filter service.name=toy-world for the journey")
     print("waterfalls; the late journey.on_time grades under toy-world-outcomes")
     print("span-link back to the decisions they judge.")
+
+
+def _run_live(budget_usd: float) -> None:
+    # Imported here so replay never needs the [live] extra or an API key.
+    from .live import run_live
+    from .openrouter import OpenRouterClient
+
+    world_resource = Resource.create({"service.name": "toy-world"})
+    world = _tracer_provider(world_resource)
+    world_meters = _meter_provider(world_resource)
+
+    summary = run_live(
+        OpenRouterClient(),
+        budget_usd=budget_usd,
+        world_provider=world,
+        world_meter_provider=world_meters,
+    )
+
+    for provider in (world, world_meters):
+        provider.force_flush()
+        provider.shutdown()
+
+    print(f"Live run (budget ${budget_usd:.2f}) -> {ENDPOINT}")
+    print(
+        f"decisions={summary.decisions}  correct={summary.correct}  "
+        f"total_cost=${summary.total_cost_usd:.6f}"
+        + ("  [BUDGET CAP HIT]" if summary.budget_exhausted else "")
+    )
+    if summary.cost_per_correct_usd is not None:
+        print(f"cost per correct decision: ${summary.cost_per_correct_usd:.6f}")
+    _print_per_model(summary.by_model)
+    print("Open SigNoz -> Traces: filter service.name=toy-world; each model is one")
+    print("trace. The cost-per-correct-by-model panel is the right-sizing evidence.")
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser(prog="toyworld")
+    parser.add_argument(
+        "--live",
+        action="store_true",
+        help="run real OpenRouter model calls (needs OPENROUTER_API_KEY) instead "
+        "of the deterministic committed replay",
+    )
+    parser.add_argument(
+        "--budget",
+        type=float,
+        default=0.50,
+        help="per-run budget cap in USD for --live (default: 0.50)",
+    )
+    args = parser.parse_args()
+
+    if args.live:
+        _run_live(args.budget)
+    else:
+        _run_replay()
 
 
 if __name__ == "__main__":

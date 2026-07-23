@@ -34,6 +34,34 @@ class JunctionDecision:
 
 
 @dataclass(frozen=True)
+class Junction:
+    """One junction's fixed layout: the routes on offer and their travel times.
+
+    This is the world *before* any driver chooses - the shared truth both modes
+    read. Replay records a `chosen` on top of it; live mode asks a real model to
+    choose. Either way the provably-correct answer is `true_fastest`.
+    """
+
+    name: str
+    options: dict[str, float]  # route name -> travel time (minutes)
+
+    @property
+    def true_fastest(self) -> str:
+        """The provably-correct answer; ties break by route name for stability."""
+        return min(sorted(self.options), key=self.options.__getitem__)
+
+
+# The canonical world layout, shared by replay and live so both describe the
+# SAME junctions. These match the committed recording (recordings/replay-v1.jsonl)
+# so a live run and a replay are comparable at each junction.
+WORLD: tuple[Junction, ...] = (
+    Junction("J1", {"A": 7.0, "B": 9.0}),
+    Junction("J2", {"C": 5.0, "D": 4.0, "E": 8.0}),
+    Junction("J3", {"F": 6.0, "G": 6.5}),
+)
+
+
+@dataclass(frozen=True)
 class JourneyOutcome:
     """The real-world verdict on one driver's journey, arriving after the fact.
 
