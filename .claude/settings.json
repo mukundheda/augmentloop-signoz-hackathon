@@ -1,0 +1,13 @@
+{
+  "extraKnownMarketplaces": {
+    "signoz-skills": {
+      "source": {
+        "source": "github",
+        "repo": "SigNoz/agent-skills"
+      }
+    }
+  },
+  "enabledPlugins": {
+    "signoz@signoz-skills": true
+  }
+}
