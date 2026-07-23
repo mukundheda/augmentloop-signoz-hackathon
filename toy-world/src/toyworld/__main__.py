@@ -16,7 +16,10 @@ from __future__ import annotations
 import os
 from pathlib import Path
 
+from opentelemetry.exporter.otlp.proto.http.metric_exporter import OTLPMetricExporter
 from opentelemetry.exporter.otlp.proto.http.trace_exporter import OTLPSpanExporter
+from opentelemetry.sdk.metrics import MeterProvider
+from opentelemetry.sdk.metrics.export import PeriodicExportingMetricReader
 from opentelemetry.sdk.resources import Resource
 from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import BatchSpanProcessor
@@ -27,23 +30,46 @@ ENDPOINT = os.environ.get("OTEL_EXPORTER_OTLP_ENDPOINT", "http://localhost:4318"
 RECORDING = Path(__file__).resolve().parents[2] / "recordings" / "replay-v1.jsonl"
 
 
-def _provider(service_name: str) -> TracerProvider:
-    provider = TracerProvider(
-        resource=Resource.create({"service.name": service_name})
-    )
+def _tracer_provider(resource: Resource) -> TracerProvider:
+    provider = TracerProvider(resource=resource)
     provider.add_span_processor(
         BatchSpanProcessor(OTLPSpanExporter(endpoint=f"{ENDPOINT}/v1/traces"))
     )
     return provider
 
 
+def _meter_provider(resource: Resource) -> MeterProvider:
+    # Short export interval: a one-shot replay needs its data points to leave
+    # the process on force_flush, not wait out the default 60s period.
+    return MeterProvider(
+        resource=resource,
+        metric_readers=[
+            PeriodicExportingMetricReader(
+                OTLPMetricExporter(endpoint=f"{ENDPOINT}/v1/metrics"),
+                export_interval_millis=1_000,
+            )
+        ],
+    )
+
+
 def main() -> None:
-    world = _provider("toy-world")
-    outcomes = _provider("toy-world-outcomes")
+    world_resource = Resource.create({"service.name": "toy-world"})
+    outcomes_resource = Resource.create({"service.name": "toy-world-outcomes"})
 
-    summary = replay(RECORDING, world_provider=world, outcomes_provider=outcomes)
+    world = _tracer_provider(world_resource)
+    outcomes = _tracer_provider(outcomes_resource)
+    world_meters = _meter_provider(world_resource)
+    outcomes_meters = _meter_provider(outcomes_resource)
 
-    for provider in (world, outcomes):
+    summary = replay(
+        RECORDING,
+        world_provider=world,
+        outcomes_provider=outcomes,
+        world_meter_provider=world_meters,
+        outcomes_meter_provider=outcomes_meters,
+    )
+
+    for provider in (world, outcomes, world_meters, outcomes_meters):
         provider.force_flush()
         provider.shutdown()
 

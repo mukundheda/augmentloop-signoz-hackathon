@@ -161,6 +161,23 @@ If the semconv version is bumped, re-run the #2 verify and reconcile this list b
 
 ---
 
+## 10. Aggregate metrics (T4 observatory extension, ticket #7)
+
+Sections 1-9 govern the per-decision **event**. This section adds two OpenTelemetry **metric** instruments, emitted alongside every event, so SigNoz's native metrics UI has something to chart and alert on - not just event/log search over spans.
+
+| Instrument | Kind | Unit | Attributes |
+|---|---|---|---|
+| `gradebook.decisions.graded` | Counter | `1` | `augmentloop.grade.source`, `gen_ai.evaluation.score.label`, `gen_ai.request.model` (if known), `augmentloop.decision.type` (if known) |
+| `gradebook.decision.cost.usd` | Histogram | `usd` | same as above |
+
+- The counter increments by 1 for every grade recorded, regardless of whether cost is known.
+- The histogram records a value only when `augmentloop.cost.usd` is known on that grade (same "never a fabricated zero" rule as the event attribute, Section 3.2).
+- Attributes deliberately reuse the same names as the event (Sections 2-3, 7) - a dashboard groups spans and metrics by one shared vocabulary, not two.
+- Both instruments are recorded **while the event's span is the current span**, so the SDK's default `TraceBasedExemplarFilter` attaches an exemplar (the originating trace id + span id) to each data point. A spike on a metric chart is one click from the exact decision that caused it.
+- The **aggregation** dashboards need (cost per correct decision, correct-rate by model) is a query-time `sum`/`count`/division over these instruments in SigNoz, filtered to `augmentloop.grade.source` in (`math`, `reality`) for anything in the headline (ADR 0001) - never computed in this library. Section 5's seam decision extends to metrics: record raw numbers here, aggregate them in SigNoz.
+
+---
+
 ## Cross-references
 
 - ADR [0001](adr/0001-machine-checked-grades-only-in-the-headline-metric.md) - machine-checked grades only in the headline metric.
@@ -168,3 +185,4 @@ If the semconv version is bumped, re-run the #2 verify and reconcile this list b
 - [CONTEXT.md](../CONTEXT.md) - glossary (Decision, Grade, Grade source, Cost, Span link roles).
 - Spec #3 - the product build (six layers); this doc is the Foundation layer's recording contract.
 - Verify #2 - Day-1 technical verifies; froze the names above and confirmed token auto-capture.
+- Ticket #7 - the T4 observatory (dashboard + alerts); Section 10 above is this ticket's recording-contract extension.

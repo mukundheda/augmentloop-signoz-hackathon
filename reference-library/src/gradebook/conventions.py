@@ -25,3 +25,7 @@ OUTPUT_TOKENS = "gen_ai.usage.output_tokens"
 GRADE_SOURCE = "augmentloop.grade.source"    # mandatory on every event (ADR 0001)
 COST_USD = "augmentloop.cost.usd"
 DECISION_TYPE = "augmentloop.decision.type"  # recommended
+
+# Aggregate OTel metric instruments (conventions doc section 10, ticket #7).
+METRIC_DECISIONS_GRADED = "gradebook.decisions.graded"
+METRIC_DECISION_COST_USD = "gradebook.decision.cost.usd"

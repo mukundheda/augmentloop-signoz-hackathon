@@ -21,7 +21,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Iterable, Optional
 
-from opentelemetry import trace
+from opentelemetry import metrics, trace
 
 from gradebook import DecisionRef, capture_decision, record_decision, record_reality_grade
 
@@ -70,12 +70,16 @@ def replay(
     *,
     world_provider: Optional[trace.TracerProvider] = None,
     outcomes_provider: Optional[trace.TracerProvider] = None,
+    world_meter_provider: Optional[metrics.MeterProvider] = None,
+    outcomes_meter_provider: Optional[metrics.MeterProvider] = None,
 ) -> ReplaySummary:
     """Replay one recording through the Gradebook library.
 
-    Providers are injectable for tests (in-memory exporter) and wired to OTLP
-    by `run.py`. `world_provider` carries the journey/decision spans;
-    `outcomes_provider` carries the late reality grades.
+    Providers are injectable for tests (in-memory exporter/reader) and wired to
+    OTLP by `__main__.py`. `world_provider`/`world_meter_provider` carry the
+    journey/decision telemetry; `outcomes_provider`/`outcomes_meter_provider`
+    carry the late reality grades (ticket #7: the aggregate metrics ride the
+    same two services as the events they're recorded alongside).
     """
     provider = world_provider or trace.get_tracer_provider()
     tracer = provider.get_tracer(TRACER_NAME)
@@ -107,6 +111,7 @@ def replay(
                             f"true fastest {correct_route} ({d.options[correct_route]}m)"
                         ),
                         tracer_provider=provider,
+                        meter_provider=world_meter_provider,
                     )
                     summary.decisions += 1
                     is_correct = d.chosen == correct_route
@@ -135,6 +140,7 @@ def replay(
             decision_type="route_choice",
             explanation=f"{outcome.driver} arrived {'on time' if outcome.on_time else 'late'}",
             tracer_provider=outcomes_provider or provider,
+            meter_provider=outcomes_meter_provider or world_meter_provider,
         )
         summary.outcomes += 1
 

@@ -15,7 +15,10 @@ with OTEL_EXPORTER_OTLP_ENDPOINT.
 
 import os
 
+from opentelemetry.exporter.otlp.proto.http.metric_exporter import OTLPMetricExporter
 from opentelemetry.exporter.otlp.proto.http.trace_exporter import OTLPSpanExporter
+from opentelemetry.sdk.metrics import MeterProvider
+from opentelemetry.sdk.metrics.export import PeriodicExportingMetricReader
 from opentelemetry.sdk.resources import Resource
 from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import BatchSpanProcessor
@@ -26,11 +29,23 @@ ENDPOINT = os.environ.get("OTEL_EXPORTER_OTLP_ENDPOINT", "http://localhost:4318"
 
 
 def main() -> None:
-    provider = TracerProvider(
-        resource=Resource.create({"service.name": "gradebook-example"})
-    )
-    provider.add_span_processor(
+    resource = Resource.create({"service.name": "gradebook-example"})
+
+    tracer_provider = TracerProvider(resource=resource)
+    tracer_provider.add_span_processor(
         BatchSpanProcessor(OTLPSpanExporter(endpoint=f"{ENDPOINT}/v1/traces"))
+    )
+
+    # Short export interval so the single data point below leaves the process
+    # promptly on force_flush, without waiting out the default 60s period.
+    meter_provider = MeterProvider(
+        resource=resource,
+        metric_readers=[
+            PeriodicExportingMetricReader(
+                OTLPMetricExporter(endpoint=f"{ENDPOINT}/v1/metrics"),
+                export_interval_millis=1_000,
+            )
+        ],
     )
 
     record_decision(
@@ -43,14 +58,18 @@ def main() -> None:
         decision_type="route_choice",
         response_id="example-resp-0001",
         explanation="chose route B; the true fastest was A",
-        tracer_provider=provider,
+        tracer_provider=tracer_provider,
+        meter_provider=meter_provider,
     )
 
-    # Flush before exit so the batch actually leaves the process.
-    provider.force_flush()
-    provider.shutdown()
-    print(f"Emitted one gen_ai.evaluation.result to {ENDPOINT} "
-          f"(service.name=gradebook-example). Find it in SigNoz Traces.")
+    # Flush before exit so the batch/period export actually leaves the process.
+    tracer_provider.force_flush()
+    tracer_provider.shutdown()
+    meter_provider.force_flush()
+    meter_provider.shutdown()
+    print(f"Emitted one gen_ai.evaluation.result + gradebook.decisions.graded / "
+          f"gradebook.decision.cost.usd to {ENDPOINT} (service.name=gradebook-example). "
+          f"Find the trace in SigNoz Traces and the metrics in SigNoz Metrics.")
 
 
 if __name__ == "__main__":
