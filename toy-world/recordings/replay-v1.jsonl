@@ -1,0 +1,16 @@
+{"type": "decision", "driver": "driver-1", "junction": "J1", "options": {"A": 7.0, "B": 9.0}, "chosen": "A", "model": "anthropic/claude-3.5-haiku", "input_tokens": 182, "output_tokens": 14, "response_id": "replay-d1-J1"}
+{"type": "decision", "driver": "driver-1", "junction": "J2", "options": {"C": 5.0, "D": 4.0, "E": 8.0}, "chosen": "D", "model": "anthropic/claude-3.5-haiku", "input_tokens": 214, "output_tokens": 12, "response_id": "replay-d1-J2"}
+{"type": "decision", "driver": "driver-1", "junction": "J3", "options": {"F": 6.0, "G": 6.5}, "chosen": "G", "model": "anthropic/claude-3.5-haiku", "input_tokens": 198, "output_tokens": 15, "response_id": "replay-d1-J3"}
+{"type": "decision", "driver": "driver-2", "junction": "J1", "options": {"A": 7.0, "B": 9.0}, "chosen": "A", "model": "anthropic/claude-sonnet-4", "input_tokens": 182, "output_tokens": 16, "response_id": "replay-d2-J1"}
+{"type": "decision", "driver": "driver-2", "junction": "J2", "options": {"C": 5.0, "D": 4.0, "E": 8.0}, "chosen": "D", "model": "anthropic/claude-sonnet-4", "input_tokens": 214, "output_tokens": 13, "response_id": "replay-d2-J2"}
+{"type": "decision", "driver": "driver-2", "junction": "J3", "options": {"F": 6.0, "G": 6.5}, "chosen": "F", "model": "anthropic/claude-sonnet-4", "input_tokens": 198, "output_tokens": 11, "response_id": "replay-d2-J3"}
+{"type": "decision", "driver": "driver-3", "junction": "J1", "options": {"A": 7.0, "B": 9.0}, "chosen": "B", "model": "google/gemini-2.0-flash", "input_tokens": 182, "output_tokens": 18, "response_id": "replay-d3-J1"}
+{"type": "decision", "driver": "driver-3", "junction": "J2", "options": {"C": 5.0, "D": 4.0, "E": 8.0}, "chosen": "C", "model": "google/gemini-2.0-flash", "input_tokens": 214, "output_tokens": 17, "response_id": "replay-d3-J2"}
+{"type": "decision", "driver": "driver-3", "junction": "J3", "options": {"F": 6.0, "G": 6.5}, "chosen": "F", "model": "google/gemini-2.0-flash", "input_tokens": 198, "output_tokens": 14, "response_id": "replay-d3-J3"}
+{"type": "decision", "driver": "driver-4", "junction": "J1", "options": {"A": 7.0, "B": 9.0}, "chosen": "A", "model": "anthropic/claude-3.5-haiku", "input_tokens": 182, "output_tokens": 13, "response_id": "replay-d4-J1"}
+{"type": "decision", "driver": "driver-4", "junction": "J2", "options": {"C": 5.0, "D": 4.0, "E": 8.0}, "chosen": "E", "model": "anthropic/claude-3.5-haiku", "input_tokens": 214, "output_tokens": 15, "response_id": "replay-d4-J2"}
+{"type": "decision", "driver": "driver-4", "junction": "J3", "options": {"F": 6.0, "G": 6.5}, "chosen": "F", "model": "anthropic/claude-3.5-haiku", "input_tokens": 198, "output_tokens": 12, "response_id": "replay-d4-J3"}
+{"type": "outcome", "driver": "driver-1", "on_time": true, "graded_response_id": "replay-d1-J3"}
+{"type": "outcome", "driver": "driver-2", "on_time": true, "graded_response_id": "replay-d2-J3"}
+{"type": "outcome", "driver": "driver-3", "on_time": false, "graded_response_id": "replay-d3-J1"}
+{"type": "outcome", "driver": "driver-4", "on_time": false, "graded_response_id": "replay-d4-J2"}
