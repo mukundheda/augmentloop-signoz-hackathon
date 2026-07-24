@@ -126,7 +126,14 @@ class DirectClient:
             max_tokens=self._max_output_tokens,
             messages=[{"role": "user", "content": build_prompt(junction)}],
         )
-        text = response.content[0].text if response.content else ""
+        # First TEXT block, not content[0]: on models where adaptive thinking
+        # is on by default (e.g. claude-sonnet-5, already in the mapping above),
+        # a thinking block precedes the text block and content[0].text would
+        # crash. Current roster models (Haiku 4.5 / Sonnet 4.6) run thinking-off
+        # when the param is omitted, but the guard keeps a future swap safe.
+        text = next(
+            (block.text for block in response.content if block.type == "text"), ""
+        )
         return ModelDecision(
             chosen=parse_route(text, junction.options),
             input_tokens=response.usage.input_tokens,

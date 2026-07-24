@@ -21,8 +21,21 @@ J1 = WORLD[0]  # {"A": 7.0, "B": 9.0}; true fastest "A"
 
 
 class _AnthropicTextBlock:
+    type = "text"
+
     def __init__(self, text):
         self.text = text
+
+
+class _AnthropicThinkingBlock:
+    """A thinking block as emitted by models with adaptive thinking on by
+    default (e.g. claude-sonnet-5) - it precedes the text block and has no
+    usable `.text`, so DirectClient must skip it."""
+
+    type = "thinking"
+
+    def __init__(self, thinking="considering the routes..."):
+        self.thinking = thinking
 
 
 class _AnthropicUsage:
@@ -140,6 +153,20 @@ def test_anthropic_response_parses_into_correct_model_decision_fields():
     assert decision == ModelDecision(
         chosen="A", input_tokens=321, output_tokens=7, response_id="msg_abc123"
     )
+
+
+def test_anthropic_thinking_block_before_text_block_is_skipped():
+    # Models with adaptive thinking on by default (claude-sonnet-5, already in
+    # ANTHROPIC_MODEL_IDS for a future roster swap) emit a thinking block
+    # BEFORE the text block; parsing must find the text block, not content[0].
+    response = _AnthropicResponse("A", response_id="msg_think1")
+    response.content = [_AnthropicThinkingBlock(), _AnthropicTextBlock("A")]
+    client = DirectClient(anthropic_client=FakeAnthropicClient(response))
+
+    decision = client.decide(model="anthropic/claude-sonnet-5", junction=J1)
+
+    assert decision.chosen == "A"
+    assert decision.response_id == "msg_think1"
 
 
 def test_anthropic_call_omits_temperature_and_sets_max_tokens():
