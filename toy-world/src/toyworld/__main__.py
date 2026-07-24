@@ -7,9 +7,13 @@ services are emitted - `toy-world` (journeys + decisions) and
 the deferred grade demonstrably crosses a service boundary.
 
 `python -m toyworld --live` (ticket #9) instead runs every roster model over
-the same junctions through real OpenRouter calls, under a per-run budget cap
-(`--budget`, default $0.50), to populate the model-vs-model comparison. Live
-mode needs `OPENROUTER_API_KEY` and the `[live]` extra; replay needs neither.
+the same junctions through real model calls, under a per-run budget cap
+(`--budget`, default $0.50), to populate the model-vs-model comparison.
+`--provider openrouter` (the default) needs `OPENROUTER_API_KEY`.
+`--provider direct` is a TEMPORARY stopgap for while OpenRouter credits are
+provisioned: it reaches Anthropic natively (`ANTHROPIC_API_KEY`) and Gemini via
+its OpenAI-compatible endpoint (`GEMINI_API_KEY`) instead. Either way, live
+mode needs the `[live]` extra; replay needs neither.
 
 Endpoint defaults to http://localhost:4318; override with
 OTEL_EXPORTER_OTLP_ENDPOINT. The run also prints a summary so the numbers can
@@ -21,6 +25,7 @@ from __future__ import annotations
 import argparse
 import os
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 from opentelemetry.exporter.otlp.proto.http.metric_exporter import OTLPMetricExporter
 from opentelemetry.exporter.otlp.proto.http.trace_exporter import OTLPSpanExporter
@@ -31,6 +36,10 @@ from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import BatchSpanProcessor
 
 from .replay import replay
+
+if TYPE_CHECKING:
+    from .direct import DirectClient
+    from .openrouter import OpenRouterClient
 
 ENDPOINT = os.environ.get("OTEL_EXPORTER_OTLP_ENDPOINT", "http://localhost:4318")
 RECORDING = Path(__file__).resolve().parents[2] / "recordings" / "replay-v1.jsonl"
@@ -102,25 +111,35 @@ def _run_replay() -> None:
     print("span-link back to the decisions they judge.")
 
 
-def _run_live(budget_usd: float) -> None:
-    # Imported here so replay never needs the [live] extra or an API key.
-    from .live import run_live
+def _make_client(provider: str) -> "OpenRouterClient | DirectClient":
+    # Imported here so replay never needs the [live] extra, an API key, or
+    # either provider SDK.
+    if provider == "direct":
+        from .direct import DirectClient
+
+        return DirectClient()
     from .openrouter import OpenRouterClient
+
+    return OpenRouterClient()
+
+
+def _run_live(budget_usd: float, provider: str) -> None:
+    from .live import run_live
 
     world_resource = Resource.create({"service.name": "toy-world"})
     world = _tracer_provider(world_resource)
     world_meters = _meter_provider(world_resource)
 
     summary = run_live(
-        OpenRouterClient(),
+        _make_client(provider),
         budget_usd=budget_usd,
         world_provider=world,
         world_meter_provider=world_meters,
     )
 
-    for provider in (world, world_meters):
-        provider.force_flush()
-        provider.shutdown()
+    for telemetry_provider in (world, world_meters):
+        telemetry_provider.force_flush()
+        telemetry_provider.shutdown()
 
     print(f"Live run (budget ${budget_usd:.2f}) -> {ENDPOINT}")
     print(
@@ -149,10 +168,19 @@ def main() -> None:
         default=0.50,
         help="per-run budget cap in USD for --live (default: 0.50)",
     )
+    parser.add_argument(
+        "--provider",
+        choices=("openrouter", "direct"),
+        default="openrouter",
+        help="live-mode model client (default: openrouter, needs "
+        "OPENROUTER_API_KEY). 'direct' is a TEMPORARY stopgap while OpenRouter "
+        "credits are provisioned: native Anthropic (ANTHROPIC_API_KEY) + "
+        "Gemini's OpenAI-compatible endpoint (GEMINI_API_KEY)",
+    )
     args = parser.parse_args()
 
     if args.live:
-        _run_live(args.budget)
+        _run_live(args.budget, args.provider)
     else:
         _run_replay()
 

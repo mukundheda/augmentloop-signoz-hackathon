@@ -31,10 +31,16 @@ TRACER_NAME = "toyworld"
 # The comparison roster (CONTEXT.md): two Claude price tiers for the right-sizing
 # story plus a cross-provider contrast. Every model must exist in the Gradebook
 # pricing table, or pricing fails loud before any span is emitted.
+#
+# Refreshed 2026-07-24 (ticket #9) to current models, grounded against
+# OpenRouter's public /models API: the prior slugs were stale (claude-3.5-haiku
+# retired by Anthropic 2026-02-19; claude-sonnet-4 past its announced
+# retirement). Old slugs stay in gradebook.pricing.PRICES so the committed
+# replay recording still prices - see that module's comment.
 DEFAULT_ROSTER: tuple[str, ...] = (
-    "anthropic/claude-3.5-haiku",
-    "anthropic/claude-sonnet-4",
-    "google/gemini-2.0-flash",
+    "anthropic/claude-haiku-4.5",
+    "anthropic/claude-sonnet-4.6",
+    "google/gemini-2.5-flash-lite",
 )
 
 # Conservative token counts used only to pre-estimate a call's cost ceiling for
@@ -56,6 +62,38 @@ class ModelClient(Protocol):
     """The one thing live mode needs from a model: choose a route at a junction."""
 
     def decide(self, *, model: str, junction: Junction) -> ModelDecision: ...
+
+
+def build_prompt(junction: Junction) -> str:
+    """The one prompt every real ModelClient sends for one junction decision.
+
+    Shared so OpenRouterClient and DirectClient ask the exact same question
+    regardless of which provider answers it - a model comparison is only fair
+    if every model sees identical wording.
+    """
+    offered = ", ".join(
+        f"{route}={minutes} min" for route, minutes in junction.options.items()
+    )
+    return (
+        f"At junction {junction.name} you may take one of these routes: {offered}. "
+        f"Reply with ONLY the single letter of the fastest route, nothing else."
+    )
+
+
+def parse_route(text: str, options: dict[str, float]) -> str:
+    """Pull the chosen route letter out of a short model reply.
+
+    Shared by every real ModelClient. We ask the model for just the route
+    letter, but stay robust: take the first offered route name that appears in
+    the reply. If none appears, return the raw first token so grading records
+    it as a (wrong) choice rather than crashing - a bad answer is data, not an
+    error.
+    """
+    stripped = text.strip()
+    for route in options:
+        if route in stripped:
+            return route
+    return stripped.split()[0] if stripped.split() else stripped
 
 
 @dataclass

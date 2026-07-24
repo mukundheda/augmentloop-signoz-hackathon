@@ -28,9 +28,21 @@ class ModelRate:
 # OpenRouter-style model slug -> rate. The default roster (CONTEXT.md): two Claude
 # price tiers for the right-sizing story plus a cross-provider contrast.
 PRICES: dict[str, ModelRate] = {
+    # Kept only because `toyworld.replay` re-prices the committed recording
+    # (toy-world/recordings/replay-v1.jsonl) from this table at run time - these
+    # slugs are stale (claude-3.5-haiku retired by Anthropic 2026-02-19;
+    # claude-sonnet-4 past its announced retirement) and no longer in
+    # DEFAULT_ROSTER, but removing them would break replay's cost numbers.
     "anthropic/claude-3.5-haiku": ModelRate(0.80, 4.00),
     "anthropic/claude-sonnet-4": ModelRate(3.00, 15.00),
     "google/gemini-2.0-flash": ModelRate(0.10, 0.40),
+    # Current roster (refreshed 2026-07-24, ticket #9), grounded against
+    # OpenRouter's public /models API: Claude Haiku 4.5 (cheap tier), Claude
+    # Sonnet 4.6 (premium tier), Gemini 2.5 Flash Lite (cross-provider cheap
+    # contrast - gemini-2.0-flash is no longer listed there).
+    "anthropic/claude-haiku-4.5": ModelRate(1.00, 5.00),
+    "anthropic/claude-sonnet-4.6": ModelRate(3.00, 15.00),
+    "google/gemini-2.5-flash-lite": ModelRate(0.10, 0.40),
 }
 
 

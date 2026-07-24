@@ -95,11 +95,11 @@ def test_grades_reflect_each_models_own_choices(world):
     J2 and J3."""
 
     def chooser(model, junction):
-        if model == "anthropic/claude-sonnet-4":
+        if model == "anthropic/claude-sonnet-4.6":
             return junction.true_fastest
-        if model == "anthropic/claude-3.5-haiku":
+        if model == "anthropic/claude-haiku-4.5":
             return "G" if junction.name == "J3" else junction.true_fastest
-        # gemini-flash: wrong at J2 and J3
+        # gemini-flash-lite: wrong at J2 and J3
         if junction.name == "J2":
             return "C"
         if junction.name == "J3":
@@ -109,9 +109,9 @@ def test_grades_reflect_each_models_own_choices(world):
     provider, exporter = world
     summary = run_live(FakeClient(chooser), budget_usd=1.0, world_provider=provider)
 
-    assert summary.by_model["anthropic/claude-sonnet-4"]["correct"] == 3
-    assert summary.by_model["anthropic/claude-3.5-haiku"]["correct"] == 2
-    assert summary.by_model["google/gemini-2.0-flash"]["correct"] == 1
+    assert summary.by_model["anthropic/claude-sonnet-4.6"]["correct"] == 3
+    assert summary.by_model["anthropic/claude-haiku-4.5"]["correct"] == 2
+    assert summary.by_model["google/gemini-2.5-flash-lite"]["correct"] == 1
     assert summary.correct == 6
 
     labels = [e.attributes["gen_ai.evaluation.score.label"] for e in _events(exporter)]
