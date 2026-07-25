@@ -124,14 +124,25 @@ replay is deterministic; re-running it just adds another identical batch.
 SigNoz UI -> Dashboards -> New Dashboard -> **Import JSON** -> upload
 `dashboards/gradebook-cost-per-correct-decision.json` -> Import and Next.
 
-Twelve panels across six panel types (value, bar, timeseries, table, list and
-histogram) light up from the replay batch on the default "Last 30 minutes"
-range. The AI-Estimated Quality panel reads 0 - correct, the replay recording
-contains no `ai_judge` grades by design. Two panels are worth opening first:
-**Right-Sizing Grid** is the finding this project exists to show, every
-decision type crossed with every model, and **Cost per Decision: Distribution
-by Model** reads the real bucket boundaries of the OpenTelemetry histogram
-instrument rather than collapsing the run to a mean.
+Eleven panels across five panel types (timeseries, bar, value, table and list)
+light up from the replay batch on the default "Last 30 minutes" range. The
+AI-Estimated Quality panel reads 0 - correct, the replay recording contains no
+`ai_judge` grades by design. The panel worth opening first is the
+**Right-Sizing Grid**, which is the finding this project exists to show: every
+decision type crossed with every model, with the three cheapest models sitting
+at 20 out of 20 on `next_hop` above `claude-sonnet-4.6`'s 19.
+
+Two deliberate absences, so neither reads as an oversight. There is no
+single-number "value" panel for the headline, and no histogram panel despite
+this build emitting a real OpenTelemetry histogram instrument for cost. Both
+come from the same limitation, found by looking at the rendered dashboard
+rather than at query responses: **this SigNoz version does not evaluate builder
+formulas on the scalar query path** that a value panel and a table column use.
+The headline's `(A/B)*1000` returns 1.507 as a timeseries and empty as a
+scalar, and with `nullZeroValues` set to zero a value panel renders that
+emptiness as a confident `0`. The headline is therefore a timeseries, the
+table shows raw counts instead of ratio columns, and the bucket panel was cut
+rather than shipped reading "No Data".
 
 **Keep the time range on your own replay run.** The reconciliation panels are
 pinned to the demo services (`toy-world` and `toy-world-outcomes`), because
