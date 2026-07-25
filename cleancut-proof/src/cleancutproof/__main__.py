@@ -26,7 +26,7 @@ from opentelemetry.sdk.resources import Resource
 from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import BatchSpanProcessor
 
-from .runner import openrouter_caller, replay_clip_outcomes, run_detections
+from .runner import ROSTER, openrouter_caller, replay_clip_outcomes, run_detections
 
 ENDPOINT = os.environ.get("OTEL_EXPORTER_OTLP_ENDPOINT", "http://localhost:4318")
 SAMPLES = Path(__file__).resolve().parents[2] / "samples"
@@ -53,12 +53,29 @@ def _meter_provider(service: str) -> MeterProvider:
 
 
 def main() -> None:
+    # Two provider paths. `openrouter` is the original; `direct` is the stopgap
+    # (mirroring toyworld.direct, #9) that runs on the keys CleanCut already
+    # holds, so this capture is not blocked on OpenRouter credit. Chosen with
+    # PROOF_PROVIDER, defaulting to whichever key is actually present.
+    provider = os.environ.get("PROOF_PROVIDER")
     api_key = os.environ.get("OPENROUTER_API_KEY")
-    if not api_key:
+    if not provider:
+        provider = "openrouter" if api_key else "direct"
+
+    if provider == "openrouter" and not api_key:
         sys.exit(
-            "OPENROUTER_API_KEY is not set. The proof run calls the live roster "
-            "(Haiku / Sonnet / Gemini Flash via OpenRouter); set the key and "
-            "re-run. Tests need no key: pytest cleancut-proof/tests"
+            "OPENROUTER_API_KEY is not set. Either set it, or use the direct "
+            "provider (PROOF_PROVIDER=direct) which runs on OPENAI_API_KEY + "
+            "GOOGLE_API_KEY. Tests need no key: pytest cleancut-proof/tests"
+        )
+    if provider == "direct" and not (
+        os.environ.get("OPENAI_API_KEY")
+        or os.environ.get("GOOGLE_API_KEY")
+        or os.environ.get("GEMINI_API_KEY")
+    ):
+        sys.exit(
+            "PROOF_PROVIDER=direct needs OPENAI_API_KEY and/or GOOGLE_API_KEY "
+            "(GEMINI_API_KEY also accepted). Tests need no key."
         )
 
     transcript_path = Path(
@@ -66,6 +83,9 @@ def main() -> None:
     )
     clips_csv = Path(os.environ.get("CLEANCUT_CLIPS_CSV", SAMPLES / "sample_clips.csv"))
     budget = float(os.environ.get("PROOF_BUDGET_USD", "0.50"))
+    # Roster override, so a direct run can name the models its keys can reach.
+    roster_env = os.environ.get("PROOF_ROSTER")
+    roster = tuple(m.strip() for m in roster_env.split(",")) if roster_env else ROSTER
 
     transcript = transcript_path.read_text(encoding="utf-8")
     label = transcript_path.stem  # keep labels non-identifying by choosing the file name
@@ -75,10 +95,17 @@ def main() -> None:
     proof_meters = _meter_provider("cleancut-proof")
     outcomes_meters = _meter_provider("cleancut-outcomes")
 
-    caller = openrouter_caller(api_key, budget_usd=budget)
+    if provider == "direct":
+        from .direct import direct_caller
+
+        caller = direct_caller(budget_usd=budget)
+    else:
+        caller = openrouter_caller(api_key, budget_usd=budget)
+    print(f"provider={provider}  roster={', '.join(roster)}")
     summary = run_detections(
         transcript,
         caller=caller,
+        models=roster,
         transcript_label=label,
         tracer_provider=proof,
         meter_provider=proof_meters,

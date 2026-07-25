@@ -43,6 +43,14 @@ PRICES: dict[str, ModelRate] = {
     "anthropic/claude-haiku-4.5": ModelRate(1.00, 5.00),
     "anthropic/claude-sonnet-4.6": ModelRate(3.00, 15.00),
     "google/gemini-2.5-flash-lite": ModelRate(0.10, 0.40),
+    # OpenAI tier, added for the CleanCut real-substrate capture (#11). That
+    # capture runs on the keys the CleanCut product itself already holds
+    # (OpenAI + Google) rather than OpenRouter, so the cheap-vs-premium
+    # comparison is cross-provider: gpt-4o-mini / gemini-2.5-flash-lite as the
+    # cheap tier against gpt-4o as the premium one. List prices, USD per 1M
+    # tokens; re-check before submission like every other row here.
+    "openai/gpt-4o": ModelRate(2.50, 10.00),
+    "openai/gpt-4o-mini": ModelRate(0.15, 0.60),
 }
 
 

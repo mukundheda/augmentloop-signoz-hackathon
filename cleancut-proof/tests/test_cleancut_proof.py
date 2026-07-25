@@ -168,3 +168,26 @@ def test_budget_cap_fails_loud_before_spending():
     caller = openrouter_caller("fake-key", budget_usd=0.0)
     with pytest.raises(BudgetExceededError):
         caller("anthropic/claude-haiku-4.5", "hi")  # no network call happens
+
+
+# --- NONE sentinel (found on the real capture run, #11) ---------------------
+
+
+def test_none_sentinel_stripped_wherever_it_appears():
+    """gpt-4o appended NONE *after* listing fillers on the live run.
+
+    Only stripping a whole-answer "NONE" left a stray token the multiset
+    comparison counted as a filler, failing a model for how it framed its
+    answer rather than for which fillers it found.
+    """
+    from cleancutproof.runner import _strip_none_sentinel
+
+    truth = ["er", "uh", "uh", "uh", "uh", "uh", "um", "um"]
+    # correct fillers + a trailing sentinel must PASS
+    assert filler_checker(_strip_none_sentinel("er uh uh uh uh uh um um NONE"), truth)
+    # whole-answer NONE still means "found nothing"
+    assert _strip_none_sentinel("NONE").strip() == ""
+    # a genuinely wrong count still FAILS (this is the real gpt-4o answer)
+    assert not filler_checker(
+        _strip_none_sentinel("er uh uh uh um uh um uh um NONE"), truth
+    )

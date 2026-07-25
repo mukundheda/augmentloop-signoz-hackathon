@@ -17,6 +17,7 @@ from __future__ import annotations
 
 import csv
 import json
+import re
 import urllib.request
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -38,6 +39,21 @@ from .checkers import filler_checker, lexical_fillers
 def _passed(outcome) -> bool:
     """Normalize a checker return (bool or CheckResult) to a bool for the tally."""
     return outcome.passed if isinstance(outcome, CheckResult) else bool(outcome)
+
+
+def _strip_none_sentinel(answer: str) -> str:
+    """Drop the prompt's `NONE` sentinel wherever it appears in a filler answer.
+
+    The prompt says "if there are none, reply NONE", and models sometimes append
+    NONE *after* listing fillers rather than instead of a list (observed from
+    gpt-4o on the real capture). Only stripping a whole-answer "NONE" left the
+    sentinel as a stray token, which the multiset comparison then counted as a
+    filler the transcript never contained - failing a model for how it framed
+    its answer rather than for which fillers it found. This grade is supposed to
+    measure filler detection, so the sentinel is removed either way; a genuinely
+    wrong count still fails.
+    """
+    return re.sub(r"\bNONE\b", " ", answer, flags=re.IGNORECASE)
 
 TRACER_NAME = "cleancutproof"
 
@@ -179,7 +195,7 @@ def run_detections(
             FILLER_PROMPT,
             # Compare the model's word list against the lexical ground truth.
             lambda chosen, _correct: filler_checker(
-                "" if chosen.strip().upper() == "NONE" else chosen, truth_fillers
+                _strip_none_sentinel(chosen), truth_fillers
             ),
             " ".join(truth_fillers) or "NONE",
         ),
