@@ -19,7 +19,7 @@ from __future__ import annotations
 import os
 from typing import Optional
 
-from .live import ModelDecision
+from .live import MAX_OUTPUT_TOKENS, ModelDecision
 from .world import Query
 
 
@@ -31,7 +31,7 @@ class OpenRouterClient:
         *,
         api_key: Optional[str] = None,
         base_url: str = "https://openrouter.ai/api/v1",
-        max_output_tokens: int = 64,
+        max_output_tokens: int = MAX_OUTPUT_TOKENS,
     ):
         # Key check BEFORE the SDK import: a missing key must fail loud naming
         # the env var even on an install without the `[live]` extra, otherwise

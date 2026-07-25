@@ -9,18 +9,28 @@ junctions, weighted directed edges) and three decision types built on top of
 the SAME graph and the SAME shortest-path routine, so every answer key is
 computed, never hand-authored (spec ticket #33):
 
-- **route_choice** (hard): pick which of two candidate routes between a start
-  and destination junction, several hops apart, is fastest. Both candidates
-  are real paths through the graph (the true shortest path, and the best
-  alternative that diverges from its first hop); the correct answer is
-  whichever has the lower total time.
-- **eta_estimate** (medium): estimate the travel time, in minutes, of the
-  fastest route between a start and destination junction. Graded within
-  `ETA_TOLERANCE_FRACTION` of the true shortest-path time - a numeric
-  tolerance, not an exact match.
+Every prompt hands the model the same thing: the serialized road network
+(`MAP_TEXT`) and a question. No prompt does any of the question's arithmetic
+in advance. What separates the three types is purely how much reasoning is
+left to do over that shared map:
+
+- **eta_estimate** (hard): no candidate routes are offered at all - search
+  the graph for the fastest route from start to destination and estimate its
+  total travel time. A shortest-path search the model has to run itself.
+  Graded within `ETA_TOLERANCE_FRACTION` of the true shortest-path time - a
+  numeric tolerance, not an exact match.
+- **route_choice** (medium): two candidate routes between a start and
+  destination junction, several hops apart, are named but NOT timed; add up
+  each one's edges from the map and say which is faster. Both candidates are
+  real paths through the graph (the true shortest path, and the best
+  alternative that diverges from its first hop).
 - **next_hop** (easy): at one junction, choose the single cheapest outgoing
-  edge. A one-step decision - the same shape the toy world had before this
-  ticket, now one of three.
+  edge - one row of the map, one comparison. A one-step decision, the same
+  shape the toy world had before this ticket, now one of three.
+
+The parenthetical tiers above describe the TYPE. The per-decision `difficulty`
+attribute is separate and is computed from the starting junction's branching
+factor (`difficulty_tier`), so correct-rate can be broken down either way.
 
 Difficulty is tagged per decision from the branching factor of its starting
 junction (`difficulty_tier`) - more outgoing edges to compare is a harder
@@ -173,6 +183,47 @@ GRAPH: dict[str, JunctionNode] = {
 assert len(GRAPH) == 20, "spec ticket #33 requires exactly twenty junctions"
 
 
+def _junction_sort_key(name: str) -> int:
+    """Order junctions J1..J20 numerically rather than lexicographically, so
+    the serialized map reads J1, J2, ... J20 instead of J1, J10, J11, ... J2.
+    """
+    return int(name[1:])
+
+
+def _render_map(graph: Mapping[str, JunctionNode]) -> str:
+    """Serialize the whole road network as the lookup table a model has to
+    reason OVER, one junction per line.
+
+    Every prompt in this module carries this and nothing more. That is the
+    point: before this, each prompt shipped its own answer pre-computed
+    alongside the question (route_choice printed both candidates' total times,
+    next_hop printed every outgoing edge's time next to the edge), so the task
+    collapsed to "pick the smaller number that is already on screen" and every
+    model in the roster scored identically. A decision every model gets right
+    for free cannot demonstrate right-sizing - there is no gap to route on.
+    Handing over the raw graph instead, with no per-question arithmetic done
+    in advance, is what makes the three types actually differ in difficulty.
+
+    The answer keys are untouched by this: they are still computed from GRAPH
+    by `shortest_path`/`cheapest_edge`, never read out of the prompt text.
+    """
+    return "\n".join(
+        f"{name}: " + ", ".join(f"{e.to}={e.minutes}" for e in graph[name].edges)
+        for name in sorted(graph, key=_junction_sort_key)
+    )
+
+
+# Built once at import: the same map text is shared by all three decision
+# types, so no type gets a privileged view of the world.
+MAP_TEXT = _render_map(GRAPH)
+
+_MAP_PREAMBLE = (
+    "Road network. Each line is one junction, then the junctions you can "
+    "drive to from it and the travel time in minutes:\n"
+    f"{MAP_TEXT}\n\n"
+)
+
+
 class NoPathError(ValueError):
     """Raised when no path exists between two junctions in the graph."""
 
@@ -275,13 +326,33 @@ class Query:
     route_options: Optional[Mapping[str, float]] = None
 
 
-def _first_number(text: str) -> float:
-    """Pull the first number out of a short reply. Unparseable text becomes
+# A quantity in a reply, ignoring the digits inside junction names: `J13` is
+# an identifier, not a number of minutes. The lookbehind rejects any digit run
+# glued to a letter, so `J13` is skipped while `13.0` is kept.
+_QUANTITY = re.compile(r"(?<![A-Za-z])-?\d+(?:\.\d+)?")
+
+
+def _final_number(text: str) -> float:
+    """Pull the model's ANSWER out of a numeric reply. Unparseable text becomes
     NaN, which never satisfies the tolerance check (Section: "a bad answer is
     data, not an error" - grading records it as wrong rather than crashing).
+
+    Takes the LAST quantity, not the first, because a model that shows its
+    working states its answer at the END ("...so the total is 7.0 minutes")
+    while every intermediate step comes first. Reading the first number
+    instead graded such a reply on whatever it happened to write down first.
+
+    That was not hypothetical: it silently zeroed the strongest model on the
+    hardest decision type. Asked for an ETA from J1, claude-sonnet-4.6 opens
+    "Let me use Dijkstra's algorithm. Starting from J1, initial distances: -
+    J1: 0", reaches the correct 7.0, and was scored on the `1` scraped out of
+    `J1` - 0/20 on answers it got RIGHT, while two models that guessed a bare
+    wrong number were graded honestly. A grading harness that punishes a model
+    for showing its working is measuring formatting, not correctness, which is
+    the exact failure this project exists to argue against.
     """
-    match = re.search(r"-?\d+(?:\.\d+)?", text)
-    return float(match.group()) if match else float("nan")
+    matches = _QUANTITY.findall(text)
+    return float(matches[-1]) if matches else float("nan")
 
 
 def _first_token_in(text: str, options: Any) -> str:
@@ -325,12 +396,12 @@ def journey_on_time(chosen_time: float, best_time: float) -> bool:
 def _next_hop_query(name: str) -> Query:
     node = GRAPH[name]
     edge = node.cheapest_edge
-    offered = ", ".join(f"{e.to} ({e.minutes} min)" for e in node.edges)
     neighbors = tuple(e.to for e in node.edges)
     prompt = (
-        f"You are at junction {name}. The roads out are: {offered}. "
-        f"Reply with ONLY the name of the junction you would go to next to "
-        f"minimize travel time, nothing else."
+        f"{_MAP_PREAMBLE}"
+        f"You are at junction {name}. Find that junction's roads in the map "
+        f"above and take the fastest one. Reply with ONLY the name of the "
+        f"junction you would go to next, nothing else."
     )
     return Query(
         decision_type=DECISION_TYPE_NEXT_HOP,
@@ -400,13 +471,16 @@ def _route_choice_query(start: str, end: str) -> Query:
     paths_by_label = {labels[i]: path for i, (path, _) in enumerate(candidates)}
     correct_label = min(options, key=lambda label: options[label])
 
-    offered = ", ".join(
-        f"{label}: {' -> '.join(paths_by_label[label])} ({options[label]} min)"
-        for label in labels
+    # The candidate PATHS are offered; their total times are not. Summing each
+    # path's edges out of the map is the actual work of this decision.
+    offered = "; ".join(
+        f"{label}: {' -> '.join(paths_by_label[label])}" for label in labels
     )
     prompt = (
-        f"Two candidate routes from {start} to {end}: {offered}. "
-        f"Reply with ONLY the single letter of the fastest route, nothing else."
+        f"{_MAP_PREAMBLE}"
+        f"Two candidate routes from {start} to {end} - {offered}. "
+        f"Add up each route's travel times from the map and reply with ONLY "
+        f"the single letter of the faster route, nothing else."
     )
     difficulty = difficulty_tier(GRAPH[start].branching_factor)
     return Query(
@@ -428,9 +502,13 @@ def _route_choice_query(start: str, end: str) -> Query:
 
 def _eta_estimate_query(start: str, end: str) -> Query:
     _, best_time = shortest_path(GRAPH, start, end)
+    # No candidate routes are offered here at all - finding the fastest one is
+    # the model's problem, which is what makes this the hardest of the three.
     prompt = (
-        f"Estimate the travel time in minutes for the fastest route from "
-        f"{start} to {end}. Reply with ONLY the number of minutes, nothing else."
+        f"{_MAP_PREAMBLE}"
+        f"Work out the fastest route from {start} to {end} using the map "
+        f"above, and estimate its total travel time. Reply with ONLY the "
+        f"number of minutes, nothing else."
     )
     difficulty = difficulty_tier(GRAPH[start].branching_factor)
     return Query(
@@ -441,7 +519,7 @@ def _eta_estimate_query(start: str, end: str) -> Query:
         prompt=prompt,
         correct=best_time,
         checker=within_eta_tolerance,
-        parse=_first_number,
+        parse=_final_number,
         explain=lambda chosen: (
             f"estimated {chosen}m; true fastest time is {best_time}m "
             f"(tolerance +/-{ETA_TOLERANCE_FRACTION:.0%})"
