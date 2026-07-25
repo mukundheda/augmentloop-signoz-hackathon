@@ -1,0 +1,268 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Grade provenance - Gradebook</title>
+<style>
+  /* SigNoz Periscope tokens, verified against @signozhq/design-tokens/dist/style.css. */
+  :root {
+    --bg-ink-500: #0b0c0e;  --bg-ink-400: #121317;  --bg-ink-300: #16181d;
+    --bg-ink-200: #23262e;
+    --bg-slate-400: #1d212d; --bg-slate-200: #2c3140; --bg-slate-100: #3c4152;
+    --bg-slate-50: #62687c;
+    --bg-vanilla-100: #fff;  --bg-vanilla-400: #c0c1c3;
+    --bg-robin-500: #4e74f8; --bg-robin-300: #95acfb;
+    --bg-cherry-500: #e5484d; --bg-cherry-900: #320f10;
+    --bg-forest-500: #25e192;
+    --bg-amber-500: #ffcc56; --bg-amber-300: #ffe19a;
+    --bg-sienna-500: #ad7f58;
+
+    --text: var(--bg-vanilla-100);
+    --text-dim: var(--bg-vanilla-400);
+    --text-faint: var(--bg-slate-50);
+    --line: var(--bg-slate-200);
+
+    --font: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    --mono: "Geist Mono", "Space Mono", "Fira Code", ui-monospace, SFMono-Regular, Menlo, monospace;
+
+    /* Hue carries provenance. These three are the whole argument. */
+    --src-math: var(--bg-robin-500);
+    --src-reality: var(--bg-amber-500);
+    --src-ai_judge: var(--bg-sienna-500);
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg-ink-500); color: var(--text);
+    font-family: var(--font); font-size: 14px; line-height: 1.45;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  header {
+    display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 14px;
+    padding: 14px 20px; border-bottom: 1px solid var(--line); background: var(--bg-ink-400);
+  }
+  h1 { font-size: 15px; font-weight: 600; margin: 0; letter-spacing: -0.01em; }
+  .crumb { color: var(--text-faint); font-size: 12px; font-family: var(--mono); }
+
+  .wrap { padding: 18px 20px 30px; }
+  h2 {
+    font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase;
+    color: var(--text-faint); margin: 0 0 10px; font-weight: 600;
+  }
+
+  /* Legend: the key has to be readable before the ribbon means anything. */
+  .legend { display: flex; flex-wrap: wrap; gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 3px; margin-bottom: 22px; }
+  .key { flex: 1 1 190px; background: var(--bg-ink-400); padding: 11px 14px; }
+  .key .row { display: flex; align-items: center; gap: 9px; }
+  .swatch { width: 10px; height: 22px; border-radius: 2px; flex: none; }
+  .key .src { font-family: var(--mono); font-size: 13px; }
+  .key .count { margin-left: auto; font-family: var(--mono); font-size: 13px; color: var(--text-dim); }
+  .key .verdict { margin-top: 5px; font-size: 11px; }
+  .counts-in { color: var(--bg-forest-500); }
+  .counts-out { color: var(--bg-sienna-500); }
+
+  .ribbon {
+    display: flex; flex-wrap: wrap; align-items: flex-end; gap: 3px;
+    padding: 18px 14px 14px; background: var(--bg-ink-400);
+    border: 1px solid var(--line); border-radius: 3px; min-height: 120px;
+  }
+  .glyph {
+    border: 0; padding: 0; border-radius: 1px 1px 0 0;
+    background: var(--src); cursor: pointer; position: relative;
+  }
+  /* Saturation carries correctness: a wrong decision's hue washes out, and the
+     cherry foot underneath stays fully saturated so wrong runs read as red
+     streaks along the baseline without having to inspect a single glyph. */
+  .glyph.incorrect {
+    background: linear-gradient(
+      to top,
+      var(--bg-cherry-500) 0 9px,
+      color-mix(in srgb, var(--src) 30%, var(--bg-ink-200)) 9px
+    );
+  }
+  .glyph:hover, .glyph:focus-visible { outline: 2px solid var(--bg-vanilla-100); outline-offset: 1px; }
+  .glyph[aria-pressed="true"] { outline: 2px solid var(--bg-vanilla-100); outline-offset: 1px; }
+  .gap { flex-basis: 100%; height: 0; }
+  .divider {
+    width: 100%; margin: 14px 0 10px; padding-top: 10px; border-top: 1px dashed var(--bg-slate-100);
+    font-family: var(--mono); font-size: 11px; color: var(--text-faint);
+  }
+
+  .axis { display: flex; justify-content: space-between; margin-top: 8px; font-size: 11px; color: var(--text-faint); font-family: var(--mono); }
+
+  .detail {
+    margin-top: 16px; border: 1px solid var(--line); border-left: 3px solid var(--src, var(--bg-slate-100));
+    border-radius: 3px; background: var(--bg-ink-400); padding: 12px 14px; min-height: 74px;
+  }
+  .detail .head { display: flex; flex-wrap: wrap; gap: 8px; align-items: baseline; }
+  .detail .name { font-family: var(--mono); font-size: 13px; }
+  .detail .body { margin-top: 6px; font-size: 12px; color: var(--text-dim); }
+  .detail .num { font-family: var(--mono); color: var(--text); }
+  .detail .hint { color: var(--text-faint); font-size: 12px; }
+
+  .pill {
+    font-size: 10px; letter-spacing: 0.04em; text-transform: uppercase;
+    padding: 2px 7px; border-radius: 999px; border: 1px solid currentColor; font-weight: 600;
+  }
+  .pill.correct { color: var(--bg-forest-500); }
+  .pill.incorrect { color: var(--bg-cherry-500); }
+  .pill.src { color: var(--src); }
+
+  .note { margin-top: 20px; max-width: 76ch; font-size: 13px; color: var(--text-dim); }
+  .note b { color: var(--text); font-weight: 600; }
+  footer { padding: 14px 20px 24px; color: var(--text-faint); font-size: 11px; border-top: 1px solid var(--line); }
+  footer code { font-family: var(--mono); color: var(--text-dim); }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Grade provenance</h1>
+  <span class="crumb" id="crumb"></span>
+</header>
+
+<div class="wrap">
+  <h2>Where every grade's authority comes from</h2>
+  <div class="legend" id="legend"></div>
+
+  <h2>Every decision in the run, in the order it was graded</h2>
+  <div class="ribbon" id="ribbon"></div>
+  <div class="axis">
+    <span>height = cost of the decision</span>
+    <span id="axis-max"></span>
+  </div>
+
+  <div class="detail" id="detail"></div>
+  <p class="note" id="note"></p>
+</div>
+
+<footer>
+  Rendered from spans this build already emits - captured by
+  <code>docs/visuals/capture_run.py</code> straight out of the OpenTelemetry SDK, no new
+  instrumentation. Hue is <code>augmentloop.grade.source</code>, saturation is
+  <code>gen_ai.evaluation.score.label</code>, height is <code>augmentloop.cost.usd</code>.
+</footer>
+
+<script src="run-data.js"></script>
+<script>
+  const RUN = window.RUN;
+  const money = (n) => '$' + n.toFixed(6);
+  const attr = (s, k) => s.attributes[k];
+
+  // Grade sources, in the order the conventions doc lists them. ai_judge is
+  // declared even when the run contains none - a zero here is the point, not an
+  // omission (ADR 0001: an opinion never enters the headline).
+  const SOURCES = [
+    { id: 'math', blurb: 'a checker computed the provably-correct answer', headline: true },
+    { id: 'reality', blurb: 'the real world proved it, later', headline: true },
+    { id: 'ai_judge', blurb: 'another model scored it - an opinion', headline: false },
+  ];
+
+  const grades = RUN.spans
+    .filter((s) => s.name === 'gen_ai.evaluation.result')
+    .map((s, i) => ({
+      i,
+      span: s,
+      source: attr(s, 'augmentloop.grade.source'),
+      correct: attr(s, 'gen_ai.evaluation.score.value') === 1,
+      cost: attr(s, 'augmentloop.cost.usd') || 0,
+      name: attr(s, 'gen_ai.evaluation.name'),
+      why: attr(s, 'gen_ai.evaluation.explanation') || '',
+      model: attr(s, 'gen_ai.request.model') || null,
+      type: attr(s, 'augmentloop.decision.type') || null,
+    }));
+
+  const maxCost = Math.max(...grades.map((g) => g.cost));
+  const height = (g) => 10 + Math.round(46 * (maxCost ? g.cost / maxCost : 0));
+
+  // A short run should still fill the ribbon rather than huddle in the corner;
+  // a long one packs down to a hairline. The strip is meant to scale from a
+  // 16-decision replay to the thousands the idea is really for.
+  const glyphWidth = Math.max(6, Math.min(30, Math.floor(1180 / grades.length)));
+
+  function renderLegend() {
+    document.getElementById('legend').innerHTML = SOURCES.map((s) => {
+      const of = grades.filter((g) => g.source === s.id);
+      const wrong = of.filter((g) => !g.correct).length;
+      return `<div class="key">
+        <div class="row">
+          <span class="swatch" style="background: var(--src-${s.id})"></span>
+          <span class="src">${s.id}</span>
+          <span class="count">${of.length}</span>
+        </div>
+        <div class="verdict ${s.headline ? 'counts-in' : 'counts-out'}">
+          ${s.headline ? 'counts in the headline' : 'never in the headline'}
+          <span style="color: var(--text-faint)"> - ${s.blurb}</span>
+          ${of.length ? `<span style="color: var(--text-faint)"> - ${wrong} wrong</span>` : ''}
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  function renderRibbon() {
+    let lastService = null;
+    const html = [];
+    grades.forEach((g) => {
+      if (lastService !== null && g.span.service !== lastService) {
+        html.push(`<div class="divider">&darr; ${g.span.service} - the late grades, arriving after the decisions they judge</div>`);
+      }
+      lastService = g.span.service;
+      html.push(`<button class="glyph ${g.correct ? '' : 'incorrect'}"
+        style="--src: var(--src-${g.source}); height: ${height(g)}px; width: ${glyphWidth}px"
+        data-i="${g.i}" aria-pressed="false"
+        title="${g.source} - ${g.correct ? 'correct' : 'incorrect'} - ${money(g.cost)}"
+        aria-label="${g.name}, ${g.source} grade, ${g.correct ? 'correct' : 'incorrect'}, ${money(g.cost)}"></button>`);
+    });
+    document.getElementById('ribbon').innerHTML = html.join('');
+    document.getElementById('axis-max').textContent = `tallest = ${money(maxCost)}`;
+  }
+
+  function renderDetail(g) {
+    document.querySelectorAll('.glyph').forEach((b) =>
+      b.setAttribute('aria-pressed', String(Number(b.dataset.i) === g.i)));
+    document.getElementById('detail').style.setProperty('--src', `var(--src-${g.source})`);
+    document.getElementById('detail').innerHTML = `
+      <div class="head">
+        <span class="name">${g.name}</span>
+        <span class="pill src" style="--src: var(--src-${g.source})">${g.source}</span>
+        <span class="pill ${g.correct ? 'correct' : 'incorrect'}">${g.correct ? 'correct' : 'incorrect'}</span>
+      </div>
+      <div class="body">${g.why}</div>
+      <div class="body">
+        cost <span class="num">${money(g.cost)}</span>
+        ${g.model ? ` &middot; model <span class="num">${g.model}</span>` : ''}
+        ${g.type ? ` &middot; type <span class="num">${g.type}</span>` : ''}
+        &middot; service <span class="num">${g.span.service}</span>
+      </div>`;
+  }
+
+  function renderNote() {
+    const counted = grades.filter((g) => SOURCES.find((s) => s.id === g.source).headline);
+    const opinions = grades.length - counted.length;
+    document.getElementById('note').innerHTML =
+      `<b>${counted.length} of ${grades.length}</b> grades in this run are machine-checked, and
+       <b>${opinions}</b> ${opinions === 1 ? 'is an opinion' : 'are opinions'}. Every glyph carries its
+       own provenance, so the headline number can filter on it in the query rather than in a footnote -
+       which is the difference between a claim you can poke and one you cannot.`;
+  }
+
+  function boot() {
+    document.getElementById('crumb').textContent =
+      `${RUN.recording} - captured ${RUN.capturedAt} - ${grades.length} graded decisions`;
+    renderLegend();
+    renderRibbon();
+    renderNote();
+    document.getElementById('ribbon').addEventListener('click', (ev) => {
+      const b = ev.target.closest('button');
+      if (b) renderDetail(grades[Number(b.dataset.i)]);
+    });
+    // Open on the first wrong decision: the streaks are what the strip is for.
+    renderDetail(grades.find((g) => !g.correct) || grades[0]);
+  }
+
+  boot();
+</script>
+</body>
+</html>
