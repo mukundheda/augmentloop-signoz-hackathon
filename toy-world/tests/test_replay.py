@@ -1,14 +1,9 @@
 """Ticket #6 - toy world replay mode; extended by ticket #33 to three decision
-types read from a recorder-written recording.
+types read from a recorder-written recording, including the deferred
+route_choice reality grade restored after a prior #33 revision dropped it.
 
 Assertions use the literal frozen attribute names from docs/conventions.md
 section 9, on emitted telemetry only - same discipline as the library tests.
-The committed recording (recordings/replay-v1.jsonl) is, as of this PR, a
-PLACEHOLDER written by the recorder against a trivial always-correct oracle
-client (NOT a real model) - see the PR description and toy-world/README.md.
-These tests pin the mechanism (grading, cost, trace shape, difficulty), not a
-particular win/loss split, since the placeholder is a clean sweep by
-construction.
 """
 
 import json
@@ -20,14 +15,17 @@ from toyworld.replay import replay as run_replay
 from toyworld.world import QUERIES_BY_ID
 
 
-def _run(world, recording_path, world_metrics=None):
+def _run(world, outcomes, recording_path, world_metrics=None, outcomes_metrics=None):
     world_provider, world_exporter = world
+    outcomes_provider, outcomes_exporter = outcomes
     summary = run_replay(
         recording_path,
         world_provider=world_provider,
+        outcomes_provider=outcomes_provider,
         world_meter_provider=world_metrics[0] if world_metrics else None,
+        outcomes_meter_provider=outcomes_metrics[0] if outcomes_metrics else None,
     )
-    return summary, world_exporter
+    return summary, world_exporter, outcomes_exporter
 
 
 def _metrics_by_name(metric_reader) -> dict:
@@ -43,12 +41,18 @@ def _metrics_by_name(metric_reader) -> dict:
 
 
 def test_committed_recording_has_roughly_180_decisions(recording_path):
-    entries = load_recording(recording_path)
-    assert 170 <= len(entries) <= 190
+    decisions, _ = load_recording(recording_path)
+    assert 170 <= len(decisions) <= 190
 
 
-def test_every_decision_is_recorded_and_math_graded(world, recording_path):
-    summary, world_exporter = _run(world, recording_path)
+def test_committed_recording_has_one_outcome_per_route_choice_decision(recording_path):
+    decisions, outcomes = load_recording(recording_path)
+    route_choice_decisions = [d for d in decisions if d.decision_type == "route_choice"]
+    assert len(outcomes) == len(route_choice_decisions) > 0
+
+
+def test_every_decision_is_recorded_and_math_graded(world, outcomes, recording_path):
+    summary, world_exporter, _ = _run(world, outcomes, recording_path)
 
     events = [
         s
@@ -66,8 +70,8 @@ def test_every_decision_is_recorded_and_math_graded(world, recording_path):
         assert e.attributes["augmentloop.cost.usd"] > 0
 
 
-def test_difficulty_attribute_is_set_on_every_decision_span(world, recording_path):
-    _, world_exporter = _run(world, recording_path)
+def test_difficulty_attribute_is_set_on_every_decision_span(world, outcomes, recording_path):
+    _, world_exporter, _ = _run(world, outcomes, recording_path)
     spans = world_exporter.get_finished_spans()
 
     events = {s for s in spans if s.name == "gen_ai.evaluation.result"}
@@ -84,7 +88,7 @@ def test_difficulty_attribute_is_set_on_every_decision_span(world, recording_pat
 
 
 def test_grades_recompute_the_correct_answer_from_the_graph_not_the_file(
-    world, recording_path
+    world, outcomes, recording_path
 ):
     """The recording never stores a `correct` field - `replay.py` must look it
     up fresh from `world.QUERIES_BY_ID` by query_id (spec: "never hand-author
@@ -92,7 +96,7 @@ def test_grades_recompute_the_correct_answer_from_the_graph_not_the_file(
     raw_lines = [json.loads(line) for line in recording_path.read_text().splitlines() if line]
     assert all("correct" not in entry for entry in raw_lines)
 
-    _, world_exporter = _run(world, recording_path)
+    _, world_exporter, _ = _run(world, outcomes, recording_path)
     events = [
         s
         for s in world_exporter.get_finished_spans()
@@ -106,8 +110,8 @@ def test_grades_recompute_the_correct_answer_from_the_graph_not_the_file(
         assert e.attributes["augmentloop.decision.type"] in known_types
 
 
-def test_decision_events_sit_under_a_per_model_trace_waterfall(world, recording_path):
-    _, world_exporter = _run(world, recording_path)
+def test_decision_events_sit_under_a_per_model_trace_waterfall(world, outcomes, recording_path):
+    _, world_exporter, _ = _run(world, outcomes, recording_path)
     spans = world_exporter.get_finished_spans()
 
     model_runs = [s for s in spans if s.name.startswith("model-run ")]
@@ -124,13 +128,55 @@ def test_decision_events_sit_under_a_per_model_trace_waterfall(world, recording_
         assert e.context.trace_id == parent_decision.context.trace_id
 
 
-def test_replay_is_deterministic(world, recording_path):
-    summary_a, world_a = _run(world, recording_path)
+def test_reality_outcomes_span_link_back_across_the_service_boundary(
+    world, outcomes, recording_path
+):
+    """docs/conventions.md section 6, span-link Role 1 (restored after a prior
+    #33 revision dropped this path entirely): every route_choice decision's
+    deferred `journey.on_time` grade lands in the separate `outcomes`
+    provider/service and carries a span link back to the exact decision span
+    it judges."""
+    summary, world_exporter, outcomes_exporter = _run(world, outcomes, recording_path)
+
+    decisions, recorded_outcomes = load_recording(recording_path)
+    assert summary.outcomes == len(recorded_outcomes) > 0
+
+    late_grades = outcomes_exporter.get_finished_spans()
+    assert len(late_grades) == summary.outcomes
+
+    decision_events = {
+        s.attributes["gen_ai.response.id"]: s
+        for s in world_exporter.get_finished_spans()
+        if s.name == "gen_ai.evaluation.result"
+    }
+    for grade in late_grades:
+        assert grade.attributes["augmentloop.grade.source"] == "reality"
+        assert grade.attributes["gen_ai.evaluation.name"] == "journey.on_time"
+        assert grade.attributes["augmentloop.decision.type"] == "route_choice"
+        # The link target is the decision span the outcome judges - resolve it
+        # via the graded response id's decision event parent.
+        graded = decision_events[grade.attributes["gen_ai.response.id"]]
+        assert len(grade.links) == 1
+        assert grade.links[0].context.trace_id == graded.context.trace_id
+        assert grade.links[0].context.span_id == graded.parent.span_id
+
+    # The late grades never land in the `toy-world` service's exporter - the
+    # whole point of the separate `outcomes` provider.
+    world_events = [
+        s
+        for s in world_exporter.get_finished_spans()
+        if s.name == "gen_ai.evaluation.result"
+    ]
+    assert all(e.attributes["augmentloop.grade.source"] == "math" for e in world_events)
+
+
+def test_replay_is_deterministic(world, outcomes, recording_path):
+    summary_a, world_a, _ = _run(world, outcomes, recording_path)
 
     from conftest import _pair
 
-    world2 = _pair()
-    summary_b, world_b = _run(world2, recording_path)
+    world2, outcomes2 = _pair(), _pair()
+    summary_b, world_b, _ = _run(world2, outcomes2, recording_path)
 
     assert summary_a.decisions == summary_b.decisions
     assert summary_a.correct == summary_b.correct
@@ -151,20 +197,25 @@ def test_replay_is_deterministic(world, recording_path):
 
 
 def test_replay_emits_aggregate_metrics_matching_the_summary(
-    world, recording_path, world_metrics
+    world, outcomes, recording_path, world_metrics, outcomes_metrics
 ):
     """Ticket #7: the metrics ride the same replay call as the events, so the
     counter's total matches summary.decisions exactly - no separate code path
     to drift out of sync."""
-    summary, _ = _run(world, recording_path, world_metrics)
+    summary, _, _ = _run(world, outcomes, recording_path, world_metrics, outcomes_metrics)
 
     _, world_reader = world_metrics
+    _, outcomes_reader = outcomes_metrics
 
     world_points = _metrics_by_name(world_reader)["gradebook.decisions.graded"].data.data_points
     assert sum(p.value for p in world_points) == summary.decisions
 
     cost_points = _metrics_by_name(world_reader)["gradebook.decision.cost.usd"].data.data_points
     assert sum(p.sum for p in cost_points) == pytest.approx(summary.total_cost_usd)
+
+    outcomes_points = _metrics_by_name(outcomes_reader)["gradebook.decisions.graded"].data.data_points
+    assert sum(p.value for p in outcomes_points) == summary.outcomes
+    assert all(p.attributes["augmentloop.grade.source"] == "reality" for p in outcomes_points)
 
 
 def test_unknown_query_id_fails_loud(world, tmp_path):
@@ -188,14 +239,33 @@ def test_unknown_query_id_fails_loud(world, tmp_path):
         load_recording(bad)
 
 
-def test_by_model_type_breakdown_covers_every_decision_type(world, recording_path):
-    summary, _ = _run(world, recording_path)
+def test_unknown_graded_response_id_fails_loud(world, outcomes, tmp_path):
+    bad = tmp_path / "bad.jsonl"
+    bad.write_text(
+        json.dumps(
+            {
+                "type": "outcome",
+                "graded_response_id": "no-such-decision",
+                "on_time": True,
+                "model": "anthropic/claude-sonnet-4.6",
+            }
+        )
+        + "\n"
+    )
+    world_provider, _ = world
+    outcomes_provider, _ = outcomes
+    with pytest.raises(ValueError, match="no-such-decision"):
+        run_replay(bad, world_provider=world_provider, outcomes_provider=outcomes_provider)
+
+
+def test_by_model_type_breakdown_covers_every_decision_type(world, outcomes, recording_path):
+    summary, _, _ = _run(world, outcomes, recording_path)
     decision_types = {dt for (_, dt) in summary.by_model_type}
     assert decision_types == {"route_choice", "eta_estimate", "next_hop"}
 
 
-def test_cost_per_correct_is_the_headline_division(world, recording_path):
-    summary, _ = _run(world, recording_path)
+def test_cost_per_correct_is_the_headline_division(world, outcomes, recording_path):
+    summary, _, _ = _run(world, outcomes, recording_path)
     assert summary.cost_per_correct_usd == pytest.approx(
         summary.total_cost_usd / summary.correct
     )

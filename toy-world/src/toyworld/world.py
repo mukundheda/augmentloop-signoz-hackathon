@@ -26,6 +26,15 @@ Difficulty is tagged per decision from the branching factor of its starting
 junction (`difficulty_tier`) - more outgoing edges to compare is a harder
 decision - and emitted as an attribute so correct-rate can be broken down by
 difficulty, independent of decision type.
+
+route_choice, being the one decision type that represents an actual
+point-to-point journey, also carries a DEFERRED "reality" grade
+(docs/conventions.md section 6, span-link Role 1, mandatory): after the
+decision is made, `journey_on_time` checks whether the journey the model's
+chosen route produces actually arrives close enough to on time. `recorder.py`
+computes this at record time and `replay.py` emits it later, span-linked back
+to the original decision, through the separate `toy-world-outcomes` service -
+same mechanism the pre-#33 toy world used, carried over rather than dropped.
 """
 
 from __future__ import annotations
@@ -40,6 +49,17 @@ from typing import Any, Callable, Mapping, Optional
 # toy-world/README.md). A model's minute estimate is graded correct when it
 # falls within this fraction of the true shortest-path time.
 ETA_TOLERANCE_FRACTION = 0.15
+
+# The numeric tolerance for a route_choice decision's DEFERRED reality grade
+# (docs/conventions.md section 6, span-link Role 1; restored by the #33
+# review - see `journey_on_time` below). Deliberately a *separate* constant
+# from ETA_TOLERANCE_FRACTION: it grades a different question (did the
+# journey the model's chosen route produced actually arrive close enough to
+# on time?), not the exact-match `checker` a route_choice decision is
+# math-graded against, so a wrong-but-only-slightly-slower choice can still
+# arrive "on time" in reality - the whole point of carrying a second,
+# independently-sourced signal rather than mirroring the math grade.
+REALITY_TOLERANCE_FRACTION = 0.20
 
 # The three decision types this world runs, named rather than inlined so the
 # routing table (routing.py) and the emitted `augmentloop.decision.type`
@@ -245,6 +265,14 @@ class Query:
     checker: Callable[[Any, Any], bool]
     parse: Callable[[str], Any]
     explain: Callable[[Any], str]
+    # Populated only for route_choice queries: label -> that candidate route's
+    # true total travel time. This is the one decision type that represents a
+    # full point-to-point journey (rather than a single hop or a bare number),
+    # so it is the one decision type a later, deferred "reality" grade - did
+    # the journey actually arrive on time? - attaches to (see
+    # `journey_on_time` and `recorder.py`/`replay.py`). None for eta_estimate
+    # and next_hop, which have no journey to arrive anywhere.
+    route_options: Optional[Mapping[str, float]] = None
 
 
 def _first_number(text: str) -> float:
@@ -276,6 +304,22 @@ def within_eta_tolerance(chosen: float, correct: float) -> bool:
     if chosen != chosen:  # NaN check without importing math
         return False
     return abs(chosen - correct) <= ETA_TOLERANCE_FRACTION * correct
+
+
+def journey_on_time(chosen_time: float, best_time: float) -> bool:
+    """The route_choice decision's DEFERRED reality grade: did the journey
+    that resulted from the model's chosen route actually arrive on time?
+
+    Still a pure computation over the graph's own known travel times (never
+    hand-authored, same discipline as every other answer key in this module) -
+    just a more lenient, real-world-buffer comparison (`REALITY_TOLERANCE_
+    FRACTION`) than the exact-match `checker` route_choice is math-graded
+    against. `chosen_time` of `float('inf')` (an unparseable/unrecognized
+    reply - see recorder.py) is never on time.
+    """
+    if chosen_time != chosen_time:  # NaN check without importing math
+        return False
+    return chosen_time <= best_time * (1 + REALITY_TOLERANCE_FRACTION)
 
 
 def _next_hop_query(name: str) -> Query:
@@ -378,6 +422,7 @@ def _route_choice_query(start: str, end: str) -> Query:
             f"chose {chosen} ({options.get(chosen, '?')}m); "
             f"true fastest {correct_label} ({options[correct_label]}m)"
         ),
+        route_options=options,
     )
 
 

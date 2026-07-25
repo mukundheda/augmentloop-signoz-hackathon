@@ -23,17 +23,18 @@ way. Each decision is recorded through the
 (`recordings/replay-v1.jsonl`) replays deterministically, needs **no API
 keys**, and fills the SigNoz dashboards from a judge's own machine.
 
-> **The committed recording is currently a PLACEHOLDER.** It was written by
-> the recorder (`--live --record`, below) run against a trivial
-> always-correct oracle client, not a real model - every model in it scores
-> 100%. That was a deliberate choice: rather than invent any per-model
-> differentiation to make the numbers "interesting," the placeholder makes a
-> maximally boring claim (a clean sweep) so it cannot be mistaken for a real
-> comparative result. The real, split result (spec: "the cheapest model is
-> fine at one-step decisions and falls apart on multi-hop routing") needs a
-> real `--live --record` run against real models, which this PR's author
-> could not perform (no API key in the build environment). See the PR
-> description for exact next steps.
+> **The committed recording is a real `--live --record` run** (all 180
+> decisions, 3 roster models x 3 decision types x 20 queries, ~$0.04 total
+> spend) against real OpenRouter models - not hand-authored, not tuned, not
+> filtered. The honest result: **route_choice and next_hop are a clean sweep
+> (60/60 for every model), and eta_estimate is a near-total wipeout** (0/20 for
+> both Claude tiers, 2/20 for Gemini Flash-Lite) - every roster model is
+> confidently wrong estimating a number within ±15% far more often than it
+> reasons correctly about which of two labeled routes is faster. That is the
+> opposite of the spec's anticipated split ("fine at one-step decisions, falls
+> apart on multi-hop routing") - reality turned out to be about numeric
+> estimation being harder than routing at this prompt/tolerance, not about
+> hop count. See `python -m toyworld`'s own printed breakdown for the numbers.
 
 ## Run it (one command)
 
@@ -99,23 +100,37 @@ recorded against.
 
 The recorder is built and unit-tested against a deterministic, duck-typed
 fake `ModelClient` (`tests/test_recorder.py`, same discipline as
-`tests/test_live.py`) - it has **not** been run against a real provider as of
-this PR.
+`tests/test_live.py`).
+
+For every route_choice decision, the recorder also computes and writes a
+deferred **reality** outcome row: did the journey the model's chosen route
+produces actually arrive on time (`world.journey_on_time`, a real-world-buffer
+comparison against the true shortest-path time - looser than route_choice's
+exact-match math grade, so a wrong-but-only-slightly-slower choice can still
+count as on time)? `replay.py` reads these back and emits them as a second,
+span-linked grade (docs/conventions.md section 6) through the separate
+`toy-world-outcomes` service - eta_estimate and next_hop have no journey to
+arrive anywhere, so only route_choice gets one.
 
 ## What you see in SigNoz
 
-- **Service:** `toy-world`.
+- **Services:** `toy-world` (the decisions) and `toy-world-outcomes` (the
+  late, route_choice-only reality grades) - the deferred grade demonstrably
+  crosses a service boundary, as it would in a real system.
 - **Traces:** one trace per model (`model-run <model>`) - a waterfall of
   `<decision_type> <query_id> decision` -> `gen_ai.evaluation.result`.
-- **Events:** every grade carries `augmentloop.grade.source` (`math`),
+- **Events:** every grade carries `augmentloop.grade.source` (`math` for every
+  decision, `reality` for the route_choice `journey.on_time` outcomes),
   `augmentloop.decision.type` (`route_choice` / `eta_estimate` / `next_hop`),
-  `augmentloop.cost.usd` priced from the shared pricing table, and the frozen
-  standard attributes.
+  `augmentloop.cost.usd` priced from the shared pricing table (math grades
+  only), and the frozen standard attributes.
 - **Decision spans** additionally carry `augmentloop.decision.difficulty`
-  (`easy` / `medium` / `hard`).
-- The run prints the same numbers (decisions, correct, cost per correct, per
-  model, per model x decision type) so the dashboards can be eyeballed
-  against ground truth.
+  (`easy` / `medium` / `hard`). **Reality grades** carry an OpenTelemetry span
+  link back to the decision span they judge, plus `gen_ai.response.id` as the
+  always-present correlation fallback (section 6, span-link Role 1).
+- The run prints the same numbers (decisions, correct, reality outcomes, cost
+  per correct, per model, per model x decision type) so the dashboards can be
+  eyeballed against ground truth.
 
 ## Test
 

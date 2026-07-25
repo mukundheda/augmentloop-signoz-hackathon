@@ -1,9 +1,10 @@
 """Test seam, mirroring reference-library/tests: assert on emitted telemetry.
 
-Ticket #33 dropped the separate `toy-world-outcomes` service (the journey/
-reality-grade demo was scoped out of this ticket - see the PR description) so
-there is now one provider+exporter pair, `world`, matching what `replay.py`
-and `live.py` both emit through.
+Two independent provider+exporter pairs so tests can tell the decision spans
+(`toy-world`, `world` fixture) apart from the late reality grades
+(`toy-world-outcomes`, `outcomes` fixture), exactly as `python -m toyworld`
+wires them (ticket #33: the `outcomes` service carries route_choice's deferred
+`journey.on_time` grade; `live.py`'s decision spans always go through `world`).
 """
 
 from pathlib import Path
@@ -70,7 +71,17 @@ def world():
 
 
 @pytest.fixture
+def outcomes():
+    return _pair()
+
+
+@pytest.fixture
 def world_metrics():
+    return _metric_pair()
+
+
+@pytest.fixture
+def outcomes_metrics():
     return _metric_pair()
 
 

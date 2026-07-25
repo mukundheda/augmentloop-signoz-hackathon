@@ -1,15 +1,26 @@
 """Replay mode: deterministic, no API keys, judge-runnable (spec stories 12-13;
-extended by ticket #33 to three decision types).
+extended by ticket #33 to three decision types; the deferred reality-grade
+path restored per review after a prior #33 revision dropped it).
 
 Reads a committed JSONL recording of real model answers (written by
 `recorder.py`'s `--live --record`, never hand-authored - see that module's
-docstring) and replays them through the Gradebook library. Each recorded
-decision becomes a math-graded `gen_ai.evaluation.result` event: the recording
-stores only what the model actually answered (`chosen`, token counts, a
-response id); the correct answer, checker, and difficulty are looked up fresh
-from `world.QUERIES_BY_ID` by `query_id` - the same computation that produced
-the original prompt - so a recording can never silently drift from the graph
-it was recorded against.
+docstring) and replays them through the Gradebook library:
+
+- each recorded decision becomes a math-graded `gen_ai.evaluation.result`
+  event: the recording stores only what the model actually answered (`chosen`,
+  token counts, a response id); the correct answer, checker, and difficulty
+  are looked up fresh from `world.QUERIES_BY_ID` by `query_id` - the same
+  computation that produced the original prompt - so a recording can never
+  silently drift from the graph it was recorded against;
+- each recorded route_choice outcome becomes a *reality* grade that
+  span-links back (docs/conventions.md section 6, span-link Role 1) to the
+  decision span it judges - did the journey that decision's chosen route
+  produces actually arrive on time (`world.journey_on_time`)?
+
+The decision spans are emitted by the `toy-world` service and the late reality
+grades by the separate `toy-world-outcomes` service, mirroring how outcomes
+arrive from a different process in real systems - both services appear in
+SigNoz, the same span-link demo the pre-#33 toy world shipped.
 """
 
 from __future__ import annotations
@@ -21,16 +32,17 @@ from typing import Iterable, Optional
 
 from opentelemetry import metrics, trace
 
-from gradebook import record_decision
+from gradebook import DecisionRef, capture_decision, record_decision, record_reality_grade
 
-from .world import QUERIES_BY_ID
+from .world import DECISION_TYPE_ROUTE_CHOICE, QUERIES_BY_ID
 
 TRACER_NAME = "toyworld"
 
 
 @dataclass(frozen=True)
 class RecordingEntry:
-    """One parsed line of the recording - the recorder's raw fields, unchanged."""
+    """One parsed "decision" line of the recording - the recorder's raw
+    fields, unchanged."""
 
     decision_type: str
     query_id: str
@@ -41,30 +53,44 @@ class RecordingEntry:
     response_id: str
 
 
-def load_recording(path: Path) -> list[RecordingEntry]:
-    """Parse the JSONL recording, order preserved.
+@dataclass(frozen=True)
+class OutcomeEntry:
+    """One parsed "outcome" line of the recording - a deferred reality grade
+    for the route_choice decision identified by `graded_response_id`."""
 
-    Every entry's `query_id` must resolve against `world.QUERIES_BY_ID` - a
+    graded_response_id: str
+    on_time: bool
+    model: str
+
+
+def load_recording(path: Path) -> tuple[list[RecordingEntry], list[OutcomeEntry]]:
+    """Parse the JSONL recording into decisions and outcomes, order preserved.
+
+    Every decision's `query_id` must resolve against `world.QUERIES_BY_ID` - a
     recording that references a query the current graph doesn't have is a
     stale recording, and replay fails loud rather than silently skipping it.
     """
-    entries: list[RecordingEntry] = []
+    decisions: list[RecordingEntry] = []
+    outcomes: list[OutcomeEntry] = []
     for line in path.read_text().splitlines():
         line = line.strip()
         if not line:
             continue
         raw = json.loads(line)
         kind = raw.pop("type")
-        if kind != "decision":
+        if kind == "decision":
+            entry = RecordingEntry(**raw)
+            if entry.query_id not in QUERIES_BY_ID:
+                raise ValueError(
+                    f"recording references unknown query_id {entry.query_id!r}; "
+                    f"the graph in world.py has changed since this recording was made"
+                )
+            decisions.append(entry)
+        elif kind == "outcome":
+            outcomes.append(OutcomeEntry(**raw))
+        else:
             raise ValueError(f"unknown recording entry type: {kind!r}")
-        entry = RecordingEntry(**raw)
-        if entry.query_id not in QUERIES_BY_ID:
-            raise ValueError(
-                f"recording references unknown query_id {entry.query_id!r}; "
-                f"the graph in world.py has changed since this recording was made"
-            )
-        entries.append(entry)
-    return entries
+    return decisions, outcomes
 
 
 @dataclass
@@ -74,6 +100,7 @@ class ReplaySummary:
     decisions: int = 0
     correct: int = 0
     total_cost_usd: float = 0.0
+    outcomes: int = 0
     by_model: dict[str, dict[str, float]] = field(default_factory=dict)
     by_model_type: dict[tuple[str, str], dict[str, float]] = field(default_factory=dict)
     by_model_type_difficulty: dict[tuple[str, str, str], dict[str, float]] = field(
@@ -90,24 +117,36 @@ def replay(
     recording_path: Path,
     *,
     world_provider: Optional[trace.TracerProvider] = None,
+    outcomes_provider: Optional[trace.TracerProvider] = None,
     world_meter_provider: Optional[metrics.MeterProvider] = None,
+    outcomes_meter_provider: Optional[metrics.MeterProvider] = None,
 ) -> ReplaySummary:
     """Replay one recording through the Gradebook library.
 
     Providers are injectable for tests (in-memory exporter/reader) and wired to
-    OTLP by `__main__.py`. One trace per model (`model-run <model>`), one child
-    span per query (named after decision type + query id, carrying
-    `augmentloop.decision.difficulty`) - the same trace shape `live.run_live`
-    produces, so a replay and a live run look identical in SigNoz.
+    OTLP by `__main__.py`. `world_provider`/`world_meter_provider` carry the
+    decision telemetry; `outcomes_provider`/`outcomes_meter_provider` carry the
+    late reality grades (docs/conventions.md section 6) - falling back to the
+    world providers when not given, so callers that don't care about the
+    service split (most tests) don't have to wire a second pair.
+
+    One trace per model (`model-run <model>`), one child span per query (named
+    after decision type + query id, carrying `augmentloop.decision.
+    difficulty`) - the same trace shape `live.run_live` produces, so a replay
+    and a live run look identical in SigNoz. Every route_choice decision span's
+    context is captured (`capture_decision`) so a second pass, after all
+    decision spans have closed, can span-link each recorded outcome back to
+    the exact decision it judges.
     """
     provider = world_provider or trace.get_tracer_provider()
     tracer = provider.get_tracer(TRACER_NAME)
 
-    entries = load_recording(recording_path)
+    decisions, outcomes = load_recording(recording_path)
     summary = ReplaySummary()
+    refs: dict[str, DecisionRef] = {}
 
-    for model in _models_in_order(entries):
-        model_entries = [e for e in entries if e.model == model]
+    for model in _models_in_order(decisions):
+        model_entries = [e for e in decisions if e.model == model]
         with tracer.start_as_current_span(f"model-run {model}"):
             for entry in model_entries:
                 query = QUERIES_BY_ID[entry.query_id]
@@ -117,6 +156,10 @@ def replay(
                     span.set_attribute(
                         "augmentloop.decision.difficulty", query.difficulty
                     )
+                    if query.decision_type == DECISION_TYPE_ROUTE_CHOICE:
+                        refs[entry.response_id] = capture_decision(
+                            response_id=entry.response_id
+                        )
                     record_decision(
                         name=query.eval_name,
                         model=entry.model,
@@ -163,6 +206,28 @@ def replay(
                     diff_row["decisions"] += 1
                     diff_row["correct"] += int(is_correct)
                     diff_row["cost_usd"] += cost
+
+    # The outcomes "process": late reality grades, span-linked back (section 6).
+    for outcome in outcomes:
+        ref = refs.get(outcome.graded_response_id)
+        if ref is None:
+            raise ValueError(
+                f"outcome references unknown decision response_id "
+                f"{outcome.graded_response_id!r}"
+            )
+        record_reality_grade(
+            ref,
+            name="journey.on_time",
+            correct=outcome.on_time,
+            model=outcome.model,
+            decision_type=DECISION_TYPE_ROUTE_CHOICE,
+            explanation=(
+                f"journey arrived {'on time' if outcome.on_time else 'late'}"
+            ),
+            tracer_provider=outcomes_provider or provider,
+            meter_provider=outcomes_meter_provider or world_meter_provider,
+        )
+        summary.outcomes += 1
 
     return summary
 
