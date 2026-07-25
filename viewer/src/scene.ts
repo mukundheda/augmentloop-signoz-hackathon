@@ -1,35 +1,173 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
-import type { Decision, Driver, FeatureCollection, RaceRun } from "./domain";
-import type { ReplayEvent } from "./replay";
+import type {
+  AgentDecision,
+  Coordinate,
+  PuneMap,
+  RaceRun,
+  RoadMapping
+} from "./domain";
+import { buildWaves, samplePolyline } from "./replay";
 
-type RouteRecord = { curve: THREE.CatmullRomCurve3; mesh: THREE.Mesh; base: THREE.Color };
-type DriverRecord = { mesh: THREE.Group; label: HTMLDivElement; driver: Driver };
-type Motion = { driverId: string; curve: THREE.CatmullRomCurve3; started: number; duration: number };
+const CENTER = { lon: 73.8525, lat: 18.5125 };
+const SCALE = 760;
+const project = ([lon, lat]: Coordinate, y = 0) =>
+  new THREE.Vector3((lon - CENTER.lon) * SCALE, y, -(lat - CENTER.lat) * SCALE);
 
-const CENTER = { lon: 73.8505, lat: 18.5075 };
-const SCALE = 620;
-const project = ([lon, lat]: number[]) => new THREE.Vector3((lon - CENTER.lon) * SCALE, 0, -(lat - CENTER.lat) * SCALE);
+type ActiveAgent = {
+  agent: AgentDecision;
+  group: THREE.Group;
+  route: THREE.Line;
+  started: number;
+  duration: number;
+  completed: boolean;
+};
 
-function routeKey(junction: string, route: string) {
-  return `${junction}:${route}`;
+export interface PlaybackCallbacks {
+  onAgent(agent: AgentDecision): void;
+  onProgress(agent: AgentDecision, wave: number, waves: number): void;
+  onComplete(): void;
 }
 
-function makeTextSprite(text: string, color = "#cbd6ef"): THREE.Sprite {
+export type CameraPreset = "overview" | "top" | "chase" | "follow";
+
+function makeLabel(text: string, color = "#a8bad4"): THREE.Sprite {
   const canvas = document.createElement("canvas");
   canvas.width = 512;
-  canvas.height = 128;
-  const ctx = canvas.getContext("2d")!;
-  ctx.font = "600 34px Inter, system-ui";
-  ctx.fillStyle = "rgba(4,8,16,.82)";
-  ctx.roundRect(6, 16, 500, 92, 16);
-  ctx.fill();
-  ctx.fillStyle = color;
-  ctx.fillText(text, 28, 75);
+  canvas.height = 112;
+  const context = canvas.getContext("2d")!;
+  context.font = "600 30px ui-monospace, monospace";
+  context.fillStyle = "rgba(5,9,16,.88)";
+  context.roundRect(4, 12, 504, 88, 14);
+  context.fill();
+  context.fillStyle = color;
+  context.fillText(text, 24, 66);
   const texture = new THREE.CanvasTexture(canvas);
-  const sprite = new THREE.Sprite(new THREE.SpriteMaterial({ map: texture, transparent: true, depthTest: false }));
-  sprite.scale.set(8, 2, 1);
+  const sprite = new THREE.Sprite(
+    new THREE.SpriteMaterial({ map: texture, transparent: true, depthTest: false })
+  );
+  sprite.scale.set(7.5, 1.65, 1);
   return sprite;
+}
+
+export function roadSegmentGeometry(polyline: Coordinate[], width: number): THREE.BufferGeometry {
+  const positions: number[] = [];
+  const indices: number[] = [];
+  let vertex = 0;
+  const points = polyline.map((point) => project(point, 0.015));
+  for (let index = 1; index < points.length; index += 1) {
+      const before = points[index - 1];
+      const after = points[index];
+      const dx = after.x - before.x;
+      const dz = after.z - before.z;
+      const length = Math.hypot(dx, dz) || 1;
+      const offsetX = (-dz / length) * width;
+      const offsetZ = (dx / length) * width;
+      positions.push(
+        before.x + offsetX, 0.015, before.z + offsetZ,
+        before.x - offsetX, 0.015, before.z - offsetZ,
+        after.x + offsetX, 0.015, after.z + offsetZ,
+        after.x - offsetX, 0.015, after.z - offsetZ
+      );
+      indices.push(vertex, vertex + 1, vertex + 2, vertex + 2, vertex + 1, vertex + 3);
+      vertex += 4;
+  }
+  const geometry = new THREE.BufferGeometry();
+  geometry.setAttribute("position", new THREE.Float32BufferAttribute(positions, 3));
+  geometry.setIndex(indices);
+  geometry.computeVertexNormals();
+  return geometry;
+}
+
+function ribbonGeometry(features: PuneMap["features"]): THREE.BufferGeometry {
+  const geometries: THREE.BufferGeometry[] = [];
+  const positions: number[] = [];
+  const indices: number[] = [];
+  let vertexOffset = 0;
+  for (const feature of features) {
+    if (feature.properties.kind !== "road" || feature.geometry.type !== "LineString") continue;
+    const geometry = roadSegmentGeometry(
+      feature.geometry.coordinates as Coordinate[],
+      (feature.properties.width ?? 0.065) * 7
+    );
+    geometries.push(geometry);
+    const position = geometry.getAttribute("position");
+    positions.push(...Array.from(position.array));
+    const index = geometry.getIndex();
+    if (index) indices.push(...Array.from(index.array, (value) => Number(value) + vertexOffset));
+    vertexOffset += position.count;
+  }
+  geometries.forEach((geometry) => geometry.dispose());
+  const merged = new THREE.BufferGeometry();
+  merged.setAttribute("position", new THREE.Float32BufferAttribute(positions, 3));
+  merged.setIndex(indices);
+  merged.computeVertexNormals();
+  return merged;
+}
+
+function laneGeometry(features: PuneMap["features"]): THREE.BufferGeometry {
+  const positions: number[] = [];
+  for (const feature of features) {
+    if (feature.properties.kind !== "road" || feature.geometry.type !== "LineString") continue;
+    const points = (feature.geometry.coordinates as Coordinate[]).map((point) => project(point, 0.035));
+    for (let index = 1; index < points.length; index += 1) {
+      positions.push(...points[index - 1].toArray(), ...points[index].toArray());
+    }
+  }
+  const geometry = new THREE.BufferGeometry();
+  geometry.setAttribute("position", new THREE.Float32BufferAttribute(positions, 3));
+  return geometry;
+}
+
+function routeLine(polyline: Coordinate[], color: string, opacity = 0.75): THREE.Line {
+  const geometry = new THREE.BufferGeometry().setFromPoints(
+    polyline.map((point) => project(point, 0.18))
+  );
+  return new THREE.Line(
+    geometry,
+    new THREE.LineBasicMaterial({
+      color,
+      transparent: true,
+      opacity,
+      depthTest: false
+    })
+  );
+}
+
+export class AgentDotGeometry extends THREE.SphereGeometry {
+  constructor() {
+    super(0.22, 16, 12);
+  }
+}
+
+function createAgentMarker(agent: AgentDecision): THREE.Group {
+  const group = new THREE.Group();
+  const color = new THREE.Color(agent.color);
+  const body = new THREE.Mesh(
+    new AgentDotGeometry(),
+    new THREE.MeshStandardMaterial({
+      color,
+      emissive: color,
+      emissiveIntensity: 2.2,
+      metalness: 0.45,
+      roughness: 0.25
+    })
+  );
+  const haloScale = agent.difficulty === "hard" ? 0.52 : agent.difficulty === "medium" ? 0.43 : 0.35;
+  const halo = new THREE.Mesh(
+    new THREE.RingGeometry(haloScale * 0.78, haloScale, 24),
+    new THREE.MeshBasicMaterial({
+      color,
+      transparent: true,
+      opacity: agent.decision_type === "eta_estimate" ? 0.8 : 0.46,
+      side: THREE.DoubleSide
+    })
+  );
+  halo.rotation.x = -Math.PI / 2;
+  halo.position.y = -0.2;
+  group.add(body, halo);
+  group.userData.agent = agent;
+  return group;
 }
 
 export class RaceScene {
@@ -37,190 +175,311 @@ export class RaceScene {
   private camera: THREE.PerspectiveCamera;
   private renderer: THREE.WebGLRenderer;
   private controls: OrbitControls;
-  private routes = new Map<string, RouteRecord>();
-  private drivers = new Map<string, DriverRecord>();
-  private motions: Motion[] = [];
-  private clock = new THREE.Clock();
   private frame = 0;
+  private active: ActiveAgent[] = [];
+  private timers: number[] = [];
+  private selected: ActiveAgent | null = null;
+  private callbacks: PlaybackCallbacks | null = null;
+  private raycaster = new THREE.Raycaster();
+  private pointer = new THREE.Vector2();
+  private speed = 1;
 
-  constructor(private container: HTMLElement, world: FeatureCollection, context: FeatureCollection, run: RaceRun) {
-    this.scene.background = new THREE.Color("#050812");
-    this.scene.fog = new THREE.FogExp2("#050812", 0.018);
-    this.camera = new THREE.PerspectiveCamera(42, container.clientWidth / container.clientHeight, 0.1, 300);
-    this.camera.position.set(17, 26, 28);
-    this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
-    this.renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+  constructor(
+    private container: HTMLElement,
+    map: PuneMap,
+    private roads: RoadMapping
+  ) {
+    this.scene.background = new THREE.Color("#04070d");
+    this.scene.fog = new THREE.FogExp2("#04070d", 0.026);
+    this.camera = new THREE.PerspectiveCamera(
+      42,
+      container.clientWidth / container.clientHeight,
+      0.05,
+      350
+    );
+    this.camera.position.set(21, 31, 33);
+    this.renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: "high-performance" });
+    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.75));
     this.renderer.setSize(container.clientWidth, container.clientHeight);
     this.renderer.outputColorSpace = THREE.SRGBColorSpace;
+    this.renderer.shadowMap.enabled = true;
     container.appendChild(this.renderer.domElement);
     this.controls = new OrbitControls(this.camera, this.renderer.domElement);
     this.controls.enableDamping = true;
     this.controls.target.set(0, 0, 0);
-    this.controls.maxPolarAngle = Math.PI * 0.47;
-    this.controls.minDistance = 12;
-    this.controls.maxDistance = 75;
-
-    this.scene.add(new THREE.HemisphereLight("#9fc5ff", "#07101c", 2.2));
-    const key = new THREE.DirectionalLight("#d9ecff", 2.8);
-    key.position.set(10, 28, 12);
-    this.scene.add(key);
+    this.controls.maxPolarAngle = Math.PI * 0.48;
+    this.controls.minDistance = 6;
+    this.controls.maxDistance = 90;
+    this.buildLighting();
     this.buildGround();
-    this.buildCity(context);
-    this.buildRoutes(world);
-    this.buildDrivers(run);
+    this.buildMap(map);
+    this.buildJunctions();
+    this.renderer.domElement.addEventListener("pointermove", (event) => this.onPointer(event, false));
+    this.renderer.domElement.addEventListener("click", (event) => this.onPointer(event, true));
     this.animate = this.animate.bind(this);
     this.frame = requestAnimationFrame(this.animate);
   }
 
+  private buildLighting() {
+    this.scene.add(new THREE.HemisphereLight("#8eb8ff", "#06101a", 2.5));
+    const moon = new THREE.DirectionalLight("#d9ecff", 3.2);
+    moon.position.set(12, 32, 18);
+    moon.castShadow = true;
+    this.scene.add(moon);
+    const cityGlow = new THREE.PointLight("#19d3ae", 12, 55);
+    cityGlow.position.set(-8, 12, 3);
+    this.scene.add(cityGlow);
+  }
+
   private buildGround() {
     const ground = new THREE.Mesh(
-      new THREE.PlaneGeometry(70, 70),
-      new THREE.MeshStandardMaterial({ color: "#09111d", roughness: 0.96, metalness: 0.05 })
+      new THREE.PlaneGeometry(55, 65),
+      new THREE.MeshStandardMaterial({ color: "#07101a", roughness: 0.98 })
     );
     ground.rotation.x = -Math.PI / 2;
-    ground.position.y = -0.12;
+    ground.position.y = -0.04;
+    ground.receiveShadow = true;
     this.scene.add(ground);
-    const grid = new THREE.GridHelper(70, 56, "#12253c", "#0b1828");
-    grid.position.y = -0.08;
-    this.scene.add(grid);
   }
 
-  private buildCity(context: FeatureCollection) {
-    const roadMaterial = new THREE.LineBasicMaterial({ color: "#314765", transparent: true, opacity: 0.72 });
-    for (const feature of context.features) {
-      if (feature.geometry.type === "LineString") {
-        const points = (feature.geometry.coordinates as number[][]).map(project);
-        const line = new THREE.Line(new THREE.BufferGeometry().setFromPoints(points), roadMaterial);
-        line.position.y = feature.properties.kind === "river" ? 0.02 : 0.01;
-        if (feature.properties.kind === "river") (line.material as THREE.LineBasicMaterial) = new THREE.LineBasicMaterial({ color: "#163f68" });
-        this.scene.add(line);
-      } else if (feature.geometry.type === "Point") {
-        const point = project(feature.geometry.coordinates as number[]);
-        const marker = makeTextSprite(feature.properties.name ?? "PUNE", "#8aa0bd");
-        marker.position.copy(point).add(new THREE.Vector3(0, 1.4, 0));
-        marker.scale.multiplyScalar(0.72);
-        this.scene.add(marker);
-      }
-    }
-    // Lightweight skyline: deterministic blocks around the corridor.
-    const material = new THREE.MeshStandardMaterial({ color: "#101d2d", roughness: 0.84, metalness: 0.12 });
-    for (let z = -15; z <= 16; z += 3.2) {
-      for (const side of [-1, 1]) {
-        const offset = side * (5.5 + ((Math.abs(z * 13) % 4) * 0.35));
-        const height = 0.8 + (Math.abs((z + side * 5) * 17) % 4) * 0.55;
-        const block = new THREE.Mesh(new THREE.BoxGeometry(2.1, height, 1.9), material);
-        block.position.set(offset + Math.sin(z) * 1.4, height / 2, z);
-        this.scene.add(block);
-      }
-    }
-  }
+  private buildMap(map: PuneMap) {
+    const road = new THREE.Mesh(
+      ribbonGeometry(map.features),
+      new THREE.MeshStandardMaterial({ color: "#1a2633", roughness: 0.76, metalness: 0.08 })
+    );
+    this.scene.add(road);
+    const lanes = new THREE.LineSegments(
+      laneGeometry(map.features),
+      new THREE.LineBasicMaterial({ color: "#45576a", transparent: true, opacity: 0.34 })
+    );
+    this.scene.add(lanes);
 
-  private buildRoutes(world: FeatureCollection) {
-    for (const feature of world.features) {
-      if (feature.properties.kind === "simulation-route") {
-        const raw = feature.geometry.coordinates as number[][];
-        const points = raw.map((coordinate, index) => {
-          const point = project(coordinate);
-          point.y = index === 1 ? 0.25 + (feature.properties.travel_time_min ?? 4) * 0.08 : 0.16;
-          return point;
-        });
-        const curve = new THREE.CatmullRomCurve3(points);
-        const base = new THREE.Color(feature.properties.is_fastest ? "#1d6f68" : "#24334b");
-        const mesh = new THREE.Mesh(
-          new THREE.TubeGeometry(curve, 44, 0.08, 7, false),
-          new THREE.MeshStandardMaterial({ color: base, emissive: base, emissiveIntensity: 0.4, roughness: 0.35 })
-        );
-        this.scene.add(mesh);
-        this.routes.set(routeKey(feature.properties.junction!, feature.properties.route!), { curve, mesh, base });
-      } else if (feature.geometry.type === "Point" && feature.properties.label) {
-        const point = project(feature.geometry.coordinates as number[]);
-        const label = makeTextSprite(feature.properties.label, feature.properties.kind === "finish" ? "#ffcc66" : "#dce8ff");
-        label.position.copy(point).add(new THREE.Vector3(0, 2.2, 0));
-        this.scene.add(label);
-      }
+    const buildings = map.features.filter(
+      (feature) => feature.properties.kind === "building" && feature.geometry.type === "Polygon"
+    );
+    const geometry = new THREE.BoxGeometry(1, 1, 1);
+    const material = new THREE.MeshStandardMaterial({
+      color: "#111d2a",
+      emissive: "#07101b",
+      emissiveIntensity: 0.5,
+      roughness: 0.72,
+      metalness: 0.15
+    });
+    const instances = new THREE.InstancedMesh(geometry, material, buildings.length);
+    const dummy = new THREE.Object3D();
+    buildings.forEach((feature, index) => {
+      const ring = (feature.geometry.coordinates as Coordinate[][])[0];
+      const points = ring.map((point) => project(point));
+      const minX = Math.min(...points.map((point) => point.x));
+      const maxX = Math.max(...points.map((point) => point.x));
+      const minZ = Math.min(...points.map((point) => point.z));
+      const maxZ = Math.max(...points.map((point) => point.z));
+      const sourceHeight = feature.properties.height
+        || (feature.properties.levels ?? 0) * 0.45
+        || 0.7 + (index % 7) * 0.16;
+      const height = Math.max(0.35, Math.min(4.5, sourceHeight * 0.12));
+      dummy.position.set((minX + maxX) / 2, height / 2, (minZ + maxZ) / 2);
+      dummy.scale.set(Math.max(0.14, maxX - minX), height, Math.max(0.14, maxZ - minZ));
+      dummy.updateMatrix();
+      instances.setMatrixAt(index, dummy.matrix);
+    });
+    instances.instanceMatrix.needsUpdate = true;
+    this.scene.add(instances);
+
+    for (const feature of map.features) {
+      if (feature.properties.kind !== "landmark" || feature.geometry.type !== "Point") continue;
+      const label = makeLabel(feature.properties.name ?? "PUNE");
+      label.position.copy(project(feature.geometry.coordinates as Coordinate, 1.2));
+      this.scene.add(label);
     }
   }
 
-  private buildDrivers(run: RaceRun) {
-    run.drivers.forEach((driver, index) => {
-      const group = new THREE.Group();
-      const color = new THREE.Color(driver.color);
-      const body = new THREE.Mesh(
-        new THREE.IcosahedronGeometry(0.28, 1),
-        new THREE.MeshStandardMaterial({ color, emissive: color, emissiveIntensity: 1.8, metalness: 0.4 })
+  private buildJunctions() {
+    Object.entries(this.roads.nodes).forEach(([name, node]) => {
+      const point = project(node.coordinate, 0.12);
+      const marker = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.2, 0.27, 0.12, 12),
+        new THREE.MeshStandardMaterial({
+          color: "#6f83a0",
+          emissive: "#243b58",
+          emissiveIntensity: 1.2
+        })
       );
-      const ring = new THREE.Mesh(
-        new THREE.TorusGeometry(0.42, 0.035, 8, 30),
-        new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0.75 })
-      );
-      ring.rotation.x = Math.PI / 2;
-      group.add(body, ring);
-      const first = this.routes.get(routeKey(driver.decisions[0].junction, driver.decisions[0].chosen))!;
-      group.position.copy(first.curve.getPoint(0)).add(new THREE.Vector3((index - 1.5) * 0.22, 0.35, 0));
-      this.scene.add(group);
-      const label = document.createElement("div");
-      label.className = "world-label";
-      label.style.setProperty("--driver", driver.color);
-      label.innerHTML = `<b>${driver.id}</b><span>${driver.model.split("/").at(-1)}</span>`;
-      this.container.appendChild(label);
-      this.drivers.set(driver.id, { mesh: group, label, driver });
+      marker.position.copy(point);
+      this.scene.add(marker);
+      const label = makeLabel(name, "#d5e3f7");
+      label.scale.set(2.3, 0.55, 1);
+      label.position.copy(point).add(new THREE.Vector3(0, 0.72, 0));
+      this.scene.add(label);
     });
   }
 
-  apply(event: ReplayEvent) {
-    if (event.kind === "start") {
-      for (const route of this.routes.values()) this.setRouteColor(route, route.base);
-      return;
-    }
-    if (event.kind === "decision") {
-      const selected = this.routes.get(routeKey(event.decision.junction, event.decision.chosen));
-      if (!selected) return;
-      this.setRouteColor(selected, new THREE.Color(event.decision.correct ? "#26e6a7" : "#ff496d"));
-      if (!event.decision.correct) {
-        const ghost = this.routes.get(routeKey(event.decision.junction, event.decision.true_fastest));
-        if (ghost) this.setRouteColor(ghost, new THREE.Color("#f5d76e"), true);
-      }
-      this.motions = this.motions.filter((motion) => motion.driverId !== event.driverId);
-      this.motions.push({
-        driverId: event.driverId,
-        curve: selected.curve,
-        started: performance.now(),
-        duration: 1250 + event.decision.travel_time_min * 90
-      });
-    } else if (event.kind === "outcome") {
-      const target = this.routes.get(routeKey(event.decision.junction, event.decision.chosen));
-      if (target) {
-        this.setRouteColor(target, new THREE.Color(event.onTime ? "#68f5b7" : "#ff264f"), true);
-        target.mesh.scale.setScalar(1.35);
-        setTimeout(() => target.mesh.scale.setScalar(1), 650);
-      }
+  play(run: RaceRun, speed: number, callbacks: PlaybackCallbacks) {
+    this.stop();
+    this.speed = speed;
+    this.callbacks = callbacks;
+    const waves = buildWaves(run, 24);
+    const waveDuration = 5200 / speed;
+    waves.forEach((wave, waveIndex) => {
+      this.timers.push(window.setTimeout(() => {
+        this.finishWave();
+        this.clearWave();
+        wave.agents.forEach((agent, index) => {
+          this.spawn(agent, performance.now() + (index % 8) * (105 / speed), waveIndex + 1, waves.length);
+        });
+      }, waveIndex * waveDuration));
+    });
+    this.timers.push(window.setTimeout(() => {
+      this.finishWave();
+      this.pulseOutcomes(run);
+      callbacks.onComplete();
+    }, waves.length * waveDuration + 800 / speed));
+  }
+
+  pause() {
+    this.timers.forEach(clearTimeout);
+    this.timers = [];
+  }
+
+  restart(run: RaceRun, speed: number, callbacks: PlaybackCallbacks) {
+    this.play(run, speed, callbacks);
+  }
+
+  setSpeed(speed: number) {
+    this.speed = speed;
+  }
+
+  setCameraPreset(preset: CameraPreset) {
+    if (preset === "top") {
+      this.camera.position.set(0, 52, 0.01);
+      this.controls.target.set(0, 0, 0);
+    } else if (preset === "chase") {
+      this.camera.position.set(3, 4.5, 6);
+      this.controls.target.set(0, 0, -3);
+    } else if (preset === "follow" && this.selected) {
+      const point = this.selected.group.position;
+      this.camera.position.copy(point).add(new THREE.Vector3(2.5, 3.2, 4.5));
+      this.controls.target.copy(point);
+    } else {
+      this.camera.position.set(21, 31, 33);
+      this.controls.target.set(0, 0, 0);
     }
   }
 
-  private setRouteColor(route: RouteRecord, color: THREE.Color, bright = false) {
-    const material = route.mesh.material as THREE.MeshStandardMaterial;
-    material.color.copy(color);
-    material.emissive.copy(color);
-    material.emissiveIntensity = bright ? 2.5 : 1.1;
+  private spawn(agent: AgentDecision, started: number, wave: number, waves: number) {
+    const group = createAgentMarker(agent);
+    const route = routeLine(agent.chosen_polyline, agent.color, 0.48);
+    group.position.copy(project(agent.chosen_polyline[0], 0.32));
+    this.scene.add(route, group);
+    const record: ActiveAgent = {
+      agent,
+      group,
+      route,
+      started,
+      duration: (2200 + Math.min(1800, agent.chosen_polyline.length * 8)) / this.speed,
+      completed: false
+    };
+    group.userData.record = record;
+    this.active.push(record);
+    this.callbacks?.onAgent(agent);
+    group.userData.wave = wave;
+    group.userData.waves = waves;
+  }
+
+  private clearWave() {
+    for (const record of this.active) {
+      this.scene.remove(record.group);
+      (record.group.children[0] as THREE.Mesh).geometry.dispose();
+      const material = record.route.material as THREE.LineBasicMaterial;
+      material.opacity = 0.08;
+    }
+    this.active = [];
+    this.selected = null;
+  }
+
+  private finishWave() {
+    for (const record of this.active) {
+      if (!record.completed) this.complete(record);
+    }
+  }
+
+  private pulseOutcomes(run: RaceRun) {
+    for (const agent of run.agents.filter((entry) => entry.outcome)) {
+      const pulse = routeLine(
+        agent.chosen_polyline,
+        agent.outcome?.on_time ? "#4dffb8" : "#ff315d",
+        0.95
+      );
+      const material = pulse.material as THREE.LineBasicMaterial;
+      this.scene.add(pulse);
+      window.setTimeout(() => {
+        material.opacity = 0.12;
+      }, 900);
+    }
+  }
+
+  private complete(record: ActiveAgent) {
+    record.completed = true;
+    const material = record.route.material as THREE.LineBasicMaterial;
+    material.color.set(record.agent.is_correct ? "#35e7a0" : "#ff3f67");
+    material.opacity = 0.88;
+    if (!record.agent.is_correct) {
+      const ghost = routeLine(record.agent.correct_polyline, "#ffd65a", 0.62);
+      this.scene.add(ghost);
+    }
+    const markerMaterial = (record.group.children[0] as THREE.Mesh).material as THREE.MeshStandardMaterial;
+    markerMaterial.emissiveIntensity = 0.65;
+    this.callbacks?.onProgress(
+      record.agent,
+      record.group.userData.wave,
+      record.group.userData.waves
+    );
+  }
+
+  private onPointer(event: PointerEvent, click: boolean) {
+    const bounds = this.renderer.domElement.getBoundingClientRect();
+    this.pointer.set(
+      ((event.clientX - bounds.left) / bounds.width) * 2 - 1,
+      -((event.clientY - bounds.top) / bounds.height) * 2 + 1
+    );
+    this.raycaster.setFromCamera(this.pointer, this.camera);
+    const meshes = this.active.map((record) => record.group.children[0]);
+    const hit = this.raycaster.intersectObjects(meshes)[0];
+    if (!hit) return;
+    const record = hit.object.parent?.userData.record as ActiveAgent | undefined;
+    if (record) {
+      this.callbacks?.onAgent(record.agent);
+      if (click) {
+        this.selected = record;
+        this.setCameraPreset("follow");
+      }
+    }
   }
 
   private animate() {
-    this.controls.update();
     const now = performance.now();
-    for (const motion of this.motions) {
-      const driver = this.drivers.get(motion.driverId);
-      if (!driver) continue;
-      const progress = Math.min(1, (now - motion.started) / motion.duration);
-      const eased = progress < 0.5 ? 2 * progress * progress : 1 - Math.pow(-2 * progress + 2, 2) / 2;
-      driver.mesh.position.copy(motion.curve.getPoint(eased)).add(new THREE.Vector3(0, 0.35, 0));
-      driver.mesh.rotation.y += 0.025;
+    for (const record of this.active) {
+      if (now < record.started) {
+        record.group.visible = false;
+        continue;
+      }
+      record.group.visible = true;
+      const progress = Math.min(1, (now - record.started) / record.duration);
+      const coordinate = samplePolyline(record.agent.chosen_polyline, progress);
+      const ahead = samplePolyline(record.agent.chosen_polyline, Math.min(1, progress + 0.012));
+      const position = project(coordinate, 0.32);
+      const next = project(ahead, 0.32);
+      record.group.position.copy(position);
+      record.group.rotation.y = Math.atan2(next.x - position.x, next.z - position.z);
+      if (progress >= 1 && !record.completed) this.complete(record);
     }
-    this.motions = this.motions.filter((motion) => now - motion.started < motion.duration);
-    for (const record of this.drivers.values()) {
-      const projected = record.mesh.position.clone().project(this.camera);
-      record.label.style.transform = `translate(-50%, -100%) translate(${(projected.x * 0.5 + 0.5) * this.container.clientWidth}px, ${(-projected.y * 0.5 + 0.5) * this.container.clientHeight}px)`;
-      record.label.style.opacity = projected.z < 1 ? "1" : "0";
+    if (this.selected && !this.selected.completed) {
+      const point = this.selected.group.position;
+      this.controls.target.lerp(point, 0.08);
+      const desired = point.clone().add(new THREE.Vector3(2.5, 3.2, 4.5));
+      this.camera.position.lerp(desired, 0.05);
     }
+    this.controls.update();
     this.renderer.render(this.scene, this.camera);
     this.frame = requestAnimationFrame(this.animate);
   }
@@ -231,12 +490,13 @@ export class RaceScene {
     this.renderer.setSize(this.container.clientWidth, this.container.clientHeight);
   }
 
-  resetCamera() {
-    this.camera.position.set(17, 26, 28);
-    this.controls.target.set(0, 0, 0);
+  stop() {
+    this.pause();
+    this.clearWave();
   }
 
   dispose() {
+    this.stop();
     cancelAnimationFrame(this.frame);
     this.controls.dispose();
     this.renderer.dispose();

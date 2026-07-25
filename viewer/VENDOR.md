@@ -19,10 +19,14 @@ application, gateway, WebSocket protocol, or framework-independent primitives.
 - Bounds: 73.835,18.480,73.865,18.535
 - Prepared: 2026-07-25
 
-`public/data/pune-context.geojson` is a compact visualization context using
-OpenStreetMap place and road geography. Runtime rendering is entirely local and
-does not call an external map service.
+`public/data/pune-map.geojson` is a reduced visualization extract containing
+real road ways and up to 1,800 building footprints from the fixed bounds.
+`public/data/toyworld-roads.json` records the deterministic assignment of
+`J1`–`J20` to OSM road intersections and a Dijkstra-computed road polyline for
+every directed toy-world edge.
+
+The raw Overpass response is excluded from Git; the reduced committed assets
+are sufficient at runtime and for regenerating `run.json`.
 
 The route alternatives and travel-time values are synthetic toy-world data.
 They are not Pune routing or traffic claims.
-

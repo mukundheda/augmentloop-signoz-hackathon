@@ -1,95 +1,102 @@
-import type { RaceRun } from "./domain";
-import type { ReplayEvent } from "./replay";
+import type { AgentDecision, RaceRun } from "./domain";
+
+export interface HudProgress {
+  completed: number;
+  correct: number;
+  cost: number;
+  wave: number;
+  waves: number;
+}
 
 export interface Hud {
   element: HTMLElement;
-  apply(event: ReplayEvent): void;
-  setState(label: string): void;
+  update(progress: HudProgress): void;
+  showAgent(agent: AgentDecision): void;
+  setState(state: string): void;
 }
 
 const usd = (value: number | null) => value === null ? "—" : `$${value.toFixed(6)}`;
-const shortModel = (model: string) => model.split("/").at(-1)?.replaceAll("-", " ") ?? model;
+const pct = (part: number, total: number) => total ? `${((part / total) * 100).toFixed(1)}%` : "—";
+const typeLabel: Record<string, string> = {
+  route_choice: "ROUTE CHOICE",
+  eta_estimate: "ETA ESTIMATE",
+  next_hop: "NEXT HOP"
+};
 
 export function createHud(parent: HTMLElement, run: RaceRun): Hud {
+  const models = Object.entries(run.totals.by_model);
   const hud = document.createElement("aside");
   hud.className = "hud";
   hud.innerHTML = `
-    <div class="eyebrow">GRADEBOOK · LIVE REPLAY</div>
+    <div class="eyebrow">GRADEBOOK · TOY WORLD / PUNE</div>
     <div class="hud-title-row">
-      <div>
-        <h1>PUNE MODEL RACE</h1>
-        <p>Shivajinagar → Deccan → Swargate</p>
-      </div>
+      <div><h1>AGENT ROAD NETWORK</h1><p>20 junctions · 180 decisions · real road geometry</p></div>
       <span class="live-pill"><i></i><span data-state>READY</span></span>
     </div>
     <div class="metrics">
       <div><span>DECISIONS</span><strong data-decisions>0/${run.totals.decisions}</strong></div>
-      <div><span>CORRECT</span><strong data-correct>0</strong></div>
+      <div><span>CORRECT RATE</span><strong data-rate>0.0%</strong></div>
       <div><span>TOTAL COST</span><strong data-cost>$0.000000</strong></div>
       <div class="hero-metric"><span>COST / CORRECT</span><strong data-cpc>—</strong></div>
     </div>
-    <div class="driver-list">
-      ${run.drivers.map((driver) => `
-        <article class="driver-row" data-driver-id="${driver.id}">
-          <span class="driver-dot" style="--driver:${driver.color}"></span>
-          <div class="driver-copy">
-            <strong>${driver.id.toUpperCase()}</strong>
-            <span>${shortModel(driver.model)}</span>
-          </div>
-          <div class="driver-score"><b data-driver-score>0/0</b><span data-driver-status>STAGED</span></div>
-        </article>
+    <div class="wave-line"><span>ACTIVE WAVE</span><b data-wave>0/0</b></div>
+    <div class="type-grid">
+      ${(["route_choice", "eta_estimate", "next_hop"] as const).map((type) => `
+        <div data-type="${type}"><span>${typeLabel[type]}</span><b>${run.totals.by_type[type] ?? 0}</b></div>
       `).join("")}
     </div>
-    <div class="event-log" data-event-log>
-      <span>WAITING FOR REPLAY</span>
+    <div class="model-list">
+      ${models.map(([model, count]) => `
+        <div><span class="model-swatch" style="--model:${run.agents.find((a) => a.model === model)?.color ?? "#fff"}"></span><span>${model.split("/").at(-1)}</span><b>${count}</b></div>
+      `).join("")}
     </div>
+    <section class="agent-drawer" data-agent-drawer>
+      <div class="drawer-empty">SELECT OR HOVER AN AGENT</div>
+    </section>
+    <div class="event-log" data-event-log>MAP READY · WAITING FOR REPLAY</div>
   `;
   parent.appendChild(hud);
 
-  const driverProgress = new Map<string, { decisions: number; correct: number }>();
-  const setState = (label: string) => {
-    const state = hud.querySelector<HTMLElement>("[data-state]");
-    if (state) state.textContent = label;
-  };
-
+  const find = (selector: string) => hud.querySelector<HTMLElement>(selector);
   return {
     element: hud,
-    setState,
-    apply(event) {
-      const decisions = hud.querySelector<HTMLElement>("[data-decisions]");
-      const correct = hud.querySelector<HTMLElement>("[data-correct]");
-      const cost = hud.querySelector<HTMLElement>("[data-cost]");
-      const cpc = hud.querySelector<HTMLElement>("[data-cpc]");
-      if (decisions) decisions.textContent = `${event.totals.decisions}/${run.totals.decisions}`;
-      if (correct) correct.textContent = String(event.totals.correct);
-      if (cost) cost.textContent = usd(event.totals.totalCostUsd);
-      if (cpc) cpc.textContent = usd(event.totals.costPerCorrectUsd);
-
-      let message = "RACE INITIALIZED";
-      if (event.kind === "decision") {
-        const progress = driverProgress.get(event.driverId) ?? { decisions: 0, correct: 0 };
-        progress.decisions += 1;
-        progress.correct += Number(event.decision.correct);
-        driverProgress.set(event.driverId, progress);
-        const row = hud.querySelector<HTMLElement>(`[data-driver-id="${event.driverId}"]`);
-        const score = row?.querySelector<HTMLElement>("[data-driver-score]");
-        const status = row?.querySelector<HTMLElement>("[data-driver-status]");
-        if (score) score.textContent = `${progress.correct}/${progress.decisions}`;
-        if (status) {
-          status.textContent = `${event.decision.junction} · ${event.decision.chosen}`;
-          status.className = event.decision.correct ? "good" : "bad";
-        }
-        message = `${event.driverId} chose ${event.decision.chosen} at ${event.decision.junction} · ${event.decision.correct ? "MATH-CORRECT" : `WRONG · FASTEST ${event.decision.true_fastest}`}`;
-      } else if (event.kind === "outcome") {
-        message = `REALITY GRADE → ${event.driverId} · ${event.decision.junction} · ${event.onTime ? "ON TIME" : "LATE"}`;
-      } else if (event.kind === "complete") {
-        message = "REPLAY COMPLETE · EVIDENCE RECONCILED";
-        setState("COMPLETE");
-      } else if (event.kind === "start") {
-        setState("RUNNING");
-      }
-      const log = hud.querySelector<HTMLElement>("[data-event-log]");
-      if (log) log.innerHTML = `<span>${message}</span>`;
+    setState(state) {
+      const target = find("[data-state]");
+      if (target) target.textContent = state;
+    },
+    update(progress) {
+      const decisions = find("[data-decisions]");
+      const rate = find("[data-rate]");
+      const cost = find("[data-cost]");
+      const cpc = find("[data-cpc]");
+      const wave = find("[data-wave]");
+      if (decisions) decisions.textContent = `${progress.completed}/${run.totals.decisions}`;
+      if (rate) rate.textContent = pct(progress.correct, progress.completed);
+      if (cost) cost.textContent = usd(progress.cost);
+      if (cpc) cpc.textContent = usd(progress.correct ? progress.cost / progress.correct : null);
+      if (wave) wave.textContent = `${progress.wave}/${progress.waves}`;
+    },
+    showAgent(agent) {
+      const drawer = find("[data-agent-drawer]");
+      if (!drawer) return;
+      const result = agent.is_correct ? "CORRECT" : "WRONG";
+      drawer.innerHTML = `
+        <div class="drawer-head"><span class="agent-color" style="--agent:${agent.color}"></span><div><b>${agent.agent_id.toUpperCase()}</b><span>${agent.model.split("/").at(-1)}</span></div><em class="${agent.is_correct ? "good" : "bad"}">${result}</em></div>
+        <dl>
+          <div><dt>TYPE</dt><dd>${typeLabel[agent.decision_type]}</dd></div>
+          <div><dt>DIFFICULTY</dt><dd>${agent.difficulty.toUpperCase()}</dd></div>
+          <div><dt>QUERY</dt><dd>${agent.query_id}</dd></div>
+          <div><dt>JOURNEY</dt><dd>${agent.start} → ${agent.destination}</dd></div>
+          <div><dt>CHOSEN</dt><dd>${String(agent.chosen)}</dd></div>
+          <div><dt>CORRECT</dt><dd>${String(agent.correct_answer)}</dd></div>
+          <div><dt>PATH</dt><dd>${agent.chosen_path.join(" → ")}</dd></div>
+          <div><dt>COST</dt><dd>${usd(agent.cost_usd)}</dd></div>
+          <div><dt>TOKENS</dt><dd>${agent.input_tokens} in · ${agent.output_tokens} out</dd></div>
+          ${agent.outcome ? `<div><dt>REALITY</dt><dd class="${agent.outcome.on_time ? "good" : "bad"}">${agent.outcome.on_time ? "ON TIME" : "LATE"}</dd></div>` : ""}
+        </dl>
+      `;
+      const log = find("[data-event-log]");
+      if (log) log.textContent = `${agent.agent_id} · ${typeLabel[agent.decision_type]} · ${result}`;
     }
   };
 }

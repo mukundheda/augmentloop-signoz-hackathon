@@ -6,18 +6,41 @@ button, select { font: inherit; }
 .viewport { position: relative; overflow: hidden; min-width: 0; }
 .viewport canvas { display: block; width: 100%; height: 100%; }
 .side-panel { z-index: 5; background: linear-gradient(180deg, rgba(8,14,25,.96), rgba(4,8,15,.98)); border-left: 1px solid #1c2a40; box-shadow: -20px 0 70px #0008; }
-.hud { height: 100%; padding: 28px 26px; display: flex; flex-direction: column; }
+.hud { height: 100%; padding: 24px; display: flex; flex-direction: column; overflow-y: auto; }
 .eyebrow { font: 600 11px/1.2 ui-monospace, "Cascadia Code", monospace; letter-spacing: .18em; color: #43e5b4; margin-bottom: 18px; }
 .hud-title-row { display: flex; justify-content: space-between; gap: 16px; align-items: flex-start; }
 .hud h1 { margin: 0; font-size: 25px; letter-spacing: -.04em; }
 .hud p { margin: 7px 0 0; color: #8190a8; font-size: 12px; }
 .live-pill { font: 600 9px ui-monospace, "Cascadia Code", monospace; letter-spacing: .1em; color: #69f0ae; border: 1px solid #24483e; border-radius: 99px; padding: 8px 10px; white-space: nowrap; }
 .live-pill i { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: #69f0ae; box-shadow: 0 0 12px #69f0ae; margin-right: 6px; }
-.metrics { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: #1a2739; border: 1px solid #1a2739; margin: 28px 0; }
+.metrics { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: #1a2739; border: 1px solid #1a2739; margin: 22px 0 14px; }
 .metrics div { background: #0a111e; padding: 16px; min-height: 80px; }
 .metrics span { display: block; color: #65758e; font: 500 9px ui-monospace, "Cascadia Code", monospace; letter-spacing: .11em; margin-bottom: 9px; }
 .metrics strong { font: 600 18px ui-monospace, "Cascadia Code", monospace; }
 .metrics .hero-metric strong { color: #69f0ae; text-shadow: 0 0 20px #69f0ae44; }
+.wave-line { display: flex; justify-content: space-between; align-items: center; padding: 10px 12px; border: 1px solid #17253a; background: #0a111e; }
+.wave-line span { color: #65758e; font: 500 9px ui-monospace, monospace; letter-spacing: .12em; }
+.wave-line b { color: #69f0ae; font: 600 11px ui-monospace, monospace; }
+.type-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin: 9px 0; }
+.type-grid div { padding: 10px 9px; border: 1px solid #17253a; background: #0b1320; }
+.type-grid span { display: block; min-height: 22px; color: #6f819c; font: 500 8px/1.25 ui-monospace, monospace; }
+.type-grid b { display: block; margin-top: 5px; color: #dce8f8; font: 600 15px ui-monospace, monospace; }
+.model-list { display: grid; gap: 4px; margin-bottom: 10px; }
+.model-list > div { display: grid; grid-template-columns: 9px 1fr auto; gap: 8px; align-items: center; padding: 7px 9px; color: #8192aa; background: #09111d; font: 500 9px ui-monospace, monospace; }
+.model-list b { color: #c7d4e8; }
+.model-swatch, .agent-color { width: 7px; height: 7px; border-radius: 50%; background: var(--model); box-shadow: 0 0 10px var(--model); }
+.agent-drawer { border: 1px solid #1a2a40; background: linear-gradient(145deg, #0c1625, #08101b); min-height: 178px; padding: 13px; }
+.drawer-empty { display: grid; place-items: center; min-height: 145px; color: #53637a; font: 500 9px ui-monospace, monospace; letter-spacing: .12em; }
+.drawer-head { display: grid; grid-template-columns: 10px 1fr auto; gap: 10px; align-items: center; border-bottom: 1px solid #1a2a40; padding-bottom: 10px; }
+.drawer-head .agent-color { background: var(--agent); box-shadow: 0 0 12px var(--agent); }
+.drawer-head b, .drawer-head span { display: block; font: 600 10px ui-monospace, monospace; }
+.drawer-head span { color: #697c98; margin-top: 3px; font-weight: 400; font-size: 8px; }
+.drawer-head em { font: 600 8px ui-monospace, monospace; font-style: normal; }
+.agent-drawer dl { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 12px; margin: 12px 0 0; }
+.agent-drawer dl div { min-width: 0; }
+.agent-drawer dt { color: #566a87; font: 500 7px ui-monospace, monospace; letter-spacing: .1em; }
+.agent-drawer dd { margin: 3px 0 0; color: #afbdd1; font: 500 8px/1.35 ui-monospace, monospace; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.good { color: #69f0ae !important; }.bad { color: #ff5577 !important; }
 .driver-list { display: grid; gap: 8px; }
 .driver-row { display: grid; grid-template-columns: 12px 1fr auto; align-items: center; gap: 12px; padding: 13px 14px; background: #0c1422; border: 1px solid #17253a; border-radius: 5px; }
 .driver-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--driver); box-shadow: 0 0 14px var(--driver); }
@@ -26,14 +49,14 @@ button, select { font: inherit; }
 .driver-score { text-align: right; }
 .driver-score .good { color: #69f0ae; }
 .driver-score .bad { color: #ff5577; }
-.event-log { margin-top: auto; border-top: 1px solid #1d2a3e; padding-top: 18px; min-height: 58px; color: #b9c7dc; font: 500 10px/1.6 ui-monospace, "Cascadia Code", monospace; }
+.event-log { margin-top: 10px; border-top: 1px solid #1d2a3e; padding-top: 12px; min-height: 34px; color: #b9c7dc; font: 500 9px/1.5 ui-monospace, "Cascadia Code", monospace; }
 .city-badge { position: absolute; z-index: 3; left: 28px; top: 25px; padding-left: 13px; border-left: 2px solid #69f0ae; text-shadow: 0 2px 10px #000; }
 .city-badge span, .city-badge b { display: block; }
 .city-badge span { color: #7789a5; font: 500 9px ui-monospace, "Cascadia Code", monospace; letter-spacing: .12em; }
 .city-badge b { margin-top: 6px; font-size: 13px; letter-spacing: .08em; }
 .legend { position: absolute; z-index: 3; left: 28px; bottom: 72px; display: flex; gap: 17px; font: 500 9px ui-monospace, "Cascadia Code", monospace; color: #8493aa; }
 .legend i { display: inline-block; width: 16px; height: 2px; margin-right: 7px; vertical-align: middle; box-shadow: 0 0 7px currentColor; }
-.legend .correct { background: #26e6a7; color: #26e6a7; }.legend .wrong { background: #ff496d; color: #ff496d; }.legend .ghost { background: #f5d76e; color: #f5d76e; }
+.legend .active { background: #55d7ff; color: #55d7ff; }.legend .correct { background: #26e6a7; color: #26e6a7; }.legend .wrong { background: #ff496d; color: #ff496d; }.legend .ghost { background: #f5d76e; color: #f5d76e; }
 .controls { position: fixed; z-index: 8; left: 28px; bottom: 22px; display: flex; gap: 7px; }
 .controls button, .controls label { border: 1px solid #22344f; color: #aab9cf; background: #09111eee; padding: 10px 12px; border-radius: 3px; font: 600 9px ui-monospace, "Cascadia Code", monospace; letter-spacing: .08em; }
 .controls button:hover { border-color: #69f0ae; color: #69f0ae; cursor: pointer; }

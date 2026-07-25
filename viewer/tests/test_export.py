@@ -7,73 +7,90 @@ import unittest
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "viewer"))
-sys.path.insert(0, str(ROOT / "toy-world" / "src"))
-sys.path.insert(0, str(ROOT / "reference-library" / "src"))
 
-from export import RECORDING, WORLD, build_run_document, build_world_feature_collection
+from export import (
+    GRAPH,
+    RECORDING,
+    build_road_mapping,
+    build_run_document,
+    parse_osm_number,
+)
 
 
-class ExportTests(unittest.TestCase):
-    def test_exports_one_simulation_route_per_world_option(self) -> None:
-        document = build_world_feature_collection()
-        routes = [
-            feature
-            for feature in document["features"]
-            if feature["properties"]["kind"] == "simulation-route"
-        ]
-        self.assertEqual(len(routes), 7)
-        self.assertEqual(len(routes), sum(len(junction.options) for junction in WORLD))
+class ExportV2Tests(unittest.TestCase):
+    def test_parses_osm_measurements_with_units(self) -> None:
+        self.assertEqual(parse_osm_number("23 meters"), 23.0)
+        self.assertEqual(parse_osm_number("12.5"), 12.5)
+        self.assertEqual(parse_osm_number(None), 0.0)
 
-    def test_fastest_flags_match_the_world_answer_key(self) -> None:
-        document = build_world_feature_collection()
-        actual = {
-            (feature["properties"]["junction"], feature["properties"]["route"]): feature[
-                "properties"
-            ]["is_fastest"]
-            for feature in document["features"]
-            if feature["properties"]["kind"] == "simulation-route"
+    def test_maps_every_graph_node_to_a_distinct_road_intersection(self) -> None:
+        mapping = build_road_mapping()
+        self.assertEqual(set(mapping["nodes"]), set(GRAPH))
+        coordinates = {
+            tuple(node["coordinate"]) for node in mapping["nodes"].values()
         }
-        expected = {
-            (junction.name, route): route == junction.true_fastest
-            for junction in WORLD
-            for route in junction.options
-        }
-        self.assertEqual(actual, expected)
+        self.assertEqual(len(coordinates), 20)
 
-    def test_run_totals_are_the_hand_checked_recording_totals(self) -> None:
-        document = build_run_document(RECORDING)
-        self.assertEqual(document["totals"]["decisions"], 12)
-        self.assertEqual(document["totals"]["correct"], 8)
-        self.assertEqual(document["totals"]["outcomes"], 4)
-        self.assertAlmostEqual(document["totals"]["total_cost_usd"], 0.0037354)
-        self.assertAlmostEqual(
-            document["totals"]["cost_per_correct_usd"], 0.000466925
+    def test_exports_every_recorded_decision_once(self) -> None:
+        run = build_run_document(RECORDING)
+        decision_lines = sum(
+            1
+            for line in RECORDING.read_text(encoding="utf-8").splitlines()
+            if json.loads(line)["type"] == "decision"
+        )
+        self.assertEqual(decision_lines, 180)
+        self.assertEqual(len(run["agents"]), decision_lines)
+        self.assertEqual(
+            len({agent["response_id"] for agent in run["agents"]}), decision_lines
         )
 
-    def test_every_outcome_targets_an_exported_decision(self) -> None:
-        document = build_run_document(RECORDING)
-        response_ids = {
-            decision["response_id"]
-            for driver in document["drivers"]
-            for decision in driver["decisions"]
+    def test_exports_all_three_decision_types(self) -> None:
+        run = build_run_document(RECORDING)
+        self.assertEqual(
+            {agent["decision_type"] for agent in run["agents"]},
+            {"route_choice", "eta_estimate", "next_hop"},
+        )
+
+    def test_every_toy_edge_has_a_road_polyline(self) -> None:
+        mapping = build_road_mapping()
+        expected = {
+            f"{start}->{edge.to}"
+            for start, node in GRAPH.items()
+            for edge in node.edges
         }
+        self.assertEqual(set(mapping["edges"]), expected)
+        self.assertTrue(
+            all(len(edge["polyline"]) >= 2 for edge in mapping["edges"].values())
+        )
+
+    def test_every_agent_path_stays_on_exported_road_coordinates(self) -> None:
+        mapping = build_road_mapping()
+        road_points = {
+            tuple(point)
+            for edge in mapping["edges"].values()
+            for point in edge["polyline"]
+        }
+        run = build_run_document(RECORDING)
         self.assertTrue(
             all(
-                outcome["graded_response_id"] in response_ids
-                for outcome in document["outcomes"]
+                tuple(point) in road_points
+                for agent in run["agents"]
+                for point in agent["chosen_polyline"]
             )
         )
 
-    def test_pune_context_has_required_attribution(self) -> None:
-        path = Path(__file__).parents[1] / "public" / "data" / "pune-context.geojson"
-        context = json.loads(path.read_text(encoding="utf-8"))
-        self.assertEqual(
-            context["metadata"]["attribution"], "© OpenStreetMap contributors"
+    def test_outcomes_resolve_to_route_choice_agents(self) -> None:
+        run = build_run_document(RECORDING)
+        by_response = {agent["response_id"]: agent for agent in run["agents"]}
+        self.assertTrue(run["outcomes"])
+        self.assertTrue(
+            all(
+                outcome["graded_response_id"] in by_response
+                and by_response[outcome["graded_response_id"]]["decision_type"]
+                == "route_choice"
+                for outcome in run["outcomes"]
+            )
         )
-        self.assertEqual(
-            context["metadata"]["corridor"], "Shivajinagar–Deccan–Swargate"
-        )
-        self.assertTrue(context["features"])
 
 
 if __name__ == "__main__":
