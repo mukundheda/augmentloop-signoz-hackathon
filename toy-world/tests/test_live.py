@@ -67,15 +67,15 @@ def test_runs_the_full_roster_over_every_query(world, world_metrics):
         world_provider=provider,
         world_meter_provider=world_metrics[0],
     )
-    # 3 roster models x 60 queries (spec: "roughly 180 decisions").
-    assert summary.decisions == 180
+    expected_decisions = len(DEFAULT_ROSTER) * len(ALL_QUERIES)
+    assert summary.decisions == expected_decisions
     assert not summary.budget_exhausted
     assert set(summary.by_model) == set(DEFAULT_ROSTER)
     for model in DEFAULT_ROSTER:
         assert summary.by_model[model]["decisions"] == len(ALL_QUERIES)
 
     events = _events(exporter)
-    assert len(events) == 180
+    assert len(events) == expected_decisions
     for e in events:
         assert e.attributes["augmentloop.grade.source"] == "math"
         assert e.attributes["augmentloop.decision.type"] in (
@@ -95,7 +95,7 @@ def test_difficulty_attribute_is_set_on_every_decision_span(world):
         for s in exporter.get_finished_spans()
         if s.name != "gen_ai.evaluation.result" and not s.name.startswith("model-run")
     ]
-    assert len(decision_spans) == 180
+    assert len(decision_spans) == len(DEFAULT_ROSTER) * len(ALL_QUERIES)
     for s in decision_spans:
         assert s.attributes["augmentloop.decision.difficulty"] in (
             "easy",
@@ -159,14 +159,14 @@ def test_budget_cap_stops_partway_without_overspending(world):
         world_provider=provider,
     )
     assert summary.budget_exhausted
-    assert 0 < summary.decisions < 180
+    assert 0 < summary.decisions < len(DEFAULT_ROSTER) * len(ALL_QUERIES)
     assert summary.total_cost_usd <= 0.01
 
 
 def test_generous_budget_runs_everything(world):
     provider, _ = world
     summary = run_live(FakeClient(_perfect), budget_usd=100.0, world_provider=provider)
-    assert summary.decisions == 180
+    assert summary.decisions == len(DEFAULT_ROSTER) * len(ALL_QUERIES)
     assert not summary.budget_exhausted
 
 
@@ -199,7 +199,7 @@ def test_live_traces_are_one_waterfall_per_model(world):
     ]
 
     assert len(model_runs) == len(DEFAULT_ROSTER)
-    assert len(decision_spans) == 180
+    assert len(decision_spans) == len(DEFAULT_ROSTER) * len(ALL_QUERIES)
     run_ids = {s.context.span_id for s in model_runs}
     decision_ids = {s.context.span_id: s for s in decision_spans}
     for e in events:

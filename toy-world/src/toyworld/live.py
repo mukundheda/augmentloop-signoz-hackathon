@@ -46,9 +46,17 @@ TRACER_NAME = "toyworld"
 # retirement). Old slugs stay in gradebook.pricing.PRICES so the committed
 # replay recording still prices - see that module's comment.
 DEFAULT_ROSTER: tuple[str, ...] = (
+    # Ordered cheapest to most expensive on input price. Five providers, roughly
+    # 100x apart, all answering the identical question, so "which model should
+    # own this decision type" is a cross-vendor question rather than a
+    # pick-your-Claude-tier question. Rates in gradebook.pricing.
+    "mistralai/mistral-small-24b-instruct-2501",
+    "google/gemini-2.5-flash-lite",
+    "meta-llama/llama-3.3-70b-instruct",
+    "openai/gpt-4o-mini",
+    "deepseek/deepseek-chat",
     "anthropic/claude-haiku-4.5",
     "anthropic/claude-sonnet-4.6",
-    "google/gemini-2.5-flash-lite",
 )
 
 # The output cap sent to every model, shared by both clients (openrouter.py,
