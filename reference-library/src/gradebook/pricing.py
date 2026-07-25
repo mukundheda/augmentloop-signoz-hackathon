@@ -43,6 +43,14 @@ PRICES: dict[str, ModelRate] = {
     "anthropic/claude-haiku-4.5": ModelRate(1.00, 5.00),
     "anthropic/claude-sonnet-4.6": ModelRate(3.00, 15.00),
     "google/gemini-2.5-flash-lite": ModelRate(0.10, 0.40),
+    # Roster widened 2026-07-26, every rate re-grounded against OpenRouter's
+    # public /models catalog the same day. The point of the wider roster is that
+    # right-sizing is a cross-provider question, not an Anthropic-tier question:
+    # these five vendors span roughly 100x on input price for the same decision.
+    "mistralai/mistral-small-24b-instruct-2501": ModelRate(0.05, 0.08),
+    "meta-llama/llama-3.3-70b-instruct": ModelRate(0.13, 0.40),
+    "openai/gpt-4o-mini": ModelRate(0.15, 0.60),
+    "deepseek/deepseek-chat": ModelRate(0.20, 0.80),
 }
 
 

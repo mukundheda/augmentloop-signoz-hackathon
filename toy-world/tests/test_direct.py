@@ -235,8 +235,18 @@ def test_run_live_with_direct_client_fakes_produces_a_correct_summary(world):
     test FakeClient does - proving it satisfies the ModelClient protocol, not
     just its own unit tests. Every fake answers via `query.parse`/`query.correct`
     directly (not string-matching the prompt), so it is agnostic to which of
-    the three decision types it's answering."""
+    the three decision types it's answering.
+
+    DirectClient is a two-provider stopgap (anthropic/* and google/* only;
+    OpenRouter is the default client and is what reaches the full roster), so
+    this only exercises the DEFAULT_ROSTER subset DirectClient actually routes."""
     provider, _ = world
+
+    direct_roster = tuple(
+        model
+        for model in DEFAULT_ROSTER
+        if model.startswith("anthropic/") or model.startswith("google/")
+    )
 
     anthropic_calls = []
 
@@ -275,11 +285,13 @@ def test_run_live_with_direct_client_fakes_produces_a_correct_summary(world):
         gemini_client=RoutingGeminiClient(),
     )
 
-    summary = run_live(client, budget_usd=10.0, world_provider=provider)
+    summary = run_live(client, budget_usd=10.0, roster=direct_roster, world_provider=provider)
 
-    assert summary.decisions == len(DEFAULT_ROSTER) * len(ALL_QUERIES)
+    assert summary.decisions == len(direct_roster) * len(ALL_QUERIES)
     assert summary.correct == summary.decisions  # every fake always answers correctly
     assert not summary.budget_exhausted
-    assert set(summary.by_model) == set(DEFAULT_ROSTER)
-    assert len(anthropic_calls) == 2 * len(ALL_QUERIES)  # 2 anthropic/* slugs in the roster
-    assert len(gemini_calls) == 1 * len(ALL_QUERIES)  # 1 google/* slug in the roster
+    assert set(summary.by_model) == set(direct_roster)
+    anthropic_models = [m for m in direct_roster if m.startswith("anthropic/")]
+    gemini_models = [m for m in direct_roster if m.startswith("google/")]
+    assert len(anthropic_calls) == len(anthropic_models) * len(ALL_QUERIES)
+    assert len(gemini_calls) == len(gemini_models) * len(ALL_QUERIES)
