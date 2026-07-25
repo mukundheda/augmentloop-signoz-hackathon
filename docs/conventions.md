@@ -330,6 +330,33 @@ log-based alert (ticket C7, #52 - "budget guard tripped N times in five
 minutes") and any log dashboard can group and count by failure class without
 parsing message text.
 
+---
+
+## 14. Conformance: the contract, executable against any language (Lane B, ticket #44)
+
+ADR 0002's moat is that this contract is a *cross-language* extension of a
+standard event. Sections 1-9 describe it; this section makes "any language can
+emit it, and we can prove a given implementation does" executable.
+
+- **A second-language emitter** lives at `conformance/ts-emitter/emit.ts`:
+  TypeScript, zero npm dependencies (Node built-ins only), POSTing the OTLP/HTTP
+  JSON the collector accepts. It emits one conforming `gen_ai.evaluation.result`
+  event with the two mandatory extensions - the §9 field table, from a language
+  that is not the reference library.
+- **A conformance checker** lives at `conformance/check_conformance.py`. It
+  validates one event (as language-neutral JSON: `{"name", "attributes"}`)
+  against the §9 frozen table, depending only on the standard library so it can
+  judge an emitter it did not write. **Error-level** findings (wrong event name;
+  missing/invalid `gen_ai.evaluation.name`; missing/invalid
+  `augmentloop.grade.source`; a math/reality grade whose `score.value` is not
+  0.0/1.0 or `score.label` is not correct/incorrect; a negative
+  `augmentloop.cost.usd`) fail conformance; **warning-level** (a missing
+  recommended `gen_ai.response.id`) does not.
+
+The checker is the artifact of record: "language-agnostic" stops being a claim
+in prose and becomes `exit 0` / `exit 1` against real emitted telemetry. See
+`conformance/README.md` for the two one-command invocations.
+
 ## Cross-references
 
 - ADR [0001](adr/0001-machine-checked-grades-only-in-the-headline-metric.md) - machine-checked grades only in the headline metric.
