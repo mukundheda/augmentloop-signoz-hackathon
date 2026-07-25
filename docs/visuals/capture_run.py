@@ -55,7 +55,7 @@ def _serialize(span: ReadableSpan, service: str) -> dict:
         "endUnixNano": span.end_time,
         "attributes": dict(span.attributes or {}),
         # Span-link Role 1: a late reality grade points back at the decision
-        # span it judges. This is the edge the blast radius walks.
+        # span it judges. This is the edge span-link.html walks.
         "links": [
             {
                 "traceId": _hex_trace(link.context.trace_id),
@@ -108,7 +108,7 @@ def _check(run: dict) -> None:
         for s in run["spans"]
         if s["attributes"].get("augmentloop.grade.source") == "reality"
     ]
-    assert reality, "no reality grades captured - nothing seeds a blast radius"
+    assert reality, "no reality grades captured - nothing for the visuals to attribute"
     for s in reality:
         assert len(s["links"]) == 1, f"reality grade {s['spanId']} lost its span link"
         assert s["links"][0]["spanId"] in ids, "span link points outside the capture"

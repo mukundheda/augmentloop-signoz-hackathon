@@ -19,6 +19,8 @@ from __future__ import annotations
 
 import re
 
+from gradebook import verbatim_substring
+
 # Mirror of CleanCut's PURE_FILLERS (hesitation sounds only - lexically provable).
 PURE_FILLERS: frozenset[str] = frozenset(
     {
@@ -56,21 +58,13 @@ def filler_checker(chosen: str, correct: list[str]) -> bool:
     return sorted(normalize_words(chosen)) == sorted(correct)
 
 
-_WS_RE = re.compile(r"\s+")
-
-
-def _squash_ws(text: str) -> str:
-    return _WS_RE.sub(" ", text).strip()
-
-
 def quote_checker(chosen: str, correct: str) -> bool:
     """The pulled quote must appear verbatim in the transcript.
 
-    `chosen` is the model's quote (surrounding quotation marks tolerated),
-    `correct` is the full transcript. Whitespace is normalized on both sides;
-    the words themselves must match exactly.
+    Now a thin adopter of the library's reusable `verbatim_substring` checker
+    (ticket #42) - the verbatim-substring logic lives in `gradebook.checkers`,
+    not hand-rolled here. Returns a bool for the runner's per-model tally;
+    `runner.run_detections` passes `verbatim_substring` itself to
+    `record_decision`, so the emitted grade still carries the reason code.
     """
-    quote = _squash_ws(chosen).strip("\"'“”‘’ ")
-    if not quote:
-        return False
-    return quote in _squash_ws(correct)
+    return verbatim_substring(chosen, correct).passed

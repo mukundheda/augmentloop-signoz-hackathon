@@ -1,0 +1,54 @@
+{
+  "name": "Judge Run Health: Decisions Graded",
+  "category": "judge-run",
+  "sourcePage": "metrics",
+  "tags": ["judge-run", "health"],
+  "compositeQuery": {
+    "queryType": "builder",
+    "panelType": "graph",
+    "queries": [
+      {
+        "type": "builder_query",
+        "spec": {
+          "name": "A",
+          "signal": "metrics",
+          "stepInterval": 60,
+          "aggregations": [
+            {
+              "metricName": "gradebook.decisions.graded",
+              "temporality": "cumulative",
+              "timeAggregation": "increase",
+              "spaceAggregation": "sum"
+            }
+          ],
+          "filter": {
+            "expression": ""
+          },
+          "groupBy": [
+            {
+              "name": "augmentloop.grade.source",
+              "fieldContext": "attribute",
+              "fieldDataType": "string"
+            },
+            {
+              "name": "gen_ai.evaluation.score.label",
+              "fieldContext": "attribute",
+              "fieldDataType": "string"
+            }
+          ],
+          "order": [
+            {
+              "key": {
+                "name": "__result"
+              },
+              "direction": "desc"
+            }
+          ],
+          "limit": 100,
+          "legend": "{{augmentloop.grade.source}} / {{gen_ai.evaluation.score.label}}"
+        }
+      }
+    ]
+  },
+  "extraData": "{\"description\":\"Judge-run health saved view (#53), turning docs/judge-run.md's troubleshooting table into a live query. Graphs gradebook.decisions.graded (increase/sum, no filter) grouped by augmentloop.grade.source and gen_ai.evaluation.score.label over the currently-selected time range. Empty chart => the same root cause as the doc's 'Dashboard panels empty' row: either the replay hasn't been run yet, the time range doesn't cover when it ran, or OTLP wasn't ready when it was run (see docs/judge-run.md Troubleshooting). Non-empty bars/lines broken down by source+label => the pipeline is alive and grading. Recommended range when checking right after a replay: Last 30 minutes (matches docs/judge-run.md step 4-5 guidance). NOTE (verified 2026-07-25 against this deployment): increase()/rate() on this metric returns real data for windows up to ~3h and silently returns null for 6h+ windows - keep the Explorer time range short (well under a day) or the view will look falsely empty.\"}"
+}

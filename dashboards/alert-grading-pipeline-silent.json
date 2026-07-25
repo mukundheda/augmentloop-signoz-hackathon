@@ -1,0 +1,93 @@
+{
+  "alert": "Gradebook Grading Pipeline Silent",
+  "alertType": "METRIC_BASED_ALERT",
+  "description": "Absence rule (#50): fires when NO decisions of any kind (any augmentloop.grade.source, any score label - a total pipeline halt, not a quality dip) have been graded for 10 consecutive 1-minute evaluations (absentFor=10 @ frequency=1m = 10 minutes of silence). N=10m rationale: each toy-world/build-fleet replay batch completes in seconds, so short natural gaps between runs must not trip this; the Gradebook design target for LIVE mode is ~3k model calls/day (~1 every ~30s on average per docs/conventions.md Section 11), so 10 minutes of total silence is roughly 20x the expected inter-decision gap even allowing for bursty, non-uniform arrival - comfortably beyond noise, well short of a full incident going unnoticed. Uses increase/sum with NO grade-source filter, deliberately looser than the headline math+reality scope, because 'is the pipeline alive at all' should catch ai_judge-only activity too. QUERY WINDOW NOTE: verified live against this deployment (2026-07-25) that increase()/rate() on gradebook.decisions.graded returns real data for short windows (up to ~3h) but silently returns null for 6h+ windows regardless of groupBy - evalWindow is kept at 1m (well inside the working range) for exactly this reason. SCHEMA NOTE: the live API rejects a threshold_rule with alertOnAbsent as the sole condition (schemaVersion v2alpha1 requires condition.thresholds + notificationSettings; the v1 shape requires condition.target/op/matchType regardless) - confirmed by two rejected POSTs, not assumed. The companion threshold below (op=below, target=0) is a structural no-op: a count-of-decisions metric can never go below 0, so it can never itself fire: alertOnAbsent+absentFor is the sole EFFECTIVE trigger, the threshold exists only to satisfy the API contract. HONESTY NOTE (fire-and-recover): the grading pipeline is not continuously running in this hackathon environment - replay batches are triggered manually - so silence is the natural resting state. This rule was created while the pipeline was already silent; see the accompanying report for the actual polled/observed evidence of firing and (if within the session's time budget) recovery, stated honestly rather than assumed.",
+  "ruleType": "threshold_rule",
+  "version": "v5",
+  "schemaVersion": "v2alpha1",
+  "condition": {
+    "compositeQuery": {
+      "queryType": "builder",
+      "panelType": "graph",
+      "queries": [
+        {
+          "type": "builder_query",
+          "spec": {
+            "name": "A",
+            "signal": "metrics",
+            "stepInterval": 60,
+            "aggregations": [
+              {
+                "metricName": "gradebook.decisions.graded",
+                "temporality": "cumulative",
+                "timeAggregation": "increase",
+                "spaceAggregation": "sum"
+              }
+            ],
+            "filter": {
+              "expression": ""
+            },
+            "groupBy": [],
+            "order": [
+              {
+                "key": {
+                  "name": "__result"
+                },
+                "direction": "desc"
+              }
+            ],
+            "limit": 100,
+            "legend": "decisions graded (any source)"
+          }
+        }
+      ]
+    },
+    "selectedQueryName": "A",
+    "alertOnAbsent": true,
+    "absentFor": 10,
+    "thresholds": {
+      "kind": "basic",
+      "spec": [
+        {
+          "name": "critical",
+          "target": 0,
+          "targetUnit": "",
+          "recoveryTarget": null,
+          "matchType": "all_the_times",
+          "op": "below",
+          "channels": [
+            "gradebook-alerts"
+          ]
+        }
+      ]
+    }
+  },
+  "labels": {
+    "severity": "critical",
+    "team": "gradebook"
+  },
+  "evaluation": {
+    "kind": "rolling",
+    "spec": {
+      "evalWindow": "1m",
+      "frequency": "1m"
+    }
+  },
+  "preferredChannels": [
+    "gradebook-alerts"
+  ],
+  "notificationSettings": {
+    "groupBy": [],
+    "renotify": {
+      "enabled": true,
+      "interval": "10m",
+      "alertStates": [
+        "firing"
+      ]
+    }
+  },
+  "annotations": {
+    "description": "No decisions have been graded (any augmentloop.grade.source) for at least 10 minutes - the grading pipeline may have stalled or crashed. (Threshold shown, target 0, is a structural no-op per rule description; the real trigger is alertOnAbsent.)",
+    "summary": "Gradebook grading pipeline silent for 10+ minutes"
+  }
+}

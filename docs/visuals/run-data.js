@@ -3,31 +3,55 @@ window.RUN = {
   "recording": "replay-v1.jsonl",
   "capturedAt": "2026-07-25",
   "summary": {
-    "decisions": 12,
-    "correct": 8,
-    "outcomes": 4,
-    "totalCostUsd": 0.0037354000000000003,
-    "costPerCorrectUsd": 0.00046692500000000003
+    "decisions": 180,
+    "correct": 127,
+    "outcomes": 60,
+    "totalCostUsd": 0.37755269999999974,
+    "costPerCorrectUsd": 0.002972855905511809
   },
   "spans": [
     {
       "service": "toy-world",
+      "name": "model-run anthropic/claude-haiku-4.5",
+      "traceId": "92036a1815d57a7aabf17a9e23e78c74",
+      "spanId": "fb50039058533b59",
+      "parentSpanId": null,
+      "startUnixNano": 1785001706477149000,
+      "endUnixNano": 1785001706479109000,
+      "attributes": {},
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "route_choice route_choice-J1-J9 decision",
+      "traceId": "92036a1815d57a7aabf17a9e23e78c74",
+      "spanId": "f4eb6140a536c169",
+      "parentSpanId": "fb50039058533b59",
+      "startUnixNano": 1785001706477181000,
+      "endUnixNano": 1785001706477266000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "easy"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
       "name": "gen_ai.evaluation.result",
-      "traceId": "2ee436c193b19cb8500d1e387a11b402",
-      "spanId": "fd8b60251ad522e4",
-      "parentSpanId": "3be3f88515e74aa1",
-      "startUnixNano": 1784996397344458900,
-      "endUnixNano": 1784996397344458900,
+      "traceId": "92036a1815d57a7aabf17a9e23e78c74",
+      "spanId": "c2cd34172808e64f",
+      "parentSpanId": "f4eb6140a536c169",
+      "startUnixNano": 1785001706477224000,
+      "endUnixNano": 1785001706477251000,
       "attributes": {
         "gen_ai.evaluation.name": "route.fastest",
         "gen_ai.evaluation.score.value": 1.0,
         "gen_ai.evaluation.score.label": "correct",
         "augmentloop.grade.source": "math",
-        "augmentloop.cost.usd": 0.0002016,
-        "gen_ai.request.model": "anthropic/claude-3.5-haiku",
-        "gen_ai.usage.input_tokens": 182,
-        "gen_ai.usage.output_tokens": 14,
-        "gen_ai.response.id": "replay-d1-J1",
+        "augmentloop.cost.usd": 0.000542,
+        "gen_ai.request.model": "anthropic/claude-haiku-4.5",
+        "gen_ai.usage.input_tokens": 522,
+        "gen_ai.usage.output_tokens": 4,
+        "gen_ai.response.id": "gen-1785000655-QbzMVktYXeFlvd6fYJ5y",
         "augmentloop.decision.type": "route_choice",
         "gen_ai.evaluation.explanation": "chose A (7.0m); true fastest A (7.0m)"
       },
@@ -35,112 +59,215 @@ window.RUN = {
     },
     {
       "service": "toy-world",
-      "name": "junction J1 decision",
-      "traceId": "2ee436c193b19cb8500d1e387a11b402",
-      "spanId": "3be3f88515e74aa1",
-      "parentSpanId": "2a690e40de074923",
-      "startUnixNano": 1784996397344458900,
-      "endUnixNano": 1784996397344458900,
-      "attributes": {},
-      "links": []
-    },
-    {
-      "service": "toy-world",
-      "name": "gen_ai.evaluation.result",
-      "traceId": "2ee436c193b19cb8500d1e387a11b402",
-      "spanId": "e224821863e542e6",
-      "parentSpanId": "39f18b04066bcb77",
-      "startUnixNano": 1784996397344458900,
-      "endUnixNano": 1784996397344458900,
+      "name": "route_choice route_choice-J1-J10 decision",
+      "traceId": "92036a1815d57a7aabf17a9e23e78c74",
+      "spanId": "04f609d0bf33ce18",
+      "parentSpanId": "fb50039058533b59",
+      "startUnixNano": 1785001706477280000,
+      "endUnixNano": 1785001706477335000,
       "attributes": {
-        "gen_ai.evaluation.name": "route.fastest",
-        "gen_ai.evaluation.score.value": 1.0,
-        "gen_ai.evaluation.score.label": "correct",
-        "augmentloop.grade.source": "math",
-        "augmentloop.cost.usd": 0.00021920000000000002,
-        "gen_ai.request.model": "anthropic/claude-3.5-haiku",
-        "gen_ai.usage.input_tokens": 214,
-        "gen_ai.usage.output_tokens": 12,
-        "gen_ai.response.id": "replay-d1-J2",
-        "augmentloop.decision.type": "route_choice",
-        "gen_ai.evaluation.explanation": "chose D (4.0m); true fastest D (4.0m)"
+        "augmentloop.decision.difficulty": "easy"
       },
       "links": []
     },
     {
       "service": "toy-world",
-      "name": "junction J2 decision",
-      "traceId": "2ee436c193b19cb8500d1e387a11b402",
-      "spanId": "39f18b04066bcb77",
-      "parentSpanId": "2a690e40de074923",
-      "startUnixNano": 1784996397344458900,
-      "endUnixNano": 1784996397344458900,
-      "attributes": {},
-      "links": []
-    },
-    {
-      "service": "toy-world",
       "name": "gen_ai.evaluation.result",
-      "traceId": "2ee436c193b19cb8500d1e387a11b402",
-      "spanId": "31e9ea822e103554",
-      "parentSpanId": "c371c9d4ed1cdc44",
-      "startUnixNano": 1784996397344458900,
-      "endUnixNano": 1784996397344458900,
+      "traceId": "92036a1815d57a7aabf17a9e23e78c74",
+      "spanId": "d448b6a9107ae77b",
+      "parentSpanId": "04f609d0bf33ce18",
+      "startUnixNano": 1785001706477311000,
+      "endUnixNano": 1785001706477327000,
       "attributes": {
         "gen_ai.evaluation.name": "route.fastest",
         "gen_ai.evaluation.score.value": 0.0,
         "gen_ai.evaluation.score.label": "incorrect",
         "augmentloop.grade.source": "math",
-        "augmentloop.cost.usd": 0.0002184,
-        "gen_ai.request.model": "anthropic/claude-3.5-haiku",
-        "gen_ai.usage.input_tokens": 198,
-        "gen_ai.usage.output_tokens": 15,
-        "gen_ai.response.id": "replay-d1-J3",
+        "augmentloop.cost.usd": 0.000542,
+        "gen_ai.request.model": "anthropic/claude-haiku-4.5",
+        "gen_ai.usage.input_tokens": 522,
+        "gen_ai.usage.output_tokens": 4,
+        "gen_ai.response.id": "gen-1785000657-XiJ2D8f6poL9pzYhMH2O",
         "augmentloop.decision.type": "route_choice",
-        "gen_ai.evaluation.explanation": "chose G (6.5m); true fastest F (6.0m)"
+        "gen_ai.evaluation.explanation": "chose A (9.0m); true fastest B (8.5m)"
       },
       "links": []
     },
     {
       "service": "toy-world",
-      "name": "junction J3 decision",
-      "traceId": "2ee436c193b19cb8500d1e387a11b402",
-      "spanId": "c371c9d4ed1cdc44",
-      "parentSpanId": "2a690e40de074923",
-      "startUnixNano": 1784996397344458900,
-      "endUnixNano": 1784996397344458900,
-      "attributes": {},
-      "links": []
-    },
-    {
-      "service": "toy-world",
-      "name": "journey driver-1",
-      "traceId": "2ee436c193b19cb8500d1e387a11b402",
-      "spanId": "2a690e40de074923",
-      "parentSpanId": null,
-      "startUnixNano": 1784996397344458900,
-      "endUnixNano": 1784996397344458900,
-      "attributes": {},
+      "name": "route_choice route_choice-J2-J9 decision",
+      "traceId": "92036a1815d57a7aabf17a9e23e78c74",
+      "spanId": "e73f1ef11116f6db",
+      "parentSpanId": "fb50039058533b59",
+      "startUnixNano": 1785001706477345000,
+      "endUnixNano": 1785001706477379000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "medium"
+      },
       "links": []
     },
     {
       "service": "toy-world",
       "name": "gen_ai.evaluation.result",
-      "traceId": "8675cec9e3e216eb47d5e348019062ee",
-      "spanId": "a4621a58e2d4c2af",
-      "parentSpanId": "357999ed16219184",
-      "startUnixNano": 1784996397344458900,
-      "endUnixNano": 1784996397344458900,
+      "traceId": "92036a1815d57a7aabf17a9e23e78c74",
+      "spanId": "9847bcdb7870de52",
+      "parentSpanId": "e73f1ef11116f6db",
+      "startUnixNano": 1785001706477362000,
+      "endUnixNano": 1785001706477374000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.fastest",
+        "gen_ai.evaluation.score.value": 0.0,
+        "gen_ai.evaluation.score.label": "incorrect",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 0.000542,
+        "gen_ai.request.model": "anthropic/claude-haiku-4.5",
+        "gen_ai.usage.input_tokens": 522,
+        "gen_ai.usage.output_tokens": 4,
+        "gen_ai.response.id": "gen-1785000658-GE3Oc8K9RbgZ4a4CztJr",
+        "augmentloop.decision.type": "route_choice",
+        "gen_ai.evaluation.explanation": "chose A (8.0m); true fastest B (7.0m)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "route_choice route_choice-J2-J10 decision",
+      "traceId": "92036a1815d57a7aabf17a9e23e78c74",
+      "spanId": "0af86af7641c98a7",
+      "parentSpanId": "fb50039058533b59",
+      "startUnixNano": 1785001706477387000,
+      "endUnixNano": 1785001706477419000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "medium"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "92036a1815d57a7aabf17a9e23e78c74",
+      "spanId": "2967336e3e286d52",
+      "parentSpanId": "0af86af7641c98a7",
+      "startUnixNano": 1785001706477404000,
+      "endUnixNano": 1785001706477414000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.fastest",
+        "gen_ai.evaluation.score.value": 0.0,
+        "gen_ai.evaluation.score.label": "incorrect",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 0.000542,
+        "gen_ai.request.model": "anthropic/claude-haiku-4.5",
+        "gen_ai.usage.input_tokens": 522,
+        "gen_ai.usage.output_tokens": 4,
+        "gen_ai.response.id": "gen-1785000659-D8gzsxfZczeOQFsxjruK",
+        "augmentloop.decision.type": "route_choice",
+        "gen_ai.evaluation.explanation": "chose A (10.0m); true fastest B (5.5m)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "route_choice route_choice-J2-J11 decision",
+      "traceId": "92036a1815d57a7aabf17a9e23e78c74",
+      "spanId": "6f82884e799cf0cc",
+      "parentSpanId": "fb50039058533b59",
+      "startUnixNano": 1785001706477426000,
+      "endUnixNano": 1785001706477455000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "medium"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "92036a1815d57a7aabf17a9e23e78c74",
+      "spanId": "0f3804f42cf47faf",
+      "parentSpanId": "6f82884e799cf0cc",
+      "startUnixNano": 1785001706477441000,
+      "endUnixNano": 1785001706477451000,
       "attributes": {
         "gen_ai.evaluation.name": "route.fastest",
         "gen_ai.evaluation.score.value": 1.0,
         "gen_ai.evaluation.score.label": "correct",
         "augmentloop.grade.source": "math",
-        "augmentloop.cost.usd": 0.000786,
-        "gen_ai.request.model": "anthropic/claude-sonnet-4",
-        "gen_ai.usage.input_tokens": 182,
-        "gen_ai.usage.output_tokens": 16,
-        "gen_ai.response.id": "replay-d2-J1",
+        "augmentloop.cost.usd": 0.000542,
+        "gen_ai.request.model": "anthropic/claude-haiku-4.5",
+        "gen_ai.usage.input_tokens": 522,
+        "gen_ai.usage.output_tokens": 4,
+        "gen_ai.response.id": "gen-1785000661-2mHxVSpBduVUMsJiItlo",
+        "augmentloop.decision.type": "route_choice",
+        "gen_ai.evaluation.explanation": "chose A (9.0m); true fastest A (9.0m)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "route_choice route_choice-J3-J9 decision",
+      "traceId": "92036a1815d57a7aabf17a9e23e78c74",
+      "spanId": "8dafa60c68e9f704",
+      "parentSpanId": "fb50039058533b59",
+      "startUnixNano": 1785001706477463000,
+      "endUnixNano": 1785001706477492000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "hard"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "92036a1815d57a7aabf17a9e23e78c74",
+      "spanId": "0afd331f709e231c",
+      "parentSpanId": "8dafa60c68e9f704",
+      "startUnixNano": 1785001706477478000,
+      "endUnixNano": 1785001706477488000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.fastest",
+        "gen_ai.evaluation.score.value": 0.0,
+        "gen_ai.evaluation.score.label": "incorrect",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 0.000902,
+        "gen_ai.request.model": "anthropic/claude-haiku-4.5",
+        "gen_ai.usage.input_tokens": 522,
+        "gen_ai.usage.output_tokens": 76,
+        "gen_ai.response.id": "gen-1785000662-hnnTzYJPZawsaOYZSN8g",
+        "augmentloop.decision.type": "route_choice",
+        "gen_ai.evaluation.explanation": "chose A (11.0m); true fastest B (8.5m)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "route_choice route_choice-J3-J10 decision",
+      "traceId": "92036a1815d57a7aabf17a9e23e78c74",
+      "spanId": "ea8b316ada375db4",
+      "parentSpanId": "fb50039058533b59",
+      "startUnixNano": 1785001706477499000,
+      "endUnixNano": 1785001706477525000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "hard"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "92036a1815d57a7aabf17a9e23e78c74",
+      "spanId": "ab1f7b9b9cab4f42",
+      "parentSpanId": "ea8b316ada375db4",
+      "startUnixNano": 1785001706477513000,
+      "endUnixNano": 1785001706477521000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.fastest",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 0.000902,
+        "gen_ai.request.model": "anthropic/claude-haiku-4.5",
+        "gen_ai.usage.input_tokens": 522,
+        "gen_ai.usage.output_tokens": 76,
+        "gen_ai.response.id": "gen-1785000664-dmVjZc3t3ZuMfalkZxfW",
         "augmentloop.decision.type": "route_choice",
         "gen_ai.evaluation.explanation": "chose A (7.0m); true fastest A (7.0m)"
       },
@@ -148,134 +275,4341 @@ window.RUN = {
     },
     {
       "service": "toy-world",
-      "name": "junction J1 decision",
-      "traceId": "8675cec9e3e216eb47d5e348019062ee",
-      "spanId": "357999ed16219184",
-      "parentSpanId": "9194c14d10e9141d",
-      "startUnixNano": 1784996397344458900,
-      "endUnixNano": 1784996397344458900,
-      "attributes": {},
-      "links": []
-    },
-    {
-      "service": "toy-world",
-      "name": "gen_ai.evaluation.result",
-      "traceId": "8675cec9e3e216eb47d5e348019062ee",
-      "spanId": "b74f1fc4aa6daa10",
-      "parentSpanId": "849c9583f67f11ef",
-      "startUnixNano": 1784996397344458900,
-      "endUnixNano": 1784996397344458900,
+      "name": "route_choice route_choice-J3-J11 decision",
+      "traceId": "92036a1815d57a7aabf17a9e23e78c74",
+      "spanId": "cbaf28785c257efd",
+      "parentSpanId": "fb50039058533b59",
+      "startUnixNano": 1785001706477532000,
+      "endUnixNano": 1785001706477558000,
       "attributes": {
-        "gen_ai.evaluation.name": "route.fastest",
-        "gen_ai.evaluation.score.value": 1.0,
-        "gen_ai.evaluation.score.label": "correct",
-        "augmentloop.grade.source": "math",
-        "augmentloop.cost.usd": 0.000837,
-        "gen_ai.request.model": "anthropic/claude-sonnet-4",
-        "gen_ai.usage.input_tokens": 214,
-        "gen_ai.usage.output_tokens": 13,
-        "gen_ai.response.id": "replay-d2-J2",
-        "augmentloop.decision.type": "route_choice",
-        "gen_ai.evaluation.explanation": "chose D (4.0m); true fastest D (4.0m)"
+        "augmentloop.decision.difficulty": "hard"
       },
       "links": []
     },
     {
       "service": "toy-world",
-      "name": "junction J2 decision",
-      "traceId": "8675cec9e3e216eb47d5e348019062ee",
-      "spanId": "849c9583f67f11ef",
-      "parentSpanId": "9194c14d10e9141d",
-      "startUnixNano": 1784996397344458900,
-      "endUnixNano": 1784996397344458900,
-      "attributes": {},
-      "links": []
-    },
-    {
-      "service": "toy-world",
       "name": "gen_ai.evaluation.result",
-      "traceId": "8675cec9e3e216eb47d5e348019062ee",
-      "spanId": "3661bcf3de245605",
-      "parentSpanId": "e7bb9d0bd63790c2",
-      "startUnixNano": 1784996397344458900,
-      "endUnixNano": 1784996397344458900,
-      "attributes": {
-        "gen_ai.evaluation.name": "route.fastest",
-        "gen_ai.evaluation.score.value": 1.0,
-        "gen_ai.evaluation.score.label": "correct",
-        "augmentloop.grade.source": "math",
-        "augmentloop.cost.usd": 0.000759,
-        "gen_ai.request.model": "anthropic/claude-sonnet-4",
-        "gen_ai.usage.input_tokens": 198,
-        "gen_ai.usage.output_tokens": 11,
-        "gen_ai.response.id": "replay-d2-J3",
-        "augmentloop.decision.type": "route_choice",
-        "gen_ai.evaluation.explanation": "chose F (6.0m); true fastest F (6.0m)"
-      },
-      "links": []
-    },
-    {
-      "service": "toy-world",
-      "name": "junction J3 decision",
-      "traceId": "8675cec9e3e216eb47d5e348019062ee",
-      "spanId": "e7bb9d0bd63790c2",
-      "parentSpanId": "9194c14d10e9141d",
-      "startUnixNano": 1784996397344458900,
-      "endUnixNano": 1784996397344458900,
-      "attributes": {},
-      "links": []
-    },
-    {
-      "service": "toy-world",
-      "name": "journey driver-2",
-      "traceId": "8675cec9e3e216eb47d5e348019062ee",
-      "spanId": "9194c14d10e9141d",
-      "parentSpanId": null,
-      "startUnixNano": 1784996397344458900,
-      "endUnixNano": 1784996397344458900,
-      "attributes": {},
-      "links": []
-    },
-    {
-      "service": "toy-world",
-      "name": "junction J1 decision",
-      "traceId": "052f200c0428d03da8295270ca4d0a8a",
-      "spanId": "bd8a20fc2892c703",
-      "parentSpanId": "f0f3e7689f87b128",
-      "startUnixNano": 1784996397344458900,
-      "endUnixNano": 1784996397345479300,
-      "attributes": {},
-      "links": []
-    },
-    {
-      "service": "toy-world",
-      "name": "journey driver-3",
-      "traceId": "052f200c0428d03da8295270ca4d0a8a",
-      "spanId": "f0f3e7689f87b128",
-      "parentSpanId": null,
-      "startUnixNano": 1784996397344458900,
-      "endUnixNano": 1784996397345479300,
-      "attributes": {},
-      "links": []
-    },
-    {
-      "service": "toy-world",
-      "name": "gen_ai.evaluation.result",
-      "traceId": "052f200c0428d03da8295270ca4d0a8a",
-      "spanId": "9e5e35c6f2c0e3ae",
-      "parentSpanId": "bd8a20fc2892c703",
-      "startUnixNano": 1784996397345479300,
-      "endUnixNano": 1784996397345479300,
+      "traceId": "92036a1815d57a7aabf17a9e23e78c74",
+      "spanId": "f8779589b2f81166",
+      "parentSpanId": "cbaf28785c257efd",
+      "startUnixNano": 1785001706477545000,
+      "endUnixNano": 1785001706477553000,
       "attributes": {
         "gen_ai.evaluation.name": "route.fastest",
         "gen_ai.evaluation.score.value": 0.0,
         "gen_ai.evaluation.score.label": "incorrect",
         "augmentloop.grade.source": "math",
-        "augmentloop.cost.usd": 2.5399999999999997e-05,
-        "gen_ai.request.model": "google/gemini-2.0-flash",
-        "gen_ai.usage.input_tokens": 182,
-        "gen_ai.usage.output_tokens": 18,
-        "gen_ai.response.id": "replay-d3-J1",
+        "augmentloop.cost.usd": 0.000902,
+        "gen_ai.request.model": "anthropic/claude-haiku-4.5",
+        "gen_ai.usage.input_tokens": 522,
+        "gen_ai.usage.output_tokens": 76,
+        "gen_ai.response.id": "gen-1785000666-HR61TfibkQUw5lxdX71n",
+        "augmentloop.decision.type": "route_choice",
+        "gen_ai.evaluation.explanation": "chose A (10.0m); true fastest B (9.5m)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "route_choice route_choice-J3-J12 decision",
+      "traceId": "92036a1815d57a7aabf17a9e23e78c74",
+      "spanId": "8ffbaa1ffbd397f6",
+      "parentSpanId": "fb50039058533b59",
+      "startUnixNano": 1785001706477564000,
+      "endUnixNano": 1785001706477588000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "hard"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "92036a1815d57a7aabf17a9e23e78c74",
+      "spanId": "167f299231c0e998",
+      "parentSpanId": "8ffbaa1ffbd397f6",
+      "startUnixNano": 1785001706477576000,
+      "endUnixNano": 1785001706477584000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.fastest",
+        "gen_ai.evaluation.score.value": 0.0,
+        "gen_ai.evaluation.score.label": "incorrect",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 0.000902,
+        "gen_ai.request.model": "anthropic/claude-haiku-4.5",
+        "gen_ai.usage.input_tokens": 522,
+        "gen_ai.usage.output_tokens": 76,
+        "gen_ai.response.id": "gen-1785000667-FpFCjTNdQOrasjePjYv3",
+        "augmentloop.decision.type": "route_choice",
+        "gen_ai.evaluation.explanation": "chose A (11.0m); true fastest B (10.5m)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "route_choice route_choice-J4-J11 decision",
+      "traceId": "92036a1815d57a7aabf17a9e23e78c74",
+      "spanId": "843618225a303c30",
+      "parentSpanId": "fb50039058533b59",
+      "startUnixNano": 1785001706477594000,
+      "endUnixNano": 1785001706477618000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "easy"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "92036a1815d57a7aabf17a9e23e78c74",
+      "spanId": "b91cd440d4018119",
+      "parentSpanId": "843618225a303c30",
+      "startUnixNano": 1785001706477606000,
+      "endUnixNano": 1785001706477614000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.fastest",
+        "gen_ai.evaluation.score.value": 0.0,
+        "gen_ai.evaluation.score.label": "incorrect",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 0.000542,
+        "gen_ai.request.model": "anthropic/claude-haiku-4.5",
+        "gen_ai.usage.input_tokens": 522,
+        "gen_ai.usage.output_tokens": 4,
+        "gen_ai.response.id": "gen-1785000669-cfUbRmHgV2B6ONBeo2o1",
+        "augmentloop.decision.type": "route_choice",
+        "gen_ai.evaluation.explanation": "chose A (8.0m); true fastest B (7.5m)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "route_choice route_choice-J4-J12 decision",
+      "traceId": "92036a1815d57a7aabf17a9e23e78c74",
+      "spanId": "be5733bc4068e8fd",
+      "parentSpanId": "fb50039058533b59",
+      "startUnixNano": 1785001706477625000,
+      "endUnixNano": 1785001706477648000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "easy"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "92036a1815d57a7aabf17a9e23e78c74",
+      "spanId": "b746932b27226c4d",
+      "parentSpanId": "be5733bc4068e8fd",
+      "startUnixNano": 1785001706477637000,
+      "endUnixNano": 1785001706477645000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.fastest",
+        "gen_ai.evaluation.score.value": 0.0,
+        "gen_ai.evaluation.score.label": "incorrect",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 0.000542,
+        "gen_ai.request.model": "anthropic/claude-haiku-4.5",
+        "gen_ai.usage.input_tokens": 522,
+        "gen_ai.usage.output_tokens": 4,
+        "gen_ai.response.id": "gen-1785000670-Ds31T1OjaMglh0afykQj",
+        "augmentloop.decision.type": "route_choice",
+        "gen_ai.evaluation.explanation": "chose A (9.0m); true fastest B (8.5m)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "route_choice route_choice-J1-J13 decision",
+      "traceId": "92036a1815d57a7aabf17a9e23e78c74",
+      "spanId": "f4745e14c4bae399",
+      "parentSpanId": "fb50039058533b59",
+      "startUnixNano": 1785001706477655000,
+      "endUnixNano": 1785001706477678000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "easy"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "92036a1815d57a7aabf17a9e23e78c74",
+      "spanId": "90ee5078ef53504c",
+      "parentSpanId": "f4745e14c4bae399",
+      "startUnixNano": 1785001706477666000,
+      "endUnixNano": 1785001706477674000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.fastest",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 0.00055,
+        "gen_ai.request.model": "anthropic/claude-haiku-4.5",
+        "gen_ai.usage.input_tokens": 530,
+        "gen_ai.usage.output_tokens": 4,
+        "gen_ai.response.id": "gen-1785000672-0su5skkSKoCDe9ynpGr6",
+        "augmentloop.decision.type": "route_choice",
+        "gen_ai.evaluation.explanation": "chose A (11.0m); true fastest A (11.0m)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "route_choice route_choice-J1-J14 decision",
+      "traceId": "92036a1815d57a7aabf17a9e23e78c74",
+      "spanId": "c786ade63af0ec87",
+      "parentSpanId": "fb50039058533b59",
+      "startUnixNano": 1785001706477684000,
+      "endUnixNano": 1785001706477707000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "easy"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "92036a1815d57a7aabf17a9e23e78c74",
+      "spanId": "648518a1d011b1b9",
+      "parentSpanId": "c786ade63af0ec87",
+      "startUnixNano": 1785001706477696000,
+      "endUnixNano": 1785001706477704000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.fastest",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 0.00081,
+        "gen_ai.request.model": "anthropic/claude-haiku-4.5",
+        "gen_ai.usage.input_tokens": 530,
+        "gen_ai.usage.output_tokens": 56,
+        "gen_ai.response.id": "gen-1785000673-eDWbIQAMIeuIoOeCh45y",
+        "augmentloop.decision.type": "route_choice",
+        "gen_ai.evaluation.explanation": "chose A (13.0m); true fastest A (13.0m)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "route_choice route_choice-J1-J15 decision",
+      "traceId": "92036a1815d57a7aabf17a9e23e78c74",
+      "spanId": "dde94ef437966c7d",
+      "parentSpanId": "fb50039058533b59",
+      "startUnixNano": 1785001706477715000,
+      "endUnixNano": 1785001706477737000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "easy"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "92036a1815d57a7aabf17a9e23e78c74",
+      "spanId": "450afeaa2d44475d",
+      "parentSpanId": "dde94ef437966c7d",
+      "startUnixNano": 1785001706477726000,
+      "endUnixNano": 1785001706477734000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.fastest",
+        "gen_ai.evaluation.score.value": 0.0,
+        "gen_ai.evaluation.score.label": "incorrect",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 0.00081,
+        "gen_ai.request.model": "anthropic/claude-haiku-4.5",
+        "gen_ai.usage.input_tokens": 530,
+        "gen_ai.usage.output_tokens": 56,
+        "gen_ai.response.id": "gen-1785000675-xy2vDHWtYXHmVv2In15S",
+        "augmentloop.decision.type": "route_choice",
+        "gen_ai.evaluation.explanation": "chose A (16.0m); true fastest B (15.5m)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "route_choice route_choice-J2-J13 decision",
+      "traceId": "92036a1815d57a7aabf17a9e23e78c74",
+      "spanId": "262bfdf4f515285b",
+      "parentSpanId": "fb50039058533b59",
+      "startUnixNano": 1785001706477743000,
+      "endUnixNano": 1785001706477767000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "medium"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "92036a1815d57a7aabf17a9e23e78c74",
+      "spanId": "40723ed5acba58fe",
+      "parentSpanId": "262bfdf4f515285b",
+      "startUnixNano": 1785001706477755000,
+      "endUnixNano": 1785001706477764000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.fastest",
+        "gen_ai.evaluation.score.value": 0.0,
+        "gen_ai.evaluation.score.label": "incorrect",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 0.00055,
+        "gen_ai.request.model": "anthropic/claude-haiku-4.5",
+        "gen_ai.usage.input_tokens": 530,
+        "gen_ai.usage.output_tokens": 4,
+        "gen_ai.response.id": "gen-1785000677-tQWelNutb4iHyN0RYOZd",
+        "augmentloop.decision.type": "route_choice",
+        "gen_ai.evaluation.explanation": "chose A (12.0m); true fastest B (8.5m)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "route_choice route_choice-J2-J14 decision",
+      "traceId": "92036a1815d57a7aabf17a9e23e78c74",
+      "spanId": "66ff70ee9cd60484",
+      "parentSpanId": "fb50039058533b59",
+      "startUnixNano": 1785001706477773000,
+      "endUnixNano": 1785001706477797000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "medium"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "92036a1815d57a7aabf17a9e23e78c74",
+      "spanId": "1d008a46d41696e4",
+      "parentSpanId": "66ff70ee9cd60484",
+      "startUnixNano": 1785001706477786000,
+      "endUnixNano": 1785001706477794000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.fastest",
+        "gen_ai.evaluation.score.value": 0.0,
+        "gen_ai.evaluation.score.label": "incorrect",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 0.00081,
+        "gen_ai.request.model": "anthropic/claude-haiku-4.5",
+        "gen_ai.usage.input_tokens": 530,
+        "gen_ai.usage.output_tokens": 56,
+        "gen_ai.response.id": "gen-1785000679-6AmeGTJM6HOfwXH5rIHS",
+        "augmentloop.decision.type": "route_choice",
+        "gen_ai.evaluation.explanation": "chose A (14.0m); true fastest B (10.5m)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "route_choice route_choice-J2-J15 decision",
+      "traceId": "92036a1815d57a7aabf17a9e23e78c74",
+      "spanId": "0ea6ca71496f10ac",
+      "parentSpanId": "fb50039058533b59",
+      "startUnixNano": 1785001706477804000,
+      "endUnixNano": 1785001706477826000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "medium"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "92036a1815d57a7aabf17a9e23e78c74",
+      "spanId": "9639e859f4dcb93d",
+      "parentSpanId": "0ea6ca71496f10ac",
+      "startUnixNano": 1785001706477815000,
+      "endUnixNano": 1785001706477823000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.fastest",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 0.00081,
+        "gen_ai.request.model": "anthropic/claude-haiku-4.5",
+        "gen_ai.usage.input_tokens": 530,
+        "gen_ai.usage.output_tokens": 56,
+        "gen_ai.response.id": "gen-1785000680-yqTEWceAkHByfu3GFc0a",
+        "augmentloop.decision.type": "route_choice",
+        "gen_ai.evaluation.explanation": "chose A (12.5m); true fastest A (12.5m)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "route_choice route_choice-J2-J16 decision",
+      "traceId": "92036a1815d57a7aabf17a9e23e78c74",
+      "spanId": "2edc0f6fa0139213",
+      "parentSpanId": "fb50039058533b59",
+      "startUnixNano": 1785001706477833000,
+      "endUnixNano": 1785001706477858000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "medium"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "92036a1815d57a7aabf17a9e23e78c74",
+      "spanId": "d7e76df61c5b0b2d",
+      "parentSpanId": "2edc0f6fa0139213",
+      "startUnixNano": 1785001706477845000,
+      "endUnixNano": 1785001706477854000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.fastest",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 0.00101,
+        "gen_ai.request.model": "anthropic/claude-haiku-4.5",
+        "gen_ai.usage.input_tokens": 530,
+        "gen_ai.usage.output_tokens": 96,
+        "gen_ai.response.id": "gen-1785000681-pcuoefgFkEc7dGZXbuvl",
+        "augmentloop.decision.type": "route_choice",
+        "gen_ai.evaluation.explanation": "chose A (15.5m); true fastest A (15.5m)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "route_choice route_choice-J3-J13 decision",
+      "traceId": "92036a1815d57a7aabf17a9e23e78c74",
+      "spanId": "a2098b36fc4f3931",
+      "parentSpanId": "fb50039058533b59",
+      "startUnixNano": 1785001706477864000,
+      "endUnixNano": 1785001706477908000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "hard"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "92036a1815d57a7aabf17a9e23e78c74",
+      "spanId": "56f333abf8729130",
+      "parentSpanId": "a2098b36fc4f3931",
+      "startUnixNano": 1785001706477876000,
+      "endUnixNano": 1785001706477904000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.fastest",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 0.00081,
+        "gen_ai.request.model": "anthropic/claude-haiku-4.5",
+        "gen_ai.usage.input_tokens": 530,
+        "gen_ai.usage.output_tokens": 56,
+        "gen_ai.response.id": "gen-1785000683-TLUxkpmRX3WTSgFTKMm3",
+        "augmentloop.decision.type": "route_choice",
+        "gen_ai.evaluation.explanation": "chose A (10.0m); true fastest A (10.0m)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "route_choice route_choice-J3-J14 decision",
+      "traceId": "92036a1815d57a7aabf17a9e23e78c74",
+      "spanId": "be948d655d5cbdb8",
+      "parentSpanId": "fb50039058533b59",
+      "startUnixNano": 1785001706477915000,
+      "endUnixNano": 1785001706477942000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "hard"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "92036a1815d57a7aabf17a9e23e78c74",
+      "spanId": "42dc7e484dd98e4f",
+      "parentSpanId": "be948d655d5cbdb8",
+      "startUnixNano": 1785001706477930000,
+      "endUnixNano": 1785001706477938000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.fastest",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 0.00081,
+        "gen_ai.request.model": "anthropic/claude-haiku-4.5",
+        "gen_ai.usage.input_tokens": 530,
+        "gen_ai.usage.output_tokens": 56,
+        "gen_ai.response.id": "gen-1785000685-mBpZSTK1oG4FLbHIHuKY",
+        "augmentloop.decision.type": "route_choice",
+        "gen_ai.evaluation.explanation": "chose A (12.0m); true fastest A (12.0m)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "eta_estimate eta_estimate-J1-J9 decision",
+      "traceId": "92036a1815d57a7aabf17a9e23e78c74",
+      "spanId": "eb65e5c3a55c6e4b",
+      "parentSpanId": "fb50039058533b59",
+      "startUnixNano": 1785001706477948000,
+      "endUnixNano": 1785001706477974000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "easy"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "92036a1815d57a7aabf17a9e23e78c74",
+      "spanId": "af7ee4a3f18cb07c",
+      "parentSpanId": "eb65e5c3a55c6e4b",
+      "startUnixNano": 1785001706477962000,
+      "endUnixNano": 1785001706477970000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.eta",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 0.002105,
+        "gen_ai.request.model": "anthropic/claude-haiku-4.5",
+        "gen_ai.usage.input_tokens": 495,
+        "gen_ai.usage.output_tokens": 322,
+        "gen_ai.response.id": "gen-1785000686-Uz4tqrShkvx2RXaAYRpe",
+        "augmentloop.decision.type": "eta_estimate",
+        "gen_ai.evaluation.explanation": "estimated 7.0m; true fastest time is 7.0m (tolerance +/-15%)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "eta_estimate eta_estimate-J1-J10 decision",
+      "traceId": "92036a1815d57a7aabf17a9e23e78c74",
+      "spanId": "3a594f1f4f6ca718",
+      "parentSpanId": "fb50039058533b59",
+      "startUnixNano": 1785001706477981000,
+      "endUnixNano": 1785001706478004000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "easy"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "92036a1815d57a7aabf17a9e23e78c74",
+      "spanId": "3f0efc9cb54fd0bd",
+      "parentSpanId": "3a594f1f4f6ca718",
+      "startUnixNano": 1785001706477992000,
+      "endUnixNano": 1785001706478000000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.eta",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 0.002455,
+        "gen_ai.request.model": "anthropic/claude-haiku-4.5",
+        "gen_ai.usage.input_tokens": 495,
+        "gen_ai.usage.output_tokens": 392,
+        "gen_ai.response.id": "gen-1785000689-64qXASOI9inTcvTF42Ar",
+        "augmentloop.decision.type": "eta_estimate",
+        "gen_ai.evaluation.explanation": "estimated 8.5m; true fastest time is 8.5m (tolerance +/-15%)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "eta_estimate eta_estimate-J2-J9 decision",
+      "traceId": "92036a1815d57a7aabf17a9e23e78c74",
+      "spanId": "0572d64dd14c3ebd",
+      "parentSpanId": "fb50039058533b59",
+      "startUnixNano": 1785001706478010000,
+      "endUnixNano": 1785001706478032000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "medium"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "92036a1815d57a7aabf17a9e23e78c74",
+      "spanId": "1d111541327791d2",
+      "parentSpanId": "0572d64dd14c3ebd",
+      "startUnixNano": 1785001706478021000,
+      "endUnixNano": 1785001706478029000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.eta",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 0.00256,
+        "gen_ai.request.model": "anthropic/claude-haiku-4.5",
+        "gen_ai.usage.input_tokens": 495,
+        "gen_ai.usage.output_tokens": 413,
+        "gen_ai.response.id": "gen-1785000691-Efin4CtVRavayYqo2iR6",
+        "augmentloop.decision.type": "eta_estimate",
+        "gen_ai.evaluation.explanation": "estimated 7.0m; true fastest time is 7.0m (tolerance +/-15%)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "eta_estimate eta_estimate-J2-J10 decision",
+      "traceId": "92036a1815d57a7aabf17a9e23e78c74",
+      "spanId": "78bbf4dda7a6ba8d",
+      "parentSpanId": "fb50039058533b59",
+      "startUnixNano": 1785001706478039000,
+      "endUnixNano": 1785001706478062000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "medium"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "92036a1815d57a7aabf17a9e23e78c74",
+      "spanId": "54e2bffe6091520b",
+      "parentSpanId": "78bbf4dda7a6ba8d",
+      "startUnixNano": 1785001706478051000,
+      "endUnixNano": 1785001706478059000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.eta",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 0.002165,
+        "gen_ai.request.model": "anthropic/claude-haiku-4.5",
+        "gen_ai.usage.input_tokens": 495,
+        "gen_ai.usage.output_tokens": 334,
+        "gen_ai.response.id": "gen-1785000695-gswa3SffCZr5jAqd5piD",
+        "augmentloop.decision.type": "eta_estimate",
+        "gen_ai.evaluation.explanation": "estimated 5.5m; true fastest time is 5.5m (tolerance +/-15%)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "eta_estimate eta_estimate-J2-J11 decision",
+      "traceId": "92036a1815d57a7aabf17a9e23e78c74",
+      "spanId": "ff008cc1e2588515",
+      "parentSpanId": "fb50039058533b59",
+      "startUnixNano": 1785001706478069000,
+      "endUnixNano": 1785001706478091000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "medium"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "92036a1815d57a7aabf17a9e23e78c74",
+      "spanId": "6d736f142c2c2398",
+      "parentSpanId": "ff008cc1e2588515",
+      "startUnixNano": 1785001706478080000,
+      "endUnixNano": 1785001706478088000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.eta",
+        "gen_ai.evaluation.score.value": 0.0,
+        "gen_ai.evaluation.score.label": "incorrect",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 0.005615,
+        "gen_ai.request.model": "anthropic/claude-haiku-4.5",
+        "gen_ai.usage.input_tokens": 495,
+        "gen_ai.usage.output_tokens": 1024,
+        "gen_ai.response.id": "gen-1785000697-Trf9LHC3L58zsY5AHMJb",
+        "augmentloop.decision.type": "eta_estimate",
+        "gen_ai.evaluation.explanation": "estimated 1.0m; true fastest time is 9.0m (tolerance +/-15%)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "eta_estimate eta_estimate-J3-J9 decision",
+      "traceId": "92036a1815d57a7aabf17a9e23e78c74",
+      "spanId": "3f74dd74a986096b",
+      "parentSpanId": "fb50039058533b59",
+      "startUnixNano": 1785001706478097000,
+      "endUnixNano": 1785001706478121000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "hard"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "92036a1815d57a7aabf17a9e23e78c74",
+      "spanId": "df98390f8fdecae7",
+      "parentSpanId": "3f74dd74a986096b",
+      "startUnixNano": 1785001706478109000,
+      "endUnixNano": 1785001706478117000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.eta",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 0.003425,
+        "gen_ai.request.model": "anthropic/claude-haiku-4.5",
+        "gen_ai.usage.input_tokens": 495,
+        "gen_ai.usage.output_tokens": 586,
+        "gen_ai.response.id": "gen-1785000703-FrsGVt6rTOyw4SKH7br4",
+        "augmentloop.decision.type": "eta_estimate",
+        "gen_ai.evaluation.explanation": "estimated 8.5m; true fastest time is 8.5m (tolerance +/-15%)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "eta_estimate eta_estimate-J3-J10 decision",
+      "traceId": "92036a1815d57a7aabf17a9e23e78c74",
+      "spanId": "ad0b5302b5fc3238",
+      "parentSpanId": "fb50039058533b59",
+      "startUnixNano": 1785001706478127000,
+      "endUnixNano": 1785001706478149000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "hard"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "92036a1815d57a7aabf17a9e23e78c74",
+      "spanId": "99e60e19098e7294",
+      "parentSpanId": "ad0b5302b5fc3238",
+      "startUnixNano": 1785001706478138000,
+      "endUnixNano": 1785001706478146000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.eta",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 0.002725,
+        "gen_ai.request.model": "anthropic/claude-haiku-4.5",
+        "gen_ai.usage.input_tokens": 495,
+        "gen_ai.usage.output_tokens": 446,
+        "gen_ai.response.id": "gen-1785000706-tmQqQNXTK1lpQoQ9QPAO",
+        "augmentloop.decision.type": "eta_estimate",
+        "gen_ai.evaluation.explanation": "estimated 7.0m; true fastest time is 7.0m (tolerance +/-15%)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "eta_estimate eta_estimate-J3-J11 decision",
+      "traceId": "92036a1815d57a7aabf17a9e23e78c74",
+      "spanId": "4e6c1401963f5043",
+      "parentSpanId": "fb50039058533b59",
+      "startUnixNano": 1785001706478157000,
+      "endUnixNano": 1785001706478179000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "hard"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "92036a1815d57a7aabf17a9e23e78c74",
+      "spanId": "6934fedb7efef4b5",
+      "parentSpanId": "4e6c1401963f5043",
+      "startUnixNano": 1785001706478168000,
+      "endUnixNano": 1785001706478176000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.eta",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 0.003095,
+        "gen_ai.request.model": "anthropic/claude-haiku-4.5",
+        "gen_ai.usage.input_tokens": 495,
+        "gen_ai.usage.output_tokens": 520,
+        "gen_ai.response.id": "gen-1785000710-f7Vww6wiT6eiG0iBKGwb",
+        "augmentloop.decision.type": "eta_estimate",
+        "gen_ai.evaluation.explanation": "estimated 9.5m; true fastest time is 9.5m (tolerance +/-15%)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "eta_estimate eta_estimate-J3-J12 decision",
+      "traceId": "92036a1815d57a7aabf17a9e23e78c74",
+      "spanId": "72eb562cc909a929",
+      "parentSpanId": "fb50039058533b59",
+      "startUnixNano": 1785001706478185000,
+      "endUnixNano": 1785001706478208000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "hard"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "92036a1815d57a7aabf17a9e23e78c74",
+      "spanId": "a2f81632b2737d83",
+      "parentSpanId": "72eb562cc909a929",
+      "startUnixNano": 1785001706478197000,
+      "endUnixNano": 1785001706478204000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.eta",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 0.004015,
+        "gen_ai.request.model": "anthropic/claude-haiku-4.5",
+        "gen_ai.usage.input_tokens": 495,
+        "gen_ai.usage.output_tokens": 704,
+        "gen_ai.response.id": "gen-1785000713-iQM4QSJscEUUyZPPJ2Fa",
+        "augmentloop.decision.type": "eta_estimate",
+        "gen_ai.evaluation.explanation": "estimated 10.5m; true fastest time is 10.5m (tolerance +/-15%)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "eta_estimate eta_estimate-J4-J11 decision",
+      "traceId": "92036a1815d57a7aabf17a9e23e78c74",
+      "spanId": "acc6b1de9dc90372",
+      "parentSpanId": "fb50039058533b59",
+      "startUnixNano": 1785001706478214000,
+      "endUnixNano": 1785001706478236000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "easy"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "92036a1815d57a7aabf17a9e23e78c74",
+      "spanId": "9bd91086683f266b",
+      "parentSpanId": "acc6b1de9dc90372",
+      "startUnixNano": 1785001706478225000,
+      "endUnixNano": 1785001706478232000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.eta",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 0.00272,
+        "gen_ai.request.model": "anthropic/claude-haiku-4.5",
+        "gen_ai.usage.input_tokens": 495,
+        "gen_ai.usage.output_tokens": 445,
+        "gen_ai.response.id": "gen-1785000717-k4ECzzXGCVM6vZEajQ5v",
+        "augmentloop.decision.type": "eta_estimate",
+        "gen_ai.evaluation.explanation": "estimated 7.5m; true fastest time is 7.5m (tolerance +/-15%)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "eta_estimate eta_estimate-J4-J12 decision",
+      "traceId": "92036a1815d57a7aabf17a9e23e78c74",
+      "spanId": "9a7d8327871de0c3",
+      "parentSpanId": "fb50039058533b59",
+      "startUnixNano": 1785001706478242000,
+      "endUnixNano": 1785001706478264000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "easy"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "92036a1815d57a7aabf17a9e23e78c74",
+      "spanId": "b4134b8262f4eee6",
+      "parentSpanId": "9a7d8327871de0c3",
+      "startUnixNano": 1785001706478252000,
+      "endUnixNano": 1785001706478261000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.eta",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 0.00316,
+        "gen_ai.request.model": "anthropic/claude-haiku-4.5",
+        "gen_ai.usage.input_tokens": 495,
+        "gen_ai.usage.output_tokens": 533,
+        "gen_ai.response.id": "gen-1785000721-7lhN6dse63V0Z1bRrlk8",
+        "augmentloop.decision.type": "eta_estimate",
+        "gen_ai.evaluation.explanation": "estimated 8.5m; true fastest time is 8.5m (tolerance +/-15%)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "eta_estimate eta_estimate-J1-J13 decision",
+      "traceId": "92036a1815d57a7aabf17a9e23e78c74",
+      "spanId": "e0386041b671d538",
+      "parentSpanId": "fb50039058533b59",
+      "startUnixNano": 1785001706478270000,
+      "endUnixNano": 1785001706478292000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "easy"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "92036a1815d57a7aabf17a9e23e78c74",
+      "spanId": "24c05fe84f32cd36",
+      "parentSpanId": "e0386041b671d538",
+      "startUnixNano": 1785001706478281000,
+      "endUnixNano": 1785001706478289000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.eta",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 0.00278,
+        "gen_ai.request.model": "anthropic/claude-haiku-4.5",
+        "gen_ai.usage.input_tokens": 495,
+        "gen_ai.usage.output_tokens": 457,
+        "gen_ai.response.id": "gen-1785000724-nm1bBgGZ90lCspKOq0kE",
+        "augmentloop.decision.type": "eta_estimate",
+        "gen_ai.evaluation.explanation": "estimated 11.0m; true fastest time is 11.0m (tolerance +/-15%)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "eta_estimate eta_estimate-J1-J14 decision",
+      "traceId": "92036a1815d57a7aabf17a9e23e78c74",
+      "spanId": "23ed10d516164bb8",
+      "parentSpanId": "fb50039058533b59",
+      "startUnixNano": 1785001706478300000,
+      "endUnixNano": 1785001706478322000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "easy"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "92036a1815d57a7aabf17a9e23e78c74",
+      "spanId": "b63808c42a81ff49",
+      "parentSpanId": "23ed10d516164bb8",
+      "startUnixNano": 1785001706478310000,
+      "endUnixNano": 1785001706478318000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.eta",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 0.00294,
+        "gen_ai.request.model": "anthropic/claude-haiku-4.5",
+        "gen_ai.usage.input_tokens": 495,
+        "gen_ai.usage.output_tokens": 489,
+        "gen_ai.response.id": "gen-1785000728-qrXAmP9eIGqLg9b9Ngif",
+        "augmentloop.decision.type": "eta_estimate",
+        "gen_ai.evaluation.explanation": "estimated 13.0m; true fastest time is 13.0m (tolerance +/-15%)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "eta_estimate eta_estimate-J1-J15 decision",
+      "traceId": "92036a1815d57a7aabf17a9e23e78c74",
+      "spanId": "572f82dcbe18bcb6",
+      "parentSpanId": "fb50039058533b59",
+      "startUnixNano": 1785001706478328000,
+      "endUnixNano": 1785001706478351000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "easy"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "92036a1815d57a7aabf17a9e23e78c74",
+      "spanId": "4086cf2097f341d9",
+      "parentSpanId": "572f82dcbe18bcb6",
+      "startUnixNano": 1785001706478340000,
+      "endUnixNano": 1785001706478348000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.eta",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 0.005615,
+        "gen_ai.request.model": "anthropic/claude-haiku-4.5",
+        "gen_ai.usage.input_tokens": 495,
+        "gen_ai.usage.output_tokens": 1024,
+        "gen_ai.response.id": "gen-1785000731-N7MbwWvtjnBZTJ1ruF73",
+        "augmentloop.decision.type": "eta_estimate",
+        "gen_ai.evaluation.explanation": "estimated 17.0m; true fastest time is 15.5m (tolerance +/-15%)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "eta_estimate eta_estimate-J2-J13 decision",
+      "traceId": "92036a1815d57a7aabf17a9e23e78c74",
+      "spanId": "cd005662cd73fd71",
+      "parentSpanId": "fb50039058533b59",
+      "startUnixNano": 1785001706478357000,
+      "endUnixNano": 1785001706478379000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "medium"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "92036a1815d57a7aabf17a9e23e78c74",
+      "spanId": "448cc66be524760f",
+      "parentSpanId": "cd005662cd73fd71",
+      "startUnixNano": 1785001706478368000,
+      "endUnixNano": 1785001706478375000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.eta",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 0.00255,
+        "gen_ai.request.model": "anthropic/claude-haiku-4.5",
+        "gen_ai.usage.input_tokens": 495,
+        "gen_ai.usage.output_tokens": 411,
+        "gen_ai.response.id": "gen-1785000737-axVb4LmpJV05TJGvGKXc",
+        "augmentloop.decision.type": "eta_estimate",
+        "gen_ai.evaluation.explanation": "estimated 8.5m; true fastest time is 8.5m (tolerance +/-15%)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "eta_estimate eta_estimate-J2-J14 decision",
+      "traceId": "92036a1815d57a7aabf17a9e23e78c74",
+      "spanId": "cd0176b22adc35cb",
+      "parentSpanId": "fb50039058533b59",
+      "startUnixNano": 1785001706478384000,
+      "endUnixNano": 1785001706478406000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "medium"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "92036a1815d57a7aabf17a9e23e78c74",
+      "spanId": "c3ec21e70c626a15",
+      "parentSpanId": "cd0176b22adc35cb",
+      "startUnixNano": 1785001706478395000,
+      "endUnixNano": 1785001706478403000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.eta",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 0.00355,
+        "gen_ai.request.model": "anthropic/claude-haiku-4.5",
+        "gen_ai.usage.input_tokens": 495,
+        "gen_ai.usage.output_tokens": 611,
+        "gen_ai.response.id": "gen-1785000740-XBtn1n9oq2xh79yxJIHr",
+        "augmentloop.decision.type": "eta_estimate",
+        "gen_ai.evaluation.explanation": "estimated 10.5m; true fastest time is 10.5m (tolerance +/-15%)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "eta_estimate eta_estimate-J2-J15 decision",
+      "traceId": "92036a1815d57a7aabf17a9e23e78c74",
+      "spanId": "7430226db12e7574",
+      "parentSpanId": "fb50039058533b59",
+      "startUnixNano": 1785001706478412000,
+      "endUnixNano": 1785001706478433000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "medium"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "92036a1815d57a7aabf17a9e23e78c74",
+      "spanId": "16e29b5ca1e4aaf7",
+      "parentSpanId": "7430226db12e7574",
+      "startUnixNano": 1785001706478423000,
+      "endUnixNano": 1785001706478430000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.eta",
+        "gen_ai.evaluation.score.value": 0.0,
+        "gen_ai.evaluation.score.label": "incorrect",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 0.005155,
+        "gen_ai.request.model": "anthropic/claude-haiku-4.5",
+        "gen_ai.usage.input_tokens": 495,
+        "gen_ai.usage.output_tokens": 932,
+        "gen_ai.response.id": "gen-1785000744-1wGIpLoGiSYYEkEzJJRD",
+        "augmentloop.decision.type": "eta_estimate",
+        "gen_ai.evaluation.explanation": "estimated 14.5m; true fastest time is 12.5m (tolerance +/-15%)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "eta_estimate eta_estimate-J2-J16 decision",
+      "traceId": "92036a1815d57a7aabf17a9e23e78c74",
+      "spanId": "6a0248fa548ef894",
+      "parentSpanId": "fb50039058533b59",
+      "startUnixNano": 1785001706478440000,
+      "endUnixNano": 1785001706478461000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "medium"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "92036a1815d57a7aabf17a9e23e78c74",
+      "spanId": "07f1792bd1f93c32",
+      "parentSpanId": "6a0248fa548ef894",
+      "startUnixNano": 1785001706478450000,
+      "endUnixNano": 1785001706478458000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.eta",
+        "gen_ai.evaluation.score.value": 0.0,
+        "gen_ai.evaluation.score.label": "incorrect",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 0.005615,
+        "gen_ai.request.model": "anthropic/claude-haiku-4.5",
+        "gen_ai.usage.input_tokens": 495,
+        "gen_ai.usage.output_tokens": 1024,
+        "gen_ai.response.id": "gen-1785000749-YsQwdAArvYivCJW2e8w9",
+        "augmentloop.decision.type": "eta_estimate",
+        "gen_ai.evaluation.explanation": "estimated 1.0m; true fastest time is 15.5m (tolerance +/-15%)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "eta_estimate eta_estimate-J3-J13 decision",
+      "traceId": "92036a1815d57a7aabf17a9e23e78c74",
+      "spanId": "f3214160af72b367",
+      "parentSpanId": "fb50039058533b59",
+      "startUnixNano": 1785001706478468000,
+      "endUnixNano": 1785001706478491000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "hard"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "92036a1815d57a7aabf17a9e23e78c74",
+      "spanId": "44dcaf19b2fe9556",
+      "parentSpanId": "f3214160af72b367",
+      "startUnixNano": 1785001706478479000,
+      "endUnixNano": 1785001706478487000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.eta",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 0.003975,
+        "gen_ai.request.model": "anthropic/claude-haiku-4.5",
+        "gen_ai.usage.input_tokens": 495,
+        "gen_ai.usage.output_tokens": 696,
+        "gen_ai.response.id": "gen-1785000755-UCLT3LdYzK0JRBS6Pfoc",
+        "augmentloop.decision.type": "eta_estimate",
+        "gen_ai.evaluation.explanation": "estimated 10.0m; true fastest time is 10.0m (tolerance +/-15%)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "eta_estimate eta_estimate-J3-J14 decision",
+      "traceId": "92036a1815d57a7aabf17a9e23e78c74",
+      "spanId": "a0743bdedc219cfc",
+      "parentSpanId": "fb50039058533b59",
+      "startUnixNano": 1785001706478497000,
+      "endUnixNano": 1785001706478519000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "hard"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "92036a1815d57a7aabf17a9e23e78c74",
+      "spanId": "01a2bf282a4577f2",
+      "parentSpanId": "a0743bdedc219cfc",
+      "startUnixNano": 1785001706478508000,
+      "endUnixNano": 1785001706478516000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.eta",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 0.005135,
+        "gen_ai.request.model": "anthropic/claude-haiku-4.5",
+        "gen_ai.usage.input_tokens": 495,
+        "gen_ai.usage.output_tokens": 928,
+        "gen_ai.response.id": "gen-1785000759-S4JLicgvCG3huBafrDk5",
+        "augmentloop.decision.type": "eta_estimate",
+        "gen_ai.evaluation.explanation": "estimated 12.0m; true fastest time is 12.0m (tolerance +/-15%)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "next_hop next_hop-J1 decision",
+      "traceId": "92036a1815d57a7aabf17a9e23e78c74",
+      "spanId": "213ea81f70e0cdce",
+      "parentSpanId": "fb50039058533b59",
+      "startUnixNano": 1785001706478525000,
+      "endUnixNano": 1785001706478566000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "easy"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "92036a1815d57a7aabf17a9e23e78c74",
+      "spanId": "94338bfeacbf893d",
+      "parentSpanId": "213ea81f70e0cdce",
+      "startUnixNano": 1785001706478554000,
+      "endUnixNano": 1785001706478563000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.next_hop",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 0.000523,
+        "gen_ai.request.model": "anthropic/claude-haiku-4.5",
+        "gen_ai.usage.input_tokens": 498,
+        "gen_ai.usage.output_tokens": 5,
+        "gen_ai.response.id": "gen-1785000764-r3Jc34sTiLv0V1AEo60V",
+        "augmentloop.decision.type": "next_hop",
+        "gen_ai.evaluation.explanation": "chose J5; cheapest next hop is J5 (4.0m)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "next_hop next_hop-J10 decision",
+      "traceId": "92036a1815d57a7aabf17a9e23e78c74",
+      "spanId": "ba70f5be11fd6406",
+      "parentSpanId": "fb50039058533b59",
+      "startUnixNano": 1785001706478573000,
+      "endUnixNano": 1785001706478596000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "medium"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "92036a1815d57a7aabf17a9e23e78c74",
+      "spanId": "3b8d5178b2b8f22b",
+      "parentSpanId": "ba70f5be11fd6406",
+      "startUnixNano": 1785001706478585000,
+      "endUnixNano": 1785001706478593000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.next_hop",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 0.000523,
+        "gen_ai.request.model": "anthropic/claude-haiku-4.5",
+        "gen_ai.usage.input_tokens": 498,
+        "gen_ai.usage.output_tokens": 5,
+        "gen_ai.response.id": "gen-1785000766-BzkqW2YNZcgja1v165Od",
+        "augmentloop.decision.type": "next_hop",
+        "gen_ai.evaluation.explanation": "chose J13; cheapest next hop is J13 (3.0m)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "next_hop next_hop-J11 decision",
+      "traceId": "92036a1815d57a7aabf17a9e23e78c74",
+      "spanId": "a894be27dbddcaaa",
+      "parentSpanId": "fb50039058533b59",
+      "startUnixNano": 1785001706478602000,
+      "endUnixNano": 1785001706478624000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "hard"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "92036a1815d57a7aabf17a9e23e78c74",
+      "spanId": "cf9d1aa336a62c97",
+      "parentSpanId": "a894be27dbddcaaa",
+      "startUnixNano": 1785001706478613000,
+      "endUnixNano": 1785001706478621000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.next_hop",
+        "gen_ai.evaluation.score.value": 0.0,
+        "gen_ai.evaluation.score.label": "incorrect",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 0.000523,
+        "gen_ai.request.model": "anthropic/claude-haiku-4.5",
+        "gen_ai.usage.input_tokens": 498,
+        "gen_ai.usage.output_tokens": 5,
+        "gen_ai.response.id": "gen-1785000767-RW549X49c4YSrSL1aTSa",
+        "augmentloop.decision.type": "next_hop",
+        "gen_ai.evaluation.explanation": "chose J8; cheapest next hop is J14 (4.5m)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "next_hop next_hop-J12 decision",
+      "traceId": "92036a1815d57a7aabf17a9e23e78c74",
+      "spanId": "56e6b29841ebc3a4",
+      "parentSpanId": "fb50039058533b59",
+      "startUnixNano": 1785001706478630000,
+      "endUnixNano": 1785001706478652000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "easy"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "92036a1815d57a7aabf17a9e23e78c74",
+      "spanId": "f525c4c0a7959bb6",
+      "parentSpanId": "56e6b29841ebc3a4",
+      "startUnixNano": 1785001706478641000,
+      "endUnixNano": 1785001706478649000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.next_hop",
+        "gen_ai.evaluation.score.value": 0.0,
+        "gen_ai.evaluation.score.label": "incorrect",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 0.000523,
+        "gen_ai.request.model": "anthropic/claude-haiku-4.5",
+        "gen_ai.usage.input_tokens": 498,
+        "gen_ai.usage.output_tokens": 5,
+        "gen_ai.response.id": "gen-1785000768-NhEX9mPNv93FBu6n7IlM",
+        "augmentloop.decision.type": "next_hop",
+        "gen_ai.evaluation.explanation": "chose J16; cheapest next hop is J15 (3.5m)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "next_hop next_hop-J13 decision",
+      "traceId": "92036a1815d57a7aabf17a9e23e78c74",
+      "spanId": "6f17e233f7206f67",
+      "parentSpanId": "fb50039058533b59",
+      "startUnixNano": 1785001706478660000,
+      "endUnixNano": 1785001706478681000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "easy"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "92036a1815d57a7aabf17a9e23e78c74",
+      "spanId": "f7230d34f137762e",
+      "parentSpanId": "6f17e233f7206f67",
+      "startUnixNano": 1785001706478670000,
+      "endUnixNano": 1785001706478678000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.next_hop",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 0.000523,
+        "gen_ai.request.model": "anthropic/claude-haiku-4.5",
+        "gen_ai.usage.input_tokens": 498,
+        "gen_ai.usage.output_tokens": 5,
+        "gen_ai.response.id": "gen-1785000770-vnpmcTOb7767Os2ABdoX",
+        "augmentloop.decision.type": "next_hop",
+        "gen_ai.evaluation.explanation": "chose J17; cheapest next hop is J17 (4.0m)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "next_hop next_hop-J14 decision",
+      "traceId": "92036a1815d57a7aabf17a9e23e78c74",
+      "spanId": "e9f1f4f16ad81a8f",
+      "parentSpanId": "fb50039058533b59",
+      "startUnixNano": 1785001706478688000,
+      "endUnixNano": 1785001706478709000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "medium"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "92036a1815d57a7aabf17a9e23e78c74",
+      "spanId": "e5c61824d8ef617d",
+      "parentSpanId": "e9f1f4f16ad81a8f",
+      "startUnixNano": 1785001706478698000,
+      "endUnixNano": 1785001706478706000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.next_hop",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 0.000523,
+        "gen_ai.request.model": "anthropic/claude-haiku-4.5",
+        "gen_ai.usage.input_tokens": 498,
+        "gen_ai.usage.output_tokens": 5,
+        "gen_ai.response.id": "gen-1785000771-frWRvbI2XrsvPtndafsP",
+        "augmentloop.decision.type": "next_hop",
+        "gen_ai.evaluation.explanation": "chose J18; cheapest next hop is J18 (3.0m)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "next_hop next_hop-J15 decision",
+      "traceId": "92036a1815d57a7aabf17a9e23e78c74",
+      "spanId": "f8e60f8a8edfa66e",
+      "parentSpanId": "fb50039058533b59",
+      "startUnixNano": 1785001706478715000,
+      "endUnixNano": 1785001706478738000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "hard"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "92036a1815d57a7aabf17a9e23e78c74",
+      "spanId": "905b81586b4032ed",
+      "parentSpanId": "f8e60f8a8edfa66e",
+      "startUnixNano": 1785001706478726000,
+      "endUnixNano": 1785001706478735000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.next_hop",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 0.000523,
+        "gen_ai.request.model": "anthropic/claude-haiku-4.5",
+        "gen_ai.usage.input_tokens": 498,
+        "gen_ai.usage.output_tokens": 5,
+        "gen_ai.response.id": "gen-1785000772-y5LRSpK0TKgIuuzyOahQ",
+        "augmentloop.decision.type": "next_hop",
+        "gen_ai.evaluation.explanation": "chose J18; cheapest next hop is J18 (4.5m)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "next_hop next_hop-J16 decision",
+      "traceId": "92036a1815d57a7aabf17a9e23e78c74",
+      "spanId": "15e4d2ebe2fc4154",
+      "parentSpanId": "fb50039058533b59",
+      "startUnixNano": 1785001706478744000,
+      "endUnixNano": 1785001706478766000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "easy"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "92036a1815d57a7aabf17a9e23e78c74",
+      "spanId": "0a13f90e655ee491",
+      "parentSpanId": "15e4d2ebe2fc4154",
+      "startUnixNano": 1785001706478755000,
+      "endUnixNano": 1785001706478763000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.next_hop",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 0.000523,
+        "gen_ai.request.model": "anthropic/claude-haiku-4.5",
+        "gen_ai.usage.input_tokens": 498,
+        "gen_ai.usage.output_tokens": 5,
+        "gen_ai.response.id": "gen-1785000774-uu1LvrNnAT5LRLocxWo8",
+        "augmentloop.decision.type": "next_hop",
+        "gen_ai.evaluation.explanation": "chose J19; cheapest next hop is J19 (3.5m)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "next_hop next_hop-J17 decision",
+      "traceId": "92036a1815d57a7aabf17a9e23e78c74",
+      "spanId": "e7125d7e24c08b84",
+      "parentSpanId": "fb50039058533b59",
+      "startUnixNano": 1785001706478772000,
+      "endUnixNano": 1785001706478794000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "easy"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "92036a1815d57a7aabf17a9e23e78c74",
+      "spanId": "8c3c8fabf9d23aed",
+      "parentSpanId": "e7125d7e24c08b84",
+      "startUnixNano": 1785001706478783000,
+      "endUnixNano": 1785001706478791000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.next_hop",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 0.000523,
+        "gen_ai.request.model": "anthropic/claude-haiku-4.5",
+        "gen_ai.usage.input_tokens": 498,
+        "gen_ai.usage.output_tokens": 5,
+        "gen_ai.response.id": "gen-1785000775-utSA9uea4oqUyFJJ1fYz",
+        "augmentloop.decision.type": "next_hop",
+        "gen_ai.evaluation.explanation": "chose J18; cheapest next hop is J18 (2.0m)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "next_hop next_hop-J18 decision",
+      "traceId": "92036a1815d57a7aabf17a9e23e78c74",
+      "spanId": "786ae53a57a7b263",
+      "parentSpanId": "fb50039058533b59",
+      "startUnixNano": 1785001706478800000,
+      "endUnixNano": 1785001706478823000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "easy"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "92036a1815d57a7aabf17a9e23e78c74",
+      "spanId": "d220e72f90798e8d",
+      "parentSpanId": "786ae53a57a7b263",
+      "startUnixNano": 1785001706478812000,
+      "endUnixNano": 1785001706478820000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.next_hop",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 0.000523,
+        "gen_ai.request.model": "anthropic/claude-haiku-4.5",
+        "gen_ai.usage.input_tokens": 498,
+        "gen_ai.usage.output_tokens": 5,
+        "gen_ai.response.id": "gen-1785000780-03U2dkPGzv4iaHXBlFDM",
+        "augmentloop.decision.type": "next_hop",
+        "gen_ai.evaluation.explanation": "chose J19; cheapest next hop is J19 (2.5m)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "next_hop next_hop-J19 decision",
+      "traceId": "92036a1815d57a7aabf17a9e23e78c74",
+      "spanId": "4976757e0b177c8f",
+      "parentSpanId": "fb50039058533b59",
+      "startUnixNano": 1785001706478829000,
+      "endUnixNano": 1785001706478851000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "easy"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "92036a1815d57a7aabf17a9e23e78c74",
+      "spanId": "da27c2779dc0f891",
+      "parentSpanId": "4976757e0b177c8f",
+      "startUnixNano": 1785001706478841000,
+      "endUnixNano": 1785001706478848000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.next_hop",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 0.000523,
+        "gen_ai.request.model": "anthropic/claude-haiku-4.5",
+        "gen_ai.usage.input_tokens": 498,
+        "gen_ai.usage.output_tokens": 5,
+        "gen_ai.response.id": "gen-1785000783-kBtyauHboKFSvqYeuJmg",
+        "augmentloop.decision.type": "next_hop",
+        "gen_ai.evaluation.explanation": "chose J20; cheapest next hop is J20 (2.0m)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "next_hop next_hop-J2 decision",
+      "traceId": "92036a1815d57a7aabf17a9e23e78c74",
+      "spanId": "3a0fc03ac9563ff1",
+      "parentSpanId": "fb50039058533b59",
+      "startUnixNano": 1785001706478857000,
+      "endUnixNano": 1785001706478879000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "medium"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "92036a1815d57a7aabf17a9e23e78c74",
+      "spanId": "d34d8a5e46072694",
+      "parentSpanId": "3a0fc03ac9563ff1",
+      "startUnixNano": 1785001706478868000,
+      "endUnixNano": 1785001706478876000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.next_hop",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 0.000523,
+        "gen_ai.request.model": "anthropic/claude-haiku-4.5",
+        "gen_ai.usage.input_tokens": 498,
+        "gen_ai.usage.output_tokens": 5,
+        "gen_ai.response.id": "gen-1785000785-o6OqxZgaWzoHqXowrcBy",
+        "augmentloop.decision.type": "next_hop",
+        "gen_ai.evaluation.explanation": "chose J6; cheapest next hop is J6 (3.0m)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "next_hop next_hop-J20 decision",
+      "traceId": "92036a1815d57a7aabf17a9e23e78c74",
+      "spanId": "bd6815dfc2ab5f5f",
+      "parentSpanId": "fb50039058533b59",
+      "startUnixNano": 1785001706478885000,
+      "endUnixNano": 1785001706478906000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "easy"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "92036a1815d57a7aabf17a9e23e78c74",
+      "spanId": "cdaf69c51bf876bd",
+      "parentSpanId": "bd6815dfc2ab5f5f",
+      "startUnixNano": 1785001706478895000,
+      "endUnixNano": 1785001706478903000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.next_hop",
+        "gen_ai.evaluation.score.value": 0.0,
+        "gen_ai.evaluation.score.label": "incorrect",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 0.000523,
+        "gen_ai.request.model": "anthropic/claude-haiku-4.5",
+        "gen_ai.usage.input_tokens": 498,
+        "gen_ai.usage.output_tokens": 5,
+        "gen_ai.response.id": "gen-1785000787-56JwGF3cJvP6jjJdjrA4",
+        "augmentloop.decision.type": "next_hop",
+        "gen_ai.evaluation.explanation": "chose J19; cheapest next hop is J17 (3.0m)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "next_hop next_hop-J3 decision",
+      "traceId": "92036a1815d57a7aabf17a9e23e78c74",
+      "spanId": "8d203a59b6747492",
+      "parentSpanId": "fb50039058533b59",
+      "startUnixNano": 1785001706478912000,
+      "endUnixNano": 1785001706478933000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "hard"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "92036a1815d57a7aabf17a9e23e78c74",
+      "spanId": "eaf895406d90e8b6",
+      "parentSpanId": "8d203a59b6747492",
+      "startUnixNano": 1785001706478923000,
+      "endUnixNano": 1785001706478930000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.next_hop",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 0.000523,
+        "gen_ai.request.model": "anthropic/claude-haiku-4.5",
+        "gen_ai.usage.input_tokens": 498,
+        "gen_ai.usage.output_tokens": 5,
+        "gen_ai.response.id": "gen-1785000788-Y7DZ7ADyRNOZvtSCTJMv",
+        "augmentloop.decision.type": "next_hop",
+        "gen_ai.evaluation.explanation": "chose J6; cheapest next hop is J6 (4.5m)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "next_hop next_hop-J4 decision",
+      "traceId": "92036a1815d57a7aabf17a9e23e78c74",
+      "spanId": "9a0705235e013d3a",
+      "parentSpanId": "fb50039058533b59",
+      "startUnixNano": 1785001706478940000,
+      "endUnixNano": 1785001706478962000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "easy"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "92036a1815d57a7aabf17a9e23e78c74",
+      "spanId": "400de4922daf3019",
+      "parentSpanId": "9a0705235e013d3a",
+      "startUnixNano": 1785001706478951000,
+      "endUnixNano": 1785001706478959000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.next_hop",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 0.000523,
+        "gen_ai.request.model": "anthropic/claude-haiku-4.5",
+        "gen_ai.usage.input_tokens": 498,
+        "gen_ai.usage.output_tokens": 5,
+        "gen_ai.response.id": "gen-1785000790-qEUv8gotdcSGiXfwh9NV",
+        "augmentloop.decision.type": "next_hop",
+        "gen_ai.evaluation.explanation": "chose J7; cheapest next hop is J7 (3.5m)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "next_hop next_hop-J5 decision",
+      "traceId": "92036a1815d57a7aabf17a9e23e78c74",
+      "spanId": "681f0080d7ac8d59",
+      "parentSpanId": "fb50039058533b59",
+      "startUnixNano": 1785001706478970000,
+      "endUnixNano": 1785001706478991000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "easy"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "92036a1815d57a7aabf17a9e23e78c74",
+      "spanId": "5efb9f13e88e3223",
+      "parentSpanId": "681f0080d7ac8d59",
+      "startUnixNano": 1785001706478980000,
+      "endUnixNano": 1785001706478988000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.next_hop",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 0.000523,
+        "gen_ai.request.model": "anthropic/claude-haiku-4.5",
+        "gen_ai.usage.input_tokens": 498,
+        "gen_ai.usage.output_tokens": 5,
+        "gen_ai.response.id": "gen-1785000792-xaWuIryycoYIKZjKlWFB",
+        "augmentloop.decision.type": "next_hop",
+        "gen_ai.evaluation.explanation": "chose J9; cheapest next hop is J9 (3.0m)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "next_hop next_hop-J6 decision",
+      "traceId": "92036a1815d57a7aabf17a9e23e78c74",
+      "spanId": "99105ed46ead050b",
+      "parentSpanId": "fb50039058533b59",
+      "startUnixNano": 1785001706478998000,
+      "endUnixNano": 1785001706479021000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "medium"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "92036a1815d57a7aabf17a9e23e78c74",
+      "spanId": "668258c02bb63b38",
+      "parentSpanId": "99105ed46ead050b",
+      "startUnixNano": 1785001706479010000,
+      "endUnixNano": 1785001706479017000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.next_hop",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 0.000523,
+        "gen_ai.request.model": "anthropic/claude-haiku-4.5",
+        "gen_ai.usage.input_tokens": 498,
+        "gen_ai.usage.output_tokens": 5,
+        "gen_ai.response.id": "gen-1785000794-jt8RBteIuvNTgnaoso1J",
+        "augmentloop.decision.type": "next_hop",
+        "gen_ai.evaluation.explanation": "chose J10; cheapest next hop is J10 (2.5m)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "next_hop next_hop-J7 decision",
+      "traceId": "92036a1815d57a7aabf17a9e23e78c74",
+      "spanId": "6e5fca8e739b87ff",
+      "parentSpanId": "fb50039058533b59",
+      "startUnixNano": 1785001706479027000,
+      "endUnixNano": 1785001706479050000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "hard"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "92036a1815d57a7aabf17a9e23e78c74",
+      "spanId": "81ebd5d9ab91a9d5",
+      "parentSpanId": "6e5fca8e739b87ff",
+      "startUnixNano": 1785001706479038000,
+      "endUnixNano": 1785001706479046000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.next_hop",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 0.000523,
+        "gen_ai.request.model": "anthropic/claude-haiku-4.5",
+        "gen_ai.usage.input_tokens": 498,
+        "gen_ai.usage.output_tokens": 5,
+        "gen_ai.response.id": "gen-1785000795-219qvp4M42fr2Tar4JdY",
+        "augmentloop.decision.type": "next_hop",
+        "gen_ai.evaluation.explanation": "chose J10; cheapest next hop is J10 (3.5m)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "next_hop next_hop-J8 decision",
+      "traceId": "92036a1815d57a7aabf17a9e23e78c74",
+      "spanId": "c42ae641be958cba",
+      "parentSpanId": "fb50039058533b59",
+      "startUnixNano": 1785001706479057000,
+      "endUnixNano": 1785001706479079000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "easy"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "92036a1815d57a7aabf17a9e23e78c74",
+      "spanId": "00ff462d3bb4174f",
+      "parentSpanId": "c42ae641be958cba",
+      "startUnixNano": 1785001706479068000,
+      "endUnixNano": 1785001706479076000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.next_hop",
+        "gen_ai.evaluation.score.value": 0.0,
+        "gen_ai.evaluation.score.label": "incorrect",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 0.000523,
+        "gen_ai.request.model": "anthropic/claude-haiku-4.5",
+        "gen_ai.usage.input_tokens": 498,
+        "gen_ai.usage.output_tokens": 5,
+        "gen_ai.response.id": "gen-1785000797-OmRFGZoV5Lfkc7ea2xOU",
+        "augmentloop.decision.type": "next_hop",
+        "gen_ai.evaluation.explanation": "chose J12; cheapest next hop is J11 (3.0m)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "next_hop next_hop-J9 decision",
+      "traceId": "92036a1815d57a7aabf17a9e23e78c74",
+      "spanId": "0259ce8ad8f75486",
+      "parentSpanId": "fb50039058533b59",
+      "startUnixNano": 1785001706479085000,
+      "endUnixNano": 1785001706479107000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "easy"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "92036a1815d57a7aabf17a9e23e78c74",
+      "spanId": "3832ea6877c4489a",
+      "parentSpanId": "0259ce8ad8f75486",
+      "startUnixNano": 1785001706479095000,
+      "endUnixNano": 1785001706479103000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.next_hop",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 0.000523,
+        "gen_ai.request.model": "anthropic/claude-haiku-4.5",
+        "gen_ai.usage.input_tokens": 498,
+        "gen_ai.usage.output_tokens": 5,
+        "gen_ai.response.id": "gen-1785000798-wv2x6JOWmGjwICwmLDip",
+        "augmentloop.decision.type": "next_hop",
+        "gen_ai.evaluation.explanation": "chose J13; cheapest next hop is J13 (4.0m)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "model-run anthropic/claude-sonnet-4.6",
+      "traceId": "fb79e1d061eb713421188cf8e907a36d",
+      "spanId": "7bf7762c4677a305",
+      "parentSpanId": null,
+      "startUnixNano": 1785001706479120000,
+      "endUnixNano": 1785001706481002000,
+      "attributes": {},
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "route_choice route_choice-J1-J9 decision",
+      "traceId": "fb79e1d061eb713421188cf8e907a36d",
+      "spanId": "d696de42addecf47",
+      "parentSpanId": "7bf7762c4677a305",
+      "startUnixNano": 1785001706479126000,
+      "endUnixNano": 1785001706479151000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "easy"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "fb79e1d061eb713421188cf8e907a36d",
+      "spanId": "4a6f4fd289e1dc86",
+      "parentSpanId": "d696de42addecf47",
+      "startUnixNano": 1785001706479140000,
+      "endUnixNano": 1785001706479148000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.fastest",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 0.001626,
+        "gen_ai.request.model": "anthropic/claude-sonnet-4.6",
+        "gen_ai.usage.input_tokens": 522,
+        "gen_ai.usage.output_tokens": 4,
+        "gen_ai.response.id": "gen-1785000800-zBgIY9HQXRiXof6jan4p",
+        "augmentloop.decision.type": "route_choice",
+        "gen_ai.evaluation.explanation": "chose A (7.0m); true fastest A (7.0m)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "route_choice route_choice-J1-J10 decision",
+      "traceId": "fb79e1d061eb713421188cf8e907a36d",
+      "spanId": "3c40813bcb5e8f79",
+      "parentSpanId": "7bf7762c4677a305",
+      "startUnixNano": 1785001706479157000,
+      "endUnixNano": 1785001706479199000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "easy"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "fb79e1d061eb713421188cf8e907a36d",
+      "spanId": "6471584237f4dd28",
+      "parentSpanId": "3c40813bcb5e8f79",
+      "startUnixNano": 1785001706479187000,
+      "endUnixNano": 1785001706479195000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.fastest",
+        "gen_ai.evaluation.score.value": 0.0,
+        "gen_ai.evaluation.score.label": "incorrect",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 0.001626,
+        "gen_ai.request.model": "anthropic/claude-sonnet-4.6",
+        "gen_ai.usage.input_tokens": 522,
+        "gen_ai.usage.output_tokens": 4,
+        "gen_ai.response.id": "gen-1785000803-jzcNaeraRbAfBCMLvFPz",
+        "augmentloop.decision.type": "route_choice",
+        "gen_ai.evaluation.explanation": "chose A (9.0m); true fastest B (8.5m)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "route_choice route_choice-J2-J9 decision",
+      "traceId": "fb79e1d061eb713421188cf8e907a36d",
+      "spanId": "1bb9ce19a4f64c73",
+      "parentSpanId": "7bf7762c4677a305",
+      "startUnixNano": 1785001706479206000,
+      "endUnixNano": 1785001706479232000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "medium"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "fb79e1d061eb713421188cf8e907a36d",
+      "spanId": "69cb1fc1fa611a13",
+      "parentSpanId": "1bb9ce19a4f64c73",
+      "startUnixNano": 1785001706479220000,
+      "endUnixNano": 1785001706479228000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.fastest",
+        "gen_ai.evaluation.score.value": 0.0,
+        "gen_ai.evaluation.score.label": "incorrect",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 0.001626,
+        "gen_ai.request.model": "anthropic/claude-sonnet-4.6",
+        "gen_ai.usage.input_tokens": 522,
+        "gen_ai.usage.output_tokens": 4,
+        "gen_ai.response.id": "gen-1785000804-PYVntht1aYTbYUMxJk2t",
+        "augmentloop.decision.type": "route_choice",
+        "gen_ai.evaluation.explanation": "chose A (8.0m); true fastest B (7.0m)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "route_choice route_choice-J2-J10 decision",
+      "traceId": "fb79e1d061eb713421188cf8e907a36d",
+      "spanId": "43a9af4401995cc2",
+      "parentSpanId": "7bf7762c4677a305",
+      "startUnixNano": 1785001706479238000,
+      "endUnixNano": 1785001706479261000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "medium"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "fb79e1d061eb713421188cf8e907a36d",
+      "spanId": "8cb8622e55c8e4b6",
+      "parentSpanId": "43a9af4401995cc2",
+      "startUnixNano": 1785001706479250000,
+      "endUnixNano": 1785001706479258000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.fastest",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 0.001626,
+        "gen_ai.request.model": "anthropic/claude-sonnet-4.6",
+        "gen_ai.usage.input_tokens": 522,
+        "gen_ai.usage.output_tokens": 4,
+        "gen_ai.response.id": "gen-1785000806-9kx9aBA0BOPiRsjDYfyJ",
+        "augmentloop.decision.type": "route_choice",
+        "gen_ai.evaluation.explanation": "chose B (5.5m); true fastest B (5.5m)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "route_choice route_choice-J2-J11 decision",
+      "traceId": "fb79e1d061eb713421188cf8e907a36d",
+      "spanId": "623d05b04386ac7f",
+      "parentSpanId": "7bf7762c4677a305",
+      "startUnixNano": 1785001706479268000,
+      "endUnixNano": 1785001706479290000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "medium"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "fb79e1d061eb713421188cf8e907a36d",
+      "spanId": "e5e43d2148995684",
+      "parentSpanId": "623d05b04386ac7f",
+      "startUnixNano": 1785001706479279000,
+      "endUnixNano": 1785001706479287000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.fastest",
+        "gen_ai.evaluation.score.value": 0.0,
+        "gen_ai.evaluation.score.label": "incorrect",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 0.001626,
+        "gen_ai.request.model": "anthropic/claude-sonnet-4.6",
+        "gen_ai.usage.input_tokens": 522,
+        "gen_ai.usage.output_tokens": 4,
+        "gen_ai.response.id": "gen-1785000807-wdtWcK6ljdvbJyMtfGhb",
+        "augmentloop.decision.type": "route_choice",
+        "gen_ai.evaluation.explanation": "chose B (11.5m); true fastest A (9.0m)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "route_choice route_choice-J3-J9 decision",
+      "traceId": "fb79e1d061eb713421188cf8e907a36d",
+      "spanId": "64433009e40a7cb6",
+      "parentSpanId": "7bf7762c4677a305",
+      "startUnixNano": 1785001706479298000,
+      "endUnixNano": 1785001706479322000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "hard"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "fb79e1d061eb713421188cf8e907a36d",
+      "spanId": "ed15f3eb75d6ae5d",
+      "parentSpanId": "64433009e40a7cb6",
+      "startUnixNano": 1785001706479310000,
+      "endUnixNano": 1785001706479319000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.fastest",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 0.001626,
+        "gen_ai.request.model": "anthropic/claude-sonnet-4.6",
+        "gen_ai.usage.input_tokens": 522,
+        "gen_ai.usage.output_tokens": 4,
+        "gen_ai.response.id": "gen-1785000808-HUfyf42T92eaDJOaJa74",
+        "augmentloop.decision.type": "route_choice",
+        "gen_ai.evaluation.explanation": "chose B (8.5m); true fastest B (8.5m)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "route_choice route_choice-J3-J10 decision",
+      "traceId": "fb79e1d061eb713421188cf8e907a36d",
+      "spanId": "e61854495ff53b2f",
+      "parentSpanId": "7bf7762c4677a305",
+      "startUnixNano": 1785001706479329000,
+      "endUnixNano": 1785001706479352000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "hard"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "fb79e1d061eb713421188cf8e907a36d",
+      "spanId": "b2db0c2b6050a5e0",
+      "parentSpanId": "e61854495ff53b2f",
+      "startUnixNano": 1785001706479341000,
+      "endUnixNano": 1785001706479349000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.fastest",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 0.001626,
+        "gen_ai.request.model": "anthropic/claude-sonnet-4.6",
+        "gen_ai.usage.input_tokens": 522,
+        "gen_ai.usage.output_tokens": 4,
+        "gen_ai.response.id": "gen-1785000809-C45e0dvYJKtA8Y9N7XSA",
+        "augmentloop.decision.type": "route_choice",
+        "gen_ai.evaluation.explanation": "chose A (7.0m); true fastest A (7.0m)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "route_choice route_choice-J3-J11 decision",
+      "traceId": "fb79e1d061eb713421188cf8e907a36d",
+      "spanId": "f09b0c41b5ee67f1",
+      "parentSpanId": "7bf7762c4677a305",
+      "startUnixNano": 1785001706479358000,
+      "endUnixNano": 1785001706479380000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "hard"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "fb79e1d061eb713421188cf8e907a36d",
+      "spanId": "92fec65da491415d",
+      "parentSpanId": "f09b0c41b5ee67f1",
+      "startUnixNano": 1785001706479369000,
+      "endUnixNano": 1785001706479377000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.fastest",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 0.001626,
+        "gen_ai.request.model": "anthropic/claude-sonnet-4.6",
+        "gen_ai.usage.input_tokens": 522,
+        "gen_ai.usage.output_tokens": 4,
+        "gen_ai.response.id": "gen-1785000810-eDrnq5rOFMAfeQa5yLUk",
+        "augmentloop.decision.type": "route_choice",
+        "gen_ai.evaluation.explanation": "chose B (9.5m); true fastest B (9.5m)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "route_choice route_choice-J3-J12 decision",
+      "traceId": "fb79e1d061eb713421188cf8e907a36d",
+      "spanId": "51288b2d1f339461",
+      "parentSpanId": "7bf7762c4677a305",
+      "startUnixNano": 1785001706479387000,
+      "endUnixNano": 1785001706479411000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "hard"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "fb79e1d061eb713421188cf8e907a36d",
+      "spanId": "62cc4e704dc83c26",
+      "parentSpanId": "51288b2d1f339461",
+      "startUnixNano": 1785001706479399000,
+      "endUnixNano": 1785001706479406000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.fastest",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 0.001626,
+        "gen_ai.request.model": "anthropic/claude-sonnet-4.6",
+        "gen_ai.usage.input_tokens": 522,
+        "gen_ai.usage.output_tokens": 4,
+        "gen_ai.response.id": "gen-1785000812-vrA87IpYY3P726qisEJK",
+        "augmentloop.decision.type": "route_choice",
+        "gen_ai.evaluation.explanation": "chose B (10.5m); true fastest B (10.5m)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "route_choice route_choice-J4-J11 decision",
+      "traceId": "fb79e1d061eb713421188cf8e907a36d",
+      "spanId": "d798f469fc80581e",
+      "parentSpanId": "7bf7762c4677a305",
+      "startUnixNano": 1785001706479417000,
+      "endUnixNano": 1785001706479439000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "easy"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "fb79e1d061eb713421188cf8e907a36d",
+      "spanId": "c9108739ab376ed2",
+      "parentSpanId": "d798f469fc80581e",
+      "startUnixNano": 1785001706479428000,
+      "endUnixNano": 1785001706479436000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.fastest",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 0.001626,
+        "gen_ai.request.model": "anthropic/claude-sonnet-4.6",
+        "gen_ai.usage.input_tokens": 522,
+        "gen_ai.usage.output_tokens": 4,
+        "gen_ai.response.id": "gen-1785000813-DCl4rqEHPpII14DNzTUS",
+        "augmentloop.decision.type": "route_choice",
+        "gen_ai.evaluation.explanation": "chose B (7.5m); true fastest B (7.5m)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "route_choice route_choice-J4-J12 decision",
+      "traceId": "fb79e1d061eb713421188cf8e907a36d",
+      "spanId": "f35c1e2ace00b171",
+      "parentSpanId": "7bf7762c4677a305",
+      "startUnixNano": 1785001706479445000,
+      "endUnixNano": 1785001706479468000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "easy"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "fb79e1d061eb713421188cf8e907a36d",
+      "spanId": "a1179ec7fcf62ecb",
+      "parentSpanId": "f35c1e2ace00b171",
+      "startUnixNano": 1785001706479456000,
+      "endUnixNano": 1785001706479465000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.fastest",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 0.001626,
+        "gen_ai.request.model": "anthropic/claude-sonnet-4.6",
+        "gen_ai.usage.input_tokens": 522,
+        "gen_ai.usage.output_tokens": 4,
+        "gen_ai.response.id": "gen-1785000816-CRLqxLEmrIMEaXqINOvi",
+        "augmentloop.decision.type": "route_choice",
+        "gen_ai.evaluation.explanation": "chose B (8.5m); true fastest B (8.5m)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "route_choice route_choice-J1-J13 decision",
+      "traceId": "fb79e1d061eb713421188cf8e907a36d",
+      "spanId": "7a53da00a3e2eb99",
+      "parentSpanId": "7bf7762c4677a305",
+      "startUnixNano": 1785001706479474000,
+      "endUnixNano": 1785001706479496000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "easy"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "fb79e1d061eb713421188cf8e907a36d",
+      "spanId": "2d1796c5a5624521",
+      "parentSpanId": "7a53da00a3e2eb99",
+      "startUnixNano": 1785001706479485000,
+      "endUnixNano": 1785001706479493000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.fastest",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 0.00165,
+        "gen_ai.request.model": "anthropic/claude-sonnet-4.6",
+        "gen_ai.usage.input_tokens": 530,
+        "gen_ai.usage.output_tokens": 4,
+        "gen_ai.response.id": "gen-1785000817-0zggD6PYDkz4YGYTs1F4",
+        "augmentloop.decision.type": "route_choice",
+        "gen_ai.evaluation.explanation": "chose A (11.0m); true fastest A (11.0m)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "route_choice route_choice-J1-J14 decision",
+      "traceId": "fb79e1d061eb713421188cf8e907a36d",
+      "spanId": "510cdaddddab53cd",
+      "parentSpanId": "7bf7762c4677a305",
+      "startUnixNano": 1785001706479502000,
+      "endUnixNano": 1785001706479524000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "easy"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "fb79e1d061eb713421188cf8e907a36d",
+      "spanId": "32c3deb7580df450",
+      "parentSpanId": "510cdaddddab53cd",
+      "startUnixNano": 1785001706479513000,
+      "endUnixNano": 1785001706479520000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.fastest",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 0.0024,
+        "gen_ai.request.model": "anthropic/claude-sonnet-4.6",
+        "gen_ai.usage.input_tokens": 530,
+        "gen_ai.usage.output_tokens": 54,
+        "gen_ai.response.id": "gen-1785000818-mb4yuuTlaIWAS2BhVhJ7",
+        "augmentloop.decision.type": "route_choice",
+        "gen_ai.evaluation.explanation": "chose A (13.0m); true fastest A (13.0m)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "route_choice route_choice-J1-J15 decision",
+      "traceId": "fb79e1d061eb713421188cf8e907a36d",
+      "spanId": "7d971b7c07b1ebc1",
+      "parentSpanId": "7bf7762c4677a305",
+      "startUnixNano": 1785001706479530000,
+      "endUnixNano": 1785001706479551000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "easy"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "fb79e1d061eb713421188cf8e907a36d",
+      "spanId": "384ea7d7d8bfe942",
+      "parentSpanId": "7d971b7c07b1ebc1",
+      "startUnixNano": 1785001706479540000,
+      "endUnixNano": 1785001706479548000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.fastest",
+        "gen_ai.evaluation.score.value": 0.0,
+        "gen_ai.evaluation.score.label": "incorrect",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 0.00306,
+        "gen_ai.request.model": "anthropic/claude-sonnet-4.6",
+        "gen_ai.usage.input_tokens": 530,
+        "gen_ai.usage.output_tokens": 98,
+        "gen_ai.response.id": "gen-1785000820-wodb2mIyZ63FTL3FWwrA",
+        "augmentloop.decision.type": "route_choice",
+        "gen_ai.evaluation.explanation": "chose A (16.0m); true fastest B (15.5m)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "route_choice route_choice-J2-J13 decision",
+      "traceId": "fb79e1d061eb713421188cf8e907a36d",
+      "spanId": "4e776437512785a3",
+      "parentSpanId": "7bf7762c4677a305",
+      "startUnixNano": 1785001706479557000,
+      "endUnixNano": 1785001706479588000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "medium"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "fb79e1d061eb713421188cf8e907a36d",
+      "spanId": "01d4dc2b7a70f82c",
+      "parentSpanId": "4e776437512785a3",
+      "startUnixNano": 1785001706479577000,
+      "endUnixNano": 1785001706479585000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.fastest",
+        "gen_ai.evaluation.score.value": 0.0,
+        "gen_ai.evaluation.score.label": "incorrect",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 0.0024,
+        "gen_ai.request.model": "anthropic/claude-sonnet-4.6",
+        "gen_ai.usage.input_tokens": 530,
+        "gen_ai.usage.output_tokens": 54,
+        "gen_ai.response.id": "gen-1785000822-laQaQTcmsYqHwfvpkTso",
+        "augmentloop.decision.type": "route_choice",
+        "gen_ai.evaluation.explanation": "chose A (12.0m); true fastest B (8.5m)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "route_choice route_choice-J2-J14 decision",
+      "traceId": "fb79e1d061eb713421188cf8e907a36d",
+      "spanId": "1b4831ea0600cf95",
+      "parentSpanId": "7bf7762c4677a305",
+      "startUnixNano": 1785001706479595000,
+      "endUnixNano": 1785001706479617000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "medium"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "fb79e1d061eb713421188cf8e907a36d",
+      "spanId": "aab740949cdae4c0",
+      "parentSpanId": "1b4831ea0600cf95",
+      "startUnixNano": 1785001706479606000,
+      "endUnixNano": 1785001706479613000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.fastest",
+        "gen_ai.evaluation.score.value": 0.0,
+        "gen_ai.evaluation.score.label": "incorrect",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 0.00306,
+        "gen_ai.request.model": "anthropic/claude-sonnet-4.6",
+        "gen_ai.usage.input_tokens": 530,
+        "gen_ai.usage.output_tokens": 98,
+        "gen_ai.response.id": "gen-1785000825-NVV6IvYDVUKYjDf8A5vE",
+        "augmentloop.decision.type": "route_choice",
+        "gen_ai.evaluation.explanation": "chose A (14.0m); true fastest B (10.5m)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "route_choice route_choice-J2-J15 decision",
+      "traceId": "fb79e1d061eb713421188cf8e907a36d",
+      "spanId": "1bda0471d3926e72",
+      "parentSpanId": "7bf7762c4677a305",
+      "startUnixNano": 1785001706479623000,
+      "endUnixNano": 1785001706479644000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "medium"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "fb79e1d061eb713421188cf8e907a36d",
+      "spanId": "ecd8b5f0567a8505",
+      "parentSpanId": "1bda0471d3926e72",
+      "startUnixNano": 1785001706479634000,
+      "endUnixNano": 1785001706479641000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.fastest",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 0.00303,
+        "gen_ai.request.model": "anthropic/claude-sonnet-4.6",
+        "gen_ai.usage.input_tokens": 530,
+        "gen_ai.usage.output_tokens": 96,
+        "gen_ai.response.id": "gen-1785000827-q7ESbhZv34XaAe8e4s6b",
+        "augmentloop.decision.type": "route_choice",
+        "gen_ai.evaluation.explanation": "chose A (12.5m); true fastest A (12.5m)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "route_choice route_choice-J2-J16 decision",
+      "traceId": "fb79e1d061eb713421188cf8e907a36d",
+      "spanId": "7a67dc2e23c66828",
+      "parentSpanId": "7bf7762c4677a305",
+      "startUnixNano": 1785001706479650000,
+      "endUnixNano": 1785001706479674000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "medium"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "fb79e1d061eb713421188cf8e907a36d",
+      "spanId": "44e22738355b6a51",
+      "parentSpanId": "7a67dc2e23c66828",
+      "startUnixNano": 1785001706479662000,
+      "endUnixNano": 1785001706479671000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.fastest",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 0.00306,
+        "gen_ai.request.model": "anthropic/claude-sonnet-4.6",
+        "gen_ai.usage.input_tokens": 530,
+        "gen_ai.usage.output_tokens": 98,
+        "gen_ai.response.id": "gen-1785000829-EFQ1nUbV0VeL4b28LlOd",
+        "augmentloop.decision.type": "route_choice",
+        "gen_ai.evaluation.explanation": "chose A (15.5m); true fastest A (15.5m)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "route_choice route_choice-J3-J13 decision",
+      "traceId": "fb79e1d061eb713421188cf8e907a36d",
+      "spanId": "69d553584f8e51d8",
+      "parentSpanId": "7bf7762c4677a305",
+      "startUnixNano": 1785001706479680000,
+      "endUnixNano": 1785001706479702000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "hard"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "fb79e1d061eb713421188cf8e907a36d",
+      "spanId": "ed3e969a259c1905",
+      "parentSpanId": "69d553584f8e51d8",
+      "startUnixNano": 1785001706479691000,
+      "endUnixNano": 1785001706479699000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.fastest",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 0.00306,
+        "gen_ai.request.model": "anthropic/claude-sonnet-4.6",
+        "gen_ai.usage.input_tokens": 530,
+        "gen_ai.usage.output_tokens": 98,
+        "gen_ai.response.id": "gen-1785000832-3WK6G5NPvxl5KDFTOjxO",
+        "augmentloop.decision.type": "route_choice",
+        "gen_ai.evaluation.explanation": "chose A (10.0m); true fastest A (10.0m)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "route_choice route_choice-J3-J14 decision",
+      "traceId": "fb79e1d061eb713421188cf8e907a36d",
+      "spanId": "c331f5bf367553b7",
+      "parentSpanId": "7bf7762c4677a305",
+      "startUnixNano": 1785001706479708000,
+      "endUnixNano": 1785001706479730000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "hard"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "fb79e1d061eb713421188cf8e907a36d",
+      "spanId": "0403afa0040b753d",
+      "parentSpanId": "c331f5bf367553b7",
+      "startUnixNano": 1785001706479719000,
+      "endUnixNano": 1785001706479727000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.fastest",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 0.00306,
+        "gen_ai.request.model": "anthropic/claude-sonnet-4.6",
+        "gen_ai.usage.input_tokens": 530,
+        "gen_ai.usage.output_tokens": 98,
+        "gen_ai.response.id": "gen-1785000835-bjhs4IMwrJklAzMaYe1Q",
+        "augmentloop.decision.type": "route_choice",
+        "gen_ai.evaluation.explanation": "chose A (12.0m); true fastest A (12.0m)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "eta_estimate eta_estimate-J1-J9 decision",
+      "traceId": "fb79e1d061eb713421188cf8e907a36d",
+      "spanId": "33f535b1d078c00f",
+      "parentSpanId": "7bf7762c4677a305",
+      "startUnixNano": 1785001706479736000,
+      "endUnixNano": 1785001706479759000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "easy"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "fb79e1d061eb713421188cf8e907a36d",
+      "spanId": "f8c3e1655578cb18",
+      "parentSpanId": "33f535b1d078c00f",
+      "startUnixNano": 1785001706479748000,
+      "endUnixNano": 1785001706479755000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.eta",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 0.00594,
+        "gen_ai.request.model": "anthropic/claude-sonnet-4.6",
+        "gen_ai.usage.input_tokens": 495,
+        "gen_ai.usage.output_tokens": 297,
+        "gen_ai.response.id": "gen-1785000837-D01qNiGB35xGZCOWtq31",
+        "augmentloop.decision.type": "eta_estimate",
+        "gen_ai.evaluation.explanation": "estimated 7.0m; true fastest time is 7.0m (tolerance +/-15%)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "eta_estimate eta_estimate-J1-J10 decision",
+      "traceId": "fb79e1d061eb713421188cf8e907a36d",
+      "spanId": "2ea4f22121b4a2a3",
+      "parentSpanId": "7bf7762c4677a305",
+      "startUnixNano": 1785001706479766000,
+      "endUnixNano": 1785001706479789000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "easy"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "fb79e1d061eb713421188cf8e907a36d",
+      "spanId": "f1a5e53ab9e4c2e8",
+      "parentSpanId": "2ea4f22121b4a2a3",
+      "startUnixNano": 1785001706479778000,
+      "endUnixNano": 1785001706479785000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.eta",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 0.006735,
+        "gen_ai.request.model": "anthropic/claude-sonnet-4.6",
+        "gen_ai.usage.input_tokens": 495,
+        "gen_ai.usage.output_tokens": 350,
+        "gen_ai.response.id": "gen-1785000842-v8sLgtm4hXUbaHdhdah4",
+        "augmentloop.decision.type": "eta_estimate",
+        "gen_ai.evaluation.explanation": "estimated 8.5m; true fastest time is 8.5m (tolerance +/-15%)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "eta_estimate eta_estimate-J2-J9 decision",
+      "traceId": "fb79e1d061eb713421188cf8e907a36d",
+      "spanId": "67f3e298c7d90382",
+      "parentSpanId": "7bf7762c4677a305",
+      "startUnixNano": 1785001706479795000,
+      "endUnixNano": 1785001706479832000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "medium"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "fb79e1d061eb713421188cf8e907a36d",
+      "spanId": "e643addaf935ce07",
+      "parentSpanId": "67f3e298c7d90382",
+      "startUnixNano": 1785001706479820000,
+      "endUnixNano": 1785001706479829000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.eta",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 0.008775,
+        "gen_ai.request.model": "anthropic/claude-sonnet-4.6",
+        "gen_ai.usage.input_tokens": 495,
+        "gen_ai.usage.output_tokens": 486,
+        "gen_ai.response.id": "gen-1785000847-MQuLxA4zdMLGo87B0O0S",
+        "augmentloop.decision.type": "eta_estimate",
+        "gen_ai.evaluation.explanation": "estimated 7.0m; true fastest time is 7.0m (tolerance +/-15%)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "eta_estimate eta_estimate-J2-J10 decision",
+      "traceId": "fb79e1d061eb713421188cf8e907a36d",
+      "spanId": "ad28029651089414",
+      "parentSpanId": "7bf7762c4677a305",
+      "startUnixNano": 1785001706479839000,
+      "endUnixNano": 1785001706479863000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "medium"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "fb79e1d061eb713421188cf8e907a36d",
+      "spanId": "6f6e13f7e96b7e84",
+      "parentSpanId": "ad28029651089414",
+      "startUnixNano": 1785001706479851000,
+      "endUnixNano": 1785001706479859000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.eta",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 0.00555,
+        "gen_ai.request.model": "anthropic/claude-sonnet-4.6",
+        "gen_ai.usage.input_tokens": 495,
+        "gen_ai.usage.output_tokens": 271,
+        "gen_ai.response.id": "gen-1785000854-lfDHaq4ra0cPJParXe72",
+        "augmentloop.decision.type": "eta_estimate",
+        "gen_ai.evaluation.explanation": "estimated 5.5m; true fastest time is 5.5m (tolerance +/-15%)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "eta_estimate eta_estimate-J2-J11 decision",
+      "traceId": "fb79e1d061eb713421188cf8e907a36d",
+      "spanId": "df8ff4bcdbb4ff88",
+      "parentSpanId": "7bf7762c4677a305",
+      "startUnixNano": 1785001706479869000,
+      "endUnixNano": 1785001706479891000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "medium"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "fb79e1d061eb713421188cf8e907a36d",
+      "spanId": "5ee934b9383d6c24",
+      "parentSpanId": "df8ff4bcdbb4ff88",
+      "startUnixNano": 1785001706479880000,
+      "endUnixNano": 1785001706479888000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.eta",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 0.01047,
+        "gen_ai.request.model": "anthropic/claude-sonnet-4.6",
+        "gen_ai.usage.input_tokens": 495,
+        "gen_ai.usage.output_tokens": 599,
+        "gen_ai.response.id": "gen-1785000866-1gZ1q45jFuSkJBoabGWT",
+        "augmentloop.decision.type": "eta_estimate",
+        "gen_ai.evaluation.explanation": "estimated 9.0m; true fastest time is 9.0m (tolerance +/-15%)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "eta_estimate eta_estimate-J3-J9 decision",
+      "traceId": "fb79e1d061eb713421188cf8e907a36d",
+      "spanId": "df823a49613475f3",
+      "parentSpanId": "7bf7762c4677a305",
+      "startUnixNano": 1785001706479897000,
+      "endUnixNano": 1785001706479919000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "hard"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "fb79e1d061eb713421188cf8e907a36d",
+      "spanId": "9e99c1170f4e8940",
+      "parentSpanId": "df823a49613475f3",
+      "startUnixNano": 1785001706479908000,
+      "endUnixNano": 1785001706479916000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.eta",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 0.00894,
+        "gen_ai.request.model": "anthropic/claude-sonnet-4.6",
+        "gen_ai.usage.input_tokens": 495,
+        "gen_ai.usage.output_tokens": 497,
+        "gen_ai.response.id": "gen-1785000873-HcAkUuz9TEHbBzcGAi8P",
+        "augmentloop.decision.type": "eta_estimate",
+        "gen_ai.evaluation.explanation": "estimated 8.5m; true fastest time is 8.5m (tolerance +/-15%)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "eta_estimate eta_estimate-J3-J10 decision",
+      "traceId": "fb79e1d061eb713421188cf8e907a36d",
+      "spanId": "7cee090c8e159e47",
+      "parentSpanId": "7bf7762c4677a305",
+      "startUnixNano": 1785001706479925000,
+      "endUnixNano": 1785001706479946000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "hard"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "fb79e1d061eb713421188cf8e907a36d",
+      "spanId": "ed180fdb14a87654",
+      "parentSpanId": "7cee090c8e159e47",
+      "startUnixNano": 1785001706479936000,
+      "endUnixNano": 1785001706479943000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.eta",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 0.005565,
+        "gen_ai.request.model": "anthropic/claude-sonnet-4.6",
+        "gen_ai.usage.input_tokens": 495,
+        "gen_ai.usage.output_tokens": 272,
+        "gen_ai.response.id": "gen-1785000879-6MJjyYaSGgBvC2Yu75RD",
+        "augmentloop.decision.type": "eta_estimate",
+        "gen_ai.evaluation.explanation": "estimated 7.0m; true fastest time is 7.0m (tolerance +/-15%)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "eta_estimate eta_estimate-J3-J11 decision",
+      "traceId": "fb79e1d061eb713421188cf8e907a36d",
+      "spanId": "51fe70ea564f9e4e",
+      "parentSpanId": "7bf7762c4677a305",
+      "startUnixNano": 1785001706479953000,
+      "endUnixNano": 1785001706479975000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "hard"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "fb79e1d061eb713421188cf8e907a36d",
+      "spanId": "f3fb7a43c5b53207",
+      "parentSpanId": "51fe70ea564f9e4e",
+      "startUnixNano": 1785001706479964000,
+      "endUnixNano": 1785001706479972000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.eta",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 0.01188,
+        "gen_ai.request.model": "anthropic/claude-sonnet-4.6",
+        "gen_ai.usage.input_tokens": 495,
+        "gen_ai.usage.output_tokens": 693,
+        "gen_ai.response.id": "gen-1785000884-NNmdiwBWGCNWCAFWQiwK",
+        "augmentloop.decision.type": "eta_estimate",
+        "gen_ai.evaluation.explanation": "estimated 9.5m; true fastest time is 9.5m (tolerance +/-15%)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "eta_estimate eta_estimate-J3-J12 decision",
+      "traceId": "fb79e1d061eb713421188cf8e907a36d",
+      "spanId": "f61f19c37c0f8bbf",
+      "parentSpanId": "7bf7762c4677a305",
+      "startUnixNano": 1785001706479981000,
+      "endUnixNano": 1785001706480003000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "hard"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "fb79e1d061eb713421188cf8e907a36d",
+      "spanId": "7a3bd378da9cb93e",
+      "parentSpanId": "f61f19c37c0f8bbf",
+      "startUnixNano": 1785001706479992000,
+      "endUnixNano": 1785001706479999000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.eta",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 0.01674,
+        "gen_ai.request.model": "anthropic/claude-sonnet-4.6",
+        "gen_ai.usage.input_tokens": 495,
+        "gen_ai.usage.output_tokens": 1017,
+        "gen_ai.response.id": "gen-1785000892-23dZjdExtn3ODv32KQNa",
+        "augmentloop.decision.type": "eta_estimate",
+        "gen_ai.evaluation.explanation": "estimated 10.5m; true fastest time is 10.5m (tolerance +/-15%)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "eta_estimate eta_estimate-J4-J11 decision",
+      "traceId": "fb79e1d061eb713421188cf8e907a36d",
+      "spanId": "1386363f42d272f1",
+      "parentSpanId": "7bf7762c4677a305",
+      "startUnixNano": 1785001706480009000,
+      "endUnixNano": 1785001706480031000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "easy"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "fb79e1d061eb713421188cf8e907a36d",
+      "spanId": "4188edbdc5108e46",
+      "parentSpanId": "1386363f42d272f1",
+      "startUnixNano": 1785001706480019000,
+      "endUnixNano": 1785001706480028000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.eta",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 0.00771,
+        "gen_ai.request.model": "anthropic/claude-sonnet-4.6",
+        "gen_ai.usage.input_tokens": 495,
+        "gen_ai.usage.output_tokens": 415,
+        "gen_ai.response.id": "gen-1785000905-gDyzYGH4s3kyyTY3InoV",
+        "augmentloop.decision.type": "eta_estimate",
+        "gen_ai.evaluation.explanation": "estimated 7.5m; true fastest time is 7.5m (tolerance +/-15%)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "eta_estimate eta_estimate-J4-J12 decision",
+      "traceId": "fb79e1d061eb713421188cf8e907a36d",
+      "spanId": "431aee2304e91ca7",
+      "parentSpanId": "7bf7762c4677a305",
+      "startUnixNano": 1785001706480038000,
+      "endUnixNano": 1785001706480062000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "easy"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "fb79e1d061eb713421188cf8e907a36d",
+      "spanId": "a9d96d779afbaad3",
+      "parentSpanId": "431aee2304e91ca7",
+      "startUnixNano": 1785001706480050000,
+      "endUnixNano": 1785001706480058000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.eta",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 0.00735,
+        "gen_ai.request.model": "anthropic/claude-sonnet-4.6",
+        "gen_ai.usage.input_tokens": 495,
+        "gen_ai.usage.output_tokens": 391,
+        "gen_ai.response.id": "gen-1785000911-DT38PZGSBKtZIPZjJ6TW",
+        "augmentloop.decision.type": "eta_estimate",
+        "gen_ai.evaluation.explanation": "estimated 8.5m; true fastest time is 8.5m (tolerance +/-15%)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "eta_estimate eta_estimate-J1-J13 decision",
+      "traceId": "fb79e1d061eb713421188cf8e907a36d",
+      "spanId": "16de6ef983d121a8",
+      "parentSpanId": "7bf7762c4677a305",
+      "startUnixNano": 1785001706480068000,
+      "endUnixNano": 1785001706480092000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "easy"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "fb79e1d061eb713421188cf8e907a36d",
+      "spanId": "4f88b5b64bf518a1",
+      "parentSpanId": "16de6ef983d121a8",
+      "startUnixNano": 1785001706480080000,
+      "endUnixNano": 1785001706480089000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.eta",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 0.0084,
+        "gen_ai.request.model": "anthropic/claude-sonnet-4.6",
+        "gen_ai.usage.input_tokens": 495,
+        "gen_ai.usage.output_tokens": 461,
+        "gen_ai.response.id": "gen-1785000917-IHg4qyetQiYmXOdSZDcY",
+        "augmentloop.decision.type": "eta_estimate",
+        "gen_ai.evaluation.explanation": "estimated 11.0m; true fastest time is 11.0m (tolerance +/-15%)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "eta_estimate eta_estimate-J1-J14 decision",
+      "traceId": "fb79e1d061eb713421188cf8e907a36d",
+      "spanId": "c137f2eeec6746e6",
+      "parentSpanId": "7bf7762c4677a305",
+      "startUnixNano": 1785001706480099000,
+      "endUnixNano": 1785001706480123000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "easy"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "fb79e1d061eb713421188cf8e907a36d",
+      "spanId": "22a9f39a4f87cdbf",
+      "parentSpanId": "c137f2eeec6746e6",
+      "startUnixNano": 1785001706480111000,
+      "endUnixNano": 1785001706480119000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.eta",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 0.00894,
+        "gen_ai.request.model": "anthropic/claude-sonnet-4.6",
+        "gen_ai.usage.input_tokens": 495,
+        "gen_ai.usage.output_tokens": 497,
+        "gen_ai.response.id": "gen-1785000924-Um5krGjTp8kLawnrOFQq",
+        "augmentloop.decision.type": "eta_estimate",
+        "gen_ai.evaluation.explanation": "estimated 13.0m; true fastest time is 13.0m (tolerance +/-15%)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "eta_estimate eta_estimate-J1-J15 decision",
+      "traceId": "fb79e1d061eb713421188cf8e907a36d",
+      "spanId": "aacbf9749221f10b",
+      "parentSpanId": "7bf7762c4677a305",
+      "startUnixNano": 1785001706480130000,
+      "endUnixNano": 1785001706480156000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "easy"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "fb79e1d061eb713421188cf8e907a36d",
+      "spanId": "3e6b0489b24fd890",
+      "parentSpanId": "aacbf9749221f10b",
+      "startUnixNano": 1785001706480143000,
+      "endUnixNano": 1785001706480152000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.eta",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 0.0093,
+        "gen_ai.request.model": "anthropic/claude-sonnet-4.6",
+        "gen_ai.usage.input_tokens": 495,
+        "gen_ai.usage.output_tokens": 521,
+        "gen_ai.response.id": "gen-1785000930-37TKJ9SHR6onvKM19eRy",
+        "augmentloop.decision.type": "eta_estimate",
+        "gen_ai.evaluation.explanation": "estimated 15.5m; true fastest time is 15.5m (tolerance +/-15%)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "eta_estimate eta_estimate-J2-J13 decision",
+      "traceId": "fb79e1d061eb713421188cf8e907a36d",
+      "spanId": "526f0e3b567926e8",
+      "parentSpanId": "7bf7762c4677a305",
+      "startUnixNano": 1785001706480163000,
+      "endUnixNano": 1785001706480188000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "medium"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "fb79e1d061eb713421188cf8e907a36d",
+      "spanId": "7c19274896a25c45",
+      "parentSpanId": "526f0e3b567926e8",
+      "startUnixNano": 1785001706480176000,
+      "endUnixNano": 1785001706480184000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.eta",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 0.010185,
+        "gen_ai.request.model": "anthropic/claude-sonnet-4.6",
+        "gen_ai.usage.input_tokens": 495,
+        "gen_ai.usage.output_tokens": 580,
+        "gen_ai.response.id": "gen-1785000937-Jq1rSnbdVcFCIJYUQdRH",
+        "augmentloop.decision.type": "eta_estimate",
+        "gen_ai.evaluation.explanation": "estimated 8.5m; true fastest time is 8.5m (tolerance +/-15%)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "eta_estimate eta_estimate-J2-J14 decision",
+      "traceId": "fb79e1d061eb713421188cf8e907a36d",
+      "spanId": "a16cf6b94cecdccd",
+      "parentSpanId": "7bf7762c4677a305",
+      "startUnixNano": 1785001706480194000,
+      "endUnixNano": 1785001706480220000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "medium"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "fb79e1d061eb713421188cf8e907a36d",
+      "spanId": "ebba5c1b85f27cc0",
+      "parentSpanId": "a16cf6b94cecdccd",
+      "startUnixNano": 1785001706480206000,
+      "endUnixNano": 1785001706480215000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.eta",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 0.012495,
+        "gen_ai.request.model": "anthropic/claude-sonnet-4.6",
+        "gen_ai.usage.input_tokens": 495,
+        "gen_ai.usage.output_tokens": 734,
+        "gen_ai.response.id": "gen-1785000944-HPpaYoKgv7RGjwUksgWS",
+        "augmentloop.decision.type": "eta_estimate",
+        "gen_ai.evaluation.explanation": "estimated 10.5m; true fastest time is 10.5m (tolerance +/-15%)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "eta_estimate eta_estimate-J2-J15 decision",
+      "traceId": "fb79e1d061eb713421188cf8e907a36d",
+      "spanId": "cce5e0c169b77118",
+      "parentSpanId": "7bf7762c4677a305",
+      "startUnixNano": 1785001706480229000,
+      "endUnixNano": 1785001706480255000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "medium"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "fb79e1d061eb713421188cf8e907a36d",
+      "spanId": "64ffe2bde057465a",
+      "parentSpanId": "cce5e0c169b77118",
+      "startUnixNano": 1785001706480241000,
+      "endUnixNano": 1785001706480250000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.eta",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 0.01353,
+        "gen_ai.request.model": "anthropic/claude-sonnet-4.6",
+        "gen_ai.usage.input_tokens": 495,
+        "gen_ai.usage.output_tokens": 803,
+        "gen_ai.response.id": "gen-1785000953-VPqxLZ9ycwALHiIKDdni",
+        "augmentloop.decision.type": "eta_estimate",
+        "gen_ai.evaluation.explanation": "estimated 12.5m; true fastest time is 12.5m (tolerance +/-15%)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "eta_estimate eta_estimate-J2-J16 decision",
+      "traceId": "fb79e1d061eb713421188cf8e907a36d",
+      "spanId": "6d6b5fccd0c415ba",
+      "parentSpanId": "7bf7762c4677a305",
+      "startUnixNano": 1785001706480263000,
+      "endUnixNano": 1785001706480295000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "medium"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "fb79e1d061eb713421188cf8e907a36d",
+      "spanId": "8056d57e60c193b6",
+      "parentSpanId": "6d6b5fccd0c415ba",
+      "startUnixNano": 1785001706480280000,
+      "endUnixNano": 1785001706480291000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.eta",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 0.016845,
+        "gen_ai.request.model": "anthropic/claude-sonnet-4.6",
+        "gen_ai.usage.input_tokens": 495,
+        "gen_ai.usage.output_tokens": 1024,
+        "gen_ai.response.id": "gen-1785000963-LF3CfiVl5UgciKnOewU7",
+        "augmentloop.decision.type": "eta_estimate",
+        "gen_ai.evaluation.explanation": "estimated 17.5m; true fastest time is 15.5m (tolerance +/-15%)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "eta_estimate eta_estimate-J3-J13 decision",
+      "traceId": "fb79e1d061eb713421188cf8e907a36d",
+      "spanId": "52345929670f917a",
+      "parentSpanId": "7bf7762c4677a305",
+      "startUnixNano": 1785001706480304000,
+      "endUnixNano": 1785001706480330000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "hard"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "fb79e1d061eb713421188cf8e907a36d",
+      "spanId": "a2d39ce608798db8",
+      "parentSpanId": "52345929670f917a",
+      "startUnixNano": 1785001706480318000,
+      "endUnixNano": 1785001706480326000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.eta",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 0.013005,
+        "gen_ai.request.model": "anthropic/claude-sonnet-4.6",
+        "gen_ai.usage.input_tokens": 495,
+        "gen_ai.usage.output_tokens": 768,
+        "gen_ai.response.id": "gen-1785000977-vM0U4aQKHMJzRJku7kb1",
+        "augmentloop.decision.type": "eta_estimate",
+        "gen_ai.evaluation.explanation": "estimated 10.0m; true fastest time is 10.0m (tolerance +/-15%)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "eta_estimate eta_estimate-J3-J14 decision",
+      "traceId": "fb79e1d061eb713421188cf8e907a36d",
+      "spanId": "882237da87ed434a",
+      "parentSpanId": "7bf7762c4677a305",
+      "startUnixNano": 1785001706480338000,
+      "endUnixNano": 1785001706480365000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "hard"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "fb79e1d061eb713421188cf8e907a36d",
+      "spanId": "2ac8c7f7deef9d54",
+      "parentSpanId": "882237da87ed434a",
+      "startUnixNano": 1785001706480352000,
+      "endUnixNano": 1785001706480361000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.eta",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 0.01563,
+        "gen_ai.request.model": "anthropic/claude-sonnet-4.6",
+        "gen_ai.usage.input_tokens": 495,
+        "gen_ai.usage.output_tokens": 943,
+        "gen_ai.response.id": "gen-1785000986-4YBVn7kCeQ1YTclu5tvU",
+        "augmentloop.decision.type": "eta_estimate",
+        "gen_ai.evaluation.explanation": "estimated 12.0m; true fastest time is 12.0m (tolerance +/-15%)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "next_hop next_hop-J1 decision",
+      "traceId": "fb79e1d061eb713421188cf8e907a36d",
+      "spanId": "905fc8573c15cf9e",
+      "parentSpanId": "7bf7762c4677a305",
+      "startUnixNano": 1785001706480372000,
+      "endUnixNano": 1785001706480397000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "easy"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "fb79e1d061eb713421188cf8e907a36d",
+      "spanId": "e0dfc3dbb38c4f76",
+      "parentSpanId": "905fc8573c15cf9e",
+      "startUnixNano": 1785001706480384000,
+      "endUnixNano": 1785001706480393000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.next_hop",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 0.001569,
+        "gen_ai.request.model": "anthropic/claude-sonnet-4.6",
+        "gen_ai.usage.input_tokens": 498,
+        "gen_ai.usage.output_tokens": 5,
+        "gen_ai.response.id": "gen-1785001001-qNw6bSQzepTyrQBZE1yg",
+        "augmentloop.decision.type": "next_hop",
+        "gen_ai.evaluation.explanation": "chose J5; cheapest next hop is J5 (4.0m)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "next_hop next_hop-J10 decision",
+      "traceId": "fb79e1d061eb713421188cf8e907a36d",
+      "spanId": "8afaef5ad1c548fd",
+      "parentSpanId": "7bf7762c4677a305",
+      "startUnixNano": 1785001706480404000,
+      "endUnixNano": 1785001706480429000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "medium"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "fb79e1d061eb713421188cf8e907a36d",
+      "spanId": "a901a029f9a0a76a",
+      "parentSpanId": "8afaef5ad1c548fd",
+      "startUnixNano": 1785001706480416000,
+      "endUnixNano": 1785001706480425000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.next_hop",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 0.001569,
+        "gen_ai.request.model": "anthropic/claude-sonnet-4.6",
+        "gen_ai.usage.input_tokens": 498,
+        "gen_ai.usage.output_tokens": 5,
+        "gen_ai.response.id": "gen-1785001003-AzEaBW8hQSJrD933YBse",
+        "augmentloop.decision.type": "next_hop",
+        "gen_ai.evaluation.explanation": "chose J13; cheapest next hop is J13 (3.0m)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "next_hop next_hop-J11 decision",
+      "traceId": "fb79e1d061eb713421188cf8e907a36d",
+      "spanId": "fe1abfcb842ab15c",
+      "parentSpanId": "7bf7762c4677a305",
+      "startUnixNano": 1785001706480436000,
+      "endUnixNano": 1785001706480461000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "hard"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "fb79e1d061eb713421188cf8e907a36d",
+      "spanId": "71de6fba07d63e38",
+      "parentSpanId": "fe1abfcb842ab15c",
+      "startUnixNano": 1785001706480448000,
+      "endUnixNano": 1785001706480457000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.next_hop",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 0.001569,
+        "gen_ai.request.model": "anthropic/claude-sonnet-4.6",
+        "gen_ai.usage.input_tokens": 498,
+        "gen_ai.usage.output_tokens": 5,
+        "gen_ai.response.id": "gen-1785001005-NN5rjc5zbr9kOIv6rrqw",
+        "augmentloop.decision.type": "next_hop",
+        "gen_ai.evaluation.explanation": "chose J14; cheapest next hop is J14 (4.5m)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "next_hop next_hop-J12 decision",
+      "traceId": "fb79e1d061eb713421188cf8e907a36d",
+      "spanId": "a8174f381c1cc3fb",
+      "parentSpanId": "7bf7762c4677a305",
+      "startUnixNano": 1785001706480468000,
+      "endUnixNano": 1785001706480493000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "easy"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "fb79e1d061eb713421188cf8e907a36d",
+      "spanId": "d95848621b0ac51e",
+      "parentSpanId": "a8174f381c1cc3fb",
+      "startUnixNano": 1785001706480480000,
+      "endUnixNano": 1785001706480489000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.next_hop",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 0.001569,
+        "gen_ai.request.model": "anthropic/claude-sonnet-4.6",
+        "gen_ai.usage.input_tokens": 498,
+        "gen_ai.usage.output_tokens": 5,
+        "gen_ai.response.id": "gen-1785001007-cJ2g2O5q8OeNxP0cUTYA",
+        "augmentloop.decision.type": "next_hop",
+        "gen_ai.evaluation.explanation": "chose J15; cheapest next hop is J15 (3.5m)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "next_hop next_hop-J13 decision",
+      "traceId": "fb79e1d061eb713421188cf8e907a36d",
+      "spanId": "98bda1cb1e087e09",
+      "parentSpanId": "7bf7762c4677a305",
+      "startUnixNano": 1785001706480500000,
+      "endUnixNano": 1785001706480544000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "easy"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "fb79e1d061eb713421188cf8e907a36d",
+      "spanId": "11b847e5735e55fb",
+      "parentSpanId": "98bda1cb1e087e09",
+      "startUnixNano": 1785001706480530000,
+      "endUnixNano": 1785001706480540000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.next_hop",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 0.001569,
+        "gen_ai.request.model": "anthropic/claude-sonnet-4.6",
+        "gen_ai.usage.input_tokens": 498,
+        "gen_ai.usage.output_tokens": 5,
+        "gen_ai.response.id": "gen-1785001008-0AZQ2jsUcmnnVcFfKs5n",
+        "augmentloop.decision.type": "next_hop",
+        "gen_ai.evaluation.explanation": "chose J17; cheapest next hop is J17 (4.0m)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "next_hop next_hop-J14 decision",
+      "traceId": "fb79e1d061eb713421188cf8e907a36d",
+      "spanId": "1f942f389f080b1c",
+      "parentSpanId": "7bf7762c4677a305",
+      "startUnixNano": 1785001706480551000,
+      "endUnixNano": 1785001706480579000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "medium"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "fb79e1d061eb713421188cf8e907a36d",
+      "spanId": "4aceabb054358ea8",
+      "parentSpanId": "1f942f389f080b1c",
+      "startUnixNano": 1785001706480566000,
+      "endUnixNano": 1785001706480575000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.next_hop",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 0.001569,
+        "gen_ai.request.model": "anthropic/claude-sonnet-4.6",
+        "gen_ai.usage.input_tokens": 498,
+        "gen_ai.usage.output_tokens": 5,
+        "gen_ai.response.id": "gen-1785001010-pfSuzGcqyWrTQDE7c5ir",
+        "augmentloop.decision.type": "next_hop",
+        "gen_ai.evaluation.explanation": "chose J18; cheapest next hop is J18 (3.0m)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "next_hop next_hop-J15 decision",
+      "traceId": "fb79e1d061eb713421188cf8e907a36d",
+      "spanId": "f5f50dcd82f78114",
+      "parentSpanId": "7bf7762c4677a305",
+      "startUnixNano": 1785001706480586000,
+      "endUnixNano": 1785001706480612000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "hard"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "fb79e1d061eb713421188cf8e907a36d",
+      "spanId": "cbc6a74f62a41fe9",
+      "parentSpanId": "f5f50dcd82f78114",
+      "startUnixNano": 1785001706480599000,
+      "endUnixNano": 1785001706480608000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.next_hop",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 0.001569,
+        "gen_ai.request.model": "anthropic/claude-sonnet-4.6",
+        "gen_ai.usage.input_tokens": 498,
+        "gen_ai.usage.output_tokens": 5,
+        "gen_ai.response.id": "gen-1785001011-CDvg3TLXmHnn8EiqFVKZ",
+        "augmentloop.decision.type": "next_hop",
+        "gen_ai.evaluation.explanation": "chose J18; cheapest next hop is J18 (4.5m)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "next_hop next_hop-J16 decision",
+      "traceId": "fb79e1d061eb713421188cf8e907a36d",
+      "spanId": "39466abf24e53fc3",
+      "parentSpanId": "7bf7762c4677a305",
+      "startUnixNano": 1785001706480619000,
+      "endUnixNano": 1785001706480644000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "easy"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "fb79e1d061eb713421188cf8e907a36d",
+      "spanId": "20f3eb9aab871907",
+      "parentSpanId": "39466abf24e53fc3",
+      "startUnixNano": 1785001706480631000,
+      "endUnixNano": 1785001706480640000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.next_hop",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 0.001569,
+        "gen_ai.request.model": "anthropic/claude-sonnet-4.6",
+        "gen_ai.usage.input_tokens": 498,
+        "gen_ai.usage.output_tokens": 5,
+        "gen_ai.response.id": "gen-1785001014-OVE4nGHCxcQoqE4EyUcz",
+        "augmentloop.decision.type": "next_hop",
+        "gen_ai.evaluation.explanation": "chose J19; cheapest next hop is J19 (3.5m)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "next_hop next_hop-J17 decision",
+      "traceId": "fb79e1d061eb713421188cf8e907a36d",
+      "spanId": "2c5fff9a5b61c805",
+      "parentSpanId": "7bf7762c4677a305",
+      "startUnixNano": 1785001706480651000,
+      "endUnixNano": 1785001706480676000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "easy"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "fb79e1d061eb713421188cf8e907a36d",
+      "spanId": "b2b49270e3018ccd",
+      "parentSpanId": "2c5fff9a5b61c805",
+      "startUnixNano": 1785001706480663000,
+      "endUnixNano": 1785001706480672000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.next_hop",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 0.001569,
+        "gen_ai.request.model": "anthropic/claude-sonnet-4.6",
+        "gen_ai.usage.input_tokens": 498,
+        "gen_ai.usage.output_tokens": 5,
+        "gen_ai.response.id": "gen-1785001015-9aLYuEGjUZeld2qGxv0h",
+        "augmentloop.decision.type": "next_hop",
+        "gen_ai.evaluation.explanation": "chose J18; cheapest next hop is J18 (2.0m)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "next_hop next_hop-J18 decision",
+      "traceId": "fb79e1d061eb713421188cf8e907a36d",
+      "spanId": "af2bfe32da016062",
+      "parentSpanId": "7bf7762c4677a305",
+      "startUnixNano": 1785001706480683000,
+      "endUnixNano": 1785001706480707000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "easy"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "fb79e1d061eb713421188cf8e907a36d",
+      "spanId": "9fcae4d68f943aa6",
+      "parentSpanId": "af2bfe32da016062",
+      "startUnixNano": 1785001706480695000,
+      "endUnixNano": 1785001706480704000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.next_hop",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 0.001569,
+        "gen_ai.request.model": "anthropic/claude-sonnet-4.6",
+        "gen_ai.usage.input_tokens": 498,
+        "gen_ai.usage.output_tokens": 5,
+        "gen_ai.response.id": "gen-1785001016-Qh2KpeyIUkwNUuZl0yZO",
+        "augmentloop.decision.type": "next_hop",
+        "gen_ai.evaluation.explanation": "chose J19; cheapest next hop is J19 (2.5m)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "next_hop next_hop-J19 decision",
+      "traceId": "fb79e1d061eb713421188cf8e907a36d",
+      "spanId": "1328b7cc5b114b2f",
+      "parentSpanId": "7bf7762c4677a305",
+      "startUnixNano": 1785001706480714000,
+      "endUnixNano": 1785001706480740000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "easy"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "fb79e1d061eb713421188cf8e907a36d",
+      "spanId": "61e616a7fdb57c35",
+      "parentSpanId": "1328b7cc5b114b2f",
+      "startUnixNano": 1785001706480728000,
+      "endUnixNano": 1785001706480736000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.next_hop",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 0.001569,
+        "gen_ai.request.model": "anthropic/claude-sonnet-4.6",
+        "gen_ai.usage.input_tokens": 498,
+        "gen_ai.usage.output_tokens": 5,
+        "gen_ai.response.id": "gen-1785001018-aU4tBDOiWE9MWS4ejQMn",
+        "augmentloop.decision.type": "next_hop",
+        "gen_ai.evaluation.explanation": "chose J20; cheapest next hop is J20 (2.0m)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "next_hop next_hop-J2 decision",
+      "traceId": "fb79e1d061eb713421188cf8e907a36d",
+      "spanId": "6fab0b549c3bf760",
+      "parentSpanId": "7bf7762c4677a305",
+      "startUnixNano": 1785001706480747000,
+      "endUnixNano": 1785001706480775000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "medium"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "fb79e1d061eb713421188cf8e907a36d",
+      "spanId": "23298075d6c78b12",
+      "parentSpanId": "6fab0b549c3bf760",
+      "startUnixNano": 1785001706480762000,
+      "endUnixNano": 1785001706480771000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.next_hop",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 0.001569,
+        "gen_ai.request.model": "anthropic/claude-sonnet-4.6",
+        "gen_ai.usage.input_tokens": 498,
+        "gen_ai.usage.output_tokens": 5,
+        "gen_ai.response.id": "gen-1785001019-ZhZn4AbmjSTVx8KMcQxh",
+        "augmentloop.decision.type": "next_hop",
+        "gen_ai.evaluation.explanation": "chose J6; cheapest next hop is J6 (3.0m)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "next_hop next_hop-J20 decision",
+      "traceId": "fb79e1d061eb713421188cf8e907a36d",
+      "spanId": "1ae103638a9aaffe",
+      "parentSpanId": "7bf7762c4677a305",
+      "startUnixNano": 1785001706480782000,
+      "endUnixNano": 1785001706480804000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "easy"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "fb79e1d061eb713421188cf8e907a36d",
+      "spanId": "74abc15850ac40e6",
+      "parentSpanId": "1ae103638a9aaffe",
+      "startUnixNano": 1785001706480792000,
+      "endUnixNano": 1785001706480800000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.next_hop",
+        "gen_ai.evaluation.score.value": 0.0,
+        "gen_ai.evaluation.score.label": "incorrect",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 0.001569,
+        "gen_ai.request.model": "anthropic/claude-sonnet-4.6",
+        "gen_ai.usage.input_tokens": 498,
+        "gen_ai.usage.output_tokens": 5,
+        "gen_ai.response.id": "gen-1785001020-DayAAZ7R7miOLc2uaTi1",
+        "augmentloop.decision.type": "next_hop",
+        "gen_ai.evaluation.explanation": "chose J19; cheapest next hop is J17 (3.0m)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "next_hop next_hop-J3 decision",
+      "traceId": "fb79e1d061eb713421188cf8e907a36d",
+      "spanId": "132e9a52bf931dbc",
+      "parentSpanId": "7bf7762c4677a305",
+      "startUnixNano": 1785001706480811000,
+      "endUnixNano": 1785001706480833000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "hard"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "fb79e1d061eb713421188cf8e907a36d",
+      "spanId": "53e1110de0ae061d",
+      "parentSpanId": "132e9a52bf931dbc",
+      "startUnixNano": 1785001706480822000,
+      "endUnixNano": 1785001706480829000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.next_hop",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 0.001569,
+        "gen_ai.request.model": "anthropic/claude-sonnet-4.6",
+        "gen_ai.usage.input_tokens": 498,
+        "gen_ai.usage.output_tokens": 5,
+        "gen_ai.response.id": "gen-1785001022-sw40hSyhRjw4kZQByRT3",
+        "augmentloop.decision.type": "next_hop",
+        "gen_ai.evaluation.explanation": "chose J6; cheapest next hop is J6 (4.5m)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "next_hop next_hop-J4 decision",
+      "traceId": "fb79e1d061eb713421188cf8e907a36d",
+      "spanId": "39c0fcdb57435555",
+      "parentSpanId": "7bf7762c4677a305",
+      "startUnixNano": 1785001706480839000,
+      "endUnixNano": 1785001706480862000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "easy"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "fb79e1d061eb713421188cf8e907a36d",
+      "spanId": "de47b166c0c53966",
+      "parentSpanId": "39c0fcdb57435555",
+      "startUnixNano": 1785001706480849000,
+      "endUnixNano": 1785001706480857000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.next_hop",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 0.001569,
+        "gen_ai.request.model": "anthropic/claude-sonnet-4.6",
+        "gen_ai.usage.input_tokens": 498,
+        "gen_ai.usage.output_tokens": 5,
+        "gen_ai.response.id": "gen-1785001024-jUkfbjsr9b6Hd6o7o0T2",
+        "augmentloop.decision.type": "next_hop",
+        "gen_ai.evaluation.explanation": "chose J7; cheapest next hop is J7 (3.5m)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "next_hop next_hop-J5 decision",
+      "traceId": "fb79e1d061eb713421188cf8e907a36d",
+      "spanId": "ffd49ee1de059ee6",
+      "parentSpanId": "7bf7762c4677a305",
+      "startUnixNano": 1785001706480868000,
+      "endUnixNano": 1785001706480889000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "easy"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "fb79e1d061eb713421188cf8e907a36d",
+      "spanId": "4d21bee8e8fd60e6",
+      "parentSpanId": "ffd49ee1de059ee6",
+      "startUnixNano": 1785001706480878000,
+      "endUnixNano": 1785001706480886000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.next_hop",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 0.001569,
+        "gen_ai.request.model": "anthropic/claude-sonnet-4.6",
+        "gen_ai.usage.input_tokens": 498,
+        "gen_ai.usage.output_tokens": 5,
+        "gen_ai.response.id": "gen-1785001026-l6QFpOlog2dzTdaNuzqq",
+        "augmentloop.decision.type": "next_hop",
+        "gen_ai.evaluation.explanation": "chose J9; cheapest next hop is J9 (3.0m)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "next_hop next_hop-J6 decision",
+      "traceId": "fb79e1d061eb713421188cf8e907a36d",
+      "spanId": "4f535631042b95e9",
+      "parentSpanId": "7bf7762c4677a305",
+      "startUnixNano": 1785001706480896000,
+      "endUnixNano": 1785001706480917000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "medium"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "fb79e1d061eb713421188cf8e907a36d",
+      "spanId": "763100c43832618c",
+      "parentSpanId": "4f535631042b95e9",
+      "startUnixNano": 1785001706480906000,
+      "endUnixNano": 1785001706480914000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.next_hop",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 0.001569,
+        "gen_ai.request.model": "anthropic/claude-sonnet-4.6",
+        "gen_ai.usage.input_tokens": 498,
+        "gen_ai.usage.output_tokens": 5,
+        "gen_ai.response.id": "gen-1785001027-WmZO65olStc3B2qhX6jB",
+        "augmentloop.decision.type": "next_hop",
+        "gen_ai.evaluation.explanation": "chose J10; cheapest next hop is J10 (2.5m)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "next_hop next_hop-J7 decision",
+      "traceId": "fb79e1d061eb713421188cf8e907a36d",
+      "spanId": "f91d853ae818b2dc",
+      "parentSpanId": "7bf7762c4677a305",
+      "startUnixNano": 1785001706480923000,
+      "endUnixNano": 1785001706480945000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "hard"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "fb79e1d061eb713421188cf8e907a36d",
+      "spanId": "257e70c43c2b8c85",
+      "parentSpanId": "f91d853ae818b2dc",
+      "startUnixNano": 1785001706480933000,
+      "endUnixNano": 1785001706480941000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.next_hop",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 0.001569,
+        "gen_ai.request.model": "anthropic/claude-sonnet-4.6",
+        "gen_ai.usage.input_tokens": 498,
+        "gen_ai.usage.output_tokens": 5,
+        "gen_ai.response.id": "gen-1785001028-QqlXXtzDdo1quyeAGP20",
+        "augmentloop.decision.type": "next_hop",
+        "gen_ai.evaluation.explanation": "chose J10; cheapest next hop is J10 (3.5m)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "next_hop next_hop-J8 decision",
+      "traceId": "fb79e1d061eb713421188cf8e907a36d",
+      "spanId": "d5cc4a8b2aebf9d2",
+      "parentSpanId": "7bf7762c4677a305",
+      "startUnixNano": 1785001706480952000,
+      "endUnixNano": 1785001706480973000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "easy"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "fb79e1d061eb713421188cf8e907a36d",
+      "spanId": "69883d9410f542b6",
+      "parentSpanId": "d5cc4a8b2aebf9d2",
+      "startUnixNano": 1785001706480962000,
+      "endUnixNano": 1785001706480970000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.next_hop",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 0.001569,
+        "gen_ai.request.model": "anthropic/claude-sonnet-4.6",
+        "gen_ai.usage.input_tokens": 498,
+        "gen_ai.usage.output_tokens": 5,
+        "gen_ai.response.id": "gen-1785001029-vi8Sl46herBZ9JjzEK5o",
+        "augmentloop.decision.type": "next_hop",
+        "gen_ai.evaluation.explanation": "chose J11; cheapest next hop is J11 (3.0m)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "next_hop next_hop-J9 decision",
+      "traceId": "fb79e1d061eb713421188cf8e907a36d",
+      "spanId": "23d505a41a5386dc",
+      "parentSpanId": "7bf7762c4677a305",
+      "startUnixNano": 1785001706480979000,
+      "endUnixNano": 1785001706481000000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "easy"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "fb79e1d061eb713421188cf8e907a36d",
+      "spanId": "50d8144bb7cebb71",
+      "parentSpanId": "23d505a41a5386dc",
+      "startUnixNano": 1785001706480989000,
+      "endUnixNano": 1785001706480997000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.next_hop",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 0.001569,
+        "gen_ai.request.model": "anthropic/claude-sonnet-4.6",
+        "gen_ai.usage.input_tokens": 498,
+        "gen_ai.usage.output_tokens": 5,
+        "gen_ai.response.id": "gen-1785001031-n3VePrGZSZ7Ab8Z4TZBc",
+        "augmentloop.decision.type": "next_hop",
+        "gen_ai.evaluation.explanation": "chose J13; cheapest next hop is J13 (4.0m)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "model-run google/gemini-2.5-flash-lite",
+      "traceId": "5d215a162971a8ebec56a285d910c247",
+      "spanId": "38e0a43e5cb8d7cc",
+      "parentSpanId": null,
+      "startUnixNano": 1785001706481013000,
+      "endUnixNano": 1785001706483177000,
+      "attributes": {},
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "route_choice route_choice-J1-J9 decision",
+      "traceId": "5d215a162971a8ebec56a285d910c247",
+      "spanId": "d8b2fb44c52f79db",
+      "parentSpanId": "38e0a43e5cb8d7cc",
+      "startUnixNano": 1785001706481019000,
+      "endUnixNano": 1785001706481044000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "easy"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "5d215a162971a8ebec56a285d910c247",
+      "spanId": "5a2bf6a62ab11990",
+      "parentSpanId": "d8b2fb44c52f79db",
+      "startUnixNano": 1785001706481031000,
+      "endUnixNano": 1785001706481040000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.fastest",
+        "gen_ai.evaluation.score.value": 0.0,
+        "gen_ai.evaluation.score.label": "incorrect",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 5.61e-05,
+        "gen_ai.request.model": "google/gemini-2.5-flash-lite",
+        "gen_ai.usage.input_tokens": 557,
+        "gen_ai.usage.output_tokens": 1,
+        "gen_ai.response.id": "gen-1785001032-vkb4KKB3CCzrftCKNRMX",
+        "augmentloop.decision.type": "route_choice",
+        "gen_ai.evaluation.explanation": "chose B (10.0m); true fastest A (7.0m)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "route_choice route_choice-J1-J10 decision",
+      "traceId": "5d215a162971a8ebec56a285d910c247",
+      "spanId": "079e32901732a0ea",
+      "parentSpanId": "38e0a43e5cb8d7cc",
+      "startUnixNano": 1785001706481050000,
+      "endUnixNano": 1785001706481073000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "easy"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "5d215a162971a8ebec56a285d910c247",
+      "spanId": "915dfeaa3d304418",
+      "parentSpanId": "079e32901732a0ea",
+      "startUnixNano": 1785001706481062000,
+      "endUnixNano": 1785001706481070000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.fastest",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 5.6399999999999995e-05,
+        "gen_ai.request.model": "google/gemini-2.5-flash-lite",
+        "gen_ai.usage.input_tokens": 560,
+        "gen_ai.usage.output_tokens": 1,
+        "gen_ai.response.id": "gen-1785001034-BSxaYd6VQdmigYP8I2Nt",
+        "augmentloop.decision.type": "route_choice",
+        "gen_ai.evaluation.explanation": "chose B (8.5m); true fastest B (8.5m)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "route_choice route_choice-J2-J9 decision",
+      "traceId": "5d215a162971a8ebec56a285d910c247",
+      "spanId": "19025ea25d351947",
+      "parentSpanId": "38e0a43e5cb8d7cc",
+      "startUnixNano": 1785001706481080000,
+      "endUnixNano": 1785001706481103000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "medium"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "5d215a162971a8ebec56a285d910c247",
+      "spanId": "6f960275e469efcb",
+      "parentSpanId": "19025ea25d351947",
+      "startUnixNano": 1785001706481092000,
+      "endUnixNano": 1785001706481100000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.fastest",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 5.61e-05,
+        "gen_ai.request.model": "google/gemini-2.5-flash-lite",
+        "gen_ai.usage.input_tokens": 557,
+        "gen_ai.usage.output_tokens": 1,
+        "gen_ai.response.id": "gen-1785001036-HPKj7dKnipen0WDdpeWv",
+        "augmentloop.decision.type": "route_choice",
+        "gen_ai.evaluation.explanation": "chose B (7.0m); true fastest B (7.0m)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "route_choice route_choice-J2-J10 decision",
+      "traceId": "5d215a162971a8ebec56a285d910c247",
+      "spanId": "f9f3ff1870c5ac28",
+      "parentSpanId": "38e0a43e5cb8d7cc",
+      "startUnixNano": 1785001706481109000,
+      "endUnixNano": 1785001706481137000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "medium"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "5d215a162971a8ebec56a285d910c247",
+      "spanId": "e5cf796f9b09e27d",
+      "parentSpanId": "f9f3ff1870c5ac28",
+      "startUnixNano": 1785001706481125000,
+      "endUnixNano": 1785001706481133000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.fastest",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 5.6399999999999995e-05,
+        "gen_ai.request.model": "google/gemini-2.5-flash-lite",
+        "gen_ai.usage.input_tokens": 560,
+        "gen_ai.usage.output_tokens": 1,
+        "gen_ai.response.id": "gen-1785001037-bR8qVvjDfSkdXZx9ZTlh",
+        "augmentloop.decision.type": "route_choice",
+        "gen_ai.evaluation.explanation": "chose B (5.5m); true fastest B (5.5m)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "route_choice route_choice-J2-J11 decision",
+      "traceId": "5d215a162971a8ebec56a285d910c247",
+      "spanId": "7b4f5728fbcd143e",
+      "parentSpanId": "38e0a43e5cb8d7cc",
+      "startUnixNano": 1785001706481143000,
+      "endUnixNano": 1785001706481165000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "medium"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "5d215a162971a8ebec56a285d910c247",
+      "spanId": "b5c3a5fead099a9e",
+      "parentSpanId": "7b4f5728fbcd143e",
+      "startUnixNano": 1785001706481154000,
+      "endUnixNano": 1785001706481162000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.fastest",
+        "gen_ai.evaluation.score.value": 0.0,
+        "gen_ai.evaluation.score.label": "incorrect",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 5.6399999999999995e-05,
+        "gen_ai.request.model": "google/gemini-2.5-flash-lite",
+        "gen_ai.usage.input_tokens": 560,
+        "gen_ai.usage.output_tokens": 1,
+        "gen_ai.response.id": "gen-1785001039-aUowK8kbWRYakaGHI3O9",
+        "augmentloop.decision.type": "route_choice",
+        "gen_ai.evaluation.explanation": "chose B (11.5m); true fastest A (9.0m)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "route_choice route_choice-J3-J9 decision",
+      "traceId": "5d215a162971a8ebec56a285d910c247",
+      "spanId": "2cf68cb8a1b9ef2a",
+      "parentSpanId": "38e0a43e5cb8d7cc",
+      "startUnixNano": 1785001706481171000,
+      "endUnixNano": 1785001706481210000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "hard"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "5d215a162971a8ebec56a285d910c247",
+      "spanId": "75ce956e08bf282f",
+      "parentSpanId": "2cf68cb8a1b9ef2a",
+      "startUnixNano": 1785001706481182000,
+      "endUnixNano": 1785001706481206000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.fastest",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 5.61e-05,
+        "gen_ai.request.model": "google/gemini-2.5-flash-lite",
+        "gen_ai.usage.input_tokens": 557,
+        "gen_ai.usage.output_tokens": 1,
+        "gen_ai.response.id": "gen-1785001041-Dp43kgYH5cBglfslXIwP",
+        "augmentloop.decision.type": "route_choice",
+        "gen_ai.evaluation.explanation": "chose B (8.5m); true fastest B (8.5m)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "route_choice route_choice-J3-J10 decision",
+      "traceId": "5d215a162971a8ebec56a285d910c247",
+      "spanId": "34b27e4defe447d4",
+      "parentSpanId": "38e0a43e5cb8d7cc",
+      "startUnixNano": 1785001706481216000,
+      "endUnixNano": 1785001706481241000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "hard"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "5d215a162971a8ebec56a285d910c247",
+      "spanId": "c3677bcf5e72e355",
+      "parentSpanId": "34b27e4defe447d4",
+      "startUnixNano": 1785001706481230000,
+      "endUnixNano": 1785001706481238000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.fastest",
+        "gen_ai.evaluation.score.value": 0.0,
+        "gen_ai.evaluation.score.label": "incorrect",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 5.6399999999999995e-05,
+        "gen_ai.request.model": "google/gemini-2.5-flash-lite",
+        "gen_ai.usage.input_tokens": 560,
+        "gen_ai.usage.output_tokens": 1,
+        "gen_ai.response.id": "gen-1785001043-V1pvEFDzrboZM5I7GHEu",
         "augmentloop.decision.type": "route_choice",
         "gen_ai.evaluation.explanation": "chose B (9.0m); true fastest A (7.0m)"
       },
@@ -283,278 +4617,3409 @@ window.RUN = {
     },
     {
       "service": "toy-world",
+      "name": "route_choice route_choice-J3-J11 decision",
+      "traceId": "5d215a162971a8ebec56a285d910c247",
+      "spanId": "71d980691ab5eb31",
+      "parentSpanId": "38e0a43e5cb8d7cc",
+      "startUnixNano": 1785001706481248000,
+      "endUnixNano": 1785001706481273000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "hard"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
       "name": "gen_ai.evaluation.result",
-      "traceId": "052f200c0428d03da8295270ca4d0a8a",
-      "spanId": "8d360b335688a4dd",
-      "parentSpanId": "330129c95f60b15f",
-      "startUnixNano": 1784996397345479300,
-      "endUnixNano": 1784996397345479300,
+      "traceId": "5d215a162971a8ebec56a285d910c247",
+      "spanId": "e6fde9e023c35090",
+      "parentSpanId": "71d980691ab5eb31",
+      "startUnixNano": 1785001706481261000,
+      "endUnixNano": 1785001706481269000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.fastest",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 5.6399999999999995e-05,
+        "gen_ai.request.model": "google/gemini-2.5-flash-lite",
+        "gen_ai.usage.input_tokens": 560,
+        "gen_ai.usage.output_tokens": 1,
+        "gen_ai.response.id": "gen-1785001045-Rnzp7LSlvTfuxXKltsLV",
+        "augmentloop.decision.type": "route_choice",
+        "gen_ai.evaluation.explanation": "chose B (9.5m); true fastest B (9.5m)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "route_choice route_choice-J3-J12 decision",
+      "traceId": "5d215a162971a8ebec56a285d910c247",
+      "spanId": "6a1741f23ac325a7",
+      "parentSpanId": "38e0a43e5cb8d7cc",
+      "startUnixNano": 1785001706481280000,
+      "endUnixNano": 1785001706481304000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "hard"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "5d215a162971a8ebec56a285d910c247",
+      "spanId": "334bc9ce16bf6ddd",
+      "parentSpanId": "6a1741f23ac325a7",
+      "startUnixNano": 1785001706481293000,
+      "endUnixNano": 1785001706481301000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.fastest",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 5.6399999999999995e-05,
+        "gen_ai.request.model": "google/gemini-2.5-flash-lite",
+        "gen_ai.usage.input_tokens": 560,
+        "gen_ai.usage.output_tokens": 1,
+        "gen_ai.response.id": "gen-1785001047-FdZpLji7lfRWbLsPSMT3",
+        "augmentloop.decision.type": "route_choice",
+        "gen_ai.evaluation.explanation": "chose B (10.5m); true fastest B (10.5m)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "route_choice route_choice-J4-J11 decision",
+      "traceId": "5d215a162971a8ebec56a285d910c247",
+      "spanId": "daf4f70112c20456",
+      "parentSpanId": "38e0a43e5cb8d7cc",
+      "startUnixNano": 1785001706481311000,
+      "endUnixNano": 1785001706481335000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "easy"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "5d215a162971a8ebec56a285d910c247",
+      "spanId": "a10cf8b095fd1af6",
+      "parentSpanId": "daf4f70112c20456",
+      "startUnixNano": 1785001706481324000,
+      "endUnixNano": 1785001706481332000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.fastest",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 5.6399999999999995e-05,
+        "gen_ai.request.model": "google/gemini-2.5-flash-lite",
+        "gen_ai.usage.input_tokens": 560,
+        "gen_ai.usage.output_tokens": 1,
+        "gen_ai.response.id": "gen-1785001048-TzlmZaw6oDRvwqSVa7R6",
+        "augmentloop.decision.type": "route_choice",
+        "gen_ai.evaluation.explanation": "chose B (7.5m); true fastest B (7.5m)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "route_choice route_choice-J4-J12 decision",
+      "traceId": "5d215a162971a8ebec56a285d910c247",
+      "spanId": "f08a8031c42b2a37",
+      "parentSpanId": "38e0a43e5cb8d7cc",
+      "startUnixNano": 1785001706481341000,
+      "endUnixNano": 1785001706481363000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "easy"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "5d215a162971a8ebec56a285d910c247",
+      "spanId": "364a7bb1c6d84efc",
+      "parentSpanId": "f08a8031c42b2a37",
+      "startUnixNano": 1785001706481352000,
+      "endUnixNano": 1785001706481360000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.fastest",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 5.6399999999999995e-05,
+        "gen_ai.request.model": "google/gemini-2.5-flash-lite",
+        "gen_ai.usage.input_tokens": 560,
+        "gen_ai.usage.output_tokens": 1,
+        "gen_ai.response.id": "gen-1785001049-VftMRW3VA2l3hWGi3k7s",
+        "augmentloop.decision.type": "route_choice",
+        "gen_ai.evaluation.explanation": "chose B (8.5m); true fastest B (8.5m)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "route_choice route_choice-J1-J13 decision",
+      "traceId": "5d215a162971a8ebec56a285d910c247",
+      "spanId": "e47963945ade8e70",
+      "parentSpanId": "38e0a43e5cb8d7cc",
+      "startUnixNano": 1785001706481370000,
+      "endUnixNano": 1785001706481392000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "easy"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "5d215a162971a8ebec56a285d910c247",
+      "spanId": "900cc70b0b8a4678",
+      "parentSpanId": "e47963945ade8e70",
+      "startUnixNano": 1785001706481381000,
+      "endUnixNano": 1785001706481389000,
       "attributes": {
         "gen_ai.evaluation.name": "route.fastest",
         "gen_ai.evaluation.score.value": 0.0,
         "gen_ai.evaluation.score.label": "incorrect",
         "augmentloop.grade.source": "math",
-        "augmentloop.cost.usd": 2.8200000000000004e-05,
-        "gen_ai.request.model": "google/gemini-2.0-flash",
-        "gen_ai.usage.input_tokens": 214,
-        "gen_ai.usage.output_tokens": 17,
-        "gen_ai.response.id": "replay-d3-J2",
+        "augmentloop.cost.usd": 5.71e-05,
+        "gen_ai.request.model": "google/gemini-2.5-flash-lite",
+        "gen_ai.usage.input_tokens": 567,
+        "gen_ai.usage.output_tokens": 1,
+        "gen_ai.response.id": "gen-1785001051-a6MPDt1MDZnMkkiN5bxT",
         "augmentloop.decision.type": "route_choice",
-        "gen_ai.evaluation.explanation": "chose C (5.0m); true fastest D (4.0m)"
+        "gen_ai.evaluation.explanation": "chose B (11.5m); true fastest A (11.0m)"
       },
       "links": []
     },
     {
       "service": "toy-world",
-      "name": "junction J2 decision",
-      "traceId": "052f200c0428d03da8295270ca4d0a8a",
-      "spanId": "330129c95f60b15f",
-      "parentSpanId": "f0f3e7689f87b128",
-      "startUnixNano": 1784996397345479300,
-      "endUnixNano": 1784996397345479300,
-      "attributes": {},
-      "links": []
-    },
-    {
-      "service": "toy-world",
-      "name": "gen_ai.evaluation.result",
-      "traceId": "052f200c0428d03da8295270ca4d0a8a",
-      "spanId": "477b8d23dc23a8e0",
-      "parentSpanId": "0607a42233d08946",
-      "startUnixNano": 1784996397345479300,
-      "endUnixNano": 1784996397345479300,
+      "name": "route_choice route_choice-J1-J14 decision",
+      "traceId": "5d215a162971a8ebec56a285d910c247",
+      "spanId": "2dad1ae200f40d30",
+      "parentSpanId": "38e0a43e5cb8d7cc",
+      "startUnixNano": 1785001706481398000,
+      "endUnixNano": 1785001706481420000,
       "attributes": {
-        "gen_ai.evaluation.name": "route.fastest",
-        "gen_ai.evaluation.score.value": 1.0,
-        "gen_ai.evaluation.score.label": "correct",
-        "augmentloop.grade.source": "math",
-        "augmentloop.cost.usd": 2.54e-05,
-        "gen_ai.request.model": "google/gemini-2.0-flash",
-        "gen_ai.usage.input_tokens": 198,
-        "gen_ai.usage.output_tokens": 14,
-        "gen_ai.response.id": "replay-d3-J3",
-        "augmentloop.decision.type": "route_choice",
-        "gen_ai.evaluation.explanation": "chose F (6.0m); true fastest F (6.0m)"
+        "augmentloop.decision.difficulty": "easy"
       },
       "links": []
     },
     {
       "service": "toy-world",
-      "name": "junction J3 decision",
-      "traceId": "052f200c0428d03da8295270ca4d0a8a",
-      "spanId": "0607a42233d08946",
-      "parentSpanId": "f0f3e7689f87b128",
-      "startUnixNano": 1784996397345479300,
-      "endUnixNano": 1784996397345479300,
-      "attributes": {},
-      "links": []
-    },
-    {
-      "service": "toy-world",
       "name": "gen_ai.evaluation.result",
-      "traceId": "3f8e12e236fc3dc687db5f9bb11d8102",
-      "spanId": "8910a01a7ece38ec",
-      "parentSpanId": "d574b10657936491",
-      "startUnixNano": 1784996397345479300,
-      "endUnixNano": 1784996397345479300,
-      "attributes": {
-        "gen_ai.evaluation.name": "route.fastest",
-        "gen_ai.evaluation.score.value": 1.0,
-        "gen_ai.evaluation.score.label": "correct",
-        "augmentloop.grade.source": "math",
-        "augmentloop.cost.usd": 0.0001976,
-        "gen_ai.request.model": "anthropic/claude-3.5-haiku",
-        "gen_ai.usage.input_tokens": 182,
-        "gen_ai.usage.output_tokens": 13,
-        "gen_ai.response.id": "replay-d4-J1",
-        "augmentloop.decision.type": "route_choice",
-        "gen_ai.evaluation.explanation": "chose A (7.0m); true fastest A (7.0m)"
-      },
-      "links": []
-    },
-    {
-      "service": "toy-world",
-      "name": "junction J1 decision",
-      "traceId": "3f8e12e236fc3dc687db5f9bb11d8102",
-      "spanId": "d574b10657936491",
-      "parentSpanId": "6eb02c4632455fc2",
-      "startUnixNano": 1784996397345479300,
-      "endUnixNano": 1784996397345479300,
-      "attributes": {},
-      "links": []
-    },
-    {
-      "service": "toy-world",
-      "name": "gen_ai.evaluation.result",
-      "traceId": "3f8e12e236fc3dc687db5f9bb11d8102",
-      "spanId": "d62e13a8f0fc4134",
-      "parentSpanId": "5b54ee80a9166db1",
-      "startUnixNano": 1784996397345479300,
-      "endUnixNano": 1784996397345479300,
+      "traceId": "5d215a162971a8ebec56a285d910c247",
+      "spanId": "333c1b7f0624d7b0",
+      "parentSpanId": "2dad1ae200f40d30",
+      "startUnixNano": 1785001706481409000,
+      "endUnixNano": 1785001706481417000,
       "attributes": {
         "gen_ai.evaluation.name": "route.fastest",
         "gen_ai.evaluation.score.value": 0.0,
         "gen_ai.evaluation.score.label": "incorrect",
         "augmentloop.grade.source": "math",
-        "augmentloop.cost.usd": 0.0002312,
-        "gen_ai.request.model": "anthropic/claude-3.5-haiku",
-        "gen_ai.usage.input_tokens": 214,
-        "gen_ai.usage.output_tokens": 15,
-        "gen_ai.response.id": "replay-d4-J2",
+        "augmentloop.cost.usd": 5.71e-05,
+        "gen_ai.request.model": "google/gemini-2.5-flash-lite",
+        "gen_ai.usage.input_tokens": 567,
+        "gen_ai.usage.output_tokens": 1,
+        "gen_ai.response.id": "gen-1785001053-OilMwMopGI6DViIH8r7J",
         "augmentloop.decision.type": "route_choice",
-        "gen_ai.evaluation.explanation": "chose E (8.0m); true fastest D (4.0m)"
+        "gen_ai.evaluation.explanation": "chose B (13.5m); true fastest A (13.0m)"
       },
       "links": []
     },
     {
       "service": "toy-world",
-      "name": "junction J2 decision",
-      "traceId": "3f8e12e236fc3dc687db5f9bb11d8102",
-      "spanId": "5b54ee80a9166db1",
-      "parentSpanId": "6eb02c4632455fc2",
-      "startUnixNano": 1784996397345479300,
-      "endUnixNano": 1784996397345479300,
-      "attributes": {},
+      "name": "route_choice route_choice-J1-J15 decision",
+      "traceId": "5d215a162971a8ebec56a285d910c247",
+      "spanId": "985af0fa1eb4d475",
+      "parentSpanId": "38e0a43e5cb8d7cc",
+      "startUnixNano": 1785001706481426000,
+      "endUnixNano": 1785001706481448000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "easy"
+      },
       "links": []
     },
     {
       "service": "toy-world",
       "name": "gen_ai.evaluation.result",
-      "traceId": "3f8e12e236fc3dc687db5f9bb11d8102",
-      "spanId": "af09cd655b67826a",
-      "parentSpanId": "2630761cc4593703",
-      "startUnixNano": 1784996397345479300,
-      "endUnixNano": 1784996397345479300,
+      "traceId": "5d215a162971a8ebec56a285d910c247",
+      "spanId": "68c8d0ed63c77e21",
+      "parentSpanId": "985af0fa1eb4d475",
+      "startUnixNano": 1785001706481437000,
+      "endUnixNano": 1785001706481445000,
       "attributes": {
         "gen_ai.evaluation.name": "route.fastest",
         "gen_ai.evaluation.score.value": 1.0,
         "gen_ai.evaluation.score.label": "correct",
         "augmentloop.grade.source": "math",
-        "augmentloop.cost.usd": 0.0002064,
-        "gen_ai.request.model": "anthropic/claude-3.5-haiku",
-        "gen_ai.usage.input_tokens": 198,
-        "gen_ai.usage.output_tokens": 12,
-        "gen_ai.response.id": "replay-d4-J3",
+        "augmentloop.cost.usd": 5.72e-05,
+        "gen_ai.request.model": "google/gemini-2.5-flash-lite",
+        "gen_ai.usage.input_tokens": 568,
+        "gen_ai.usage.output_tokens": 1,
+        "gen_ai.response.id": "gen-1785001055-BtVPQ7ZYe5LLadinJxNG",
         "augmentloop.decision.type": "route_choice",
-        "gen_ai.evaluation.explanation": "chose F (6.0m); true fastest F (6.0m)"
+        "gen_ai.evaluation.explanation": "chose B (15.5m); true fastest B (15.5m)"
       },
       "links": []
     },
     {
       "service": "toy-world",
-      "name": "junction J3 decision",
-      "traceId": "3f8e12e236fc3dc687db5f9bb11d8102",
-      "spanId": "2630761cc4593703",
-      "parentSpanId": "6eb02c4632455fc2",
-      "startUnixNano": 1784996397345479300,
-      "endUnixNano": 1784996397345479300,
-      "attributes": {},
+      "name": "route_choice route_choice-J2-J13 decision",
+      "traceId": "5d215a162971a8ebec56a285d910c247",
+      "spanId": "d24f0c2ace71b27e",
+      "parentSpanId": "38e0a43e5cb8d7cc",
+      "startUnixNano": 1785001706481454000,
+      "endUnixNano": 1785001706481476000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "medium"
+      },
       "links": []
     },
     {
       "service": "toy-world",
-      "name": "journey driver-4",
-      "traceId": "3f8e12e236fc3dc687db5f9bb11d8102",
-      "spanId": "6eb02c4632455fc2",
-      "parentSpanId": null,
-      "startUnixNano": 1784996397345479300,
-      "endUnixNano": 1784996397345479300,
-      "attributes": {},
+      "name": "gen_ai.evaluation.result",
+      "traceId": "5d215a162971a8ebec56a285d910c247",
+      "spanId": "8774a802e0e8a36e",
+      "parentSpanId": "d24f0c2ace71b27e",
+      "startUnixNano": 1785001706481465000,
+      "endUnixNano": 1785001706481473000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.fastest",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 5.71e-05,
+        "gen_ai.request.model": "google/gemini-2.5-flash-lite",
+        "gen_ai.usage.input_tokens": 567,
+        "gen_ai.usage.output_tokens": 1,
+        "gen_ai.response.id": "gen-1785001058-ZF0CHgv1RFxnn3ZPae7n",
+        "augmentloop.decision.type": "route_choice",
+        "gen_ai.evaluation.explanation": "chose B (8.5m); true fastest B (8.5m)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "route_choice route_choice-J2-J14 decision",
+      "traceId": "5d215a162971a8ebec56a285d910c247",
+      "spanId": "2f71a6462ef385c8",
+      "parentSpanId": "38e0a43e5cb8d7cc",
+      "startUnixNano": 1785001706481482000,
+      "endUnixNano": 1785001706481506000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "medium"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "5d215a162971a8ebec56a285d910c247",
+      "spanId": "48d5e780d59ba38a",
+      "parentSpanId": "2f71a6462ef385c8",
+      "startUnixNano": 1785001706481493000,
+      "endUnixNano": 1785001706481502000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.fastest",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 5.71e-05,
+        "gen_ai.request.model": "google/gemini-2.5-flash-lite",
+        "gen_ai.usage.input_tokens": 567,
+        "gen_ai.usage.output_tokens": 1,
+        "gen_ai.response.id": "gen-1785001058-ubwTJSYlO8iSmNg99ssc",
+        "augmentloop.decision.type": "route_choice",
+        "gen_ai.evaluation.explanation": "chose B (10.5m); true fastest B (10.5m)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "route_choice route_choice-J2-J15 decision",
+      "traceId": "5d215a162971a8ebec56a285d910c247",
+      "spanId": "ac3eeeb69022292c",
+      "parentSpanId": "38e0a43e5cb8d7cc",
+      "startUnixNano": 1785001706481515000,
+      "endUnixNano": 1785001706481539000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "medium"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "5d215a162971a8ebec56a285d910c247",
+      "spanId": "9a684091aba860ea",
+      "parentSpanId": "ac3eeeb69022292c",
+      "startUnixNano": 1785001706481527000,
+      "endUnixNano": 1785001706481536000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.fastest",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 5.72e-05,
+        "gen_ai.request.model": "google/gemini-2.5-flash-lite",
+        "gen_ai.usage.input_tokens": 568,
+        "gen_ai.usage.output_tokens": 1,
+        "gen_ai.response.id": "gen-1785001059-lLFnyYzWGM30ZFeBEdFB",
+        "augmentloop.decision.type": "route_choice",
+        "gen_ai.evaluation.explanation": "chose A (12.5m); true fastest A (12.5m)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "route_choice route_choice-J2-J16 decision",
+      "traceId": "5d215a162971a8ebec56a285d910c247",
+      "spanId": "de02322f2d2df4e9",
+      "parentSpanId": "38e0a43e5cb8d7cc",
+      "startUnixNano": 1785001706481546000,
+      "endUnixNano": 1785001706481570000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "medium"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "5d215a162971a8ebec56a285d910c247",
+      "spanId": "93d729be4a86eea0",
+      "parentSpanId": "de02322f2d2df4e9",
+      "startUnixNano": 1785001706481558000,
+      "endUnixNano": 1785001706481567000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.fastest",
+        "gen_ai.evaluation.score.value": 0.0,
+        "gen_ai.evaluation.score.label": "incorrect",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 5.72e-05,
+        "gen_ai.request.model": "google/gemini-2.5-flash-lite",
+        "gen_ai.usage.input_tokens": 568,
+        "gen_ai.usage.output_tokens": 1,
+        "gen_ai.response.id": "gen-1785001061-qQDWw5szOtm7vwFHc8zT",
+        "augmentloop.decision.type": "route_choice",
+        "gen_ai.evaluation.explanation": "chose B (17.0m); true fastest A (15.5m)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "route_choice route_choice-J3-J13 decision",
+      "traceId": "5d215a162971a8ebec56a285d910c247",
+      "spanId": "cf13348f620f371d",
+      "parentSpanId": "38e0a43e5cb8d7cc",
+      "startUnixNano": 1785001706481577000,
+      "endUnixNano": 1785001706481601000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "hard"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "5d215a162971a8ebec56a285d910c247",
+      "spanId": "bc38fe3d7b57fc3d",
+      "parentSpanId": "cf13348f620f371d",
+      "startUnixNano": 1785001706481589000,
+      "endUnixNano": 1785001706481598000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.fastest",
+        "gen_ai.evaluation.score.value": 0.0,
+        "gen_ai.evaluation.score.label": "incorrect",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 5.72e-05,
+        "gen_ai.request.model": "google/gemini-2.5-flash-lite",
+        "gen_ai.usage.input_tokens": 568,
+        "gen_ai.usage.output_tokens": 1,
+        "gen_ai.response.id": "gen-1785001062-Dpm1zSIMY0gMbxxKh6n2",
+        "augmentloop.decision.type": "route_choice",
+        "gen_ai.evaluation.explanation": "chose B (12.0m); true fastest A (10.0m)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "route_choice route_choice-J3-J14 decision",
+      "traceId": "5d215a162971a8ebec56a285d910c247",
+      "spanId": "c603d13c1dbd247e",
+      "parentSpanId": "38e0a43e5cb8d7cc",
+      "startUnixNano": 1785001706481608000,
+      "endUnixNano": 1785001706481634000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "hard"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "5d215a162971a8ebec56a285d910c247",
+      "spanId": "0561e5ac40afc28d",
+      "parentSpanId": "c603d13c1dbd247e",
+      "startUnixNano": 1785001706481621000,
+      "endUnixNano": 1785001706481631000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.fastest",
+        "gen_ai.evaluation.score.value": 0.0,
+        "gen_ai.evaluation.score.label": "incorrect",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 5.72e-05,
+        "gen_ai.request.model": "google/gemini-2.5-flash-lite",
+        "gen_ai.usage.input_tokens": 568,
+        "gen_ai.usage.output_tokens": 1,
+        "gen_ai.response.id": "gen-1785001063-dpLcoDhBoPqQn0jOMJqA",
+        "augmentloop.decision.type": "route_choice",
+        "gen_ai.evaluation.explanation": "chose B (14.0m); true fastest A (12.0m)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "eta_estimate eta_estimate-J1-J9 decision",
+      "traceId": "5d215a162971a8ebec56a285d910c247",
+      "spanId": "f1e3386df944e6ca",
+      "parentSpanId": "38e0a43e5cb8d7cc",
+      "startUnixNano": 1785001706481641000,
+      "endUnixNano": 1785001706481670000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "easy"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "5d215a162971a8ebec56a285d910c247",
+      "spanId": "202f05e711113b81",
+      "parentSpanId": "f1e3386df944e6ca",
+      "startUnixNano": 1785001706481657000,
+      "endUnixNano": 1785001706481666000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.eta",
+        "gen_ai.evaluation.score.value": 0.0,
+        "gen_ai.evaluation.score.label": "incorrect",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 5.4900000000000006e-05,
+        "gen_ai.request.model": "google/gemini-2.5-flash-lite",
+        "gen_ai.usage.input_tokens": 533,
+        "gen_ai.usage.output_tokens": 4,
+        "gen_ai.response.id": "gen-1785001063-jD67TF383gbEgV0cFTdv",
+        "augmentloop.decision.type": "eta_estimate",
+        "gen_ai.evaluation.explanation": "estimated 13.0m; true fastest time is 7.0m (tolerance +/-15%)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "eta_estimate eta_estimate-J1-J10 decision",
+      "traceId": "5d215a162971a8ebec56a285d910c247",
+      "spanId": "ef319a5976fd5f00",
+      "parentSpanId": "38e0a43e5cb8d7cc",
+      "startUnixNano": 1785001706481677000,
+      "endUnixNano": 1785001706481702000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "easy"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "5d215a162971a8ebec56a285d910c247",
+      "spanId": "0c8304bd4d1cdaab",
+      "parentSpanId": "ef319a5976fd5f00",
+      "startUnixNano": 1785001706481690000,
+      "endUnixNano": 1785001706481698000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.eta",
+        "gen_ai.evaluation.score.value": 0.0,
+        "gen_ai.evaluation.score.label": "incorrect",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 5.500000000000001e-05,
+        "gen_ai.request.model": "google/gemini-2.5-flash-lite",
+        "gen_ai.usage.input_tokens": 534,
+        "gen_ai.usage.output_tokens": 4,
+        "gen_ai.response.id": "gen-1785001064-lbez1WmXcsOmAxuUJBZm",
+        "augmentloop.decision.type": "eta_estimate",
+        "gen_ai.evaluation.explanation": "estimated 11.5m; true fastest time is 8.5m (tolerance +/-15%)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "eta_estimate eta_estimate-J2-J9 decision",
+      "traceId": "5d215a162971a8ebec56a285d910c247",
+      "spanId": "d32c31ad2b145e0e",
+      "parentSpanId": "38e0a43e5cb8d7cc",
+      "startUnixNano": 1785001706481709000,
+      "endUnixNano": 1785001706481735000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "medium"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "5d215a162971a8ebec56a285d910c247",
+      "spanId": "ff7621687cc01065",
+      "parentSpanId": "d32c31ad2b145e0e",
+      "startUnixNano": 1785001706481723000,
+      "endUnixNano": 1785001706481731000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.eta",
+        "gen_ai.evaluation.score.value": 0.0,
+        "gen_ai.evaluation.score.label": "incorrect",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 5.4900000000000006e-05,
+        "gen_ai.request.model": "google/gemini-2.5-flash-lite",
+        "gen_ai.usage.input_tokens": 533,
+        "gen_ai.usage.output_tokens": 4,
+        "gen_ai.response.id": "gen-1785001065-MFhtpeD0oFMXJWo50Oi7",
+        "augmentloop.decision.type": "eta_estimate",
+        "gen_ai.evaluation.explanation": "estimated 13.5m; true fastest time is 7.0m (tolerance +/-15%)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "eta_estimate eta_estimate-J2-J10 decision",
+      "traceId": "5d215a162971a8ebec56a285d910c247",
+      "spanId": "579459975777fcd0",
+      "parentSpanId": "38e0a43e5cb8d7cc",
+      "startUnixNano": 1785001706481742000,
+      "endUnixNano": 1785001706481767000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "medium"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "5d215a162971a8ebec56a285d910c247",
+      "spanId": "ed1fcc6bde0f01f3",
+      "parentSpanId": "579459975777fcd0",
+      "startUnixNano": 1785001706481755000,
+      "endUnixNano": 1785001706481764000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.eta",
+        "gen_ai.evaluation.score.value": 0.0,
+        "gen_ai.evaluation.score.label": "incorrect",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 5.500000000000001e-05,
+        "gen_ai.request.model": "google/gemini-2.5-flash-lite",
+        "gen_ai.usage.input_tokens": 534,
+        "gen_ai.usage.output_tokens": 4,
+        "gen_ai.response.id": "gen-1785001067-4UQUv1ZW9BAofrmYF2Ud",
+        "augmentloop.decision.type": "eta_estimate",
+        "gen_ai.evaluation.explanation": "estimated 10.5m; true fastest time is 5.5m (tolerance +/-15%)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "eta_estimate eta_estimate-J2-J11 decision",
+      "traceId": "5d215a162971a8ebec56a285d910c247",
+      "spanId": "ba1f068cbfe65802",
+      "parentSpanId": "38e0a43e5cb8d7cc",
+      "startUnixNano": 1785001706481774000,
+      "endUnixNano": 1785001706481799000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "medium"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "5d215a162971a8ebec56a285d910c247",
+      "spanId": "72482693de274553",
+      "parentSpanId": "ba1f068cbfe65802",
+      "startUnixNano": 1785001706481788000,
+      "endUnixNano": 1785001706481796000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.eta",
+        "gen_ai.evaluation.score.value": 0.0,
+        "gen_ai.evaluation.score.label": "incorrect",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 5.500000000000001e-05,
+        "gen_ai.request.model": "google/gemini-2.5-flash-lite",
+        "gen_ai.usage.input_tokens": 534,
+        "gen_ai.usage.output_tokens": 4,
+        "gen_ai.response.id": "gen-1785001068-iDhxV7H3p5m17oW0XAz1",
+        "augmentloop.decision.type": "eta_estimate",
+        "gen_ai.evaluation.explanation": "estimated 15.5m; true fastest time is 9.0m (tolerance +/-15%)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "eta_estimate eta_estimate-J3-J9 decision",
+      "traceId": "5d215a162971a8ebec56a285d910c247",
+      "spanId": "f42333781ed865a4",
+      "parentSpanId": "38e0a43e5cb8d7cc",
+      "startUnixNano": 1785001706481807000,
+      "endUnixNano": 1785001706481829000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "hard"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "5d215a162971a8ebec56a285d910c247",
+      "spanId": "1993bda12fa03f24",
+      "parentSpanId": "f42333781ed865a4",
+      "startUnixNano": 1785001706481818000,
+      "endUnixNano": 1785001706481826000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.eta",
+        "gen_ai.evaluation.score.value": 0.0,
+        "gen_ai.evaluation.score.label": "incorrect",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 5.4900000000000006e-05,
+        "gen_ai.request.model": "google/gemini-2.5-flash-lite",
+        "gen_ai.usage.input_tokens": 533,
+        "gen_ai.usage.output_tokens": 4,
+        "gen_ai.response.id": "gen-1785001068-71sMnPrLBdhUAKOim0eC",
+        "augmentloop.decision.type": "eta_estimate",
+        "gen_ai.evaluation.explanation": "estimated 14.5m; true fastest time is 8.5m (tolerance +/-15%)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "eta_estimate eta_estimate-J3-J10 decision",
+      "traceId": "5d215a162971a8ebec56a285d910c247",
+      "spanId": "06e96a838fb471fe",
+      "parentSpanId": "38e0a43e5cb8d7cc",
+      "startUnixNano": 1785001706481835000,
+      "endUnixNano": 1785001706481857000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "hard"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "5d215a162971a8ebec56a285d910c247",
+      "spanId": "1f0e75264598d573",
+      "parentSpanId": "06e96a838fb471fe",
+      "startUnixNano": 1785001706481846000,
+      "endUnixNano": 1785001706481854000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.eta",
+        "gen_ai.evaluation.score.value": 0.0,
+        "gen_ai.evaluation.score.label": "incorrect",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 5.500000000000001e-05,
+        "gen_ai.request.model": "google/gemini-2.5-flash-lite",
+        "gen_ai.usage.input_tokens": 534,
+        "gen_ai.usage.output_tokens": 4,
+        "gen_ai.response.id": "gen-1785001069-rKcsxZv4Etz1KKf1Hjk3",
+        "augmentloop.decision.type": "eta_estimate",
+        "gen_ai.evaluation.explanation": "estimated 15.5m; true fastest time is 7.0m (tolerance +/-15%)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "eta_estimate eta_estimate-J3-J11 decision",
+      "traceId": "5d215a162971a8ebec56a285d910c247",
+      "spanId": "372b8e9eee5abf44",
+      "parentSpanId": "38e0a43e5cb8d7cc",
+      "startUnixNano": 1785001706481863000,
+      "endUnixNano": 1785001706482176000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "hard"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "5d215a162971a8ebec56a285d910c247",
+      "spanId": "f1dd5425fe879a95",
+      "parentSpanId": "372b8e9eee5abf44",
+      "startUnixNano": 1785001706482161000,
+      "endUnixNano": 1785001706482171000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.eta",
+        "gen_ai.evaluation.score.value": 0.0,
+        "gen_ai.evaluation.score.label": "incorrect",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 5.500000000000001e-05,
+        "gen_ai.request.model": "google/gemini-2.5-flash-lite",
+        "gen_ai.usage.input_tokens": 534,
+        "gen_ai.usage.output_tokens": 4,
+        "gen_ai.response.id": "gen-1785001070-JulicG2IQePYPAyYhGDs",
+        "augmentloop.decision.type": "eta_estimate",
+        "gen_ai.evaluation.explanation": "estimated 20.5m; true fastest time is 9.5m (tolerance +/-15%)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "eta_estimate eta_estimate-J3-J12 decision",
+      "traceId": "5d215a162971a8ebec56a285d910c247",
+      "spanId": "e1b63f4b38413070",
+      "parentSpanId": "38e0a43e5cb8d7cc",
+      "startUnixNano": 1785001706482183000,
+      "endUnixNano": 1785001706482214000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "hard"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "5d215a162971a8ebec56a285d910c247",
+      "spanId": "a37b1b61b7ec0704",
+      "parentSpanId": "e1b63f4b38413070",
+      "startUnixNano": 1785001706482201000,
+      "endUnixNano": 1785001706482210000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.eta",
+        "gen_ai.evaluation.score.value": 0.0,
+        "gen_ai.evaluation.score.label": "incorrect",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 5.500000000000001e-05,
+        "gen_ai.request.model": "google/gemini-2.5-flash-lite",
+        "gen_ai.usage.input_tokens": 534,
+        "gen_ai.usage.output_tokens": 4,
+        "gen_ai.response.id": "gen-1785001071-KZplO7XAfLm8wOERizcq",
+        "augmentloop.decision.type": "eta_estimate",
+        "gen_ai.evaluation.explanation": "estimated 20.5m; true fastest time is 10.5m (tolerance +/-15%)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "eta_estimate eta_estimate-J4-J11 decision",
+      "traceId": "5d215a162971a8ebec56a285d910c247",
+      "spanId": "0386ec40ad75cfd8",
+      "parentSpanId": "38e0a43e5cb8d7cc",
+      "startUnixNano": 1785001706482220000,
+      "endUnixNano": 1785001706482243000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "easy"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "5d215a162971a8ebec56a285d910c247",
+      "spanId": "c6d18c7e80ba2c83",
+      "parentSpanId": "0386ec40ad75cfd8",
+      "startUnixNano": 1785001706482232000,
+      "endUnixNano": 1785001706482240000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.eta",
+        "gen_ai.evaluation.score.value": 0.0,
+        "gen_ai.evaluation.score.label": "incorrect",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 5.500000000000001e-05,
+        "gen_ai.request.model": "google/gemini-2.5-flash-lite",
+        "gen_ai.usage.input_tokens": 534,
+        "gen_ai.usage.output_tokens": 4,
+        "gen_ai.response.id": "gen-1785001073-K5RVdZQD4kUT57Wft5X2",
+        "augmentloop.decision.type": "eta_estimate",
+        "gen_ai.evaluation.explanation": "estimated 20.5m; true fastest time is 7.5m (tolerance +/-15%)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "eta_estimate eta_estimate-J4-J12 decision",
+      "traceId": "5d215a162971a8ebec56a285d910c247",
+      "spanId": "71124262a2b2a6b6",
+      "parentSpanId": "38e0a43e5cb8d7cc",
+      "startUnixNano": 1785001706482250000,
+      "endUnixNano": 1785001706482272000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "easy"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "5d215a162971a8ebec56a285d910c247",
+      "spanId": "5d95670208afe91c",
+      "parentSpanId": "71124262a2b2a6b6",
+      "startUnixNano": 1785001706482261000,
+      "endUnixNano": 1785001706482268000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.eta",
+        "gen_ai.evaluation.score.value": 0.0,
+        "gen_ai.evaluation.score.label": "incorrect",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 5.500000000000001e-05,
+        "gen_ai.request.model": "google/gemini-2.5-flash-lite",
+        "gen_ai.usage.input_tokens": 534,
+        "gen_ai.usage.output_tokens": 4,
+        "gen_ai.response.id": "gen-1785001074-Ad1tVygEoAgcEdRQuG7I",
+        "augmentloop.decision.type": "eta_estimate",
+        "gen_ai.evaluation.explanation": "estimated 20.5m; true fastest time is 8.5m (tolerance +/-15%)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "eta_estimate eta_estimate-J1-J13 decision",
+      "traceId": "5d215a162971a8ebec56a285d910c247",
+      "spanId": "825a5dac7fa224cd",
+      "parentSpanId": "38e0a43e5cb8d7cc",
+      "startUnixNano": 1785001706482278000,
+      "endUnixNano": 1785001706482300000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "easy"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "5d215a162971a8ebec56a285d910c247",
+      "spanId": "3b697b9befd28df4",
+      "parentSpanId": "825a5dac7fa224cd",
+      "startUnixNano": 1785001706482289000,
+      "endUnixNano": 1785001706482297000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.eta",
+        "gen_ai.evaluation.score.value": 0.0,
+        "gen_ai.evaluation.score.label": "incorrect",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 5.500000000000001e-05,
+        "gen_ai.request.model": "google/gemini-2.5-flash-lite",
+        "gen_ai.usage.input_tokens": 534,
+        "gen_ai.usage.output_tokens": 4,
+        "gen_ai.response.id": "gen-1785001075-HbZsc2O1t9aNjpDXym5L",
+        "augmentloop.decision.type": "eta_estimate",
+        "gen_ai.evaluation.explanation": "estimated 20.5m; true fastest time is 11.0m (tolerance +/-15%)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "eta_estimate eta_estimate-J1-J14 decision",
+      "traceId": "5d215a162971a8ebec56a285d910c247",
+      "spanId": "f6e92e9eaf585318",
+      "parentSpanId": "38e0a43e5cb8d7cc",
+      "startUnixNano": 1785001706482306000,
+      "endUnixNano": 1785001706482328000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "easy"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "5d215a162971a8ebec56a285d910c247",
+      "spanId": "d67e1642a3c823c6",
+      "parentSpanId": "f6e92e9eaf585318",
+      "startUnixNano": 1785001706482317000,
+      "endUnixNano": 1785001706482325000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.eta",
+        "gen_ai.evaluation.score.value": 0.0,
+        "gen_ai.evaluation.score.label": "incorrect",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 5.500000000000001e-05,
+        "gen_ai.request.model": "google/gemini-2.5-flash-lite",
+        "gen_ai.usage.input_tokens": 534,
+        "gen_ai.usage.output_tokens": 4,
+        "gen_ai.response.id": "gen-1785001076-c8itP13pF3Dg1LUXT0jh",
+        "augmentloop.decision.type": "eta_estimate",
+        "gen_ai.evaluation.explanation": "estimated 20.5m; true fastest time is 13.0m (tolerance +/-15%)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "eta_estimate eta_estimate-J1-J15 decision",
+      "traceId": "5d215a162971a8ebec56a285d910c247",
+      "spanId": "2120c797f2fd7b69",
+      "parentSpanId": "38e0a43e5cb8d7cc",
+      "startUnixNano": 1785001706482334000,
+      "endUnixNano": 1785001706482355000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "easy"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "5d215a162971a8ebec56a285d910c247",
+      "spanId": "4bfacdfbf663db6e",
+      "parentSpanId": "2120c797f2fd7b69",
+      "startUnixNano": 1785001706482344000,
+      "endUnixNano": 1785001706482352000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.eta",
+        "gen_ai.evaluation.score.value": 0.0,
+        "gen_ai.evaluation.score.label": "incorrect",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 5.500000000000001e-05,
+        "gen_ai.request.model": "google/gemini-2.5-flash-lite",
+        "gen_ai.usage.input_tokens": 534,
+        "gen_ai.usage.output_tokens": 4,
+        "gen_ai.response.id": "gen-1785001077-zNYU9mZxIdY1tfhGJoEW",
+        "augmentloop.decision.type": "eta_estimate",
+        "gen_ai.evaluation.explanation": "estimated 20.5m; true fastest time is 15.5m (tolerance +/-15%)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "eta_estimate eta_estimate-J2-J13 decision",
+      "traceId": "5d215a162971a8ebec56a285d910c247",
+      "spanId": "af71419feb0393a4",
+      "parentSpanId": "38e0a43e5cb8d7cc",
+      "startUnixNano": 1785001706482361000,
+      "endUnixNano": 1785001706482386000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "medium"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "5d215a162971a8ebec56a285d910c247",
+      "spanId": "203e2b663fddc271",
+      "parentSpanId": "af71419feb0393a4",
+      "startUnixNano": 1785001706482375000,
+      "endUnixNano": 1785001706482383000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.eta",
+        "gen_ai.evaluation.score.value": 0.0,
+        "gen_ai.evaluation.score.label": "incorrect",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 5.500000000000001e-05,
+        "gen_ai.request.model": "google/gemini-2.5-flash-lite",
+        "gen_ai.usage.input_tokens": 534,
+        "gen_ai.usage.output_tokens": 4,
+        "gen_ai.response.id": "gen-1785001077-cITtDzXaMvx21lZoiq5q",
+        "augmentloop.decision.type": "eta_estimate",
+        "gen_ai.evaluation.explanation": "estimated 20.5m; true fastest time is 8.5m (tolerance +/-15%)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "eta_estimate eta_estimate-J2-J14 decision",
+      "traceId": "5d215a162971a8ebec56a285d910c247",
+      "spanId": "73c37885779a0ebc",
+      "parentSpanId": "38e0a43e5cb8d7cc",
+      "startUnixNano": 1785001706482394000,
+      "endUnixNano": 1785001706482418000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "medium"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "5d215a162971a8ebec56a285d910c247",
+      "spanId": "4a058c8ded31ffa0",
+      "parentSpanId": "73c37885779a0ebc",
+      "startUnixNano": 1785001706482405000,
+      "endUnixNano": 1785001706482414000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.eta",
+        "gen_ai.evaluation.score.value": 0.0,
+        "gen_ai.evaluation.score.label": "incorrect",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 5.500000000000001e-05,
+        "gen_ai.request.model": "google/gemini-2.5-flash-lite",
+        "gen_ai.usage.input_tokens": 534,
+        "gen_ai.usage.output_tokens": 4,
+        "gen_ai.response.id": "gen-1785001078-aMe3Z5nGoainu8tOGWDy",
+        "augmentloop.decision.type": "eta_estimate",
+        "gen_ai.evaluation.explanation": "estimated 20.5m; true fastest time is 10.5m (tolerance +/-15%)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "eta_estimate eta_estimate-J2-J15 decision",
+      "traceId": "5d215a162971a8ebec56a285d910c247",
+      "spanId": "b56281f1993e0c8e",
+      "parentSpanId": "38e0a43e5cb8d7cc",
+      "startUnixNano": 1785001706482425000,
+      "endUnixNano": 1785001706482455000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "medium"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "5d215a162971a8ebec56a285d910c247",
+      "spanId": "b6a31e765a09ff74",
+      "parentSpanId": "b56281f1993e0c8e",
+      "startUnixNano": 1785001706482440000,
+      "endUnixNano": 1785001706482451000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.eta",
+        "gen_ai.evaluation.score.value": 0.0,
+        "gen_ai.evaluation.score.label": "incorrect",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 5.500000000000001e-05,
+        "gen_ai.request.model": "google/gemini-2.5-flash-lite",
+        "gen_ai.usage.input_tokens": 534,
+        "gen_ai.usage.output_tokens": 4,
+        "gen_ai.response.id": "gen-1785001079-4Y3jsM8tVEFCLWODoHVu",
+        "augmentloop.decision.type": "eta_estimate",
+        "gen_ai.evaluation.explanation": "estimated 20.5m; true fastest time is 12.5m (tolerance +/-15%)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "eta_estimate eta_estimate-J2-J16 decision",
+      "traceId": "5d215a162971a8ebec56a285d910c247",
+      "spanId": "0b3c8c50d5864a16",
+      "parentSpanId": "38e0a43e5cb8d7cc",
+      "startUnixNano": 1785001706482462000,
+      "endUnixNano": 1785001706482487000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "medium"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "5d215a162971a8ebec56a285d910c247",
+      "spanId": "5ddd93a5dec2f8e0",
+      "parentSpanId": "0b3c8c50d5864a16",
+      "startUnixNano": 1785001706482474000,
+      "endUnixNano": 1785001706482483000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.eta",
+        "gen_ai.evaluation.score.value": 0.0,
+        "gen_ai.evaluation.score.label": "incorrect",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 5.500000000000001e-05,
+        "gen_ai.request.model": "google/gemini-2.5-flash-lite",
+        "gen_ai.usage.input_tokens": 534,
+        "gen_ai.usage.output_tokens": 4,
+        "gen_ai.response.id": "gen-1785001080-x2zF8rrLMV5uvUjP8I4t",
+        "augmentloop.decision.type": "eta_estimate",
+        "gen_ai.evaluation.explanation": "estimated 30.5m; true fastest time is 15.5m (tolerance +/-15%)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "eta_estimate eta_estimate-J3-J13 decision",
+      "traceId": "5d215a162971a8ebec56a285d910c247",
+      "spanId": "4d85a4c0606705ee",
+      "parentSpanId": "38e0a43e5cb8d7cc",
+      "startUnixNano": 1785001706482494000,
+      "endUnixNano": 1785001706482518000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "hard"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "5d215a162971a8ebec56a285d910c247",
+      "spanId": "0f9719e54659847b",
+      "parentSpanId": "4d85a4c0606705ee",
+      "startUnixNano": 1785001706482506000,
+      "endUnixNano": 1785001706482514000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.eta",
+        "gen_ai.evaluation.score.value": 0.0,
+        "gen_ai.evaluation.score.label": "incorrect",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 5.500000000000001e-05,
+        "gen_ai.request.model": "google/gemini-2.5-flash-lite",
+        "gen_ai.usage.input_tokens": 534,
+        "gen_ai.usage.output_tokens": 4,
+        "gen_ai.response.id": "gen-1785001082-6Z3IaVyvkukv5kkyJRoH",
+        "augmentloop.decision.type": "eta_estimate",
+        "gen_ai.evaluation.explanation": "estimated 20.5m; true fastest time is 10.0m (tolerance +/-15%)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "eta_estimate eta_estimate-J3-J14 decision",
+      "traceId": "5d215a162971a8ebec56a285d910c247",
+      "spanId": "3e580f6096afae7b",
+      "parentSpanId": "38e0a43e5cb8d7cc",
+      "startUnixNano": 1785001706482525000,
+      "endUnixNano": 1785001706482552000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "hard"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "5d215a162971a8ebec56a285d910c247",
+      "spanId": "fd6bbf8c37a777a3",
+      "parentSpanId": "3e580f6096afae7b",
+      "startUnixNano": 1785001706482537000,
+      "endUnixNano": 1785001706482547000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.eta",
+        "gen_ai.evaluation.score.value": 0.0,
+        "gen_ai.evaluation.score.label": "incorrect",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 5.500000000000001e-05,
+        "gen_ai.request.model": "google/gemini-2.5-flash-lite",
+        "gen_ai.usage.input_tokens": 534,
+        "gen_ai.usage.output_tokens": 4,
+        "gen_ai.response.id": "gen-1785001082-1rxfia4AoMKnW7HYQ5FA",
+        "augmentloop.decision.type": "eta_estimate",
+        "gen_ai.evaluation.explanation": "estimated 20.5m; true fastest time is 12.0m (tolerance +/-15%)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "next_hop next_hop-J1 decision",
+      "traceId": "5d215a162971a8ebec56a285d910c247",
+      "spanId": "1add95cc9c16384e",
+      "parentSpanId": "38e0a43e5cb8d7cc",
+      "startUnixNano": 1785001706482560000,
+      "endUnixNano": 1785001706482587000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "easy"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "5d215a162971a8ebec56a285d910c247",
+      "spanId": "543e1aabf7a770b7",
+      "parentSpanId": "1add95cc9c16384e",
+      "startUnixNano": 1785001706482574000,
+      "endUnixNano": 1785001706482583000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.next_hop",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 5.47e-05,
+        "gen_ai.request.model": "google/gemini-2.5-flash-lite",
+        "gen_ai.usage.input_tokens": 539,
+        "gen_ai.usage.output_tokens": 2,
+        "gen_ai.response.id": "gen-1785001084-GMqBcyIGqVcGsQzQOkot",
+        "augmentloop.decision.type": "next_hop",
+        "gen_ai.evaluation.explanation": "chose J5; cheapest next hop is J5 (4.0m)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "next_hop next_hop-J10 decision",
+      "traceId": "5d215a162971a8ebec56a285d910c247",
+      "spanId": "2917a11820b12d9f",
+      "parentSpanId": "38e0a43e5cb8d7cc",
+      "startUnixNano": 1785001706482596000,
+      "endUnixNano": 1785001706482622000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "medium"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "5d215a162971a8ebec56a285d910c247",
+      "spanId": "178b3afc1bc6544e",
+      "parentSpanId": "2917a11820b12d9f",
+      "startUnixNano": 1785001706482609000,
+      "endUnixNano": 1785001706482618000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.next_hop",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 5.52e-05,
+        "gen_ai.request.model": "google/gemini-2.5-flash-lite",
+        "gen_ai.usage.input_tokens": 540,
+        "gen_ai.usage.output_tokens": 3,
+        "gen_ai.response.id": "gen-1785001084-8caxAewoUaQQsjSE0pCD",
+        "augmentloop.decision.type": "next_hop",
+        "gen_ai.evaluation.explanation": "chose J13; cheapest next hop is J13 (3.0m)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "next_hop next_hop-J11 decision",
+      "traceId": "5d215a162971a8ebec56a285d910c247",
+      "spanId": "7d4602aee00ed8ea",
+      "parentSpanId": "38e0a43e5cb8d7cc",
+      "startUnixNano": 1785001706482630000,
+      "endUnixNano": 1785001706482656000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "hard"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "5d215a162971a8ebec56a285d910c247",
+      "spanId": "18e0506dbda31745",
+      "parentSpanId": "7d4602aee00ed8ea",
+      "startUnixNano": 1785001706482643000,
+      "endUnixNano": 1785001706482652000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.next_hop",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 5.52e-05,
+        "gen_ai.request.model": "google/gemini-2.5-flash-lite",
+        "gen_ai.usage.input_tokens": 540,
+        "gen_ai.usage.output_tokens": 3,
+        "gen_ai.response.id": "gen-1785001085-4ifSRcRc7Gv35mOznlOX",
+        "augmentloop.decision.type": "next_hop",
+        "gen_ai.evaluation.explanation": "chose J14; cheapest next hop is J14 (4.5m)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "next_hop next_hop-J12 decision",
+      "traceId": "5d215a162971a8ebec56a285d910c247",
+      "spanId": "2049a54d54dd858c",
+      "parentSpanId": "38e0a43e5cb8d7cc",
+      "startUnixNano": 1785001706482663000,
+      "endUnixNano": 1785001706482688000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "easy"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "5d215a162971a8ebec56a285d910c247",
+      "spanId": "c589e1f40abd4096",
+      "parentSpanId": "2049a54d54dd858c",
+      "startUnixNano": 1785001706482675000,
+      "endUnixNano": 1785001706482684000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.next_hop",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 5.52e-05,
+        "gen_ai.request.model": "google/gemini-2.5-flash-lite",
+        "gen_ai.usage.input_tokens": 540,
+        "gen_ai.usage.output_tokens": 3,
+        "gen_ai.response.id": "gen-1785001086-mstZEbtah5kC694T7P1M",
+        "augmentloop.decision.type": "next_hop",
+        "gen_ai.evaluation.explanation": "chose J15; cheapest next hop is J15 (3.5m)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "next_hop next_hop-J13 decision",
+      "traceId": "5d215a162971a8ebec56a285d910c247",
+      "spanId": "6d994901a086c738",
+      "parentSpanId": "38e0a43e5cb8d7cc",
+      "startUnixNano": 1785001706482695000,
+      "endUnixNano": 1785001706482719000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "easy"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "5d215a162971a8ebec56a285d910c247",
+      "spanId": "1b88427ce29ce7be",
+      "parentSpanId": "6d994901a086c738",
+      "startUnixNano": 1785001706482707000,
+      "endUnixNano": 1785001706482716000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.next_hop",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 5.52e-05,
+        "gen_ai.request.model": "google/gemini-2.5-flash-lite",
+        "gen_ai.usage.input_tokens": 540,
+        "gen_ai.usage.output_tokens": 3,
+        "gen_ai.response.id": "gen-1785001086-mjcayWkBykeWXTS4JTfY",
+        "augmentloop.decision.type": "next_hop",
+        "gen_ai.evaluation.explanation": "chose J17; cheapest next hop is J17 (4.0m)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "next_hop next_hop-J14 decision",
+      "traceId": "5d215a162971a8ebec56a285d910c247",
+      "spanId": "0214d2f0faf2925b",
+      "parentSpanId": "38e0a43e5cb8d7cc",
+      "startUnixNano": 1785001706482726000,
+      "endUnixNano": 1785001706482751000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "medium"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "5d215a162971a8ebec56a285d910c247",
+      "spanId": "764ddf4eeecdbd3c",
+      "parentSpanId": "0214d2f0faf2925b",
+      "startUnixNano": 1785001706482738000,
+      "endUnixNano": 1785001706482747000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.next_hop",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 5.52e-05,
+        "gen_ai.request.model": "google/gemini-2.5-flash-lite",
+        "gen_ai.usage.input_tokens": 540,
+        "gen_ai.usage.output_tokens": 3,
+        "gen_ai.response.id": "gen-1785001088-DiQkVrBZc8ARceZH9W55",
+        "augmentloop.decision.type": "next_hop",
+        "gen_ai.evaluation.explanation": "chose J18; cheapest next hop is J18 (3.0m)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "next_hop next_hop-J15 decision",
+      "traceId": "5d215a162971a8ebec56a285d910c247",
+      "spanId": "8b8ad58a49ee14ab",
+      "parentSpanId": "38e0a43e5cb8d7cc",
+      "startUnixNano": 1785001706482758000,
+      "endUnixNano": 1785001706482782000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "hard"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "5d215a162971a8ebec56a285d910c247",
+      "spanId": "c80043ac6dac0421",
+      "parentSpanId": "8b8ad58a49ee14ab",
+      "startUnixNano": 1785001706482770000,
+      "endUnixNano": 1785001706482778000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.next_hop",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 5.52e-05,
+        "gen_ai.request.model": "google/gemini-2.5-flash-lite",
+        "gen_ai.usage.input_tokens": 540,
+        "gen_ai.usage.output_tokens": 3,
+        "gen_ai.response.id": "gen-1785001089-4Qt0MYc9SnkETOuIHv3w",
+        "augmentloop.decision.type": "next_hop",
+        "gen_ai.evaluation.explanation": "chose J18; cheapest next hop is J18 (4.5m)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "next_hop next_hop-J16 decision",
+      "traceId": "5d215a162971a8ebec56a285d910c247",
+      "spanId": "80fc35c661c97772",
+      "parentSpanId": "38e0a43e5cb8d7cc",
+      "startUnixNano": 1785001706482790000,
+      "endUnixNano": 1785001706482814000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "easy"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "5d215a162971a8ebec56a285d910c247",
+      "spanId": "09f4de617e7a1d61",
+      "parentSpanId": "80fc35c661c97772",
+      "startUnixNano": 1785001706482802000,
+      "endUnixNano": 1785001706482811000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.next_hop",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 5.52e-05,
+        "gen_ai.request.model": "google/gemini-2.5-flash-lite",
+        "gen_ai.usage.input_tokens": 540,
+        "gen_ai.usage.output_tokens": 3,
+        "gen_ai.response.id": "gen-1785001090-obCXAxh4aW3PHWLtwtbN",
+        "augmentloop.decision.type": "next_hop",
+        "gen_ai.evaluation.explanation": "chose J19; cheapest next hop is J19 (3.5m)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "next_hop next_hop-J17 decision",
+      "traceId": "5d215a162971a8ebec56a285d910c247",
+      "spanId": "2618326e9dc5eea2",
+      "parentSpanId": "38e0a43e5cb8d7cc",
+      "startUnixNano": 1785001706482820000,
+      "endUnixNano": 1785001706482841000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "easy"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "5d215a162971a8ebec56a285d910c247",
+      "spanId": "71636b9c86526d47",
+      "parentSpanId": "2618326e9dc5eea2",
+      "startUnixNano": 1785001706482830000,
+      "endUnixNano": 1785001706482838000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.next_hop",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 5.52e-05,
+        "gen_ai.request.model": "google/gemini-2.5-flash-lite",
+        "gen_ai.usage.input_tokens": 540,
+        "gen_ai.usage.output_tokens": 3,
+        "gen_ai.response.id": "gen-1785001090-UGBv6kwGzQhRv5bAp1Ya",
+        "augmentloop.decision.type": "next_hop",
+        "gen_ai.evaluation.explanation": "chose J18; cheapest next hop is J18 (2.0m)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "next_hop next_hop-J18 decision",
+      "traceId": "5d215a162971a8ebec56a285d910c247",
+      "spanId": "41dac73f3f341ad4",
+      "parentSpanId": "38e0a43e5cb8d7cc",
+      "startUnixNano": 1785001706482847000,
+      "endUnixNano": 1785001706482886000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "easy"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "5d215a162971a8ebec56a285d910c247",
+      "spanId": "d933c7d0651c8d8e",
+      "parentSpanId": "41dac73f3f341ad4",
+      "startUnixNano": 1785001706482873000,
+      "endUnixNano": 1785001706482882000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.next_hop",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 5.52e-05,
+        "gen_ai.request.model": "google/gemini-2.5-flash-lite",
+        "gen_ai.usage.input_tokens": 540,
+        "gen_ai.usage.output_tokens": 3,
+        "gen_ai.response.id": "gen-1785001092-OWuV8iKPrtVbsXy9dxpF",
+        "augmentloop.decision.type": "next_hop",
+        "gen_ai.evaluation.explanation": "chose J19; cheapest next hop is J19 (2.5m)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "next_hop next_hop-J19 decision",
+      "traceId": "5d215a162971a8ebec56a285d910c247",
+      "spanId": "7869c8e9851591de",
+      "parentSpanId": "38e0a43e5cb8d7cc",
+      "startUnixNano": 1785001706482893000,
+      "endUnixNano": 1785001706482915000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "easy"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "5d215a162971a8ebec56a285d910c247",
+      "spanId": "39850a60ed7bc2c4",
+      "parentSpanId": "7869c8e9851591de",
+      "startUnixNano": 1785001706482904000,
+      "endUnixNano": 1785001706482912000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.next_hop",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 5.52e-05,
+        "gen_ai.request.model": "google/gemini-2.5-flash-lite",
+        "gen_ai.usage.input_tokens": 540,
+        "gen_ai.usage.output_tokens": 3,
+        "gen_ai.response.id": "gen-1785001093-nPc8FcA472a2ZEBQmGE3",
+        "augmentloop.decision.type": "next_hop",
+        "gen_ai.evaluation.explanation": "chose J20; cheapest next hop is J20 (2.0m)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "next_hop next_hop-J2 decision",
+      "traceId": "5d215a162971a8ebec56a285d910c247",
+      "spanId": "86b9abdbdcaff318",
+      "parentSpanId": "38e0a43e5cb8d7cc",
+      "startUnixNano": 1785001706482921000,
+      "endUnixNano": 1785001706482944000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "medium"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "5d215a162971a8ebec56a285d910c247",
+      "spanId": "97df06c03ef7fc93",
+      "parentSpanId": "86b9abdbdcaff318",
+      "startUnixNano": 1785001706482932000,
+      "endUnixNano": 1785001706482940000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.next_hop",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 5.47e-05,
+        "gen_ai.request.model": "google/gemini-2.5-flash-lite",
+        "gen_ai.usage.input_tokens": 539,
+        "gen_ai.usage.output_tokens": 2,
+        "gen_ai.response.id": "gen-1785001093-hFLPozRqDaRt5SESPqTm",
+        "augmentloop.decision.type": "next_hop",
+        "gen_ai.evaluation.explanation": "chose J6; cheapest next hop is J6 (3.0m)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "next_hop next_hop-J20 decision",
+      "traceId": "5d215a162971a8ebec56a285d910c247",
+      "spanId": "c455ce5a42fcb9de",
+      "parentSpanId": "38e0a43e5cb8d7cc",
+      "startUnixNano": 1785001706482950000,
+      "endUnixNano": 1785001706482971000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "easy"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "5d215a162971a8ebec56a285d910c247",
+      "spanId": "f0070c494f0c8201",
+      "parentSpanId": "c455ce5a42fcb9de",
+      "startUnixNano": 1785001706482960000,
+      "endUnixNano": 1785001706482968000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.next_hop",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 5.52e-05,
+        "gen_ai.request.model": "google/gemini-2.5-flash-lite",
+        "gen_ai.usage.input_tokens": 540,
+        "gen_ai.usage.output_tokens": 3,
+        "gen_ai.response.id": "gen-1785001094-RjGzWbpQkKvA7iKG0TIH",
+        "augmentloop.decision.type": "next_hop",
+        "gen_ai.evaluation.explanation": "chose J17; cheapest next hop is J17 (3.0m)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "next_hop next_hop-J3 decision",
+      "traceId": "5d215a162971a8ebec56a285d910c247",
+      "spanId": "1752957371bacef8",
+      "parentSpanId": "38e0a43e5cb8d7cc",
+      "startUnixNano": 1785001706482977000,
+      "endUnixNano": 1785001706483000000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "hard"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "5d215a162971a8ebec56a285d910c247",
+      "spanId": "889cfb44adc46e37",
+      "parentSpanId": "1752957371bacef8",
+      "startUnixNano": 1785001706482989000,
+      "endUnixNano": 1785001706482997000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.next_hop",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 5.47e-05,
+        "gen_ai.request.model": "google/gemini-2.5-flash-lite",
+        "gen_ai.usage.input_tokens": 539,
+        "gen_ai.usage.output_tokens": 2,
+        "gen_ai.response.id": "gen-1785001095-s3I7L3WLu2Sd0gB7sm6B",
+        "augmentloop.decision.type": "next_hop",
+        "gen_ai.evaluation.explanation": "chose J6; cheapest next hop is J6 (4.5m)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "next_hop next_hop-J4 decision",
+      "traceId": "5d215a162971a8ebec56a285d910c247",
+      "spanId": "49a8c01c39031c7b",
+      "parentSpanId": "38e0a43e5cb8d7cc",
+      "startUnixNano": 1785001706483006000,
+      "endUnixNano": 1785001706483029000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "easy"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "5d215a162971a8ebec56a285d910c247",
+      "spanId": "ec8c441f3420d97f",
+      "parentSpanId": "49a8c01c39031c7b",
+      "startUnixNano": 1785001706483016000,
+      "endUnixNano": 1785001706483024000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.next_hop",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 5.47e-05,
+        "gen_ai.request.model": "google/gemini-2.5-flash-lite",
+        "gen_ai.usage.input_tokens": 539,
+        "gen_ai.usage.output_tokens": 2,
+        "gen_ai.response.id": "gen-1785001095-NkHn3KP96OCQPKbYw8TE",
+        "augmentloop.decision.type": "next_hop",
+        "gen_ai.evaluation.explanation": "chose J7; cheapest next hop is J7 (3.5m)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "next_hop next_hop-J5 decision",
+      "traceId": "5d215a162971a8ebec56a285d910c247",
+      "spanId": "054f9f7e76cd1206",
+      "parentSpanId": "38e0a43e5cb8d7cc",
+      "startUnixNano": 1785001706483035000,
+      "endUnixNano": 1785001706483058000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "easy"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "5d215a162971a8ebec56a285d910c247",
+      "spanId": "930b96c79a50c20f",
+      "parentSpanId": "054f9f7e76cd1206",
+      "startUnixNano": 1785001706483046000,
+      "endUnixNano": 1785001706483054000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.next_hop",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 5.47e-05,
+        "gen_ai.request.model": "google/gemini-2.5-flash-lite",
+        "gen_ai.usage.input_tokens": 539,
+        "gen_ai.usage.output_tokens": 2,
+        "gen_ai.response.id": "gen-1785001096-KyL3uBHbTeiPQ6HlI22j",
+        "augmentloop.decision.type": "next_hop",
+        "gen_ai.evaluation.explanation": "chose J9; cheapest next hop is J9 (3.0m)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "next_hop next_hop-J6 decision",
+      "traceId": "5d215a162971a8ebec56a285d910c247",
+      "spanId": "fab37299183577a3",
+      "parentSpanId": "38e0a43e5cb8d7cc",
+      "startUnixNano": 1785001706483065000,
+      "endUnixNano": 1785001706483089000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "medium"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "5d215a162971a8ebec56a285d910c247",
+      "spanId": "9d4971c3addd30db",
+      "parentSpanId": "fab37299183577a3",
+      "startUnixNano": 1785001706483077000,
+      "endUnixNano": 1785001706483084000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.next_hop",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 5.510000000000001e-05,
+        "gen_ai.request.model": "google/gemini-2.5-flash-lite",
+        "gen_ai.usage.input_tokens": 539,
+        "gen_ai.usage.output_tokens": 3,
+        "gen_ai.response.id": "gen-1785001096-unb6RaecgUVFSEyHvGxf",
+        "augmentloop.decision.type": "next_hop",
+        "gen_ai.evaluation.explanation": "chose J10; cheapest next hop is J10 (2.5m)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "next_hop next_hop-J7 decision",
+      "traceId": "5d215a162971a8ebec56a285d910c247",
+      "spanId": "9e56f169f39d1d06",
+      "parentSpanId": "38e0a43e5cb8d7cc",
+      "startUnixNano": 1785001706483095000,
+      "endUnixNano": 1785001706483117000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "hard"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "5d215a162971a8ebec56a285d910c247",
+      "spanId": "ef31cfefd595aa24",
+      "parentSpanId": "9e56f169f39d1d06",
+      "startUnixNano": 1785001706483106000,
+      "endUnixNano": 1785001706483114000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.next_hop",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 5.510000000000001e-05,
+        "gen_ai.request.model": "google/gemini-2.5-flash-lite",
+        "gen_ai.usage.input_tokens": 539,
+        "gen_ai.usage.output_tokens": 3,
+        "gen_ai.response.id": "gen-1785001097-5sjhJH1yqTlctGPz8gg1",
+        "augmentloop.decision.type": "next_hop",
+        "gen_ai.evaluation.explanation": "chose J10; cheapest next hop is J10 (3.5m)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "next_hop next_hop-J8 decision",
+      "traceId": "5d215a162971a8ebec56a285d910c247",
+      "spanId": "16697e4672a39b82",
+      "parentSpanId": "38e0a43e5cb8d7cc",
+      "startUnixNano": 1785001706483124000,
+      "endUnixNano": 1785001706483145000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "easy"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "5d215a162971a8ebec56a285d910c247",
+      "spanId": "c50794611c241789",
+      "parentSpanId": "16697e4672a39b82",
+      "startUnixNano": 1785001706483134000,
+      "endUnixNano": 1785001706483142000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.next_hop",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 5.510000000000001e-05,
+        "gen_ai.request.model": "google/gemini-2.5-flash-lite",
+        "gen_ai.usage.input_tokens": 539,
+        "gen_ai.usage.output_tokens": 3,
+        "gen_ai.response.id": "gen-1785001099-lCB1AZqJWDK8JZ2wQZT4",
+        "augmentloop.decision.type": "next_hop",
+        "gen_ai.evaluation.explanation": "chose J11; cheapest next hop is J11 (3.0m)"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "next_hop next_hop-J9 decision",
+      "traceId": "5d215a162971a8ebec56a285d910c247",
+      "spanId": "e15bcb3c208a29a9",
+      "parentSpanId": "38e0a43e5cb8d7cc",
+      "startUnixNano": 1785001706483152000,
+      "endUnixNano": 1785001706483175000,
+      "attributes": {
+        "augmentloop.decision.difficulty": "easy"
+      },
+      "links": []
+    },
+    {
+      "service": "toy-world",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "5d215a162971a8ebec56a285d910c247",
+      "spanId": "a1ec86cdb5ef38db",
+      "parentSpanId": "e15bcb3c208a29a9",
+      "startUnixNano": 1785001706483163000,
+      "endUnixNano": 1785001706483171000,
+      "attributes": {
+        "gen_ai.evaluation.name": "route.next_hop",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "math",
+        "augmentloop.cost.usd": 5.510000000000001e-05,
+        "gen_ai.request.model": "google/gemini-2.5-flash-lite",
+        "gen_ai.usage.input_tokens": 539,
+        "gen_ai.usage.output_tokens": 3,
+        "gen_ai.response.id": "gen-1785001101-TBuzjFYAfDG9Q00DdsAA",
+        "augmentloop.decision.type": "next_hop",
+        "gen_ai.evaluation.explanation": "chose J13; cheapest next hop is J13 (4.0m)"
+      },
       "links": []
     },
     {
       "service": "toy-world-outcomes",
       "name": "gen_ai.evaluation.result",
-      "traceId": "6d308a2c3f9744aef60034749ad077e2",
-      "spanId": "7bb42e4c484a03d1",
+      "traceId": "b13bb3f6248fcbbdcb84c35bfab99887",
+      "spanId": "55f569ee6d4a072b",
       "parentSpanId": null,
-      "startUnixNano": 1784996397345479300,
-      "endUnixNano": 1784996397345479300,
+      "startUnixNano": 1785001706483200000,
+      "endUnixNano": 1785001706483209000,
       "attributes": {
         "gen_ai.evaluation.name": "journey.on_time",
         "gen_ai.evaluation.score.value": 1.0,
         "gen_ai.evaluation.score.label": "correct",
         "augmentloop.grade.source": "reality",
-        "gen_ai.response.id": "replay-d1-J3",
+        "gen_ai.response.id": "gen-1785000655-QbzMVktYXeFlvd6fYJ5y",
+        "gen_ai.request.model": "anthropic/claude-haiku-4.5",
         "augmentloop.decision.type": "route_choice",
-        "gen_ai.evaluation.explanation": "driver-1 arrived on time"
+        "gen_ai.evaluation.explanation": "journey arrived on time"
       },
       "links": [
         {
-          "traceId": "2ee436c193b19cb8500d1e387a11b402",
-          "spanId": "c371c9d4ed1cdc44"
+          "traceId": "92036a1815d57a7aabf17a9e23e78c74",
+          "spanId": "f4eb6140a536c169"
         }
       ]
     },
     {
       "service": "toy-world-outcomes",
       "name": "gen_ai.evaluation.result",
-      "traceId": "dc84c402245168f9f41763297a1e29a6",
-      "spanId": "58299818060ea99f",
+      "traceId": "00b47856735ecfe5cbc2b2fdd61b5607",
+      "spanId": "9f5bfa7996b1ffc0",
       "parentSpanId": null,
-      "startUnixNano": 1784996397345479300,
-      "endUnixNano": 1784996397345479300,
+      "startUnixNano": 1785001706483225000,
+      "endUnixNano": 1785001706483233000,
       "attributes": {
         "gen_ai.evaluation.name": "journey.on_time",
         "gen_ai.evaluation.score.value": 1.0,
         "gen_ai.evaluation.score.label": "correct",
         "augmentloop.grade.source": "reality",
-        "gen_ai.response.id": "replay-d2-J3",
+        "gen_ai.response.id": "gen-1785000657-XiJ2D8f6poL9pzYhMH2O",
+        "gen_ai.request.model": "anthropic/claude-haiku-4.5",
         "augmentloop.decision.type": "route_choice",
-        "gen_ai.evaluation.explanation": "driver-2 arrived on time"
+        "gen_ai.evaluation.explanation": "journey arrived on time"
       },
       "links": [
         {
-          "traceId": "8675cec9e3e216eb47d5e348019062ee",
-          "spanId": "e7bb9d0bd63790c2"
+          "traceId": "92036a1815d57a7aabf17a9e23e78c74",
+          "spanId": "04f609d0bf33ce18"
         }
       ]
     },
     {
       "service": "toy-world-outcomes",
       "name": "gen_ai.evaluation.result",
-      "traceId": "6c459c3fb3c5fda0f2e8a7e3c392a0fb",
-      "spanId": "15541ed1bc4000c9",
+      "traceId": "e211d503af1027586b6ca1ff5790d859",
+      "spanId": "8e9428389d8ea69b",
       "parentSpanId": null,
-      "startUnixNano": 1784996397345479300,
-      "endUnixNano": 1784996397345479300,
+      "startUnixNano": 1785001706483246000,
+      "endUnixNano": 1785001706483253000,
       "attributes": {
         "gen_ai.evaluation.name": "journey.on_time",
-        "gen_ai.evaluation.score.value": 0.0,
-        "gen_ai.evaluation.score.label": "incorrect",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
         "augmentloop.grade.source": "reality",
-        "gen_ai.response.id": "replay-d3-J1",
+        "gen_ai.response.id": "gen-1785000658-GE3Oc8K9RbgZ4a4CztJr",
+        "gen_ai.request.model": "anthropic/claude-haiku-4.5",
         "augmentloop.decision.type": "route_choice",
-        "gen_ai.evaluation.explanation": "driver-3 arrived late"
+        "gen_ai.evaluation.explanation": "journey arrived on time"
       },
       "links": [
         {
-          "traceId": "052f200c0428d03da8295270ca4d0a8a",
-          "spanId": "bd8a20fc2892c703"
+          "traceId": "92036a1815d57a7aabf17a9e23e78c74",
+          "spanId": "e73f1ef11116f6db"
         }
       ]
     },
     {
       "service": "toy-world-outcomes",
       "name": "gen_ai.evaluation.result",
-      "traceId": "7146f748feb2d117fe8fcf3ba2ba7694",
-      "spanId": "40e3557ea1f5093d",
+      "traceId": "26e7c37f6ca2c5c8644f385a2db9c45d",
+      "spanId": "ede23e064b1f95fe",
       "parentSpanId": null,
-      "startUnixNano": 1784996397345479300,
-      "endUnixNano": 1784996397345479300,
+      "startUnixNano": 1785001706483264000,
+      "endUnixNano": 1785001706483271000,
       "attributes": {
         "gen_ai.evaluation.name": "journey.on_time",
         "gen_ai.evaluation.score.value": 0.0,
         "gen_ai.evaluation.score.label": "incorrect",
         "augmentloop.grade.source": "reality",
-        "gen_ai.response.id": "replay-d4-J2",
+        "gen_ai.response.id": "gen-1785000659-D8gzsxfZczeOQFsxjruK",
+        "gen_ai.request.model": "anthropic/claude-haiku-4.5",
         "augmentloop.decision.type": "route_choice",
-        "gen_ai.evaluation.explanation": "driver-4 arrived late"
+        "gen_ai.evaluation.explanation": "journey arrived late"
       },
       "links": [
         {
-          "traceId": "3f8e12e236fc3dc687db5f9bb11d8102",
-          "spanId": "5b54ee80a9166db1"
+          "traceId": "92036a1815d57a7aabf17a9e23e78c74",
+          "spanId": "0af86af7641c98a7"
+        }
+      ]
+    },
+    {
+      "service": "toy-world-outcomes",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "daa6368bf7e5e2ca908d80f86809a0bc",
+      "spanId": "328ed0836852dc16",
+      "parentSpanId": null,
+      "startUnixNano": 1785001706483284000,
+      "endUnixNano": 1785001706483290000,
+      "attributes": {
+        "gen_ai.evaluation.name": "journey.on_time",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "reality",
+        "gen_ai.response.id": "gen-1785000661-2mHxVSpBduVUMsJiItlo",
+        "gen_ai.request.model": "anthropic/claude-haiku-4.5",
+        "augmentloop.decision.type": "route_choice",
+        "gen_ai.evaluation.explanation": "journey arrived on time"
+      },
+      "links": [
+        {
+          "traceId": "92036a1815d57a7aabf17a9e23e78c74",
+          "spanId": "6f82884e799cf0cc"
+        }
+      ]
+    },
+    {
+      "service": "toy-world-outcomes",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "9fafe3fed40264babeb7f5d4a834678a",
+      "spanId": "69ac563979606597",
+      "parentSpanId": null,
+      "startUnixNano": 1785001706483301000,
+      "endUnixNano": 1785001706483307000,
+      "attributes": {
+        "gen_ai.evaluation.name": "journey.on_time",
+        "gen_ai.evaluation.score.value": 0.0,
+        "gen_ai.evaluation.score.label": "incorrect",
+        "augmentloop.grade.source": "reality",
+        "gen_ai.response.id": "gen-1785000662-hnnTzYJPZawsaOYZSN8g",
+        "gen_ai.request.model": "anthropic/claude-haiku-4.5",
+        "augmentloop.decision.type": "route_choice",
+        "gen_ai.evaluation.explanation": "journey arrived late"
+      },
+      "links": [
+        {
+          "traceId": "92036a1815d57a7aabf17a9e23e78c74",
+          "spanId": "8dafa60c68e9f704"
+        }
+      ]
+    },
+    {
+      "service": "toy-world-outcomes",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "20b335a6cf41875bd28f825db6a75bd0",
+      "spanId": "9138d7b8b28fcff2",
+      "parentSpanId": null,
+      "startUnixNano": 1785001706483318000,
+      "endUnixNano": 1785001706483324000,
+      "attributes": {
+        "gen_ai.evaluation.name": "journey.on_time",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "reality",
+        "gen_ai.response.id": "gen-1785000664-dmVjZc3t3ZuMfalkZxfW",
+        "gen_ai.request.model": "anthropic/claude-haiku-4.5",
+        "augmentloop.decision.type": "route_choice",
+        "gen_ai.evaluation.explanation": "journey arrived on time"
+      },
+      "links": [
+        {
+          "traceId": "92036a1815d57a7aabf17a9e23e78c74",
+          "spanId": "ea8b316ada375db4"
+        }
+      ]
+    },
+    {
+      "service": "toy-world-outcomes",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "9a15b965c7f5df909f0ee6bc3e476ce5",
+      "spanId": "f5fc1bf1ba71f1d4",
+      "parentSpanId": null,
+      "startUnixNano": 1785001706483335000,
+      "endUnixNano": 1785001706483341000,
+      "attributes": {
+        "gen_ai.evaluation.name": "journey.on_time",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "reality",
+        "gen_ai.response.id": "gen-1785000666-HR61TfibkQUw5lxdX71n",
+        "gen_ai.request.model": "anthropic/claude-haiku-4.5",
+        "augmentloop.decision.type": "route_choice",
+        "gen_ai.evaluation.explanation": "journey arrived on time"
+      },
+      "links": [
+        {
+          "traceId": "92036a1815d57a7aabf17a9e23e78c74",
+          "spanId": "cbaf28785c257efd"
+        }
+      ]
+    },
+    {
+      "service": "toy-world-outcomes",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "56170ddad5391a125e6c924feabc1b5d",
+      "spanId": "741b828f79059fd0",
+      "parentSpanId": null,
+      "startUnixNano": 1785001706483352000,
+      "endUnixNano": 1785001706483358000,
+      "attributes": {
+        "gen_ai.evaluation.name": "journey.on_time",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "reality",
+        "gen_ai.response.id": "gen-1785000667-FpFCjTNdQOrasjePjYv3",
+        "gen_ai.request.model": "anthropic/claude-haiku-4.5",
+        "augmentloop.decision.type": "route_choice",
+        "gen_ai.evaluation.explanation": "journey arrived on time"
+      },
+      "links": [
+        {
+          "traceId": "92036a1815d57a7aabf17a9e23e78c74",
+          "spanId": "8ffbaa1ffbd397f6"
+        }
+      ]
+    },
+    {
+      "service": "toy-world-outcomes",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "28564d5f6648392c63df6b29c5afbc99",
+      "spanId": "36513c2d53f027f3",
+      "parentSpanId": null,
+      "startUnixNano": 1785001706483368000,
+      "endUnixNano": 1785001706483374000,
+      "attributes": {
+        "gen_ai.evaluation.name": "journey.on_time",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "reality",
+        "gen_ai.response.id": "gen-1785000669-cfUbRmHgV2B6ONBeo2o1",
+        "gen_ai.request.model": "anthropic/claude-haiku-4.5",
+        "augmentloop.decision.type": "route_choice",
+        "gen_ai.evaluation.explanation": "journey arrived on time"
+      },
+      "links": [
+        {
+          "traceId": "92036a1815d57a7aabf17a9e23e78c74",
+          "spanId": "843618225a303c30"
+        }
+      ]
+    },
+    {
+      "service": "toy-world-outcomes",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "4285afdf076ac00288c19dc75c315ac6",
+      "spanId": "6c8ef12516c0dedc",
+      "parentSpanId": null,
+      "startUnixNano": 1785001706483385000,
+      "endUnixNano": 1785001706483390000,
+      "attributes": {
+        "gen_ai.evaluation.name": "journey.on_time",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "reality",
+        "gen_ai.response.id": "gen-1785000670-Ds31T1OjaMglh0afykQj",
+        "gen_ai.request.model": "anthropic/claude-haiku-4.5",
+        "augmentloop.decision.type": "route_choice",
+        "gen_ai.evaluation.explanation": "journey arrived on time"
+      },
+      "links": [
+        {
+          "traceId": "92036a1815d57a7aabf17a9e23e78c74",
+          "spanId": "be5733bc4068e8fd"
+        }
+      ]
+    },
+    {
+      "service": "toy-world-outcomes",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "f3409ee420a78d4783add8e7ae76a6a4",
+      "spanId": "908d4ac07294617e",
+      "parentSpanId": null,
+      "startUnixNano": 1785001706483401000,
+      "endUnixNano": 1785001706483407000,
+      "attributes": {
+        "gen_ai.evaluation.name": "journey.on_time",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "reality",
+        "gen_ai.response.id": "gen-1785000672-0su5skkSKoCDe9ynpGr6",
+        "gen_ai.request.model": "anthropic/claude-haiku-4.5",
+        "augmentloop.decision.type": "route_choice",
+        "gen_ai.evaluation.explanation": "journey arrived on time"
+      },
+      "links": [
+        {
+          "traceId": "92036a1815d57a7aabf17a9e23e78c74",
+          "spanId": "f4745e14c4bae399"
+        }
+      ]
+    },
+    {
+      "service": "toy-world-outcomes",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "3e6018b649f5700a362deb0d8fd26467",
+      "spanId": "abe8c9b8fa2cbabd",
+      "parentSpanId": null,
+      "startUnixNano": 1785001706483419000,
+      "endUnixNano": 1785001706483425000,
+      "attributes": {
+        "gen_ai.evaluation.name": "journey.on_time",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "reality",
+        "gen_ai.response.id": "gen-1785000673-eDWbIQAMIeuIoOeCh45y",
+        "gen_ai.request.model": "anthropic/claude-haiku-4.5",
+        "augmentloop.decision.type": "route_choice",
+        "gen_ai.evaluation.explanation": "journey arrived on time"
+      },
+      "links": [
+        {
+          "traceId": "92036a1815d57a7aabf17a9e23e78c74",
+          "spanId": "c786ade63af0ec87"
+        }
+      ]
+    },
+    {
+      "service": "toy-world-outcomes",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "a6f4c5e7a82a6931d57bb866fa257652",
+      "spanId": "6d9b00c7c2dc5ade",
+      "parentSpanId": null,
+      "startUnixNano": 1785001706483436000,
+      "endUnixNano": 1785001706483442000,
+      "attributes": {
+        "gen_ai.evaluation.name": "journey.on_time",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "reality",
+        "gen_ai.response.id": "gen-1785000675-xy2vDHWtYXHmVv2In15S",
+        "gen_ai.request.model": "anthropic/claude-haiku-4.5",
+        "augmentloop.decision.type": "route_choice",
+        "gen_ai.evaluation.explanation": "journey arrived on time"
+      },
+      "links": [
+        {
+          "traceId": "92036a1815d57a7aabf17a9e23e78c74",
+          "spanId": "dde94ef437966c7d"
+        }
+      ]
+    },
+    {
+      "service": "toy-world-outcomes",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "334408cf2c454e425ffdb660fee5dc26",
+      "spanId": "6adafff367ac220b",
+      "parentSpanId": null,
+      "startUnixNano": 1785001706483452000,
+      "endUnixNano": 1785001706483458000,
+      "attributes": {
+        "gen_ai.evaluation.name": "journey.on_time",
+        "gen_ai.evaluation.score.value": 0.0,
+        "gen_ai.evaluation.score.label": "incorrect",
+        "augmentloop.grade.source": "reality",
+        "gen_ai.response.id": "gen-1785000677-tQWelNutb4iHyN0RYOZd",
+        "gen_ai.request.model": "anthropic/claude-haiku-4.5",
+        "augmentloop.decision.type": "route_choice",
+        "gen_ai.evaluation.explanation": "journey arrived late"
+      },
+      "links": [
+        {
+          "traceId": "92036a1815d57a7aabf17a9e23e78c74",
+          "spanId": "262bfdf4f515285b"
+        }
+      ]
+    },
+    {
+      "service": "toy-world-outcomes",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "b66ade3f0992320ce37a102154d28ee2",
+      "spanId": "92d51afcce4f53c0",
+      "parentSpanId": null,
+      "startUnixNano": 1785001706483469000,
+      "endUnixNano": 1785001706483475000,
+      "attributes": {
+        "gen_ai.evaluation.name": "journey.on_time",
+        "gen_ai.evaluation.score.value": 0.0,
+        "gen_ai.evaluation.score.label": "incorrect",
+        "augmentloop.grade.source": "reality",
+        "gen_ai.response.id": "gen-1785000679-6AmeGTJM6HOfwXH5rIHS",
+        "gen_ai.request.model": "anthropic/claude-haiku-4.5",
+        "augmentloop.decision.type": "route_choice",
+        "gen_ai.evaluation.explanation": "journey arrived late"
+      },
+      "links": [
+        {
+          "traceId": "92036a1815d57a7aabf17a9e23e78c74",
+          "spanId": "66ff70ee9cd60484"
+        }
+      ]
+    },
+    {
+      "service": "toy-world-outcomes",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "c03c319c1578b30a0e868d161725b8c8",
+      "spanId": "3e502d8a322117ac",
+      "parentSpanId": null,
+      "startUnixNano": 1785001706483487000,
+      "endUnixNano": 1785001706483494000,
+      "attributes": {
+        "gen_ai.evaluation.name": "journey.on_time",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "reality",
+        "gen_ai.response.id": "gen-1785000680-yqTEWceAkHByfu3GFc0a",
+        "gen_ai.request.model": "anthropic/claude-haiku-4.5",
+        "augmentloop.decision.type": "route_choice",
+        "gen_ai.evaluation.explanation": "journey arrived on time"
+      },
+      "links": [
+        {
+          "traceId": "92036a1815d57a7aabf17a9e23e78c74",
+          "spanId": "0ea6ca71496f10ac"
+        }
+      ]
+    },
+    {
+      "service": "toy-world-outcomes",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "68a9cea724008d696b9b666d864796f9",
+      "spanId": "15c432b6af6d6927",
+      "parentSpanId": null,
+      "startUnixNano": 1785001706483522000,
+      "endUnixNano": 1785001706483530000,
+      "attributes": {
+        "gen_ai.evaluation.name": "journey.on_time",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "reality",
+        "gen_ai.response.id": "gen-1785000681-pcuoefgFkEc7dGZXbuvl",
+        "gen_ai.request.model": "anthropic/claude-haiku-4.5",
+        "augmentloop.decision.type": "route_choice",
+        "gen_ai.evaluation.explanation": "journey arrived on time"
+      },
+      "links": [
+        {
+          "traceId": "92036a1815d57a7aabf17a9e23e78c74",
+          "spanId": "2edc0f6fa0139213"
+        }
+      ]
+    },
+    {
+      "service": "toy-world-outcomes",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "8c2268f4b287a2ce0421fe4ffd7e4d61",
+      "spanId": "a7804ea9182122f8",
+      "parentSpanId": null,
+      "startUnixNano": 1785001706483543000,
+      "endUnixNano": 1785001706483549000,
+      "attributes": {
+        "gen_ai.evaluation.name": "journey.on_time",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "reality",
+        "gen_ai.response.id": "gen-1785000683-TLUxkpmRX3WTSgFTKMm3",
+        "gen_ai.request.model": "anthropic/claude-haiku-4.5",
+        "augmentloop.decision.type": "route_choice",
+        "gen_ai.evaluation.explanation": "journey arrived on time"
+      },
+      "links": [
+        {
+          "traceId": "92036a1815d57a7aabf17a9e23e78c74",
+          "spanId": "a2098b36fc4f3931"
+        }
+      ]
+    },
+    {
+      "service": "toy-world-outcomes",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "03b64673f34f37bf8a34fd13d49f8d70",
+      "spanId": "ed8ed5799baf7d86",
+      "parentSpanId": null,
+      "startUnixNano": 1785001706483562000,
+      "endUnixNano": 1785001706483568000,
+      "attributes": {
+        "gen_ai.evaluation.name": "journey.on_time",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "reality",
+        "gen_ai.response.id": "gen-1785000685-mBpZSTK1oG4FLbHIHuKY",
+        "gen_ai.request.model": "anthropic/claude-haiku-4.5",
+        "augmentloop.decision.type": "route_choice",
+        "gen_ai.evaluation.explanation": "journey arrived on time"
+      },
+      "links": [
+        {
+          "traceId": "92036a1815d57a7aabf17a9e23e78c74",
+          "spanId": "be948d655d5cbdb8"
+        }
+      ]
+    },
+    {
+      "service": "toy-world-outcomes",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "60a3d04acb408a8df908a02574ab5e39",
+      "spanId": "d6759c4a4e1bb7e9",
+      "parentSpanId": null,
+      "startUnixNano": 1785001706483580000,
+      "endUnixNano": 1785001706483587000,
+      "attributes": {
+        "gen_ai.evaluation.name": "journey.on_time",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "reality",
+        "gen_ai.response.id": "gen-1785000800-zBgIY9HQXRiXof6jan4p",
+        "gen_ai.request.model": "anthropic/claude-sonnet-4.6",
+        "augmentloop.decision.type": "route_choice",
+        "gen_ai.evaluation.explanation": "journey arrived on time"
+      },
+      "links": [
+        {
+          "traceId": "fb79e1d061eb713421188cf8e907a36d",
+          "spanId": "d696de42addecf47"
+        }
+      ]
+    },
+    {
+      "service": "toy-world-outcomes",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "ba93b83db6d0abcf3d8274eedf026669",
+      "spanId": "328176be84add415",
+      "parentSpanId": null,
+      "startUnixNano": 1785001706483600000,
+      "endUnixNano": 1785001706483608000,
+      "attributes": {
+        "gen_ai.evaluation.name": "journey.on_time",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "reality",
+        "gen_ai.response.id": "gen-1785000803-jzcNaeraRbAfBCMLvFPz",
+        "gen_ai.request.model": "anthropic/claude-sonnet-4.6",
+        "augmentloop.decision.type": "route_choice",
+        "gen_ai.evaluation.explanation": "journey arrived on time"
+      },
+      "links": [
+        {
+          "traceId": "fb79e1d061eb713421188cf8e907a36d",
+          "spanId": "3c40813bcb5e8f79"
+        }
+      ]
+    },
+    {
+      "service": "toy-world-outcomes",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "fe21bdb36f64860008270ed808241436",
+      "spanId": "79067a40247927a9",
+      "parentSpanId": null,
+      "startUnixNano": 1785001706483620000,
+      "endUnixNano": 1785001706483626000,
+      "attributes": {
+        "gen_ai.evaluation.name": "journey.on_time",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "reality",
+        "gen_ai.response.id": "gen-1785000804-PYVntht1aYTbYUMxJk2t",
+        "gen_ai.request.model": "anthropic/claude-sonnet-4.6",
+        "augmentloop.decision.type": "route_choice",
+        "gen_ai.evaluation.explanation": "journey arrived on time"
+      },
+      "links": [
+        {
+          "traceId": "fb79e1d061eb713421188cf8e907a36d",
+          "spanId": "1bb9ce19a4f64c73"
+        }
+      ]
+    },
+    {
+      "service": "toy-world-outcomes",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "b2ba5b5d3bafb2e7c84738506ad2671c",
+      "spanId": "2edf28047d5abfca",
+      "parentSpanId": null,
+      "startUnixNano": 1785001706483638000,
+      "endUnixNano": 1785001706483645000,
+      "attributes": {
+        "gen_ai.evaluation.name": "journey.on_time",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "reality",
+        "gen_ai.response.id": "gen-1785000806-9kx9aBA0BOPiRsjDYfyJ",
+        "gen_ai.request.model": "anthropic/claude-sonnet-4.6",
+        "augmentloop.decision.type": "route_choice",
+        "gen_ai.evaluation.explanation": "journey arrived on time"
+      },
+      "links": [
+        {
+          "traceId": "fb79e1d061eb713421188cf8e907a36d",
+          "spanId": "43a9af4401995cc2"
+        }
+      ]
+    },
+    {
+      "service": "toy-world-outcomes",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "52d14c330177ac797f9ad3c219a226f8",
+      "spanId": "f048f61eb243a4bb",
+      "parentSpanId": null,
+      "startUnixNano": 1785001706483658000,
+      "endUnixNano": 1785001706483664000,
+      "attributes": {
+        "gen_ai.evaluation.name": "journey.on_time",
+        "gen_ai.evaluation.score.value": 0.0,
+        "gen_ai.evaluation.score.label": "incorrect",
+        "augmentloop.grade.source": "reality",
+        "gen_ai.response.id": "gen-1785000807-wdtWcK6ljdvbJyMtfGhb",
+        "gen_ai.request.model": "anthropic/claude-sonnet-4.6",
+        "augmentloop.decision.type": "route_choice",
+        "gen_ai.evaluation.explanation": "journey arrived late"
+      },
+      "links": [
+        {
+          "traceId": "fb79e1d061eb713421188cf8e907a36d",
+          "spanId": "623d05b04386ac7f"
+        }
+      ]
+    },
+    {
+      "service": "toy-world-outcomes",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "63da31861953cd89ba5c02c6cfb98a1d",
+      "spanId": "fabd81de87cafdb3",
+      "parentSpanId": null,
+      "startUnixNano": 1785001706483676000,
+      "endUnixNano": 1785001706483683000,
+      "attributes": {
+        "gen_ai.evaluation.name": "journey.on_time",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "reality",
+        "gen_ai.response.id": "gen-1785000808-HUfyf42T92eaDJOaJa74",
+        "gen_ai.request.model": "anthropic/claude-sonnet-4.6",
+        "augmentloop.decision.type": "route_choice",
+        "gen_ai.evaluation.explanation": "journey arrived on time"
+      },
+      "links": [
+        {
+          "traceId": "fb79e1d061eb713421188cf8e907a36d",
+          "spanId": "64433009e40a7cb6"
+        }
+      ]
+    },
+    {
+      "service": "toy-world-outcomes",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "28015e666ac06960d39c96596f2fc551",
+      "spanId": "99ae13f2958845ea",
+      "parentSpanId": null,
+      "startUnixNano": 1785001706483695000,
+      "endUnixNano": 1785001706483702000,
+      "attributes": {
+        "gen_ai.evaluation.name": "journey.on_time",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "reality",
+        "gen_ai.response.id": "gen-1785000809-C45e0dvYJKtA8Y9N7XSA",
+        "gen_ai.request.model": "anthropic/claude-sonnet-4.6",
+        "augmentloop.decision.type": "route_choice",
+        "gen_ai.evaluation.explanation": "journey arrived on time"
+      },
+      "links": [
+        {
+          "traceId": "fb79e1d061eb713421188cf8e907a36d",
+          "spanId": "e61854495ff53b2f"
+        }
+      ]
+    },
+    {
+      "service": "toy-world-outcomes",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "951e2ad207c613d14d2e0ae1aa694862",
+      "spanId": "bcb40bb69b8b16c6",
+      "parentSpanId": null,
+      "startUnixNano": 1785001706483713000,
+      "endUnixNano": 1785001706483720000,
+      "attributes": {
+        "gen_ai.evaluation.name": "journey.on_time",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "reality",
+        "gen_ai.response.id": "gen-1785000810-eDrnq5rOFMAfeQa5yLUk",
+        "gen_ai.request.model": "anthropic/claude-sonnet-4.6",
+        "augmentloop.decision.type": "route_choice",
+        "gen_ai.evaluation.explanation": "journey arrived on time"
+      },
+      "links": [
+        {
+          "traceId": "fb79e1d061eb713421188cf8e907a36d",
+          "spanId": "f09b0c41b5ee67f1"
+        }
+      ]
+    },
+    {
+      "service": "toy-world-outcomes",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "1e0543fb31aaf8c454d5132c1aab9d2e",
+      "spanId": "2eb16af91d0b1ec2",
+      "parentSpanId": null,
+      "startUnixNano": 1785001706483732000,
+      "endUnixNano": 1785001706483738000,
+      "attributes": {
+        "gen_ai.evaluation.name": "journey.on_time",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "reality",
+        "gen_ai.response.id": "gen-1785000812-vrA87IpYY3P726qisEJK",
+        "gen_ai.request.model": "anthropic/claude-sonnet-4.6",
+        "augmentloop.decision.type": "route_choice",
+        "gen_ai.evaluation.explanation": "journey arrived on time"
+      },
+      "links": [
+        {
+          "traceId": "fb79e1d061eb713421188cf8e907a36d",
+          "spanId": "51288b2d1f339461"
+        }
+      ]
+    },
+    {
+      "service": "toy-world-outcomes",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "81767f9a3ddee83998001b86809d708c",
+      "spanId": "88439eb8c8e03753",
+      "parentSpanId": null,
+      "startUnixNano": 1785001706483750000,
+      "endUnixNano": 1785001706483756000,
+      "attributes": {
+        "gen_ai.evaluation.name": "journey.on_time",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "reality",
+        "gen_ai.response.id": "gen-1785000813-DCl4rqEHPpII14DNzTUS",
+        "gen_ai.request.model": "anthropic/claude-sonnet-4.6",
+        "augmentloop.decision.type": "route_choice",
+        "gen_ai.evaluation.explanation": "journey arrived on time"
+      },
+      "links": [
+        {
+          "traceId": "fb79e1d061eb713421188cf8e907a36d",
+          "spanId": "d798f469fc80581e"
+        }
+      ]
+    },
+    {
+      "service": "toy-world-outcomes",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "979cefcb1ac7b63ffd0b6a61d3dc2197",
+      "spanId": "c7301e9665c360f9",
+      "parentSpanId": null,
+      "startUnixNano": 1785001706483768000,
+      "endUnixNano": 1785001706483774000,
+      "attributes": {
+        "gen_ai.evaluation.name": "journey.on_time",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "reality",
+        "gen_ai.response.id": "gen-1785000816-CRLqxLEmrIMEaXqINOvi",
+        "gen_ai.request.model": "anthropic/claude-sonnet-4.6",
+        "augmentloop.decision.type": "route_choice",
+        "gen_ai.evaluation.explanation": "journey arrived on time"
+      },
+      "links": [
+        {
+          "traceId": "fb79e1d061eb713421188cf8e907a36d",
+          "spanId": "f35c1e2ace00b171"
+        }
+      ]
+    },
+    {
+      "service": "toy-world-outcomes",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "b08809eea3e936ca42e0b083b0f29f6f",
+      "spanId": "4f534111bf4558d5",
+      "parentSpanId": null,
+      "startUnixNano": 1785001706483786000,
+      "endUnixNano": 1785001706483792000,
+      "attributes": {
+        "gen_ai.evaluation.name": "journey.on_time",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "reality",
+        "gen_ai.response.id": "gen-1785000817-0zggD6PYDkz4YGYTs1F4",
+        "gen_ai.request.model": "anthropic/claude-sonnet-4.6",
+        "augmentloop.decision.type": "route_choice",
+        "gen_ai.evaluation.explanation": "journey arrived on time"
+      },
+      "links": [
+        {
+          "traceId": "fb79e1d061eb713421188cf8e907a36d",
+          "spanId": "7a53da00a3e2eb99"
+        }
+      ]
+    },
+    {
+      "service": "toy-world-outcomes",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "23c8fecb0c0cf361102b9218029a7a78",
+      "spanId": "df2be44289c0a690",
+      "parentSpanId": null,
+      "startUnixNano": 1785001706483803000,
+      "endUnixNano": 1785001706483809000,
+      "attributes": {
+        "gen_ai.evaluation.name": "journey.on_time",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "reality",
+        "gen_ai.response.id": "gen-1785000818-mb4yuuTlaIWAS2BhVhJ7",
+        "gen_ai.request.model": "anthropic/claude-sonnet-4.6",
+        "augmentloop.decision.type": "route_choice",
+        "gen_ai.evaluation.explanation": "journey arrived on time"
+      },
+      "links": [
+        {
+          "traceId": "fb79e1d061eb713421188cf8e907a36d",
+          "spanId": "510cdaddddab53cd"
+        }
+      ]
+    },
+    {
+      "service": "toy-world-outcomes",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "01e24df55f871e1a4112dea93e38bd13",
+      "spanId": "eb65b126bd0f23ea",
+      "parentSpanId": null,
+      "startUnixNano": 1785001706483820000,
+      "endUnixNano": 1785001706483825000,
+      "attributes": {
+        "gen_ai.evaluation.name": "journey.on_time",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "reality",
+        "gen_ai.response.id": "gen-1785000820-wodb2mIyZ63FTL3FWwrA",
+        "gen_ai.request.model": "anthropic/claude-sonnet-4.6",
+        "augmentloop.decision.type": "route_choice",
+        "gen_ai.evaluation.explanation": "journey arrived on time"
+      },
+      "links": [
+        {
+          "traceId": "fb79e1d061eb713421188cf8e907a36d",
+          "spanId": "7d971b7c07b1ebc1"
+        }
+      ]
+    },
+    {
+      "service": "toy-world-outcomes",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "82a1fd5efafd78518de0066aca00435c",
+      "spanId": "51cc287c872971ae",
+      "parentSpanId": null,
+      "startUnixNano": 1785001706483836000,
+      "endUnixNano": 1785001706483842000,
+      "attributes": {
+        "gen_ai.evaluation.name": "journey.on_time",
+        "gen_ai.evaluation.score.value": 0.0,
+        "gen_ai.evaluation.score.label": "incorrect",
+        "augmentloop.grade.source": "reality",
+        "gen_ai.response.id": "gen-1785000822-laQaQTcmsYqHwfvpkTso",
+        "gen_ai.request.model": "anthropic/claude-sonnet-4.6",
+        "augmentloop.decision.type": "route_choice",
+        "gen_ai.evaluation.explanation": "journey arrived late"
+      },
+      "links": [
+        {
+          "traceId": "fb79e1d061eb713421188cf8e907a36d",
+          "spanId": "4e776437512785a3"
+        }
+      ]
+    },
+    {
+      "service": "toy-world-outcomes",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "f3b580d4c63cab5945bb7071fe759507",
+      "spanId": "92c247c73a2a132b",
+      "parentSpanId": null,
+      "startUnixNano": 1785001706483852000,
+      "endUnixNano": 1785001706483858000,
+      "attributes": {
+        "gen_ai.evaluation.name": "journey.on_time",
+        "gen_ai.evaluation.score.value": 0.0,
+        "gen_ai.evaluation.score.label": "incorrect",
+        "augmentloop.grade.source": "reality",
+        "gen_ai.response.id": "gen-1785000825-NVV6IvYDVUKYjDf8A5vE",
+        "gen_ai.request.model": "anthropic/claude-sonnet-4.6",
+        "augmentloop.decision.type": "route_choice",
+        "gen_ai.evaluation.explanation": "journey arrived late"
+      },
+      "links": [
+        {
+          "traceId": "fb79e1d061eb713421188cf8e907a36d",
+          "spanId": "1b4831ea0600cf95"
+        }
+      ]
+    },
+    {
+      "service": "toy-world-outcomes",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "116cfdd2c5c008f53785cce883cd095f",
+      "spanId": "dda5430e7d382b31",
+      "parentSpanId": null,
+      "startUnixNano": 1785001706483868000,
+      "endUnixNano": 1785001706483874000,
+      "attributes": {
+        "gen_ai.evaluation.name": "journey.on_time",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "reality",
+        "gen_ai.response.id": "gen-1785000827-q7ESbhZv34XaAe8e4s6b",
+        "gen_ai.request.model": "anthropic/claude-sonnet-4.6",
+        "augmentloop.decision.type": "route_choice",
+        "gen_ai.evaluation.explanation": "journey arrived on time"
+      },
+      "links": [
+        {
+          "traceId": "fb79e1d061eb713421188cf8e907a36d",
+          "spanId": "1bda0471d3926e72"
+        }
+      ]
+    },
+    {
+      "service": "toy-world-outcomes",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "7c995bf5a5e7427aa6667a1a3d57b6b1",
+      "spanId": "d45b7b9a37ae07ef",
+      "parentSpanId": null,
+      "startUnixNano": 1785001706483886000,
+      "endUnixNano": 1785001706483892000,
+      "attributes": {
+        "gen_ai.evaluation.name": "journey.on_time",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "reality",
+        "gen_ai.response.id": "gen-1785000829-EFQ1nUbV0VeL4b28LlOd",
+        "gen_ai.request.model": "anthropic/claude-sonnet-4.6",
+        "augmentloop.decision.type": "route_choice",
+        "gen_ai.evaluation.explanation": "journey arrived on time"
+      },
+      "links": [
+        {
+          "traceId": "fb79e1d061eb713421188cf8e907a36d",
+          "spanId": "7a67dc2e23c66828"
+        }
+      ]
+    },
+    {
+      "service": "toy-world-outcomes",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "c01abb901398fab0c066a72c9dd2d922",
+      "spanId": "85e25f0bb7c15c75",
+      "parentSpanId": null,
+      "startUnixNano": 1785001706483904000,
+      "endUnixNano": 1785001706483911000,
+      "attributes": {
+        "gen_ai.evaluation.name": "journey.on_time",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "reality",
+        "gen_ai.response.id": "gen-1785000832-3WK6G5NPvxl5KDFTOjxO",
+        "gen_ai.request.model": "anthropic/claude-sonnet-4.6",
+        "augmentloop.decision.type": "route_choice",
+        "gen_ai.evaluation.explanation": "journey arrived on time"
+      },
+      "links": [
+        {
+          "traceId": "fb79e1d061eb713421188cf8e907a36d",
+          "spanId": "69d553584f8e51d8"
+        }
+      ]
+    },
+    {
+      "service": "toy-world-outcomes",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "8b44a3e2d598bc5ccd9facc9a67fe8b4",
+      "spanId": "10f18808fca7795b",
+      "parentSpanId": null,
+      "startUnixNano": 1785001706483922000,
+      "endUnixNano": 1785001706483928000,
+      "attributes": {
+        "gen_ai.evaluation.name": "journey.on_time",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "reality",
+        "gen_ai.response.id": "gen-1785000835-bjhs4IMwrJklAzMaYe1Q",
+        "gen_ai.request.model": "anthropic/claude-sonnet-4.6",
+        "augmentloop.decision.type": "route_choice",
+        "gen_ai.evaluation.explanation": "journey arrived on time"
+      },
+      "links": [
+        {
+          "traceId": "fb79e1d061eb713421188cf8e907a36d",
+          "spanId": "c331f5bf367553b7"
+        }
+      ]
+    },
+    {
+      "service": "toy-world-outcomes",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "668ffc644dbbd8329e48856f6a3c5eb3",
+      "spanId": "ab117559a73d3d5c",
+      "parentSpanId": null,
+      "startUnixNano": 1785001706483938000,
+      "endUnixNano": 1785001706483944000,
+      "attributes": {
+        "gen_ai.evaluation.name": "journey.on_time",
+        "gen_ai.evaluation.score.value": 0.0,
+        "gen_ai.evaluation.score.label": "incorrect",
+        "augmentloop.grade.source": "reality",
+        "gen_ai.response.id": "gen-1785001032-vkb4KKB3CCzrftCKNRMX",
+        "gen_ai.request.model": "google/gemini-2.5-flash-lite",
+        "augmentloop.decision.type": "route_choice",
+        "gen_ai.evaluation.explanation": "journey arrived late"
+      },
+      "links": [
+        {
+          "traceId": "5d215a162971a8ebec56a285d910c247",
+          "spanId": "d8b2fb44c52f79db"
+        }
+      ]
+    },
+    {
+      "service": "toy-world-outcomes",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "5b12a3eab6389c1f64301ed92f92c8ee",
+      "spanId": "8ad64eced16cb207",
+      "parentSpanId": null,
+      "startUnixNano": 1785001706483955000,
+      "endUnixNano": 1785001706483960000,
+      "attributes": {
+        "gen_ai.evaluation.name": "journey.on_time",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "reality",
+        "gen_ai.response.id": "gen-1785001034-BSxaYd6VQdmigYP8I2Nt",
+        "gen_ai.request.model": "google/gemini-2.5-flash-lite",
+        "augmentloop.decision.type": "route_choice",
+        "gen_ai.evaluation.explanation": "journey arrived on time"
+      },
+      "links": [
+        {
+          "traceId": "5d215a162971a8ebec56a285d910c247",
+          "spanId": "079e32901732a0ea"
+        }
+      ]
+    },
+    {
+      "service": "toy-world-outcomes",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "1b2f0a81f907c7c51605dad0c65f0e37",
+      "spanId": "c867b4108a8a00e4",
+      "parentSpanId": null,
+      "startUnixNano": 1785001706483971000,
+      "endUnixNano": 1785001706483977000,
+      "attributes": {
+        "gen_ai.evaluation.name": "journey.on_time",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "reality",
+        "gen_ai.response.id": "gen-1785001036-HPKj7dKnipen0WDdpeWv",
+        "gen_ai.request.model": "google/gemini-2.5-flash-lite",
+        "augmentloop.decision.type": "route_choice",
+        "gen_ai.evaluation.explanation": "journey arrived on time"
+      },
+      "links": [
+        {
+          "traceId": "5d215a162971a8ebec56a285d910c247",
+          "spanId": "19025ea25d351947"
+        }
+      ]
+    },
+    {
+      "service": "toy-world-outcomes",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "fd1a446e69431d857b5b65536636708f",
+      "spanId": "8c52c543c5101931",
+      "parentSpanId": null,
+      "startUnixNano": 1785001706483987000,
+      "endUnixNano": 1785001706483993000,
+      "attributes": {
+        "gen_ai.evaluation.name": "journey.on_time",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "reality",
+        "gen_ai.response.id": "gen-1785001037-bR8qVvjDfSkdXZx9ZTlh",
+        "gen_ai.request.model": "google/gemini-2.5-flash-lite",
+        "augmentloop.decision.type": "route_choice",
+        "gen_ai.evaluation.explanation": "journey arrived on time"
+      },
+      "links": [
+        {
+          "traceId": "5d215a162971a8ebec56a285d910c247",
+          "spanId": "f9f3ff1870c5ac28"
+        }
+      ]
+    },
+    {
+      "service": "toy-world-outcomes",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "722cd03cc3f0e4e74a854515716eec8f",
+      "spanId": "5507dc34c7cda6d4",
+      "parentSpanId": null,
+      "startUnixNano": 1785001706484003000,
+      "endUnixNano": 1785001706484009000,
+      "attributes": {
+        "gen_ai.evaluation.name": "journey.on_time",
+        "gen_ai.evaluation.score.value": 0.0,
+        "gen_ai.evaluation.score.label": "incorrect",
+        "augmentloop.grade.source": "reality",
+        "gen_ai.response.id": "gen-1785001039-aUowK8kbWRYakaGHI3O9",
+        "gen_ai.request.model": "google/gemini-2.5-flash-lite",
+        "augmentloop.decision.type": "route_choice",
+        "gen_ai.evaluation.explanation": "journey arrived late"
+      },
+      "links": [
+        {
+          "traceId": "5d215a162971a8ebec56a285d910c247",
+          "spanId": "7b4f5728fbcd143e"
+        }
+      ]
+    },
+    {
+      "service": "toy-world-outcomes",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "5b97d8df4a61b978573a216276a244b4",
+      "spanId": "fbc1affd24ee5fac",
+      "parentSpanId": null,
+      "startUnixNano": 1785001706484019000,
+      "endUnixNano": 1785001706484025000,
+      "attributes": {
+        "gen_ai.evaluation.name": "journey.on_time",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "reality",
+        "gen_ai.response.id": "gen-1785001041-Dp43kgYH5cBglfslXIwP",
+        "gen_ai.request.model": "google/gemini-2.5-flash-lite",
+        "augmentloop.decision.type": "route_choice",
+        "gen_ai.evaluation.explanation": "journey arrived on time"
+      },
+      "links": [
+        {
+          "traceId": "5d215a162971a8ebec56a285d910c247",
+          "spanId": "2cf68cb8a1b9ef2a"
+        }
+      ]
+    },
+    {
+      "service": "toy-world-outcomes",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "77c40af7227c9278339fec891ab4db97",
+      "spanId": "c5fb74764373a16f",
+      "parentSpanId": null,
+      "startUnixNano": 1785001706484036000,
+      "endUnixNano": 1785001706484042000,
+      "attributes": {
+        "gen_ai.evaluation.name": "journey.on_time",
+        "gen_ai.evaluation.score.value": 0.0,
+        "gen_ai.evaluation.score.label": "incorrect",
+        "augmentloop.grade.source": "reality",
+        "gen_ai.response.id": "gen-1785001043-V1pvEFDzrboZM5I7GHEu",
+        "gen_ai.request.model": "google/gemini-2.5-flash-lite",
+        "augmentloop.decision.type": "route_choice",
+        "gen_ai.evaluation.explanation": "journey arrived late"
+      },
+      "links": [
+        {
+          "traceId": "5d215a162971a8ebec56a285d910c247",
+          "spanId": "34b27e4defe447d4"
+        }
+      ]
+    },
+    {
+      "service": "toy-world-outcomes",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "ed6d8d185c74185f2b3f71df7ba9f8c8",
+      "spanId": "779d212794099370",
+      "parentSpanId": null,
+      "startUnixNano": 1785001706484052000,
+      "endUnixNano": 1785001706484058000,
+      "attributes": {
+        "gen_ai.evaluation.name": "journey.on_time",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "reality",
+        "gen_ai.response.id": "gen-1785001045-Rnzp7LSlvTfuxXKltsLV",
+        "gen_ai.request.model": "google/gemini-2.5-flash-lite",
+        "augmentloop.decision.type": "route_choice",
+        "gen_ai.evaluation.explanation": "journey arrived on time"
+      },
+      "links": [
+        {
+          "traceId": "5d215a162971a8ebec56a285d910c247",
+          "spanId": "71d980691ab5eb31"
+        }
+      ]
+    },
+    {
+      "service": "toy-world-outcomes",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "c93892388dbcd3c399f4faf0e80a8780",
+      "spanId": "c823d760139cf501",
+      "parentSpanId": null,
+      "startUnixNano": 1785001706484068000,
+      "endUnixNano": 1785001706484074000,
+      "attributes": {
+        "gen_ai.evaluation.name": "journey.on_time",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "reality",
+        "gen_ai.response.id": "gen-1785001047-FdZpLji7lfRWbLsPSMT3",
+        "gen_ai.request.model": "google/gemini-2.5-flash-lite",
+        "augmentloop.decision.type": "route_choice",
+        "gen_ai.evaluation.explanation": "journey arrived on time"
+      },
+      "links": [
+        {
+          "traceId": "5d215a162971a8ebec56a285d910c247",
+          "spanId": "6a1741f23ac325a7"
+        }
+      ]
+    },
+    {
+      "service": "toy-world-outcomes",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "6eca82e4f3905c7bce137a5d41df435b",
+      "spanId": "fb210dd19a18ae45",
+      "parentSpanId": null,
+      "startUnixNano": 1785001706484099000,
+      "endUnixNano": 1785001706484106000,
+      "attributes": {
+        "gen_ai.evaluation.name": "journey.on_time",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "reality",
+        "gen_ai.response.id": "gen-1785001048-TzlmZaw6oDRvwqSVa7R6",
+        "gen_ai.request.model": "google/gemini-2.5-flash-lite",
+        "augmentloop.decision.type": "route_choice",
+        "gen_ai.evaluation.explanation": "journey arrived on time"
+      },
+      "links": [
+        {
+          "traceId": "5d215a162971a8ebec56a285d910c247",
+          "spanId": "daf4f70112c20456"
+        }
+      ]
+    },
+    {
+      "service": "toy-world-outcomes",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "5f014abefc01e29580a308508b5695ec",
+      "spanId": "f6dd28c7f15a2260",
+      "parentSpanId": null,
+      "startUnixNano": 1785001706484118000,
+      "endUnixNano": 1785001706484125000,
+      "attributes": {
+        "gen_ai.evaluation.name": "journey.on_time",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "reality",
+        "gen_ai.response.id": "gen-1785001049-VftMRW3VA2l3hWGi3k7s",
+        "gen_ai.request.model": "google/gemini-2.5-flash-lite",
+        "augmentloop.decision.type": "route_choice",
+        "gen_ai.evaluation.explanation": "journey arrived on time"
+      },
+      "links": [
+        {
+          "traceId": "5d215a162971a8ebec56a285d910c247",
+          "spanId": "f08a8031c42b2a37"
+        }
+      ]
+    },
+    {
+      "service": "toy-world-outcomes",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "3848ee4c503545b8cc623e85df501ec3",
+      "spanId": "a4720b243f821ed6",
+      "parentSpanId": null,
+      "startUnixNano": 1785001706484136000,
+      "endUnixNano": 1785001706484143000,
+      "attributes": {
+        "gen_ai.evaluation.name": "journey.on_time",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "reality",
+        "gen_ai.response.id": "gen-1785001051-a6MPDt1MDZnMkkiN5bxT",
+        "gen_ai.request.model": "google/gemini-2.5-flash-lite",
+        "augmentloop.decision.type": "route_choice",
+        "gen_ai.evaluation.explanation": "journey arrived on time"
+      },
+      "links": [
+        {
+          "traceId": "5d215a162971a8ebec56a285d910c247",
+          "spanId": "e47963945ade8e70"
+        }
+      ]
+    },
+    {
+      "service": "toy-world-outcomes",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "ff986990bc9c448275acf1747e4e8c16",
+      "spanId": "cf218bf1057e851f",
+      "parentSpanId": null,
+      "startUnixNano": 1785001706484155000,
+      "endUnixNano": 1785001706484161000,
+      "attributes": {
+        "gen_ai.evaluation.name": "journey.on_time",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "reality",
+        "gen_ai.response.id": "gen-1785001053-OilMwMopGI6DViIH8r7J",
+        "gen_ai.request.model": "google/gemini-2.5-flash-lite",
+        "augmentloop.decision.type": "route_choice",
+        "gen_ai.evaluation.explanation": "journey arrived on time"
+      },
+      "links": [
+        {
+          "traceId": "5d215a162971a8ebec56a285d910c247",
+          "spanId": "2dad1ae200f40d30"
+        }
+      ]
+    },
+    {
+      "service": "toy-world-outcomes",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "1f2b2a4415601ff52d146af64500edd8",
+      "spanId": "4f77fd7ca713a3d5",
+      "parentSpanId": null,
+      "startUnixNano": 1785001706484172000,
+      "endUnixNano": 1785001706484179000,
+      "attributes": {
+        "gen_ai.evaluation.name": "journey.on_time",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "reality",
+        "gen_ai.response.id": "gen-1785001055-BtVPQ7ZYe5LLadinJxNG",
+        "gen_ai.request.model": "google/gemini-2.5-flash-lite",
+        "augmentloop.decision.type": "route_choice",
+        "gen_ai.evaluation.explanation": "journey arrived on time"
+      },
+      "links": [
+        {
+          "traceId": "5d215a162971a8ebec56a285d910c247",
+          "spanId": "985af0fa1eb4d475"
+        }
+      ]
+    },
+    {
+      "service": "toy-world-outcomes",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "6884343f4e7e19fbc17621f449b8bb86",
+      "spanId": "73e051be50e0ae75",
+      "parentSpanId": null,
+      "startUnixNano": 1785001706484192000,
+      "endUnixNano": 1785001706484199000,
+      "attributes": {
+        "gen_ai.evaluation.name": "journey.on_time",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "reality",
+        "gen_ai.response.id": "gen-1785001058-ZF0CHgv1RFxnn3ZPae7n",
+        "gen_ai.request.model": "google/gemini-2.5-flash-lite",
+        "augmentloop.decision.type": "route_choice",
+        "gen_ai.evaluation.explanation": "journey arrived on time"
+      },
+      "links": [
+        {
+          "traceId": "5d215a162971a8ebec56a285d910c247",
+          "spanId": "d24f0c2ace71b27e"
+        }
+      ]
+    },
+    {
+      "service": "toy-world-outcomes",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "709a18621a634d726426b36f5fb24528",
+      "spanId": "50e61a66554a6120",
+      "parentSpanId": null,
+      "startUnixNano": 1785001706484209000,
+      "endUnixNano": 1785001706484215000,
+      "attributes": {
+        "gen_ai.evaluation.name": "journey.on_time",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "reality",
+        "gen_ai.response.id": "gen-1785001058-ubwTJSYlO8iSmNg99ssc",
+        "gen_ai.request.model": "google/gemini-2.5-flash-lite",
+        "augmentloop.decision.type": "route_choice",
+        "gen_ai.evaluation.explanation": "journey arrived on time"
+      },
+      "links": [
+        {
+          "traceId": "5d215a162971a8ebec56a285d910c247",
+          "spanId": "2f71a6462ef385c8"
+        }
+      ]
+    },
+    {
+      "service": "toy-world-outcomes",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "18e7d765a9d7798a49e2bf6b55ea17e6",
+      "spanId": "857368bce213b86b",
+      "parentSpanId": null,
+      "startUnixNano": 1785001706484226000,
+      "endUnixNano": 1785001706484232000,
+      "attributes": {
+        "gen_ai.evaluation.name": "journey.on_time",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "reality",
+        "gen_ai.response.id": "gen-1785001059-lLFnyYzWGM30ZFeBEdFB",
+        "gen_ai.request.model": "google/gemini-2.5-flash-lite",
+        "augmentloop.decision.type": "route_choice",
+        "gen_ai.evaluation.explanation": "journey arrived on time"
+      },
+      "links": [
+        {
+          "traceId": "5d215a162971a8ebec56a285d910c247",
+          "spanId": "ac3eeeb69022292c"
+        }
+      ]
+    },
+    {
+      "service": "toy-world-outcomes",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "8cdbbfbebefa75f614e6d9c496838aa8",
+      "spanId": "14cc7d067105f13f",
+      "parentSpanId": null,
+      "startUnixNano": 1785001706484243000,
+      "endUnixNano": 1785001706484249000,
+      "attributes": {
+        "gen_ai.evaluation.name": "journey.on_time",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "reality",
+        "gen_ai.response.id": "gen-1785001061-qQDWw5szOtm7vwFHc8zT",
+        "gen_ai.request.model": "google/gemini-2.5-flash-lite",
+        "augmentloop.decision.type": "route_choice",
+        "gen_ai.evaluation.explanation": "journey arrived on time"
+      },
+      "links": [
+        {
+          "traceId": "5d215a162971a8ebec56a285d910c247",
+          "spanId": "de02322f2d2df4e9"
+        }
+      ]
+    },
+    {
+      "service": "toy-world-outcomes",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "481c71ba4425472e910d11322434b09a",
+      "spanId": "9e8d0241e93f996b",
+      "parentSpanId": null,
+      "startUnixNano": 1785001706484260000,
+      "endUnixNano": 1785001706484266000,
+      "attributes": {
+        "gen_ai.evaluation.name": "journey.on_time",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "reality",
+        "gen_ai.response.id": "gen-1785001062-Dpm1zSIMY0gMbxxKh6n2",
+        "gen_ai.request.model": "google/gemini-2.5-flash-lite",
+        "augmentloop.decision.type": "route_choice",
+        "gen_ai.evaluation.explanation": "journey arrived on time"
+      },
+      "links": [
+        {
+          "traceId": "5d215a162971a8ebec56a285d910c247",
+          "spanId": "cf13348f620f371d"
+        }
+      ]
+    },
+    {
+      "service": "toy-world-outcomes",
+      "name": "gen_ai.evaluation.result",
+      "traceId": "8dd47b3866e284d3967a87c7c2adeff9",
+      "spanId": "276ca6c888d198e9",
+      "parentSpanId": null,
+      "startUnixNano": 1785001706484277000,
+      "endUnixNano": 1785001706484285000,
+      "attributes": {
+        "gen_ai.evaluation.name": "journey.on_time",
+        "gen_ai.evaluation.score.value": 1.0,
+        "gen_ai.evaluation.score.label": "correct",
+        "augmentloop.grade.source": "reality",
+        "gen_ai.response.id": "gen-1785001063-dpLcoDhBoPqQn0jOMJqA",
+        "gen_ai.request.model": "google/gemini-2.5-flash-lite",
+        "augmentloop.decision.type": "route_choice",
+        "gen_ai.evaluation.explanation": "journey arrived on time"
+      },
+      "links": [
+        {
+          "traceId": "5d215a162971a8ebec56a285d910c247",
+          "spanId": "c603d13c1dbd247e"
         }
       ]
     }
