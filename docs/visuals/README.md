@@ -116,11 +116,11 @@ at full height for good; nothing else ever raises one back up.
 
 **180 decisions, $0.377553 total, over a 446s (7.4 min) window - 60 confirmed
 by reality, 120 (66.7%) never confirmed.** $0.058172 of the spend sits in
-decisions reality closed; $0.319381 (84.6%) sits in decisions it never
+decisions reality confirmed; $0.319381 (84.6%) sits in decisions it never
 touched. At run end the oldest unconfirmed decision has stood for 415s, the
-median for 107.5s. Per type: `route_choice` closes all 60 of 60, $0.058172,
-spanning 0s to 408s. `eta_estimate` closes 0 of 60, $0.276440, spanning 31s to
-427s, oldest unconfirmed 415s, median 193s. `next_hop` closes 0 of 60,
+median for 107.5s. Per type: `route_choice` confirms all 60 of 60, $0.058172,
+spanning 0s to 408s. `eta_estimate` confirms 0 of 60, $0.276440, spanning 31s to
+427s, oldest unconfirmed 415s, median 193s. `next_hop` confirms 0 of 60,
 $0.042941, spanning 109s to 446s, oldest unconfirmed 337s, median 84s. Every
 model confirms at exactly 20 of 60 - `anthropic/claude-haiku-4.5`,
 `anthropic/claude-sonnet-4.6`, `google/gemini-2.5-flash-lite` - because

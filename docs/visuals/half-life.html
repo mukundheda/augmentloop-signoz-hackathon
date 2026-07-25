@@ -29,6 +29,12 @@
     --mono: "Geist Mono", "Space Mono", "Fira Code", ui-monospace, SFMono-Regular, Menlo, monospace;
   }
 
+  /* Page-specific token, not part of the shared block above - keeps this
+     file's :root byte-identical to genome-strip.html's. */
+  :root {
+    --floor-h: 9px; /* the height an unconfirmed mark decays to; read by JS as FLOOR_H below */
+  }
+
   * { box-sizing: border-box; }
   body {
     margin: 0; background: var(--bg-ink-500); color: var(--text);
@@ -108,7 +114,7 @@
   .lane { position: relative; height: 58px; overflow: hidden; }
   .lane.unconfirmable::after {
     /* The floor: the height an unconfirmed mark decays to and then holds. */
-    content: ""; position: absolute; left: 0; right: 0; bottom: 9px;
+    content: ""; position: absolute; left: 0; right: 0; bottom: var(--floor-h);
     border-top: 1px dashed var(--bg-slate-100);
   }
   .mark { position: absolute; bottom: 0; width: 2px; transform: translateX(-50%); background: var(--bg-robin-500); }
@@ -177,6 +183,16 @@
 <script>
   const RUN = window.RUN;
   const money = (n) => '$' + n.toFixed(6);
+  function showCheckBanner(problems) {
+    const el = document.getElementById('check-banner');
+    el.hidden = false;
+    el.innerHTML = '<b>Self-check failed - refusing to render figures that may be wrong.</b> '
+      + problems.join('; ') + '. Re-run <code>docs/visuals/capture_run.py</code> and reload.';
+  }
+  if (!RUN || !Array.isArray(RUN.spans)) {
+    showCheckBanner(['run-data.js did not load - window.RUN is missing']);
+    throw new Error('half-life.html self-check failed: window.RUN is missing');
+  }
   const pct = (a, b) => (100 * a / b).toFixed(1) + '%';
   const attr = (s, k) => s.attributes[k];
   const rid = (s) => attr(s, 'gen_ai.response.id');
@@ -186,7 +202,8 @@
   const HALF_LIFE_S = 120;   // seconds of standing unconfirmed per halving
   const SPEED = 20;          // playback speedup: 446s of run in ~22s
   const CHATTER_PER_OPEN = 0.15; // display clicks per chattering decision per second
-  const FULL_H = 52, FLOOR_H = 9; // px; FLOOR_H matches .lane.unconfirmable::after bottom
+  const FULL_H = 52; // px
+  const FLOOR_H = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--floor-h')); // px; reads the same --floor-h the CSS floor uses
   const TAIL_S = 5;          // seconds of end-of-run chatter before the audio rests
 
   const TYPES = ['route_choice', 'eta_estimate', 'next_hop'];
@@ -220,10 +237,7 @@
 
   const problems = selfCheck();
   if (problems.length) {
-    const el = document.getElementById('check-banner');
-    el.hidden = false;
-    el.innerHTML = '<b>Self-check failed - refusing to render figures that may be wrong.</b> '
-      + problems.join('; ') + '. Re-run <code>docs/visuals/capture_run.py</code> and reload.';
+    showCheckBanner(problems);
     throw new Error('half-life.html self-check failed: ' + problems.join('; '));
   }
 
@@ -258,8 +272,8 @@
       ['Never confirmed', unconfirmed.length + ' (' + pct(unconfirmed.length, decisions.length) + ')', 'robin'],
       ['Cost confirmed', money(sumCost(confirmed)), 'amber'],
       ['Cost never confirmed', money(sumCost(unconfirmed)) + ' (' + pct(sumCost(unconfirmed), sumCost(decisions)) + ')', 'robin'],
-      ['Oldest unconfirmed', agesAtEnd[agesAtEnd.length - 1] + 's', 'robin'],
-      ['Median unconfirmed', median(agesAtEnd) + 's', 'robin'],
+      ['Oldest unconfirmed at run end', agesAtEnd[agesAtEnd.length - 1] + 's', 'robin'],
+      ['Median unconfirmed at run end', median(agesAtEnd) + 's', 'robin'],
     ];
     document.getElementById('stats').innerHTML = rows.map(([k, v, cls]) =>
       '<div class="stat ' + cls + '"><dt>' + k + '</dt><dd>' + v + '</dd></div>').join('');
@@ -397,7 +411,7 @@
       } else {
         open++;
         const k = decay(T - d.off);
-        el.style.height = Math.max(FLOOR_H, FLOOR_H + (FULL_H - FLOOR_H) * k).toFixed(1) + 'px';
+        el.style.height = (FLOOR_H + (FULL_H - FLOOR_H) * k).toFixed(1) + 'px';
         el.style.opacity = (0.35 + 0.65 * k).toFixed(2);
       }
     });
@@ -414,11 +428,13 @@
     if (!playing) return;
     const dt = Math.min(0.1, (now - (lastFrame || now)) / 1000);
     lastFrame = now;
+    let landedThisFrame = false;
     if (T < W) {
       T = Math.min(W, T + dt * SPEED);
       for (; tickIdx < decisions.length && decisions[tickIdx].off <= T; tickIdx++) {
         flash('flash');
         click(1250, 0.12, 0.03);
+        landedThisFrame = true;
       }
     } else {
       tail += dt;
@@ -426,7 +442,9 @@
     const open = update();
     // Geiger chatter: expected clicks this frame scale with how many landed
     // decisions will never be confirmed. Display metaphor, labeled on the page.
-    if (Math.random() < open * CHATTER_PER_OPEN * dt) {
+    // Skipped on a frame that already ticked a landing so the brighter landing
+    // flash, sharing the same lamp element, is never swallowed by a chatter flash.
+    if (!landedThisFrame && Math.random() < open * CHATTER_PER_OPEN * dt) {
       flash('flash-dim');
       click(2300, 0.05, 0.015);
     }
