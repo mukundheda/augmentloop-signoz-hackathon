@@ -23,7 +23,7 @@ Replay mode is the default. It replays a committed recording deterministically -
 | `reality` | the real world proved it, usually later | **yes** |
 | `ai_judge` | another model scored it - an opinion | **no**, labeled secondary view only |
 
-Every evaluation event carries `augmentloop.grade.source`, so that filter lives in the query rather than in this paragraph ([ADR 0001](docs/adr/0001-machine-checked-grades-only-in-the-headline-metric.md)).
+Every evaluation event carries `augmentloop.grade.source`, so that filter lives in the query rather than in this paragraph ([ADR 0001](docs/adr/0001-machine-checked-grades-only-in-the-headline-metric.md)). We raised the same evaluator-provenance question upstream, in [a comment on OpenTelemetry semantic-conventions-genai PR #359](https://github.com/open-telemetry/semantic-conventions-genai/pull/359#issuecomment-5079243760).
 
 ### Same three decision types, three models
 
