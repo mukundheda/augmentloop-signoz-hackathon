@@ -1,0 +1,506 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:,">
+<title>Half-life - Gradebook</title>
+<style>
+  /* SigNoz Periscope tokens, verified against @signozhq/design-tokens/dist/style.css.
+     Copied verbatim from docs/visuals/genome-strip.html - do not invent values. */
+  :root {
+    --bg-ink-500: #0b0c0e;  --bg-ink-400: #121317;  --bg-ink-300: #16181d;
+    --bg-ink-200: #23262e;
+    --bg-slate-400: #1d212d; --bg-slate-200: #2c3140; --bg-slate-100: #3c4152;
+    --bg-slate-50: #62687c;
+    --bg-vanilla-100: #fff;  --bg-vanilla-400: #c0c1c3;
+    --bg-robin-500: #4e74f8; --bg-robin-300: #95acfb;
+    --bg-cherry-500: #e5484d; --bg-cherry-900: #320f10;
+    --bg-forest-500: #25e192;
+    --bg-amber-500: #ffcc56; --bg-amber-300: #ffe19a;
+    --bg-sienna-500: #ad7f58;
+
+    --text: var(--bg-vanilla-100);
+    --text-dim: var(--bg-vanilla-400);
+    --text-faint: var(--bg-slate-50);
+    --line: var(--bg-slate-200);
+
+    --font: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    --mono: "Geist Mono", "Space Mono", "Fira Code", ui-monospace, SFMono-Regular, Menlo, monospace;
+  }
+
+  /* Page-specific token, not part of the shared block above - keeps this
+     file's :root byte-identical to genome-strip.html's. */
+  :root {
+    --floor-h: 9px; /* the height an unconfirmed mark decays to; read by JS as FLOOR_H below */
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg-ink-500); color: var(--text);
+    font-family: var(--font); font-size: 14px; line-height: 1.45;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  header {
+    display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 14px;
+    padding: 14px 20px; border-bottom: 1px solid var(--line); background: var(--bg-ink-400);
+  }
+  h1 { font-size: 15px; font-weight: 600; margin: 0; letter-spacing: -0.01em; }
+  .crumb { color: var(--text-faint); font-size: 12px; font-family: var(--mono); }
+
+  #check-banner {
+    margin: 0; padding: 12px 20px; background: var(--bg-cherry-900);
+    border-bottom: 2px solid var(--bg-cherry-500); color: var(--bg-vanilla-100);
+    font-size: 13px;
+  }
+  #check-banner code { font-family: var(--mono); }
+
+  .stats { display: flex; flex-wrap: wrap; gap: 1px; background: var(--line); border-bottom: 1px solid var(--line); margin: 0; }
+  .stat { flex: 1 1 140px; background: var(--bg-ink-400); padding: 10px 20px; }
+  .stat dt { margin: 0; font-size: 11px; letter-spacing: 0.04em; text-transform: uppercase; color: var(--text-faint); }
+  .stat dd { margin: 2px 0 0; font-family: var(--mono); font-size: 17px; }
+  .stat.amber dd { color: var(--bg-amber-500); }
+  .stat.robin dd { color: var(--bg-robin-300); }
+
+  .wrap { padding: 18px 20px 30px; }
+  h2 {
+    font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase;
+    color: var(--text-faint); margin: 0 0 10px; font-weight: 600;
+  }
+
+  .legend { display: flex; flex-wrap: wrap; gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 3px; margin-bottom: 14px; }
+  .key { flex: 1 1 260px; background: var(--bg-ink-400); padding: 11px 14px; }
+  .key .row { display: flex; align-items: center; gap: 9px; }
+  .swatch { width: 10px; height: 22px; border-radius: 2px; flex: none; }
+  .key .src { font-family: var(--mono); font-size: 13px; }
+  .key .count { margin-left: auto; font-family: var(--mono); font-size: 13px; color: var(--text-dim); }
+  .key .blurb { margin-top: 5px; font-size: 11px; color: var(--text-faint); }
+
+  .controls {
+    display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px;
+    padding: 10px 14px; border: 1px solid var(--line); border-radius: 3px;
+    background: var(--bg-ink-400); margin-bottom: 14px;
+  }
+  .controls button {
+    font: inherit; font-size: 13px; color: var(--text); background: var(--bg-ink-200);
+    border: 1px solid var(--bg-slate-100); border-radius: 3px; padding: 6px 12px; cursor: pointer;
+  }
+  .controls button:hover { background: var(--bg-slate-200); }
+  .controls button:focus-visible { outline: 2px solid var(--bg-robin-500); outline-offset: 2px; }
+  #scrub { flex: 1 1 160px; min-width: 120px; accent-color: var(--bg-robin-500); }
+  #scrub:focus-visible { outline: 2px solid var(--bg-robin-500); outline-offset: 2px; }
+
+  .geiger { display: flex; align-items: center; gap: 9px; font-family: var(--mono); font-size: 12px; color: var(--text-dim); }
+  .lamp {
+    width: 13px; height: 13px; border-radius: 50%; flex: none;
+    background: var(--bg-ink-200); border: 1px solid var(--bg-slate-100);
+  }
+  .lamp.flash { animation: flash 220ms ease-out; }
+  .lamp.flash-dim { animation: flashdim 180ms ease-out; }
+  @keyframes flash { 0% { background: var(--bg-robin-500); box-shadow: 0 0 8px var(--bg-robin-500); } 100% { background: var(--bg-ink-200); box-shadow: none; } }
+  @keyframes flashdim { 0% { background: var(--bg-robin-300); } 100% { background: var(--bg-ink-200); } }
+  .geiger b { color: var(--text); font-weight: 600; }
+
+  .track { position: relative; overflow: hidden; border: 1px solid var(--line); border-radius: 3px; background: var(--bg-ink-400); padding: 10px 0 0; }
+  .grid { position: absolute; top: 0; bottom: 0; width: 1px; background: var(--bg-slate-400); }
+  .playhead { position: absolute; top: 0; bottom: 0; width: 1px; background: var(--bg-vanilla-400); opacity: 0.75; z-index: 2; }
+
+  .lane-head {
+    position: relative; z-index: 1; display: flex; flex-wrap: wrap; gap: 4px 12px; align-items: baseline;
+    padding: 6px 14px 4px; font-size: 11px; color: var(--text-faint);
+  }
+  .lane-head .type { font-family: var(--mono); font-size: 12px; color: var(--text-dim); }
+  .lane { position: relative; height: 58px; overflow: hidden; }
+  .lane.unconfirmable::after {
+    /* The floor: the height an unconfirmed mark decays to and then holds. */
+    content: ""; position: absolute; left: 0; right: 0; bottom: var(--floor-h);
+    border-top: 1px dashed var(--bg-slate-100);
+  }
+  .mark { position: absolute; bottom: 0; width: 2px; transform: translateX(-50%); background: var(--bg-robin-500); }
+  .mark.confirmed { background: var(--bg-amber-500); }
+
+  .axis { position: relative; z-index: 1; height: 20px; font-family: var(--mono); font-size: 11px; color: var(--text-faint); border-top: 1px solid var(--bg-slate-400); background: var(--bg-ink-400); }
+  .axis span { position: absolute; top: 3px; transform: translateX(-50%); }
+  .axis span.first { transform: none; padding-left: 4px; }
+  .axis span.last { transform: translateX(-100%); padding-right: 4px; }
+
+  .param, .note { margin-top: 14px; max-width: 78ch; font-size: 13px; color: var(--text-dim); }
+  .param { font-size: 12px; color: var(--text-faint); }
+  .note b { color: var(--text); font-weight: 600; }
+  .note code, .param code { font-family: var(--mono); }
+  footer { padding: 14px 20px 24px; color: var(--text-faint); font-size: 11px; border-top: 1px solid var(--line); }
+  footer code { font-family: var(--mono); color: var(--text-dim); }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Half-life</h1>
+  <span class="crumb" id="crumb"></span>
+</header>
+
+<div id="check-banner" role="alert" hidden></div>
+
+<dl class="stats" id="stats"></dl>
+
+<div class="wrap">
+  <h2>Every decision at its real moment, decaying while it stands unconfirmed</h2>
+  <div class="legend" id="legend"></div>
+
+  <div class="controls">
+    <button id="play" type="button">Play the run</button>
+    <input id="scrub" type="range" min="0" value="0" step="1" aria-label="Scrub the timeline">
+    <button id="sound" type="button" aria-pressed="false">Sound: off</button>
+    <span class="geiger">
+      <span class="lamp" id="lamp" aria-hidden="true"></span>
+      <span>landed <b id="g-landed">0</b>/<span id="g-total">0</span>
+        &middot; chattering <b id="g-open">0</b>
+        &middot; t = +<span id="g-t">0</span>s
+        &middot; playback 20x</span>
+    </span>
+  </div>
+
+  <div class="track" id="track"></div>
+
+  <p class="param" id="param"></p>
+  <p class="note" id="floor-note"></p>
+  <p class="note" id="model-note"></p>
+</div>
+
+<footer>
+  Rendered from spans this build already emits - captured by
+  <code>docs/visuals/capture_run.py</code> straight out of the OpenTelemetry SDK, no new
+  instrumentation. A decision's moment is the epoch OpenRouter embeds in
+  <code>gen_ai.response.id</code>; it counts as confirmed when a <code>toy-world-outcomes</code>
+  span with <code>augmentloop.grade.source = reality</code> shares that id. Reality verdicts
+  carry no timestamp of their own in this run, so nothing on this page places a verdict in
+  time. What the verdicts said when they landed is the regret ledger's story
+  (<code>regret-ledger.html</code>). One recording, one window - the sample is what it is.
+</footer>
+
+<script src="run-data.js"></script>
+<script>
+  const RUN = window.RUN;
+  const money = (n) => '$' + n.toFixed(6);
+  function showCheckBanner(problems) {
+    const el = document.getElementById('check-banner');
+    el.hidden = false;
+    el.innerHTML = '<b>Self-check failed - refusing to render figures that may be wrong.</b> '
+      + problems.join('; ') + '. Re-run <code>docs/visuals/capture_run.py</code> and reload.';
+  }
+  if (!RUN || !Array.isArray(RUN.spans)) {
+    showCheckBanner(['run-data.js did not load - window.RUN is missing']);
+    throw new Error('half-life.html self-check failed: window.RUN is missing');
+  }
+  const pct = (a, b) => (100 * a / b).toFixed(1) + '%';
+  const attr = (s, k) => s.attributes[k];
+  const rid = (s) => attr(s, 'gen_ai.response.id');
+
+  // Display parameters, chosen for legibility - not derived from the data,
+  // because no reality verdict in this run carries a timestamp to fit a rate to.
+  const HALF_LIFE_S = 120;   // seconds of standing unconfirmed per halving
+  const SPEED = 20;          // playback speedup: 446s of run in ~22s
+  const CHATTER_PER_OPEN = 0.15; // display clicks per chattering decision per second
+  const FULL_H = 52; // px
+  const FLOOR_H = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--floor-h')); // px; reads the same --floor-h the CSS floor uses
+  const TAIL_S = 5;          // seconds of end-of-run chatter before the audio rests
+
+  const TYPES = ['route_choice', 'eta_estimate', 'next_hop'];
+
+  const evals = RUN.spans.filter((s) => s.name === 'gen_ai.evaluation.result');
+  const mathGrades = evals.filter((s) => attr(s, 'augmentloop.grade.source') === 'math');
+  const realityGrades = evals.filter((s) => attr(s, 'augmentloop.grade.source') === 'reality');
+  const confirmedIds = new Set(realityGrades.map(rid));
+
+  const ID_RE = /^gen-(\d{10})-/;
+
+  // --- Self-check, mirroring capture_run.py's _check: fail loudly at load
+  // rather than render a confident wrong page.
+  function selfCheck() {
+    const problems = [];
+    if (!mathGrades.length) problems.push('no math-graded decisions found in run-data.js');
+    const unparsable = mathGrades.filter((d) => !ID_RE.test(rid(d))).length;
+    if (unparsable) problems.push(unparsable + ' decision(s) whose gen_ai.response.id does not parse to an epoch - the timeline has no honest x-axis without it');
+    const uniqueIds = new Set(mathGrades.map(rid));
+    if (uniqueIds.size !== mathGrades.length) problems.push('duplicate gen_ai.response.id among decisions - the correlation key is broken');
+    // One verdict, one decision: the count of confirmed decisions must equal
+    // the count of reality verdicts. Fails on a duplicated verdict (two spans
+    // sharing one id) or an unmatched one - unlike a confirmed + unconfirmed
+    // partition over the same array, which is a tautology and can never fire.
+    const confirmed = mathGrades.filter((d) => confirmedIds.has(rid(d))).length;
+    if (confirmed !== realityGrades.length) problems.push('confirmed decisions (' + confirmed + ') do not equal reality verdicts (' + realityGrades.length + ') - a verdict is duplicated or matches no decision');
+    const orphans = realityGrades.filter((r) => !uniqueIds.has(rid(r))).length;
+    if (orphans) problems.push(orphans + ' reality verdict(s) match no decision by gen_ai.response.id');
+    return problems;
+  }
+
+  const problems = selfCheck();
+  if (problems.length) {
+    showCheckBanner(problems);
+    throw new Error('half-life.html self-check failed: ' + problems.join('; '));
+  }
+
+  // --- The honest facts. A decision's time is real (epoch embedded in its
+  // response id). A verdict's time does not exist in this run; confirmation is
+  // a boolean, settled at the decision's own mark.
+  const epochs = mathGrades.map((d) => Number(ID_RE.exec(rid(d))[1]));
+  const T0 = Math.min(...epochs);
+  const decisions = mathGrades.map((d, i) => ({
+    off: Number(ID_RE.exec(rid(d))[1]) - T0,
+    type: attr(d, 'augmentloop.decision.type'),
+    cost: attr(d, 'augmentloop.cost.usd') || 0,
+    model: attr(d, 'gen_ai.request.model') || '',
+    rid: rid(d),
+    confirmed: confirmedIds.has(rid(d)),
+  })).sort((a, b) => a.off - b.off);
+  const W = decisions[decisions.length - 1].off; // 446 in the committed run
+
+  const confirmed = decisions.filter((d) => d.confirmed);
+  const unconfirmed = decisions.filter((d) => !d.confirmed);
+  const sumCost = (arr) => arr.reduce((n, d) => n + d.cost, 0);
+  const agesAtEnd = unconfirmed.map((d) => W - d.off).sort((a, b) => a - b);
+  const median = (a) => a.length % 2 ? a[(a.length - 1) / 2] : (a[a.length / 2 - 1] + a[a.length / 2]) / 2;
+
+  const decay = (age) => Math.pow(0.5, age / HALF_LIFE_S);
+
+  // --- Static render -------------------------------------------------------
+  function renderStats() {
+    const rows = [
+      ['Decisions', decisions.length, ''],
+      ['Confirmed by reality', confirmed.length, 'amber'],
+      ['Never confirmed', unconfirmed.length + ' (' + pct(unconfirmed.length, decisions.length) + ')', 'robin'],
+      ['Cost confirmed', money(sumCost(confirmed)), 'amber'],
+      ['Cost never confirmed', money(sumCost(unconfirmed)) + ' (' + pct(sumCost(unconfirmed), sumCost(decisions)) + ')', 'robin'],
+      ['Oldest unconfirmed at run end', agesAtEnd[agesAtEnd.length - 1] + 's', 'robin'],
+      ['Median unconfirmed at run end', median(agesAtEnd) + 's', 'robin'],
+    ];
+    document.getElementById('stats').innerHTML = rows.map(([k, v, cls]) =>
+      '<div class="stat ' + cls + '"><dt>' + k + '</dt><dd>' + v + '</dd></div>').join('');
+  }
+
+  function renderLegend() {
+    document.getElementById('legend').innerHTML = `
+      <div class="key">
+        <div class="row"><span class="swatch" style="background: var(--bg-amber-500)"></span>
+          <span class="src">confirmed</span><span class="count">${confirmed.length}</span></div>
+        <div class="blurb">a reality verdict landed. It carries no timestamp, so it is drawn settled
+          at the decision's own mark, never at a time of its own - the wait before it landed is unrecorded.</div>
+      </div>
+      <div class="key">
+        <div class="row"><span class="swatch" style="background: var(--bg-robin-500)"></span>
+          <span class="src">never confirmed</span><span class="count">${unconfirmed.length}</span></div>
+        <div class="blurb">still waiting at run end. Height decays with real seconds stood unconfirmed,
+          down to the dashed floor, where it stays.</div>
+      </div>`;
+  }
+
+  function laneCaption(type) {
+    const of = decisions.filter((d) => d.type === type);
+    const conf = of.filter((d) => d.confirmed).length;
+    const ages = of.filter((d) => !d.confirmed).map((d) => W - d.off).sort((a, b) => a - b);
+    const ageTail = ages.length
+      ? 'oldest ' + ages[ages.length - 1] + 's, median ' + median(ages) + 's unconfirmed at run end'
+      : '';
+    let extra;
+    if (conf === of.length) {
+      extra = 'the only type the world grades: <code>journey_on_time</code> is a real signal';
+    } else if (conf === 0) {
+      // The structural claim is earned only by a type reality never grades at all.
+      extra = 'structural, not slow: no outcome signal exists for this type - ' + ageTail;
+    } else {
+      const missing = of.length - conf;
+      extra = 'the world grades this type; ' + missing + ' verdict' + (missing === 1 ? '' : 's')
+        + ' had not landed by run end - ' + ageTail;
+    }
+    return `<span class="type">${type}</span><span>${conf} of ${of.length} confirmed &middot; ${money(sumCost(of))} &middot; ${extra}</span>`;
+  }
+
+  function renderTrack() {
+    const track = document.getElementById('track');
+    const grid = [];
+    for (let s = 60; s < W; s += 60) grid.push('<div class="grid" aria-hidden="true" style="left:' + (100 * s / W) + '%"></div>');
+    const lanes = TYPES.map((type) => {
+      const marks = decisions.map((d, i) => d.type !== type ? '' :
+        `<div class="mark ${d.confirmed ? 'confirmed' : ''}" data-i="${i}"
+           title="${d.type} - ${d.rid} - ${money(d.cost)} - landed +${d.off}s - ${d.confirmed
+             ? 'confirmed by reality, settled at its own mark'
+             : 'never confirmed; ' + (W - d.off) + 's old at run end'}"
+           style="left:${(100 * d.off / W)}%"></div>`).join('');
+      const unconfirmable = decisions.filter((d) => d.type === type).every((d) => !d.confirmed);
+      // The lane captions stay in the accessibility tree; only the 180 marks
+      // and the decorative chrome are hidden from it.
+      return `<div class="lane-head">${laneCaption(type)}</div>
+        <div class="lane ${unconfirmable ? 'unconfirmable' : ''}" aria-hidden="true">${marks}</div>`;
+    }).join('');
+    const axisTicks = [0, 120, 240, 360].filter((s) => s < W - 30)
+      .map((s) => `<span class="${s === 0 ? 'first' : ''}" style="left:${100 * s / W}%">${s ? s + 's' : '0s'}</span>`)
+      .join('') + `<span class="last" style="left:100%">${W}s</span>`;
+    track.innerHTML = grid.join('') + lanes
+      + `<div class="axis" aria-hidden="true">${axisTicks}</div>`
+      + '<div class="playhead" id="playhead" aria-hidden="true"></div>';
+  }
+
+  function renderNotes() {
+    document.getElementById('param').innerHTML =
+      `Decay is drawn with a display half-life of <b>${HALF_LIFE_S}s</b> - a parameter chosen for
+       legibility, not derived: no reality verdict in this run carries a timestamp, so the data
+       contains no confirmation rate to fit. What is real is each decision's moment and how long it
+       had stood unconfirmed at run end. The Geiger chatter is a display metaphor on the same terms:
+       each landing ticks once, and the chatter rate tracks how many landed decisions will never be
+       confirmed.`;
+    const structural = TYPES.filter((t) => decisions.filter((d) => d.type === t).every((d) => !d.confirmed));
+    document.getElementById('floor-note').innerHTML =
+      `<b>The floor is structural.</b> ${structural.map((t) => '<code>' + t + '</code>').join(' and ')}
+       decay to the dashed floor and stay there because the world has no outcome signal for them:
+       the replay only ever converts a <code>route_choice</code> outcome into a reality grade, since
+       <code>journey_on_time</code> is the only real-world signal this world has. Their confirmation
+       is not late. It is never coming, and the run ends with <b>${unconfirmed.length}</b> of
+       <b>${decisions.length}</b> decisions - <b>${money(sumCost(unconfirmed))}</b> of
+       <b>${money(sumCost(decisions))}</b> - still chattering.`;
+    const models = {};
+    decisions.forEach((d) => {
+      models[d.model] = models[d.model] || { n: 0, c: 0 };
+      models[d.model].n++;
+      if (d.confirmed) models[d.model].c++;
+    });
+    document.getElementById('model-note').innerHTML =
+      'Confirmation is decided by decision type, not by model: '
+      + Object.entries(models).map(([m, v]) => '<code>' + m + '</code> confirms ' + v.c + ' of ' + v.n).join(', ')
+      + '. Read the lanes, not the vendors.';
+  }
+
+  // --- Playback ------------------------------------------------------------
+  const playBtn = document.getElementById('play');
+  const scrub = document.getElementById('scrub');
+  const lamp = document.getElementById('lamp');
+  let T = W, playing = false, tickIdx = decisions.length, tail = 0, lastFrame = null;
+
+  let audioCtx = null, soundOn = false;
+  function click(freq, gain, dur) {
+    if (!soundOn || !audioCtx) return;
+    const osc = audioCtx.createOscillator();
+    const g = audioCtx.createGain();
+    osc.type = 'square'; osc.frequency.value = freq;
+    g.gain.setValueAtTime(gain, audioCtx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + dur);
+    osc.connect(g).connect(audioCtx.destination);
+    osc.start(); osc.stop(audioCtx.currentTime + dur);
+  }
+  function flash(cls) {
+    lamp.classList.remove('flash', 'flash-dim');
+    void lamp.offsetWidth; // restart the animation
+    lamp.classList.add(cls);
+  }
+
+  const markEls = [];
+  function collectMarks() {
+    document.querySelectorAll('.mark').forEach((el) => { markEls[Number(el.dataset.i)] = el; });
+  }
+
+  function update() {
+    let landed = 0, open = 0;
+    decisions.forEach((d, i) => {
+      const el = markEls[i];
+      if (d.off > T) { el.style.visibility = 'hidden'; return; }
+      el.style.visibility = 'visible';
+      landed++;
+      if (d.confirmed) {
+        el.style.height = FULL_H + 'px';
+        el.style.opacity = '1';
+      } else {
+        open++;
+        const k = decay(T - d.off);
+        el.style.height = (FLOOR_H + (FULL_H - FLOOR_H) * k).toFixed(1) + 'px';
+        el.style.opacity = (0.35 + 0.65 * k).toFixed(2);
+      }
+    });
+    document.getElementById('playhead').style.left = (100 * T / W) + '%';
+    document.getElementById('g-landed').textContent = landed;
+    document.getElementById('g-open').textContent = open;
+    document.getElementById('g-t').textContent = Math.floor(T);
+    scrub.value = Math.floor(T);
+    scrub.setAttribute('aria-valuetext', Math.floor(T) + ' seconds into the run, ' + open + ' decisions chattering');
+    return open;
+  }
+
+  function frame(now) {
+    if (!playing) return;
+    const dt = Math.min(0.1, (now - (lastFrame || now)) / 1000);
+    lastFrame = now;
+    let landedThisFrame = false;
+    if (T < W) {
+      T = Math.min(W, T + dt * SPEED);
+      for (; tickIdx < decisions.length && decisions[tickIdx].off <= T; tickIdx++) {
+        flash('flash');
+        click(1250, 0.12, 0.03);
+        landedThisFrame = true;
+      }
+    } else {
+      tail += dt;
+    }
+    const open = update();
+    // Geiger chatter: expected clicks this frame scale with how many landed
+    // decisions will never be confirmed. Display metaphor, labeled on the page.
+    // Skipped on a frame that already ticked a landing so the brighter landing
+    // flash, sharing the same lamp element, is never swallowed by a chatter flash.
+    if (!landedThisFrame && Math.random() < open * CHATTER_PER_OPEN * dt) {
+      flash('flash-dim');
+      click(2300, 0.05, 0.015);
+    }
+    if (T >= W && tail >= TAIL_S) {
+      playing = false;
+      playBtn.textContent = 'Replay';
+      return;
+    }
+    requestAnimationFrame(frame);
+  }
+
+  playBtn.addEventListener('click', () => {
+    if (playing) {
+      playing = false;
+      playBtn.textContent = 'Play the run';
+      return;
+    }
+    if (T >= W) { T = 0; tickIdx = 0; }
+    playing = true; tail = 0; lastFrame = null;
+    playBtn.textContent = 'Pause';
+    requestAnimationFrame(frame);
+  });
+
+  scrub.addEventListener('input', () => {
+    T = Number(scrub.value);
+    tickIdx = decisions.filter((d) => d.off <= T).length; // reposition silently
+    tail = 0;
+    if (!playing) playBtn.textContent = T >= W ? 'Replay' : 'Play the run';
+    update();
+  });
+
+  document.getElementById('sound').addEventListener('click', (ev) => {
+    soundOn = !soundOn;
+    if (soundOn && !audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    if (soundOn && audioCtx.state === 'suspended') audioCtx.resume();
+    ev.target.textContent = 'Sound: ' + (soundOn ? 'on' : 'off');
+    ev.target.setAttribute('aria-pressed', String(soundOn));
+  });
+
+  function boot() {
+    document.getElementById('crumb').textContent =
+      RUN.recording + ' - captured ' + RUN.capturedAt + ' - ' + decisions.length
+      + ' decisions over ' + W + 's - ' + money(sumCost(decisions)) + ' total';
+    renderStats();
+    renderLegend();
+    renderTrack();
+    renderNotes();
+    collectMarks();
+    document.getElementById('g-total').textContent = decisions.length;
+    scrub.max = W;
+    scrub.value = W;
+    playBtn.textContent = 'Replay';
+    update(); // open at run end: the loud state is the thesis
+  }
+
+  boot();
+</script>
+</body>
+</html>

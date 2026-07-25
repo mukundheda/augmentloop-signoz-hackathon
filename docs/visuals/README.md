@@ -105,6 +105,49 @@ against, so both books now scroll inside a capped rail instead of running the
 page off the bottom. Click any position for its full detail, including the
 reality verdict's explanation where one has arrived.
 
+## Half-life
+
+A Geiger-counter framing, one lane per decision type: a decision lands at the
+real moment its `gen_ai.response.id` says it happened, then keeps losing
+height for every second it stands unconfirmed. A reality verdict locks a mark
+at full height for good; nothing else ever raises one back up.
+
+![Half-life timeline at run end, rendered from the committed replay recording on 2026-07-25: three lanes over a 446s window, route_choice's 60 marks amber and at full height because every one is confirmed, eta_estimate and next_hop's 120 marks blue and decayed down to the dashed floor because none of them ever confirm, with stat tiles reading 120 (66.7%) never confirmed and $0.319381 (84.6%) of spend never confirmed](half-life.png)
+
+**180 decisions, $0.377553 total, over a 446s (7.4 min) window - 60 confirmed
+by reality, 120 (66.7%) never confirmed.** $0.058172 of the spend sits in
+decisions reality confirmed; $0.319381 (84.6%) sits in decisions it never
+touched. At run end the oldest unconfirmed decision has stood for 415s, the
+median for 107.5s. Per type: `route_choice` confirms all 60 of 60, $0.058172,
+spanning 0s to 408s. `eta_estimate` confirms 0 of 60, $0.276440, spanning 31s to
+427s, oldest unconfirmed 415s, median 193s. `next_hop` confirms 0 of 60,
+$0.042941, spanning 109s to 446s, oldest unconfirmed 337s, median 84s. Every
+model confirms at exactly 20 of 60 - `anthropic/claude-haiku-4.5`,
+`anthropic/claude-sonnet-4.6`, `google/gemini-2.5-flash-lite` - because
+confirmation is decided by decision type, not by model. Read the lanes, not
+the vendors.
+
+A reality verdict in this run carries no timestamp of its own. The
+recording's outcome row is `{graded_response_id, on_time, model}` - no clock
+reading - so the page places a decision in time and a verdict not at all: a
+confirmed mark is drawn settled at the decision's own moment, and the wait
+before that verdict landed is unrecorded. A decision's moment is real, taken
+from the epoch OpenRouter embeds in `gen_ai.response.id`. The decay rate
+shown is not: the page draws it with a display half-life of 120s, a parameter
+chosen for legibility rather than fit to data, because no verdict in this run
+carries a timestamp for a rate to be fit to - and it says so on screen rather
+than let the animation imply a confirmation rate nobody measured.
+
+The floor two of the three lanes decay to and never leave is structural, not
+a backlog. `eta_estimate` and `next_hop` are never confirmed because the toy
+world has no outcome signal for them: the replay only ever converts a
+`route_choice` outcome into a reality grade, since `journey_on_time` is the
+only real-world signal this world has. Their confirmation is not late, it is
+never coming, and 84.6% of the run's spend sits in decisions the world will
+never weigh in on. What confirmation said when it did land - including the 15
+decisions it overturned - is the regret ledger's story; this page only shows
+whether and how long a decision waited.
+
 ## Regenerating
 
 ```bash
@@ -112,7 +155,7 @@ pip install -e reference-library -e toy-world
 python docs/visuals/capture_run.py     # rewrites run-data.js from a fresh run
 ```
 
-Then open `docs/visuals/span-link.html`, `docs/visuals/genome-strip.html`, or
-`docs/visuals/regret-ledger.html`. All three read the same `run-data.js`. The
-replay is deterministic, so the numbers do not move between runs; only the
-trace and span ids do.
+Then open `docs/visuals/span-link.html`, `docs/visuals/genome-strip.html`,
+`docs/visuals/regret-ledger.html`, or `docs/visuals/half-life.html`. All four
+read the same `run-data.js`. The replay is deterministic, so the numbers do
+not move between runs; only the trace and span ids do.

@@ -47,13 +47,42 @@ class OpenRouterClient:
         self._client = OpenAI(api_key=key, base_url=base_url)
         self._max_output_tokens = max_output_tokens
 
+    # A roster run is hundreds of sequential calls, and OpenRouter routes to
+    # upstream providers that rate-limit independently of our key. Without this,
+    # one transient 429 anywhere in the run raises out of `decide` and discards
+    # every decision already paid for. Only transient classes are retried:
+    # rate limits and provider-side 5xx. A bad key, a dead slug or a malformed
+    # request still fails immediately and loudly, because retrying those just
+    # burns the clock on a mistake that will not fix itself.
+    _RETRY_DELAYS_S: tuple[float, ...] = (2.0, 5.0, 12.0)
+
+    def _create_with_retry(self, *, model: str, query: Query):  # type: ignore[no-untyped-def]
+        import time
+
+        from openai import APIStatusError, RateLimitError
+
+        last: Exception | None = None
+        for attempt in range(len(self._RETRY_DELAYS_S) + 1):
+            try:
+                return self._client.chat.completions.create(
+                    model=model,
+                    max_tokens=self._max_output_tokens,
+                    temperature=0,
+                    messages=[{"role": "user", "content": query.prompt}],
+                )
+            except RateLimitError as exc:
+                last = exc
+            except APIStatusError as exc:
+                if exc.status_code < 500:
+                    raise
+                last = exc
+            if attempt < len(self._RETRY_DELAYS_S):
+                time.sleep(self._RETRY_DELAYS_S[attempt])
+        assert last is not None
+        raise last
+
     def decide(self, *, model: str, query: Query) -> ModelDecision:
-        response = self._client.chat.completions.create(
-            model=model,
-            max_tokens=self._max_output_tokens,
-            temperature=0,
-            messages=[{"role": "user", "content": query.prompt}],
-        )
+        response = self._create_with_retry(model=model, query=query)
         content = response.choices[0].message.content or ""
         usage = response.usage
         return ModelDecision(

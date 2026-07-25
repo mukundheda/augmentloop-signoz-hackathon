@@ -44,6 +44,8 @@ def test_missing_grade_source_is_nonconforming():
         (lambda e: e["attributes"].pop("gen_ai.evaluation.name"), "gen_ai.evaluation.name"),
         (lambda e: e["attributes"].__setitem__("augmentloop.grade.source", "vibes"), "grade.source"),
         (lambda e: e["attributes"].__setitem__("gen_ai.evaluation.score.value", 0.5), "score.value"),
+        (lambda e: e["attributes"].__setitem__("gen_ai.evaluation.score.value", True), "score.value"),
+        (lambda e: e["attributes"].__setitem__("gen_ai.evaluation.score.value", False), "score.value"),
         (lambda e: e["attributes"].__setitem__("gen_ai.evaluation.score.label", "great"), "score.label"),
         (lambda e: e["attributes"].__setitem__("augmentloop.cost.usd", -1), "cost.usd"),
     ],
@@ -63,6 +65,23 @@ def test_missing_response_id_is_a_warning_not_an_error():
     assert any(
         f.level == "warning" and "gen_ai.response.id" in f.message for f in check_event(event)
     )
+
+
+def test_a_json_boolean_score_is_not_a_valid_binary_score():
+    """A JSON `true` must not pass as 1.0 on a machine-checked grade.
+
+    Python's `True == 1`, so a membership test alone accepts it silently. This
+    checker exists to judge emitters written in other languages, and the repo
+    ships a TypeScript emitter, so `true` is the single most likely wrong value
+    to arrive here: `score.value: isCorrect` instead of `isCorrect ? 1 : 0`.
+    """
+    for bad in (True, False):
+        event = _load("conforming.json")
+        event["attributes"]["gen_ai.evaluation.score.value"] = bad
+        assert not conforms(event), f"a bare JSON {str(bad).lower()} must not conform"
+        assert any(
+            f.level == "error" and "score.value" in f.message for f in check_event(event)
+        )
 
 
 def test_ai_judge_may_carry_a_raw_non_binary_score():

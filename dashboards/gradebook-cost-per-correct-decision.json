@@ -63,9 +63,75 @@
       "w": 4,
       "x": 4,
       "y": 14
+    },
+    {
+      "h": 7,
+      "i": "panel-8-right-sizing-table",
+      "moved": false,
+      "static": false,
+      "w": 12,
+      "x": 0,
+      "y": 18
+    },
+    {
+      "h": 7,
+      "i": "panel-9-cost-distribution",
+      "moved": false,
+      "static": false,
+      "w": 12,
+      "x": 12,
+      "y": 18
+    },
+    {
+      "h": 6,
+      "i": "panel-10-failure-classes",
+      "moved": false,
+      "static": false,
+      "w": 8,
+      "x": 0,
+      "y": 25
+    },
+    {
+      "h": 6,
+      "i": "panel-11-recent-failures",
+      "moved": false,
+      "static": false,
+      "w": 16,
+      "x": 8,
+      "y": 25
+    },
+    {
+      "h": 6,
+      "i": "panel-12-contract-adoption",
+      "moved": false,
+      "static": false,
+      "w": 12,
+      "x": 0,
+      "y": 31
     }
   ],
-  "panelMap": {},
+  "panelMap": {
+    "panel-10-failure-classes": {
+      "collapsed": false,
+      "widgets": []
+    },
+    "panel-11-recent-failures": {
+      "collapsed": false,
+      "widgets": []
+    },
+    "panel-12-contract-adoption": {
+      "collapsed": false,
+      "widgets": []
+    },
+    "panel-8-right-sizing-table": {
+      "collapsed": false,
+      "widgets": []
+    },
+    "panel-9-cost-distribution": {
+      "collapsed": false,
+      "widgets": []
+    }
+  },
   "tags": [
     "gradebook",
     "signoz-hackathon"
@@ -106,7 +172,7 @@
       "contextLinks": {
         "linksData": null
       },
-      "description": "Headline metric (ADR 0001, definition fixed in C9/#54): (sum(augmentloop.cost.usd) / count(correct decisions)) * 1000, scoped to augmentloop.grade.source = 'math'. The numerator A is ALL math cost - money spent on WRONG answers included - so this is what we spent per answer we got right, not the flattering cost-of-only-correct-answers version. Denominator B is correct math decisions. Scoping to math (a decision emits at most one math grade) structurally removes the earlier double-count that reality grades caused, so this reconciles to the cent with the CLI's total_cost / correct on the same run. Reality grades are NOT blended into this number - they have their own adjacent panels (reality correct rate & count). AI-judge grades are never in the headline (ADR 0001). SCOPING: augmentloop.decision.type is limited to the four model-decision types (route_choice from the toy world, filler_detection/quote_extraction/clip_scoring from the CleanCut substrate), deliberately excluding build_session, the #13 meta build-fleet unit - a whole agent session, not a single graded model decision - which skewed this headline 534x on 2026-07-25. SERVICE SCOPE (ruling recorded on #47, 2026-07-25): every panel additionally excludes service.name = 'agent-gradebook-test', a test harness whose graded decisions were reaching this judge-facing headline. Excluding the known test service (rather than allowlisting 'real' services) was the deliberate choice: at ruling time a fourth, legitimate service (agent-gradebook-verify) was already emitting graded decisions outside any allowlist that existed then, which an allowlist would have silently dropped from the headline. VARIABLES (#48): $decision_type, $model, and $grade_source are dashboard variables (DYNAMIC, attribute-backed off augmentloop.decision.type / gen_ai.request.model / augmentloop.grade.source on the metrics signal), replacing the old hardcoded decision-type allowlist. Every panel filters augmentloop.decision.type != 'build_session' UNCONDITIONALLY (not gated by the variable) so build_session stays excluded no matter what a judge selects; augmentloop.decision.type IN ($decision_type) is the selectable part, which is why a newly emitted decision type (e.g. eta_estimate, next_hop, or the pacing_choice type observed live on 2026-07-25) appears in the dropdown automatically with no panel edits. $model is applied the same way on every panel. $grade_source is NOT wired into this panel, panels 2-4, or the ai-judge panel 5 - each has an ADR-0001-driven fixed grade source (this one: math only per #54) that a shared dashboard variable must not be allowed to override; it is wired only into the two reality panels below.",
+      "description": " SCOPED (2026-07-26): this panel is pinned to the demo services (toy-world and toy-world-outcomes). Gradebook is a portable layer and several other services on this stack emit through the same contract, so an unscoped panel silently blends them and stops reconciling with `python -m toyworld`. The 'Services Emitting Through the Contract' panel shows the full set on purpose. Headline metric (ADR 0001, definition fixed in C9/#54): (sum(augmentloop.cost.usd) / count(correct decisions)) * 1000, scoped to augmentloop.grade.source = 'math'. The numerator A is ALL math cost - money spent on WRONG answers included - so this is what we spent per answer we got right, not the flattering cost-of-only-correct-answers version. Denominator B is correct math decisions. Scoping to math (a decision emits at most one math grade) structurally removes the earlier double-count that reality grades caused, so this reconciles to the cent with the CLI's total_cost / correct on the same run. Reality grades are NOT blended into this number - they have their own adjacent panels (reality correct rate & count). AI-judge grades are never in the headline (ADR 0001). SCOPING: augmentloop.decision.type is limited to the four model-decision types (route_choice from the toy world, filler_detection/quote_extraction/clip_scoring from the CleanCut substrate), deliberately excluding build_session, the #13 meta build-fleet unit - a whole agent session, not a single graded model decision - which skewed this headline 534x on 2026-07-25. SERVICE SCOPE (ruling recorded on #47, 2026-07-25): every panel additionally excludes service.name = 'agent-gradebook-test', a test harness whose graded decisions were reaching this judge-facing headline. Excluding the known test service (rather than allowlisting 'real' services) was the deliberate choice: at ruling time a fourth, legitimate service (agent-gradebook-verify) was already emitting graded decisions outside any allowlist that existed then, which an allowlist would have silently dropped from the headline. VARIABLES (#48): $decision_type, $model, and $grade_source are dashboard variables (DYNAMIC, attribute-backed off augmentloop.decision.type / gen_ai.request.model / augmentloop.grade.source on the metrics signal), replacing the old hardcoded decision-type allowlist. Every panel filters augmentloop.decision.type != 'build_session' UNCONDITIONALLY (not gated by the variable) so build_session stays excluded no matter what a judge selects; augmentloop.decision.type IN ($decision_type) is the selectable part, which is why a newly emitted decision type (e.g. eta_estimate, next_hop, or the pacing_choice type observed live on 2026-07-25) appears in the dropdown automatically with no panel edits. $model is applied the same way on every panel. $grade_source is NOT wired into this panel, panels 2-4, or the ai-judge panel 5 - each has an ADR-0001-driven fixed grade source (this one: math only per #54) that a shared dashboard variable must not be allowed to override; it is wired only into the two reality panels below.",
       "id": "panel-1-headline-cost-per-correct",
       "legendPosition": "bottom",
       "nullZeroValues": "zero",
@@ -127,7 +193,7 @@
               "disabled": true,
               "expression": "A",
               "filter": {
-                "expression": "augmentloop.grade.source = 'math' AND augmentloop.decision.type != 'build_session' AND augmentloop.decision.type IN ($decision_type) AND service.name != 'agent-gradebook-test' AND gen_ai.request.model IN ($model)"
+                "expression": "augmentloop.grade.source = 'math' AND service.name IN ('toy-world', 'toy-world-outcomes') AND augmentloop.decision.type != 'build_session' AND augmentloop.decision.type IN ($decision_type) AND gen_ai.request.model IN ($model)"
               },
               "functions": [],
               "groupBy": [],
@@ -155,7 +221,7 @@
               "disabled": true,
               "expression": "B",
               "filter": {
-                "expression": "gen_ai.evaluation.score.label = 'correct' AND augmentloop.grade.source = 'math' AND augmentloop.decision.type != 'build_session' AND augmentloop.decision.type IN ($decision_type) AND service.name != 'agent-gradebook-test' AND gen_ai.request.model IN ($model)"
+                "expression": "gen_ai.evaluation.score.label = 'correct' AND augmentloop.grade.source = 'math' AND service.name IN ('toy-world', 'toy-world-outcomes') AND augmentloop.decision.type != 'build_session' AND augmentloop.decision.type IN ($decision_type) AND gen_ai.request.model IN ($model)"
               },
               "functions": [],
               "groupBy": [],
@@ -222,7 +288,7 @@
       "contextLinks": {
         "linksData": null
       },
-      "description": "Same headline formula grouped by gen_ai.request.model. This is the right-sizing evidence: same task, cheaper model, correctness held, cost per correct decision drops. Excludes service.name = 'agent-gradebook-test' (#47). VARIABLES (#48): $decision_type (with augmentloop.decision.type != 'build_session' enforced unconditionally alongside it) and $model are applied here; $grade_source is deliberately NOT, to avoid a shared variable pulling ai_judge into a correctness claim or collapsing the math/reality comparison.",
+      "description": "Cost per correct decision by model. Now uses ALL cost in the numerator and is scoped to grade.source = 'math', so it reconciles exactly with the headline panel and the CLI. It previously filtered the cost numerator to score.label = 'correct' (hiding money spent on wrong answers) and blended math with reality (double-counting every route_choice decision, which is graded twice). Issue #84. SCOPED (2026-07-26): this panel is pinned to the demo services (toy-world and toy-world-outcomes). Gradebook is a portable layer and several other services on this stack emit through the same contract, so an unscoped panel silently blends them and stops reconciling with `python -m toyworld`. The 'Services Emitting Through the Contract' panel shows the full set on purpose. Same headline formula grouped by gen_ai.request.model. This is the right-sizing evidence: same task, cheaper model, correctness held, cost per correct decision drops. Excludes service.name = 'agent-gradebook-test' (#47). VARIABLES (#48): $decision_type (with augmentloop.decision.type != 'build_session' enforced unconditionally alongside it) and $model are applied here; $grade_source is deliberately NOT, to avoid a shared variable pulling ai_judge into a correctness claim or collapsing the math/reality comparison.",
       "id": "panel-2-cost-per-correct-by-model",
       "legendPosition": "bottom",
       "nullZeroValues": "zero",
@@ -243,7 +309,7 @@
               "disabled": true,
               "expression": "A",
               "filter": {
-                "expression": "gen_ai.evaluation.score.label = 'correct' AND augmentloop.grade.source IN ('math','reality') AND augmentloop.decision.type != 'build_session' AND augmentloop.decision.type IN ($decision_type) AND service.name != 'agent-gradebook-test' AND gen_ai.request.model IN ($model)"
+                "expression": "augmentloop.grade.source = 'math' AND service.name IN ('toy-world', 'toy-world-outcomes') AND augmentloop.decision.type != 'build_session' AND augmentloop.decision.type IN ($decision_type) AND gen_ai.request.model IN ($model)"
               },
               "functions": [],
               "groupBy": [
@@ -277,7 +343,7 @@
               "disabled": true,
               "expression": "B",
               "filter": {
-                "expression": "gen_ai.evaluation.score.label = 'correct' AND augmentloop.grade.source IN ('math','reality') AND augmentloop.decision.type != 'build_session' AND augmentloop.decision.type IN ($decision_type) AND service.name != 'agent-gradebook-test' AND gen_ai.request.model IN ($model)"
+                "expression": "gen_ai.evaluation.score.label = 'correct' AND augmentloop.grade.source = 'math' AND service.name IN ('toy-world', 'toy-world-outcomes') AND augmentloop.decision.type != 'build_session' AND augmentloop.decision.type IN ($decision_type) AND gen_ai.request.model IN ($model)"
               },
               "functions": [],
               "groupBy": [
@@ -350,7 +416,7 @@
       "contextLinks": {
         "linksData": null
       },
-      "description": "count(correct, math+reality) / count(all math+reality grades) x 100, grouped by model. Feeds the grade-quality-drop alert baseline. Excludes service.name = 'agent-gradebook-test' (#47). VARIABLES (#48): $decision_type (with augmentloop.decision.type != 'build_session' enforced unconditionally alongside it) and $model are applied here; $grade_source is deliberately NOT, to avoid a shared variable pulling ai_judge into a correctness claim or collapsing the math/reality comparison.",
+      "description": "Correct rate by model, scoped to grade.source = 'math'. It previously blended math and reality grades, which tilted the rate toward route_choice decisions because only those carry a second, later grade. Reality keeps its own adjacent panels. Issue #84. SCOPED (2026-07-26): this panel is pinned to the demo services (toy-world and toy-world-outcomes). Gradebook is a portable layer and several other services on this stack emit through the same contract, so an unscoped panel silently blends them and stops reconciling with `python -m toyworld`. The 'Services Emitting Through the Contract' panel shows the full set on purpose. count(correct, math+reality) / count(all math+reality grades) x 100, grouped by model. Feeds the grade-quality-drop alert baseline. Excludes service.name = 'agent-gradebook-test' (#47). VARIABLES (#48): $decision_type (with augmentloop.decision.type != 'build_session' enforced unconditionally alongside it) and $model are applied here; $grade_source is deliberately NOT, to avoid a shared variable pulling ai_judge into a correctness claim or collapsing the math/reality comparison.",
       "id": "panel-3-correct-rate-by-model",
       "legendPosition": "bottom",
       "nullZeroValues": "zero",
@@ -371,7 +437,7 @@
               "disabled": true,
               "expression": "A",
               "filter": {
-                "expression": "gen_ai.evaluation.score.label = 'correct' AND augmentloop.grade.source IN ('math','reality') AND augmentloop.decision.type != 'build_session' AND augmentloop.decision.type IN ($decision_type) AND service.name != 'agent-gradebook-test' AND gen_ai.request.model IN ($model)"
+                "expression": "gen_ai.evaluation.score.label = 'correct' AND augmentloop.grade.source = 'math' AND service.name IN ('toy-world', 'toy-world-outcomes') AND augmentloop.decision.type != 'build_session' AND augmentloop.decision.type IN ($decision_type) AND gen_ai.request.model IN ($model)"
               },
               "functions": [],
               "groupBy": [
@@ -405,7 +471,7 @@
               "disabled": true,
               "expression": "B",
               "filter": {
-                "expression": "augmentloop.grade.source IN ('math','reality') AND augmentloop.decision.type != 'build_session' AND augmentloop.decision.type IN ($decision_type) AND service.name != 'agent-gradebook-test' AND gen_ai.request.model IN ($model)"
+                "expression": "augmentloop.grade.source = 'math' AND service.name IN ('toy-world', 'toy-world-outcomes') AND augmentloop.decision.type != 'build_session' AND augmentloop.decision.type IN ($decision_type) AND gen_ai.request.model IN ($model)"
               },
               "functions": [],
               "groupBy": [
@@ -478,7 +544,7 @@
       "contextLinks": {
         "linksData": null
       },
-      "description": "sum(augmentloop.cost.usd) over time, split math vs reality grade source. Feeds the spend-spike alert. Excludes service.name = 'agent-gradebook-test' (#47). VARIABLES (#48): $decision_type (with augmentloop.decision.type != 'build_session' enforced unconditionally alongside it) and $model are applied here; $grade_source is deliberately NOT, to avoid a shared variable pulling ai_judge into a correctness claim or collapsing the math/reality comparison.",
+      "description": " SCOPED (2026-07-26): this panel is pinned to the demo services (toy-world and toy-world-outcomes). Gradebook is a portable layer and several other services on this stack emit through the same contract, so an unscoped panel silently blends them and stops reconciling with `python -m toyworld`. The 'Services Emitting Through the Contract' panel shows the full set on purpose. sum(augmentloop.cost.usd) over time, split math vs reality grade source. Feeds the spend-spike alert. Excludes service.name = 'agent-gradebook-test' (#47). VARIABLES (#48): $decision_type (with augmentloop.decision.type != 'build_session' enforced unconditionally alongside it) and $model are applied here; $grade_source is deliberately NOT, to avoid a shared variable pulling ai_judge into a correctness claim or collapsing the math/reality comparison.",
       "id": "panel-4-cost-over-time",
       "legendPosition": "bottom",
       "nullZeroValues": "zero",
@@ -499,7 +565,7 @@
               "disabled": false,
               "expression": "A",
               "filter": {
-                "expression": "augmentloop.grade.source = 'math' AND augmentloop.decision.type != 'build_session' AND augmentloop.decision.type IN ($decision_type) AND service.name != 'agent-gradebook-test' AND gen_ai.request.model IN ($model)"
+                "expression": "augmentloop.grade.source = 'math' AND service.name IN ('toy-world', 'toy-world-outcomes') AND augmentloop.decision.type != 'build_session' AND augmentloop.decision.type IN ($decision_type) AND gen_ai.request.model IN ($model)"
               },
               "functions": [],
               "groupBy": [],
@@ -527,7 +593,7 @@
               "disabled": false,
               "expression": "B",
               "filter": {
-                "expression": "augmentloop.grade.source = 'reality' AND augmentloop.decision.type != 'build_session' AND augmentloop.decision.type IN ($decision_type) AND service.name != 'agent-gradebook-test' AND gen_ai.request.model IN ($model)"
+                "expression": "augmentloop.grade.source = 'reality' AND service.name IN ('toy-world', 'toy-world-outcomes') AND augmentloop.decision.type != 'build_session' AND augmentloop.decision.type IN ($decision_type) AND gen_ai.request.model IN ($model)"
               },
               "functions": [],
               "groupBy": [],
@@ -587,7 +653,7 @@
       "contextLinks": {
         "linksData": null
       },
-      "description": "Decisions graded with augmentloop.grade.source = ai_judge. Per ADR 0001, these NEVER count toward the headline cost-per-correct-decision number. Expected empty until an ai_judge grader ships (no ai_judge grade source is emitted anywhere in the codebase yet, as of ticket #7) - an empty panel here is correct, not a bug. Excludes service.name = 'agent-gradebook-test' (#47). VARIABLES (#48): $decision_type (with augmentloop.decision.type != 'build_session' enforced unconditionally alongside it) and $model are applied here; $grade_source is deliberately NOT, to avoid a shared variable pulling ai_judge into a correctness claim or collapsing the math/reality comparison.",
+      "description": " SCOPED (2026-07-26): this panel is pinned to the demo services (toy-world and toy-world-outcomes). Gradebook is a portable layer and several other services on this stack emit through the same contract, so an unscoped panel silently blends them and stops reconciling with `python -m toyworld`. The 'Services Emitting Through the Contract' panel shows the full set on purpose. Decisions graded with augmentloop.grade.source = ai_judge. Per ADR 0001, these NEVER count toward the headline cost-per-correct-decision number. Expected empty until an ai_judge grader ships (no ai_judge grade source is emitted anywhere in the codebase yet, as of ticket #7) - an empty panel here is correct, not a bug. Excludes service.name = 'agent-gradebook-test' (#47). VARIABLES (#48): $decision_type (with augmentloop.decision.type != 'build_session' enforced unconditionally alongside it) and $model are applied here; $grade_source is deliberately NOT, to avoid a shared variable pulling ai_judge into a correctness claim or collapsing the math/reality comparison.",
       "id": "panel-5-ai-judge-secondary",
       "legendPosition": "bottom",
       "nullZeroValues": "zero",
@@ -608,7 +674,7 @@
               "disabled": false,
               "expression": "A",
               "filter": {
-                "expression": "augmentloop.grade.source = 'ai_judge' AND augmentloop.decision.type != 'build_session' AND augmentloop.decision.type IN ($decision_type) AND service.name != 'agent-gradebook-test' AND gen_ai.request.model IN ($model)"
+                "expression": "augmentloop.grade.source = 'ai_judge' AND service.name IN ('toy-world', 'toy-world-outcomes') AND augmentloop.decision.type != 'build_session' AND augmentloop.decision.type IN ($decision_type) AND gen_ai.request.model IN ($model)"
               },
               "functions": [],
               "groupBy": [],
@@ -668,7 +734,7 @@
       "contextLinks": {
         "linksData": null
       },
-      "description": "Reality-graded correct rate (C9/#54): count(correct reality grades) / count(all reality grades) x 100, scoped to augmentloop.grade.source = 'reality'. Kept ADJACENT to the headline rather than blended into it - delayed reality grading is genuinely ours, and it stays visible on its own terms (ADR 0001 sets a ceiling on the headline, not a floor requiring both sources). Expected sparse: reality grades arrive later than the decisions they judge. Excludes service.name = 'agent-gradebook-test' (#47). VARIABLE (#48): augmentloop.grade.source is now driven by $grade_source instead of a hardcoded 'reality' literal, so a judge can switch this panel to inspect math or ai_judge grades in the same slot. KNOWN LIMITATION: this dashboard's saved schema has no persisted default-value field for a DYNAMIC variable (confirmed by round-tripping through the live PUT/GET on 2026-07-25 - the API accepted and echoed back the variable with no default/selectedValue key), so on first load with showALLOption this panel may show math+reality+ai_judge blended rather than reality alone until 'reality' is picked from the dropdown. Disclosed here rather than silently shipped.",
+      "description": " SCOPED (2026-07-26): this panel is pinned to the demo services (toy-world and toy-world-outcomes). Gradebook is a portable layer and several other services on this stack emit through the same contract, so an unscoped panel silently blends them and stops reconciling with `python -m toyworld`. The 'Services Emitting Through the Contract' panel shows the full set on purpose. Reality-graded correct rate (C9/#54): count(correct reality grades) / count(all reality grades) x 100, scoped to augmentloop.grade.source = 'reality'. Kept ADJACENT to the headline rather than blended into it - delayed reality grading is genuinely ours, and it stays visible on its own terms (ADR 0001 sets a ceiling on the headline, not a floor requiring both sources). Expected sparse: reality grades arrive later than the decisions they judge. Excludes service.name = 'agent-gradebook-test' (#47). VARIABLE (#48): augmentloop.grade.source is now driven by $grade_source instead of a hardcoded 'reality' literal, so a judge can switch this panel to inspect math or ai_judge grades in the same slot. KNOWN LIMITATION: this dashboard's saved schema has no persisted default-value field for a DYNAMIC variable (confirmed by round-tripping through the live PUT/GET on 2026-07-25 - the API accepted and echoed back the variable with no default/selectedValue key), so on first load with showALLOption this panel may show math+reality+ai_judge blended rather than reality alone until 'reality' is picked from the dropdown. Disclosed here rather than silently shipped.",
       "id": "panel-6-reality-correct-rate",
       "legendPosition": "bottom",
       "nullZeroValues": "zero",
@@ -689,7 +755,7 @@
               "disabled": true,
               "expression": "A",
               "filter": {
-                "expression": "gen_ai.evaluation.score.label = 'correct' AND augmentloop.grade.source = $grade_source AND augmentloop.decision.type != 'build_session' AND augmentloop.decision.type IN ($decision_type) AND service.name != 'agent-gradebook-test' AND gen_ai.request.model IN ($model)"
+                "expression": "gen_ai.evaluation.score.label = 'correct' AND augmentloop.grade.source = $grade_source AND service.name IN ('toy-world', 'toy-world-outcomes') AND augmentloop.decision.type != 'build_session' AND augmentloop.decision.type IN ($decision_type) AND gen_ai.request.model IN ($model)"
               },
               "functions": [],
               "groupBy": [],
@@ -717,7 +783,7 @@
               "disabled": true,
               "expression": "B",
               "filter": {
-                "expression": "augmentloop.grade.source = $grade_source AND augmentloop.decision.type != 'build_session' AND augmentloop.decision.type IN ($decision_type) AND service.name != 'agent-gradebook-test' AND gen_ai.request.model IN ($model)"
+                "expression": "augmentloop.grade.source = $grade_source AND service.name IN ('toy-world', 'toy-world-outcomes') AND augmentloop.decision.type != 'build_session' AND augmentloop.decision.type IN ($decision_type) AND gen_ai.request.model IN ($model)"
               },
               "functions": [],
               "groupBy": [],
@@ -784,7 +850,7 @@
       "contextLinks": {
         "linksData": null
       },
-      "description": "Count of reality-graded decisions (C9/#54): count of augmentloop.grade.source = 'reality' grades. The 'count' half of the adjacent reality view that C9 kept out of the headline. Reality grades carry no cost attribute (a late outcome check is not a priced model call), which is exactly why they belong here and not in the cost-per-correct numerator. Excludes service.name = 'agent-gradebook-test' (#47). VARIABLE (#48): augmentloop.grade.source is now driven by $grade_source instead of a hardcoded 'reality' literal, so a judge can switch this panel to inspect math or ai_judge grades in the same slot. KNOWN LIMITATION: this dashboard's saved schema has no persisted default-value field for a DYNAMIC variable (confirmed by round-tripping through the live PUT/GET on 2026-07-25 - the API accepted and echoed back the variable with no default/selectedValue key), so on first load with showALLOption this panel may show math+reality+ai_judge blended rather than reality alone until 'reality' is picked from the dropdown. Disclosed here rather than silently shipped.",
+      "description": " SCOPED (2026-07-26): this panel is pinned to the demo services (toy-world and toy-world-outcomes). Gradebook is a portable layer and several other services on this stack emit through the same contract, so an unscoped panel silently blends them and stops reconciling with `python -m toyworld`. The 'Services Emitting Through the Contract' panel shows the full set on purpose. Count of reality-graded decisions (C9/#54): count of augmentloop.grade.source = 'reality' grades. The 'count' half of the adjacent reality view that C9 kept out of the headline. Reality grades carry no cost attribute (a late outcome check is not a priced model call), which is exactly why they belong here and not in the cost-per-correct numerator. Excludes service.name = 'agent-gradebook-test' (#47). VARIABLE (#48): augmentloop.grade.source is now driven by $grade_source instead of a hardcoded 'reality' literal, so a judge can switch this panel to inspect math or ai_judge grades in the same slot. KNOWN LIMITATION: this dashboard's saved schema has no persisted default-value field for a DYNAMIC variable (confirmed by round-tripping through the live PUT/GET on 2026-07-25 - the API accepted and echoed back the variable with no default/selectedValue key), so on first load with showALLOption this panel may show math+reality+ai_judge blended rather than reality alone until 'reality' is picked from the dropdown. Disclosed here rather than silently shipped.",
       "id": "panel-7-reality-count",
       "legendPosition": "bottom",
       "nullZeroValues": "zero",
@@ -805,7 +871,7 @@
               "disabled": false,
               "expression": "A",
               "filter": {
-                "expression": "augmentloop.grade.source = $grade_source AND augmentloop.decision.type != 'build_session' AND augmentloop.decision.type IN ($decision_type) AND service.name != 'agent-gradebook-test' AND gen_ai.request.model IN ($model)"
+                "expression": "augmentloop.grade.source = $grade_source AND service.name IN ('toy-world', 'toy-world-outcomes') AND augmentloop.decision.type != 'build_session' AND augmentloop.decision.type IN ($decision_type) AND gen_ai.request.model IN ($model)"
               },
               "functions": [],
               "groupBy": [],
@@ -859,6 +925,553 @@
       "softMin": 0,
       "timePreferance": "GLOBAL_TIME",
       "title": "Reality-Graded Decisions (count)",
+      "yAxisUnit": "none"
+    },
+    {
+      "contextLinks": {
+        "linksData": null
+      },
+      "description": "The finding this project exists to show, as a native SigNoz table rather than a number in the README: every decision type crossed with every model, correct rate and cost per correct decision in the same row. Read the gemini row against the sonnet row. gemini-2.5-flash-lite is the best model in the run on next_hop and unusable on eta_estimate, so no single model ranking is true across the columns, and routing keys on decision type instead. SCOPED (2026-07-26): this panel is pinned to the demo services (toy-world and toy-world-outcomes). Gradebook is a portable layer and several other services on this stack emit through the same contract, so an unscoped panel silently blends them and stops reconciling with `python -m toyworld`. The 'Services Emitting Through the Contract' panel shows the full set on purpose.",
+      "id": "panel-8-right-sizing-table",
+      "legendPosition": "bottom",
+      "nullZeroValues": "zero",
+      "opacity": "1",
+      "panelTypes": "table",
+      "query": {
+        "builder": {
+          "queryData": [
+            {
+              "aggregations": [
+                {
+                  "metricName": "gradebook.decisions.graded",
+                  "spaceAggregation": "sum",
+                  "timeAggregation": "latest"
+                }
+              ],
+              "dataSource": "metrics",
+              "disabled": true,
+              "expression": "A",
+              "filter": {
+                "expression": "gen_ai.evaluation.score.label = 'correct' AND augmentloop.grade.source = 'math' AND service.name IN ('toy-world', 'toy-world-outcomes') AND augmentloop.decision.type != 'build_session' AND augmentloop.decision.type IN ($decision_type) AND gen_ai.request.model IN ($model)"
+              },
+              "functions": [],
+              "groupBy": [
+                {
+                  "dataType": "string",
+                  "key": "augmentloop.decision.type",
+                  "type": "tag"
+                },
+                {
+                  "dataType": "string",
+                  "key": "gen_ai.request.model",
+                  "type": "tag"
+                }
+              ],
+              "having": [],
+              "legend": "correct",
+              "limit": 100,
+              "orderBy": [
+                {
+                  "columnName": "__result",
+                  "order": "desc"
+                }
+              ],
+              "queryName": "A",
+              "stepInterval": null
+            },
+            {
+              "aggregations": [
+                {
+                  "metricName": "gradebook.decisions.graded",
+                  "spaceAggregation": "sum",
+                  "timeAggregation": "latest"
+                }
+              ],
+              "dataSource": "metrics",
+              "disabled": true,
+              "expression": "B",
+              "filter": {
+                "expression": "augmentloop.grade.source = 'math' AND service.name IN ('toy-world', 'toy-world-outcomes') AND augmentloop.decision.type != 'build_session' AND augmentloop.decision.type IN ($decision_type) AND gen_ai.request.model IN ($model)"
+              },
+              "functions": [],
+              "groupBy": [
+                {
+                  "dataType": "string",
+                  "key": "augmentloop.decision.type",
+                  "type": "tag"
+                },
+                {
+                  "dataType": "string",
+                  "key": "gen_ai.request.model",
+                  "type": "tag"
+                }
+              ],
+              "having": [],
+              "legend": "graded",
+              "limit": 100,
+              "orderBy": [
+                {
+                  "columnName": "__result",
+                  "order": "desc"
+                }
+              ],
+              "queryName": "B",
+              "stepInterval": null
+            },
+            {
+              "aggregations": [
+                {
+                  "metricName": "gradebook.decision.cost.usd.sum",
+                  "spaceAggregation": "sum",
+                  "timeAggregation": "latest"
+                }
+              ],
+              "dataSource": "metrics",
+              "disabled": true,
+              "expression": "C",
+              "filter": {
+                "expression": "augmentloop.grade.source = 'math' AND service.name IN ('toy-world', 'toy-world-outcomes') AND augmentloop.decision.type != 'build_session' AND augmentloop.decision.type IN ($decision_type) AND gen_ai.request.model IN ($model)"
+              },
+              "functions": [],
+              "groupBy": [
+                {
+                  "dataType": "string",
+                  "key": "augmentloop.decision.type",
+                  "type": "tag"
+                },
+                {
+                  "dataType": "string",
+                  "key": "gen_ai.request.model",
+                  "type": "tag"
+                }
+              ],
+              "having": [],
+              "legend": "cost",
+              "limit": 100,
+              "orderBy": [
+                {
+                  "columnName": "__result",
+                  "order": "desc"
+                }
+              ],
+              "queryName": "C",
+              "stepInterval": null
+            }
+          ],
+          "queryFormulas": [
+            {
+              "disabled": false,
+              "expression": "(A/B)*100",
+              "having": [],
+              "legend": "correct rate %",
+              "limit": 100,
+              "orderBy": [
+                {
+                  "columnName": "__result",
+                  "order": "desc"
+                }
+              ],
+              "queryName": "F1"
+            },
+            {
+              "disabled": false,
+              "expression": "C/A",
+              "having": [],
+              "legend": "cost per correct",
+              "limit": 100,
+              "orderBy": [
+                {
+                  "columnName": "__result",
+                  "order": "desc"
+                }
+              ],
+              "queryName": "F2"
+            }
+          ]
+        },
+        "id": "panel-8-right-sizing-table-query",
+        "queryType": "builder"
+      },
+      "selectedLogFields": [
+        {
+          "fieldContext": "log",
+          "name": "timestamp",
+          "signal": "logs",
+          "type": "log"
+        },
+        {
+          "fieldContext": "log",
+          "name": "body",
+          "signal": "logs",
+          "type": "log"
+        }
+      ],
+      "selectedTracesFields": [
+        {
+          "fieldContext": "resource",
+          "fieldDataType": "string",
+          "name": "service.name",
+          "signal": "traces"
+        },
+        {
+          "fieldContext": "span",
+          "fieldDataType": "string",
+          "name": "name",
+          "signal": "traces"
+        }
+      ],
+      "softMax": 0,
+      "softMin": 0,
+      "timePreferance": "GLOBAL_TIME",
+      "title": "Right-Sizing Grid: Decision Type x Model",
+      "yAxisUnit": "none"
+    },
+    {
+      "contextLinks": {
+        "linksData": null
+      },
+      "description": "gradebook.decision.cost.usd is a real OpenTelemetry histogram instrument rather than a gauge, so it carries bucket boundaries; this panel reads them directly instead of collapsing the run to a mean. The long right tail is the expensive model paying for tokens it spends reasoning through a shortest-path calculation. A mean would hide both that tail and the spike at the cheap end. SCOPED (2026-07-26): this panel is pinned to the demo services (toy-world and toy-world-outcomes). Gradebook is a portable layer and several other services on this stack emit through the same contract, so an unscoped panel silently blends them and stops reconciling with `python -m toyworld`. The 'Services Emitting Through the Contract' panel shows the full set on purpose.",
+      "id": "panel-9-cost-distribution",
+      "legendPosition": "bottom",
+      "nullZeroValues": "zero",
+      "opacity": "1",
+      "panelTypes": "histogram",
+      "query": {
+        "builder": {
+          "queryData": [
+            {
+              "aggregations": [
+                {
+                  "metricName": "gradebook.decision.cost.usd.bucket",
+                  "spaceAggregation": "sum",
+                  "timeAggregation": "latest"
+                }
+              ],
+              "dataSource": "metrics",
+              "disabled": false,
+              "expression": "A",
+              "filter": {
+                "expression": "augmentloop.grade.source = 'math' AND service.name IN ('toy-world', 'toy-world-outcomes') AND augmentloop.decision.type != 'build_session' AND augmentloop.decision.type IN ($decision_type) AND gen_ai.request.model IN ($model)"
+              },
+              "functions": [],
+              "groupBy": [
+                {
+                  "dataType": "string",
+                  "key": "gen_ai.request.model",
+                  "type": "tag"
+                }
+              ],
+              "having": [],
+              "legend": "{{gen_ai.request.model}}",
+              "limit": 100,
+              "orderBy": [
+                {
+                  "columnName": "__result",
+                  "order": "desc"
+                }
+              ],
+              "queryName": "A",
+              "stepInterval": null
+            }
+          ],
+          "queryFormulas": []
+        },
+        "id": "panel-9-cost-distribution-query",
+        "queryType": "builder"
+      },
+      "selectedLogFields": [
+        {
+          "fieldContext": "log",
+          "name": "timestamp",
+          "signal": "logs",
+          "type": "log"
+        },
+        {
+          "fieldContext": "log",
+          "name": "body",
+          "signal": "logs",
+          "type": "log"
+        }
+      ],
+      "selectedTracesFields": [
+        {
+          "fieldContext": "resource",
+          "fieldDataType": "string",
+          "name": "service.name",
+          "signal": "traces"
+        },
+        {
+          "fieldContext": "span",
+          "fieldDataType": "string",
+          "name": "name",
+          "signal": "traces"
+        }
+      ],
+      "softMax": 0,
+      "softMin": 0,
+      "timePreferance": "GLOBAL_TIME",
+      "title": "Cost per Decision: Distribution by Model",
+      "yAxisUnit": "none"
+    },
+    {
+      "contextLinks": {
+        "linksData": null
+      },
+      "description": "The first panel on this dashboard driven by the logs signal rather than metrics. Gradebook emits three failure classes as structured WARN logs (budget_guard_tripped, unknown_model_pricing_miss, missing_response_id), each carrying augmentloop.failure.class as an attribute rather than as prose in the message body, so this groups on the attribute and survives any rewording of the warning text. A class with no row has not occurred in the selected window: these are discrete failure events, not a gauge. budget_guard_tripped is the one the committed log-based alert rule watches. Deliberately NOT scoped to the demo services, because a failure anywhere on the stack is worth seeing.",
+      "id": "panel-10-failure-classes",
+      "legendPosition": "bottom",
+      "nullZeroValues": "zero",
+      "opacity": "1",
+      "panelTypes": "table",
+      "query": {
+        "builder": {
+          "queryData": [
+            {
+              "aggregations": [
+                {
+                  "expression": "count()"
+                }
+              ],
+              "dataSource": "logs",
+              "disabled": false,
+              "expression": "A",
+              "filter": {
+                "expression": "augmentloop.failure.class EXISTS AND service.name != 'agent-gradebook-test'"
+              },
+              "functions": [],
+              "groupBy": [
+                {
+                  "dataType": "string",
+                  "key": "augmentloop.failure.class",
+                  "type": "tag"
+                },
+                {
+                  "dataType": "string",
+                  "key": "service.name",
+                  "type": "tag"
+                }
+              ],
+              "having": [],
+              "legend": "events",
+              "limit": 100,
+              "orderBy": [
+                {
+                  "columnName": "__result",
+                  "order": "desc"
+                }
+              ],
+              "queryName": "A",
+              "stepInterval": null
+            }
+          ],
+          "queryFormulas": []
+        },
+        "id": "panel-10-failure-classes-query",
+        "queryType": "builder"
+      },
+      "selectedLogFields": [
+        {
+          "fieldContext": "log",
+          "name": "timestamp",
+          "signal": "logs",
+          "type": "log"
+        },
+        {
+          "fieldContext": "log",
+          "name": "body",
+          "signal": "logs",
+          "type": "log"
+        }
+      ],
+      "selectedTracesFields": [
+        {
+          "fieldContext": "resource",
+          "fieldDataType": "string",
+          "name": "service.name",
+          "signal": "traces"
+        },
+        {
+          "fieldContext": "span",
+          "fieldDataType": "string",
+          "name": "name",
+          "signal": "traces"
+        }
+      ],
+      "softMax": 0,
+      "softMin": 0,
+      "timePreferance": "GLOBAL_TIME",
+      "title": "Failure Events by Class (logs signal)",
+      "yAxisUnit": "none"
+    },
+    {
+      "contextLinks": {
+        "linksData": null
+      },
+      "description": "The raw log lines behind the panel beside it. Each record is emitted through the OTLP LoggingHandler bridge while the decision's span is current, so every line carries the trace id and span id of the decision that produced it. The click-through from a failure to its decision works here even though it does not work from a metric data point, because SigNoz drops metric exemplars before ClickHouse (docs/conventions.md section 10.1).",
+      "id": "panel-11-recent-failures",
+      "legendPosition": "bottom",
+      "nullZeroValues": "zero",
+      "opacity": "1",
+      "panelTypes": "list",
+      "query": {
+        "builder": {
+          "queryData": [
+            {
+              "aggregations": [
+                {
+                  "expression": "count()"
+                }
+              ],
+              "dataSource": "logs",
+              "disabled": false,
+              "expression": "A",
+              "filter": {
+                "expression": "augmentloop.failure.class EXISTS AND service.name != 'agent-gradebook-test'"
+              },
+              "functions": [],
+              "groupBy": [],
+              "having": [],
+              "legend": "failures",
+              "limit": 100,
+              "orderBy": [
+                {
+                  "columnName": "__result",
+                  "order": "desc"
+                }
+              ],
+              "queryName": "A",
+              "stepInterval": null
+            }
+          ],
+          "queryFormulas": []
+        },
+        "id": "panel-11-recent-failures-query",
+        "queryType": "builder"
+      },
+      "selectedLogFields": [
+        {
+          "fieldContext": "log",
+          "name": "timestamp",
+          "signal": "logs",
+          "type": "log"
+        },
+        {
+          "fieldContext": "log",
+          "name": "body",
+          "signal": "logs",
+          "type": "log"
+        }
+      ],
+      "selectedTracesFields": [
+        {
+          "fieldContext": "resource",
+          "fieldDataType": "string",
+          "name": "service.name",
+          "signal": "traces"
+        },
+        {
+          "fieldContext": "span",
+          "fieldDataType": "string",
+          "name": "name",
+          "signal": "traces"
+        }
+      ],
+      "softMax": 0,
+      "softMin": 0,
+      "timePreferance": "GLOBAL_TIME",
+      "title": "Recent Failure Events (raw log lines)",
+      "yAxisUnit": "none"
+    },
+    {
+      "contextLinks": {
+        "linksData": null
+      },
+      "description": "Why the panels above are scoped. Gradebook is a portable layer whose contract is the emitted telemetry, not its function signatures, and on this stack several independent services already emit through it: the toy world and its deferred-outcome service, a separate media-processing module and its own outcome service, plus example and verification emitters. Each one shows up here with no dashboard change, which is the portability claim being checked rather than asserted. It is also the reason the reconciliation panels pin themselves to the demo services: an unscoped headline silently blends every service on the stack. The test service is excluded per #47.",
+      "id": "panel-12-contract-adoption",
+      "legendPosition": "bottom",
+      "nullZeroValues": "zero",
+      "opacity": "1",
+      "panelTypes": "table",
+      "query": {
+        "builder": {
+          "queryData": [
+            {
+              "aggregations": [
+                {
+                  "metricName": "gradebook.decisions.graded",
+                  "spaceAggregation": "sum",
+                  "timeAggregation": "latest"
+                }
+              ],
+              "dataSource": "metrics",
+              "disabled": false,
+              "expression": "A",
+              "filter": {
+                "expression": "augmentloop.decision.type != 'build_session' AND service.name != 'agent-gradebook-test'"
+              },
+              "functions": [],
+              "groupBy": [
+                {
+                  "dataType": "string",
+                  "key": "service.name",
+                  "type": "tag"
+                },
+                {
+                  "dataType": "string",
+                  "key": "augmentloop.grade.source",
+                  "type": "tag"
+                }
+              ],
+              "having": [],
+              "legend": "grades",
+              "limit": 100,
+              "orderBy": [
+                {
+                  "columnName": "__result",
+                  "order": "desc"
+                }
+              ],
+              "queryName": "A",
+              "stepInterval": null
+            }
+          ],
+          "queryFormulas": []
+        },
+        "id": "panel-12-contract-adoption-query",
+        "queryType": "builder"
+      },
+      "selectedLogFields": [
+        {
+          "fieldContext": "log",
+          "name": "timestamp",
+          "signal": "logs",
+          "type": "log"
+        },
+        {
+          "fieldContext": "log",
+          "name": "body",
+          "signal": "logs",
+          "type": "log"
+        }
+      ],
+      "selectedTracesFields": [
+        {
+          "fieldContext": "resource",
+          "fieldDataType": "string",
+          "name": "service.name",
+          "signal": "traces"
+        },
+        {
+          "fieldContext": "span",
+          "fieldDataType": "string",
+          "name": "name",
+          "signal": "traces"
+        }
+      ],
+      "softMax": 0,
+      "softMin": 0,
+      "timePreferance": "GLOBAL_TIME",
+      "title": "Services Emitting Through the Contract",
       "yAxisUnit": "none"
     }
   ]
