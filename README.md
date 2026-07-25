@@ -18,6 +18,40 @@
 
 Every evaluation event carries `augmentloop.grade.source`, so that filter lives in the query rather than in this paragraph ([ADR 0001](docs/adr/0001-machine-checked-grades-only-in-the-headline-metric.md)).
 
+## How it fits together
+
+```
+            toy-world  (the demo substrate, 20 weighted junctions)
+   +--------------------------------------------------------------+
+   |  an AI driver decides: route_choice / eta_estimate / next_hop |
+   |  the world already computed the right answer from the graph   |
+   +---------------------------------+----------------------------+
+                                     |  record_decision(...)
+                                     v
+   +--------------------------------------------------------------+
+   |  gradebook   (reference-library; only dep: opentelemetry-api) |
+   |    event      gen_ai.evaluation.result + augmentloop.grade.*  |
+   |    counter    gradebook.decisions.graded                      |
+   |    histogram  gradebook.decision.cost.usd                     |
+   |    logs       3 failure classes, trace/span stamped           |
+   +--------+--------------------------------------+--------------+
+            |  service: toy-world                  |  service: toy-world-outcomes
+            |  math grade, at decision time        |  reality grade, later,
+            |                                      |  span-linked back to the
+            |          OTLP / http  :4318          |  decision it overturns
+            v                                      v
+   +--------------------------------------------------------------+
+   |  SigNoz          cast by Foundry from casting.yaml (11 lines) |
+   |  traces . metrics . logs . 2 dashboards . 5 alert rules       |
+   +---------------------------------+----------------------------+
+                                     |  MCP  :8000
+                                     v
+   +--------------------------------------------------------------+
+   |  agent reads 28 tools, proposes a reroute in routing.json     |
+   |  human approves the diff. 13 write tools gated to `ask`.      |
+   +--------------------------------------------------------------+
+```
+
 ## Run it with no API key
 
 ```bash
@@ -47,6 +81,22 @@ Across all 180 decisions: 127 correct, $0.377553 spent, **$0.002973 per correct 
 
 20 decisions per model per type is a small sample and this is one run, so read the per-type split as a signal worth routing on, not a settled ranking of these three models. `python -m toyworld` prints these same numbers, so the dashboards can be checked against ground truth.
 
+## See it move
+
+Three renders over the same committed run, all static files in [`docs/visuals/`](docs/visuals/), no server and no API key:
+
+| | |
+| --- | --- |
+| [Genome strip](docs/visuals/genome-strip.html) | every grade in arrival order, coloured by where its authority came from (the image at the top of this README) |
+| [Span link](docs/visuals/span-link.html) | one decision and the reality grade that arrives later on a separate trace and links back to it |
+| [Regret ledger](docs/visuals/regret-ledger.html) | every decision as an open position that closes when the outcome lands. 50 close green, 10 close red, and `OVERTURNED` fires 15 times, each one a model that took the slower route and still arrived inside tolerance. That case is exactly why two grade sources exist rather than one |
+
+And the whole run as motion: [`viewer/`](viewer/README.md) replays all 180 decisions as agents driving locally bundled OpenStreetMap roads through central Pune. Model colours stay visible in transit, math-correct routes resolve green and wrong ones red, the optimal alternative trails as a yellow ghost, and the deferred reality outcomes pulse their linked route after the last wave. Overview, top-down, street and follow cameras.
+
+```bash
+cd viewer && python export.py && npm install && npm run dev
+```
+
 ## How it is built
 
 - **No eval framework.** The library's only runtime dependency is `opentelemetry-api`.
@@ -57,15 +107,31 @@ Across all 180 decisions: 127 correct, $0.377553 spent, **$0.002973 per correct 
 
 ## Reproducibility
 
-SigNoz is deployed via [Foundry](https://github.com/SigNoz/foundry). The deployment is fully declared by `casting.yaml` (with `casting.yaml.lock` pinning exact versions), as required by the hackathon rules:
+SigNoz is deployed via [Foundry](https://github.com/SigNoz/foundry). The deployment is fully declared by `casting.yaml`, and `casting.yaml.lock` records the resolved deployment spec Foundry produced from it, as required by the hackathon rules:
 
 ```bash
 foundryctl cast -f casting.yaml
 ```
 
+The lock pins ClickHouse and ClickHouse Keeper at `25.12.5`. The three SigNoz images resolve to `latest`, so that tag is the one thing `foundryctl cast` cannot reproduce for you a week from now. For anyone who wants the exact build this entry was developed, demoed and measured against:
+
+| Image | Tag at cast time | Digest |
+| --- | --- | --- |
+| `signoz/signoz` | `v0.133.0` | `sha256:588a8ea3deeab1a6a4cb42261607457c36eee6ffbb510184880f1f826be4b646` |
+| `signoz/signoz-otel-collector` | `v0.144.6` | `sha256:7e4e539a73f1f88fbc1cd7e659ab3950908e83ce1f2a37a297452f910d072174` |
+| `signoz/signoz-mcp-server` | `main-2a64f20` | `sha256:da4fb0379d603a492fdbc0f384854f7d412a4c43347df2e086d17fc16770dd00` |
+
 The MCP server molding is enabled; after casting, mint an API key in the SigNoz UI (Settings -> API Keys) and point an MCP client at `http://localhost:8000/mcp` with a `SIGNOZ-API-KEY` header.
 
-A full cold-machine walkthrough - install, cast, create the admin account, run the replay, import the dashboards and alert rules - is in [docs/judge-run.md](docs/judge-run.md), executed end to end on a clean Windows 11 machine. Creating the admin account is a required step, not a login formality: SigNoz has no organization until it exists, and the OTLP endpoint refuses connections until it does, so a replay run before that step exports nothing. Two dashboards, four alert rules, and the saved health view are committed as JSON in [`dashboards/`](dashboards/).
+A full cold-machine walkthrough - install, cast, create the admin account, run the replay, import the dashboards and alert rules - is in [docs/judge-run.md](docs/judge-run.md), executed end to end on a clean Windows 11 machine. Creating the admin account is a required step, not a login formality: SigNoz has no organization until it exists, and the OTLP endpoint refuses connections until it does, so a replay run before that step exports nothing. Two dashboards, five alert rules spanning all three of SigNoz's rule types (threshold, anomaly, and log-based), and the saved health view are committed as JSON in [`dashboards/`](dashboards/). Two of those rules are documented as dormant on a cold stack rather than quietly shipped: the anomaly rule cannot fire without seasonal history, and a firing rule reaches the dispatcher but dies at the last hop because the stack runs no SMTP. Both are measured facts written into [docs/judge-run.md](docs/judge-run.md), not predictions.
+
+## Two things we found in SigNoz along the way
+
+Neither is a complaint. Both are places where our telemetry is correct and SigNoz's current UI cannot yet show it, and we would rather write them down than quietly design around them.
+
+**Exemplars are recorded by the SDK and dropped before ClickHouse.** We deliberately record both metric instruments while the evaluation event's span is current, so OpenTelemetry's default `TraceBasedExemplarFilter` attaches the originating trace and span id to every data point. A spike on a cost chart should then be one click from the decision that caused it. It is not, and we chased it down four independent ways before accepting it: the live schema has no exemplar column anywhere under `signoz_metrics` or `signoz_meter`; none of the three metrics exporters in the collector config handle exemplars; the `signozclickhousemetrics` exporter's own Go source never calls `.Exemplars()` on an incoming datapoint, so the value is dropped rather than filtered; and SigNoz maintainers confirm it in [discussions/1795](https://github.com/SigNoz/signoz/discussions/1795), pointing at the "View Traces" pivot as the workaround. We kept emitting the exemplar anyway, because it costs nothing and a future version may start reading it, and we do not claim a literal exemplar click-through anywhere in our copy. Full write-up in [docs/conventions.md](docs/conventions.md) section 10.1.
+
+**The service map cannot draw a span link.** SigNoz's dependency graph is built from in-trace parent/child spans, so the relationship this project is actually about, a reality grade landing later on its own trace and pointing back at the decision it overturns, is invisible there by construction. That is why the [span-link visual](docs/visuals/span-link.html) exists as a static render rather than as a screenshot of the service map.
 
 ## AI assistance disclosure
 
