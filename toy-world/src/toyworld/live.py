@@ -51,9 +51,26 @@ DEFAULT_ROSTER: tuple[str, ...] = (
     "google/gemini-2.5-flash-lite",
 )
 
+# The output cap sent to every model, shared by both clients (openrouter.py,
+# direct.py) so the budget guard's ceiling below and the cap actually sent to
+# the API can never drift apart.
+#
+# This was 64, which was correct only while every prompt could be answered
+# with a single token. Once the prompts started handing over the raw map and
+# asking for real work, 64 began TRUNCATING any model that shows its working:
+# claude-sonnet-4.6 hit the cap on 20/20 eta_estimate replies and ~30% of
+# route_choice replies, was cut off mid-Dijkstra before ever stating its
+# answer, and scored 0/20 on a decision type it can actually do. Grading a
+# model on a sentence we stopped it from finishing measures our cap, not its
+# ability. Gemini answers bare and never came close to either limit, so the
+# cap penalised exactly the model that reasoned.
+MAX_OUTPUT_TOKENS = 1024
+
 # Conservative token counts used only to pre-estimate a call's cost ceiling for
 # the budget guard. Real cost is always computed from the actual response.
-_EST_INPUT_TOKENS = 256
+# Raised with the prompts: every prompt now carries the serialized 20-junction
+# map (~220 tokens) rather than a one-line question.
+_EST_INPUT_TOKENS = 384
 
 
 @dataclass(frozen=True)
@@ -111,7 +128,7 @@ def run_live(
     pairs: Optional[Sequence[tuple[str, Query]]] = None,
     roster: Sequence[str] = DEFAULT_ROSTER,
     queries: Sequence[Query] = ALL_QUERIES,
-    max_output_tokens: int = 64,
+    max_output_tokens: int = MAX_OUTPUT_TOKENS,
     world_provider: Optional[trace.TracerProvider] = None,
     world_meter_provider: Optional[metrics.MeterProvider] = None,
     on_decision: Optional[Callable[[str, Query, ModelDecision, bool, float], None]] = None,

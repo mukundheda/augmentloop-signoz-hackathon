@@ -22,7 +22,7 @@ from __future__ import annotations
 import os
 from typing import Any, Optional
 
-from .live import ModelDecision
+from .live import MAX_OUTPUT_TOKENS, ModelDecision
 from .world import Query
 
 # OpenRouter-style slug -> native Anthropic model id. Only the roster's Claude
@@ -60,7 +60,7 @@ class DirectClient:
         gemini_api_key: Optional[str] = None,
         anthropic_client: Optional[Any] = None,
         gemini_client: Optional[Any] = None,
-        max_output_tokens: int = 64,
+        max_output_tokens: int = MAX_OUTPUT_TOKENS,
     ):
         self._anthropic_api_key = anthropic_api_key
         self._gemini_api_key = gemini_api_key
