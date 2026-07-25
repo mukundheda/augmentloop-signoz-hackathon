@@ -14,6 +14,8 @@ __pycache__/
 .DS_Store
 .claude/settings.local.json
 .scratch/
+# playwright-cli session artifacts (snapshots/screenshots from local UI checks)
+.playwright-cli/
 
 # Local strategy notes - never publish when repo flips public
 signoz-client-analysis-2026-07-22.md
