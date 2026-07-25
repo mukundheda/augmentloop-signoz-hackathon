@@ -31,6 +31,31 @@ The span link is the point. It is the piece of architecture that makes a late,
 cross-service, cross-trace verdict attributable to the decision that earned it,
 and it is otherwise invisible plumbing.
 
+## Grade provenance (genome strip)
+
+Every graded decision in the run is one glyph, in the order it was graded.
+**Hue is where the grade's authority came from**, saturation is whether it was
+right, height is what it cost.
+
+![Grade provenance strip: 16 glyphs, blue for math grades and amber for reality grades, wrong decisions carrying a red foot along the baseline, with a legend showing 12 math, 4 reality and 0 ai_judge](genome-strip.png)
+
+Blue is a `math` grade, amber is a `reality` grade, and sienna is reserved for
+`ai_judge`. A wrong decision washes out and keeps a fully saturated cherry foot,
+so bad runs read as red streaks along the baseline without inspecting a single
+glyph. The dashed divider is where the run crosses into `toy-world-outcomes` -
+the late grades that arrive after the decisions they judge.
+
+**12 math, 4 reality, 0 ai_judge.** The zero is the point, not an omission: an
+AI's opinion never silently enters the headline number ([ADR
+0001](../adr/0001-machine-checked-grades-only-in-the-headline-metric.md)), and
+the strip shows that as a fact about the run rather than a promise in prose.
+Click any glyph for its model, cost and reasoning.
+
+The glyphs scale with the run: at 16 decisions they are wide enough to click,
+and they pack down to a hairline as the count grows. Verified by cloning the
+strip to 176 glyphs in the browser - hue stays legible and the red baseline
+still reads at a glance.
+
 ## Regenerating
 
 ```bash
@@ -38,5 +63,6 @@ pip install -e reference-library -e toy-world
 python docs/visuals/capture_run.py     # rewrites run-data.js from a fresh run
 ```
 
-Then open `docs/visuals/blast-radius.html`. The replay is deterministic, so the
-numbers do not move between runs; only the trace and span ids do.
+Then open `docs/visuals/blast-radius.html` or `docs/visuals/genome-strip.html`.
+Both read the same `run-data.js`. The replay is deterministic, so the numbers do
+not move between runs; only the trace and span ids do.
