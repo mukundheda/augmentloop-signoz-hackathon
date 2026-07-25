@@ -25,7 +25,7 @@ from __future__ import annotations
 import argparse
 import os
 from pathlib import Path
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 
 from opentelemetry.exporter.otlp.proto.http.metric_exporter import OTLPMetricExporter
 from opentelemetry.exporter.otlp.proto.http.trace_exporter import OTLPSpanExporter
@@ -36,6 +36,7 @@ from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import BatchSpanProcessor
 
 from .replay import replay
+from .routing import DEFAULT_ROUTING_PATH
 
 if TYPE_CHECKING:
     from .direct import DirectClient
@@ -123,16 +124,36 @@ def _make_client(provider: str) -> "OpenRouterClient | DirectClient":
     return OpenRouterClient()
 
 
-def _run_live(budget_usd: float, provider: str) -> None:
-    from .live import run_live
+def _run_live(
+    budget_usd: float, provider: str, routing_path: Optional[Path] = None
+) -> None:
+    from .live import DECISION_TYPE, DEFAULT_ROSTER, run_live
 
     world_resource = Resource.create({"service.name": "toy-world"})
     world = _tracer_provider(world_resource)
     world_meters = _meter_provider(world_resource)
 
+    # Comparison mode runs the whole roster - that is what produces the
+    # cost-per-correct-by-model evidence the right-sizing proposal reads.
+    # Production mode (ticket #10) runs only the model the committed routing
+    # table currently assigns to this decision type, so a run before and a run
+    # after an approved reroute are directly comparable.
+    roster = DEFAULT_ROSTER
+    if routing_path is not None:
+        from .routing import load_routing, routed_model
+
+        routing = load_routing(routing_path)
+        model = routed_model(routing, DECISION_TYPE)
+        roster = (model,)
+        print(
+            f"Production routing ({routing_path.name}): "
+            f"{DECISION_TYPE} -> {model}"
+        )
+
     summary = run_live(
         _make_client(provider),
         budget_usd=budget_usd,
+        roster=roster,
         world_provider=world,
         world_meter_provider=world_meters,
     )
@@ -177,10 +198,36 @@ def main() -> None:
         "credits are provisioned: native Anthropic (ANTHROPIC_API_KEY) + "
         "Gemini's OpenAI-compatible endpoint (GEMINI_API_KEY)",
     )
+    parser.add_argument(
+        "--production",
+        action="store_true",
+        help="run only the model the committed routing table assigns to this "
+        "decision type, instead of the whole comparison roster (ticket #10). "
+        "Use this for the before/after either side of an approved reroute",
+    )
+    parser.add_argument(
+        "--routing",
+        type=Path,
+        default=DEFAULT_ROUTING_PATH,
+        metavar="PATH",
+        help=f"routing table for --production (default: {DEFAULT_ROUTING_PATH.name} "
+        "beside the package, which is the committed table the approval step edits)",
+    )
     args = parser.parse_args()
 
+    if args.production and not args.live:
+        parser.error(
+            "--production selects WHICH model serves real traffic, so it needs "
+            "--live. Replay has no routing to apply: it re-prices a recording "
+            "whose models are already fixed."
+        )
+
     if args.live:
-        _run_live(args.budget, args.provider)
+        _run_live(
+            args.budget,
+            args.provider,
+            routing_path=args.routing if args.production else None,
+        )
     else:
         _run_replay()
 

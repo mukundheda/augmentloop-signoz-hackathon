@@ -9,5 +9,54 @@
   },
   "enabledPlugins": {
     "signoz@signoz-skills": true
+  },
+  "permissions": {
+    "allow": [
+      "mcp__signoz__signoz_aggregate_logs",
+      "mcp__signoz__signoz_aggregate_traces",
+      "mcp__signoz__signoz_check_metric_cardinality",
+      "mcp__signoz__signoz_check_metric_usage",
+      "mcp__signoz__signoz_execute_builder_query",
+      "mcp__signoz__signoz_fetch_doc",
+      "mcp__signoz__signoz_get_alert",
+      "mcp__signoz__signoz_get_alert_history",
+      "mcp__signoz__signoz_get_dashboard",
+      "mcp__signoz__signoz_get_field_keys",
+      "mcp__signoz__signoz_get_field_values",
+      "mcp__signoz__signoz_get_notification_channel",
+      "mcp__signoz__signoz_get_service_top_operations",
+      "mcp__signoz__signoz_get_top_metrics",
+      "mcp__signoz__signoz_get_trace_details",
+      "mcp__signoz__signoz_get_view",
+      "mcp__signoz__signoz_list_alert_rules",
+      "mcp__signoz__signoz_list_alerts",
+      "mcp__signoz__signoz_list_dashboard_templates",
+      "mcp__signoz__signoz_list_dashboards",
+      "mcp__signoz__signoz_list_metrics",
+      "mcp__signoz__signoz_list_notification_channels",
+      "mcp__signoz__signoz_list_services",
+      "mcp__signoz__signoz_list_views",
+      "mcp__signoz__signoz_query_metrics",
+      "mcp__signoz__signoz_search_docs",
+      "mcp__signoz__signoz_search_logs",
+      "mcp__signoz__signoz_search_traces"
+    ],
+    "ask": [
+      "mcp__signoz__signoz_create_alert",
+      "mcp__signoz__signoz_create_dashboard",
+      "mcp__signoz__signoz_create_notification_channel",
+      "mcp__signoz__signoz_create_view",
+      "mcp__signoz__signoz_delete_alert",
+      "mcp__signoz__signoz_delete_dashboard",
+      "mcp__signoz__signoz_delete_notification_channel",
+      "mcp__signoz__signoz_delete_view",
+      "mcp__signoz__signoz_import_dashboard",
+      "mcp__signoz__signoz_update_alert",
+      "mcp__signoz__signoz_update_dashboard",
+      "mcp__signoz__signoz_update_notification_channel",
+      "mcp__signoz__signoz_update_view",
+      "Edit(toy-world/routing.json)",
+      "Write(toy-world/routing.json)"
+    ]
   }
 }
