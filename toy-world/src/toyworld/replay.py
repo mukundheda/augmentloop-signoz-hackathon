@@ -1,17 +1,26 @@
-"""Replay mode: deterministic, no API keys, judge-runnable (spec stories 12-13).
+"""Replay mode: deterministic, no API keys, judge-runnable (spec stories 12-13;
+extended by ticket #33 to three decision types; the deferred reality-grade
+path restored per review after a prior #33 revision dropped it).
 
-Reads a committed JSONL recording of driver decisions and journey outcomes and
-replays them through the Gradebook library:
+Reads a committed JSONL recording of real model answers (written by
+`recorder.py`'s `--live --record`, never hand-authored - see that module's
+docstring) and replays them through the Gradebook library:
 
-- each junction decision becomes a math-graded `gen_ai.evaluation.result`
-  event, parented under the driver's journey trace (a real trace waterfall in
-  SigNoz, per the T3 re-scope addendum);
-- each journey outcome becomes a *reality* grade that span-links back to the
-  decision span it judges (T5, span-link Role 1).
+- each recorded decision becomes a math-graded `gen_ai.evaluation.result`
+  event: the recording stores only what the model actually answered (`chosen`,
+  token counts, a response id); the correct answer, checker, and difficulty
+  are looked up fresh from `world.QUERIES_BY_ID` by `query_id` - the same
+  computation that produced the original prompt - so a recording can never
+  silently drift from the graph it was recorded against;
+- each recorded route_choice outcome becomes a *reality* grade that
+  span-links back (docs/conventions.md section 6, span-link Role 1) to the
+  decision span it judges - did the journey that decision's chosen route
+  produces actually arrive on time (`world.journey_on_time`)?
 
 The decision spans are emitted by the `toy-world` service and the late reality
-grades by the `toy-world-outcomes` service, mirroring how outcomes arrive from
-a different process in real systems - both services appear in SigNoz.
+grades by the separate `toy-world-outcomes` service, mirroring how outcomes
+arrive from a different process in real systems - both services appear in
+SigNoz, the same span-link demo the pre-#33 toy world shipped.
 """
 
 from __future__ import annotations
@@ -25,25 +34,60 @@ from opentelemetry import metrics, trace
 
 from gradebook import DecisionRef, capture_decision, record_decision, record_reality_grade
 
-from .world import JourneyOutcome, JunctionDecision
+from .world import DECISION_TYPE_ROUTE_CHOICE, QUERIES_BY_ID
 
 TRACER_NAME = "toyworld"
 
 
-def load_recording(path: Path) -> tuple[list[JunctionDecision], list[JourneyOutcome]]:
-    """Parse the JSONL recording into decisions and outcomes, order preserved."""
-    decisions: list[JunctionDecision] = []
-    outcomes: list[JourneyOutcome] = []
+@dataclass(frozen=True)
+class RecordingEntry:
+    """One parsed "decision" line of the recording - the recorder's raw
+    fields, unchanged."""
+
+    decision_type: str
+    query_id: str
+    model: str
+    chosen: object
+    input_tokens: int
+    output_tokens: int
+    response_id: str
+
+
+@dataclass(frozen=True)
+class OutcomeEntry:
+    """One parsed "outcome" line of the recording - a deferred reality grade
+    for the route_choice decision identified by `graded_response_id`."""
+
+    graded_response_id: str
+    on_time: bool
+    model: str
+
+
+def load_recording(path: Path) -> tuple[list[RecordingEntry], list[OutcomeEntry]]:
+    """Parse the JSONL recording into decisions and outcomes, order preserved.
+
+    Every decision's `query_id` must resolve against `world.QUERIES_BY_ID` - a
+    recording that references a query the current graph doesn't have is a
+    stale recording, and replay fails loud rather than silently skipping it.
+    """
+    decisions: list[RecordingEntry] = []
+    outcomes: list[OutcomeEntry] = []
     for line in path.read_text().splitlines():
         line = line.strip()
         if not line:
             continue
-        entry = json.loads(line)
-        kind = entry.pop("type")
+        raw = json.loads(line)
+        kind = raw.pop("type")
         if kind == "decision":
-            decisions.append(JunctionDecision(**entry))
+            entry = RecordingEntry(**raw)
+            if entry.query_id not in QUERIES_BY_ID:
+                raise ValueError(
+                    f"recording references unknown query_id {entry.query_id!r}; "
+                    f"the graph in world.py has changed since this recording was made"
+                )
+            decisions.append(entry)
         elif kind == "outcome":
-            outcomes.append(JourneyOutcome(**entry))
+            outcomes.append(OutcomeEntry(**raw))
         else:
             raise ValueError(f"unknown recording entry type: {kind!r}")
     return decisions, outcomes
@@ -58,6 +102,10 @@ class ReplaySummary:
     total_cost_usd: float = 0.0
     outcomes: int = 0
     by_model: dict[str, dict[str, float]] = field(default_factory=dict)
+    by_model_type: dict[tuple[str, str], dict[str, float]] = field(default_factory=dict)
+    by_model_type_difficulty: dict[tuple[str, str, str], dict[str, float]] = field(
+        default_factory=dict
+    )
 
     @property
     def cost_per_correct_usd(self) -> Optional[float]:
@@ -77,9 +125,18 @@ def replay(
 
     Providers are injectable for tests (in-memory exporter/reader) and wired to
     OTLP by `__main__.py`. `world_provider`/`world_meter_provider` carry the
-    journey/decision telemetry; `outcomes_provider`/`outcomes_meter_provider`
-    carry the late reality grades (ticket #7: the aggregate metrics ride the
-    same two services as the events they're recorded alongside).
+    decision telemetry; `outcomes_provider`/`outcomes_meter_provider` carry the
+    late reality grades (docs/conventions.md section 6) - falling back to the
+    world providers when not given, so callers that don't care about the
+    service split (most tests) don't have to wire a second pair.
+
+    One trace per model (`model-run <model>`), one child span per query (named
+    after decision type + query id, carrying `augmentloop.decision.
+    difficulty`) - the same trace shape `live.run_live` produces, so a replay
+    and a live run look identical in SigNoz. Every route_choice decision span's
+    context is captured (`capture_decision`) so a second pass, after all
+    decision spans have closed, can span-link each recorded outcome back to
+    the exact decision it judges.
     """
     provider = world_provider or trace.get_tracer_provider()
     tracer = provider.get_tracer(TRACER_NAME)
@@ -88,57 +145,85 @@ def replay(
     summary = ReplaySummary()
     refs: dict[str, DecisionRef] = {}
 
-    for driver in _drivers_in_order(decisions):
-        driver_decisions = [d for d in decisions if d.driver == driver]
-        # One journey = one trace: root span per driver, one child span per
-        # junction (the model-call stand-in), the Gradebook event under it.
-        with tracer.start_as_current_span(f"journey {driver}"):
-            for d in driver_decisions:
-                with tracer.start_as_current_span(f"junction {d.junction} decision"):
-                    refs[d.response_id] = capture_decision(response_id=d.response_id)
-                    correct_route = d.true_fastest
+    for model in _models_in_order(decisions):
+        model_entries = [e for e in decisions if e.model == model]
+        with tracer.start_as_current_span(f"model-run {model}"):
+            for entry in model_entries:
+                query = QUERIES_BY_ID[entry.query_id]
+                with tracer.start_as_current_span(
+                    f"{query.decision_type} {query.query_id} decision"
+                ) as span:
+                    span.set_attribute(
+                        "augmentloop.decision.difficulty", query.difficulty
+                    )
+                    if query.decision_type == DECISION_TYPE_ROUTE_CHOICE:
+                        refs[entry.response_id] = capture_decision(
+                            response_id=entry.response_id
+                        )
                     record_decision(
-                        name="route.fastest",
-                        model=d.model,
-                        chosen=d.chosen,
-                        correct=correct_route,
-                        input_tokens=d.input_tokens,
-                        output_tokens=d.output_tokens,
-                        decision_type="route_choice",
-                        response_id=d.response_id,
-                        explanation=(
-                            f"chose {d.chosen} ({d.options[d.chosen]}m); "
-                            f"true fastest {correct_route} ({d.options[correct_route]}m)"
-                        ),
+                        name=query.eval_name,
+                        model=entry.model,
+                        chosen=entry.chosen,
+                        correct=query.correct,
+                        input_tokens=entry.input_tokens,
+                        output_tokens=entry.output_tokens,
+                        decision_type=query.decision_type,
+                        response_id=entry.response_id,
+                        explanation=query.explain(entry.chosen),
+                        checker=query.checker,
                         tracer_provider=provider,
                         meter_provider=world_meter_provider,
                     )
-                    summary.decisions += 1
-                    is_correct = d.chosen == correct_route
-                    summary.correct += int(is_correct)
-                    cost = _cost(d)
-                    summary.total_cost_usd += cost
-                    per_model = summary.by_model.setdefault(
-                        d.model, {"decisions": 0, "correct": 0, "cost_usd": 0.0}
-                    )
-                    per_model["decisions"] += 1
-                    per_model["correct"] += int(is_correct)
-                    per_model["cost_usd"] += cost
 
-    # The outcomes "process": late reality grades, span-linked back (T5).
+                    from gradebook.pricing import price
+
+                    cost = price(entry.model, entry.input_tokens, entry.output_tokens)
+                    is_correct = bool(query.checker(entry.chosen, query.correct))
+
+                    summary.decisions += 1
+                    summary.correct += int(is_correct)
+                    summary.total_cost_usd += cost
+
+                    row = summary.by_model.setdefault(
+                        entry.model, {"decisions": 0, "correct": 0, "cost_usd": 0.0}
+                    )
+                    row["decisions"] += 1
+                    row["correct"] += int(is_correct)
+                    row["cost_usd"] += cost
+
+                    type_row = summary.by_model_type.setdefault(
+                        (entry.model, query.decision_type),
+                        {"decisions": 0, "correct": 0, "cost_usd": 0.0},
+                    )
+                    type_row["decisions"] += 1
+                    type_row["correct"] += int(is_correct)
+                    type_row["cost_usd"] += cost
+
+                    diff_row = summary.by_model_type_difficulty.setdefault(
+                        (entry.model, query.decision_type, query.difficulty),
+                        {"decisions": 0, "correct": 0, "cost_usd": 0.0},
+                    )
+                    diff_row["decisions"] += 1
+                    diff_row["correct"] += int(is_correct)
+                    diff_row["cost_usd"] += cost
+
+    # The outcomes "process": late reality grades, span-linked back (section 6).
     for outcome in outcomes:
         ref = refs.get(outcome.graded_response_id)
         if ref is None:
             raise ValueError(
-                f"outcome for {outcome.driver} references unknown decision "
+                f"outcome references unknown decision response_id "
                 f"{outcome.graded_response_id!r}"
             )
         record_reality_grade(
             ref,
             name="journey.on_time",
             correct=outcome.on_time,
-            decision_type="route_choice",
-            explanation=f"{outcome.driver} arrived {'on time' if outcome.on_time else 'late'}",
+            model=outcome.model,
+            decision_type=DECISION_TYPE_ROUTE_CHOICE,
+            explanation=(
+                f"journey arrived {'on time' if outcome.on_time else 'late'}"
+            ),
             tracer_provider=outcomes_provider or provider,
             meter_provider=outcomes_meter_provider or world_meter_provider,
         )
@@ -147,15 +232,9 @@ def replay(
     return summary
 
 
-def _drivers_in_order(decisions: Iterable[JunctionDecision]) -> list[str]:
+def _models_in_order(entries: Iterable[RecordingEntry]) -> list[str]:
     seen: list[str] = []
-    for d in decisions:
-        if d.driver not in seen:
-            seen.append(d.driver)
+    for e in entries:
+        if e.model not in seen:
+            seen.append(e.model)
     return seen
-
-
-def _cost(d: JunctionDecision) -> float:
-    from gradebook.pricing import price
-
-    return price(d.model, d.input_tokens, d.output_tokens)

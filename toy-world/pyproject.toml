@@ -9,8 +9,16 @@ description = "Toy world demo harness (T3): replay a tiny road network's AI driv
 readme = "README.md"
 requires-python = ">=3.10"
 license = { text = "MIT" }
-# gradebook is installed separately from ../reference-library (see README);
-# declared here so a missing install fails loud at import, not mid-replay.
+# gradebook is THIS repo's reference library (../reference-library), NOT the
+# unrelated PyPI project that owns the name. It must therefore be installed in
+# the same pip invocation - every documented command does
+# `pip install -e reference-library -e toy-world[...]`, which resolves the
+# requirement below against the local editable and never reaches PyPI.
+# Installing toy-world alone silently pulls the stranger's package; tests/
+# conftest.py fails loud with that diagnosis rather than an opaque ImportError
+# (ticket #30). A path-pinned direct reference was tried and rejected: it makes
+# pip refuse the `-e reference-library -e toy-world` form the judge runbook
+# (docs/judge-run.md) uses.
 dependencies = [
   "gradebook",
   "opentelemetry-sdk>=1.27",

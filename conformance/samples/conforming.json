@@ -1,0 +1,1 @@
+{"name":"gen_ai.evaluation.result","attributes":{"gen_ai.evaluation.name":"quote.verbatim","gen_ai.evaluation.score.value":1,"gen_ai.evaluation.score.label":"correct","gen_ai.response.id":"ts-emit-1","augmentloop.grade.source":"math","augmentloop.cost.usd":0.00021,"gen_ai.request.model":"anthropic/claude-haiku-4.5","augmentloop.decision.type":"quote_extraction"}}

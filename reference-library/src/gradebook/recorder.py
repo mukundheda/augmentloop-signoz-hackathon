@@ -19,9 +19,10 @@ from opentelemetry import trace
 from opentelemetry.metrics import MeterProvider
 
 from . import conventions as conv
+from . import logs as gb_logs
 from . import metrics as gb_metrics
 from . import pricing
-from .grading import CORRECT, INCORRECT, GradeSource, math_grade
+from .grading import CORRECT, INCORRECT, CheckerResult, GradeSource, math_grade
 
 
 class MissingResponseIdError(ValueError):
@@ -69,6 +70,9 @@ def capture_decision(*, response_id: Optional[str]) -> DecisionRef:
     now or in another process.
     """
     if response_id is None:
+        # Log while the decision span is still current, then fail loud: the log
+        # links to the exact span that was about to become ungradable (§13).
+        gb_logs.missing_response_id()
         raise MissingResponseIdError(
             "a deferred grade MUST carry gen_ai.response.id (conventions "
             "section 6); supply the completion id at capture time"
@@ -90,7 +94,7 @@ def record_decision(
     decision_type: Optional[str] = None,
     response_id: Optional[str] = None,
     explanation: Optional[str] = None,
-    checker: Callable[[Any, Any], bool] = operator.eq,
+    checker: Callable[[Any, Any], CheckerResult] = operator.eq,
     tracer_provider: Optional[trace.TracerProvider] = None,
     meter_provider: Optional[MeterProvider] = None,
 ) -> None:
@@ -119,7 +123,14 @@ def record_decision(
     tracer = provider.get_tracer("gradebook")
 
     grade = math_grade(chosen, correct, checker)
-    cost_usd = pricing.price(model, input_tokens, output_tokens)
+    try:
+        cost_usd = pricing.price(model, input_tokens, output_tokens)
+    except pricing.UnknownModelError:
+        # The caller's decision span is current here, so the log links to the
+        # decision that could not be priced; then fail loud as before (§13). A
+        # silently missing cost would corrupt the headline cost-per-correct.
+        gb_logs.unknown_model_pricing_miss(model=model)
+        raise
 
     # A leaf event span. With no explicit context it auto-parents to the active
     # operation span (the model-call span) when recording happens in that flow -
@@ -134,6 +145,9 @@ def record_decision(
         span.set_attribute(conv.SCORE_LABEL, grade.label)
         span.set_attribute(conv.GRADE_SOURCE, grade.source.value)
         span.set_attribute(conv.COST_USD, cost_usd)
+        # The reason sub-code (§12): why this grade got its label, queryable.
+        if grade.reason is not None:
+            span.set_attribute(conv.GRADE_REASON, grade.reason.value)
 
         # Recommended (section 7): echo model + tokens so the observatory is a
         # single-table query with no join. Always available here.
@@ -155,6 +169,7 @@ def record_decision(
             cost_usd=cost_usd,
             model=model,
             decision_type=decision_type,
+            grade_reason=grade.reason.value if grade.reason is not None else None,
             meter_provider=meter_provider,
         )
 

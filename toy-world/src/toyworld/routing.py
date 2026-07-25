@@ -17,9 +17,11 @@ committed JSON file rather than a flag or an environment variable on purpose:
   conventions doc: right-sizing targets a *kind* of decision (reroute
   `route_choice`, not "everything").
 
-The toy world has exactly one decision type (`route_choice`). A substrate with
-several - CleanCut's `filler_detection` and `quote_extraction` - wears the same
-table with more rows, which is the point of keying on decision type at all.
+The toy world has three decision types (ticket #33: `route_choice`,
+`eta_estimate`, `next_hop`), so the table now has real rows to compare instead
+of one - a substrate with different decision types (CleanCut's
+`filler_detection` and `quote_extraction`) wears the same table with more
+rows, which is the point of keying on decision type at all.
 """
 
 from __future__ import annotations

@@ -224,6 +224,139 @@ bounded panel (Spec #3), never a substitute for the toy-world substrate.
   panel is scoped to what actually exists, not to what "team fleet" implies;
   this is a known, accepted gap, not something this ticket resolved.
 
+---
+
+## 12. Reason codes + reusable checkers (Lane B, ticket #42)
+
+Two additions that lower the cost of authoring a math grade and make a grade's
+verdict more rigorous than a bare true/false.
+
+### 12.1 The reason sub-code: `augmentloop.grade.reason`
+
+An optional namespaced attribute on the standard event carrying *why* a grade
+got its label. It makes "not machine-checkable" a specific, queryable reason
+instead of one generic bucket, and lets a dashboard break grades down by reason.
+It is **not** mandatory (the mandatory field is still `augmentloop.grade.source`,
+Section 3) and it is emitted as a metric dimension on
+`gradebook.decisions.graded` as well as on the event.
+
+**The codes are a closed, versioned enum** (`REASON_CODES_VERSION`, currently
+**1**, in `gradebook.checkers`). An open-ended reason string becomes unqueryable
+the moment two people spell the same reason differently, so a new code is a
+deliberate change here and in the enum, with the version bumped.
+
+| code | meaning | machine-checked? |
+|---|---|---|
+| `match` | answer provably equals / satisfies the ground truth | yes |
+| `mismatch` | answer provably does not | yes |
+| `no_ground_truth` | no provably-correct answer was supplied | no |
+| `empty_answer` | the model produced nothing to check | no |
+| `ambiguous` | the ground truth under-specifies the answer | no |
+
+Only `match`/`mismatch` are machine-checked; the other three are the sub-coded
+reasons a decision is not machine-checkable (and per ADR 0001 such a decision
+never counts as correct in the headline). A plain-bool checker (e.g. the default
+`operator.eq`) still yields a reason - `match` or `mismatch`.
+
+### 12.2 Reusable checkers
+
+Ready-made checkers in `gradebook.checkers` for the decision shapes we had
+hand-written more than once, so an adopter picks one instead of writing
+comparison logic. Each returns a `CheckResult(passed, reason)`:
+
+- **`verbatim_substring(chosen, reference)`** - the answer must appear verbatim
+  in a reference text (whitespace-normalized, quote marks tolerated). Promoted
+  out of CleanCut's quote extraction, which now consumes it.
+- **`fact_match(chosen, record)`** - normalized equality of an extracted scalar
+  against a known record value (a phone number vs. the CRM, a total vs. a ledger).
+- **`tool_choice(chosen, expected)`** - identity match on a low-cardinality
+  choice (tool name, route id). The toy world's route pick consumes it.
+- **`completed(chosen, done_states)`** - did the decision reach a terminal
+  success state.
+
+`record_decision`'s `checker` accepts either a bare bool (back-compat) or a
+`CheckResult`; when a `CheckResult` is returned, its reason is emitted.
+
+**Deliberately not here: a weighted overall score.** Collapsing several metrics
+into one blended number is precisely what ADR 0001 exists to refuse.
+
+---
+
+## 13. Failure logs - the three genuine failure classes (ticket C6, #51)
+
+Sections 1-12 govern the *happy path*: every graded decision is one standard
+`gen_ai.evaluation.result` event (§2) plus the two aggregate metrics (§10). This
+section adds the other signal a judging surface expects - **logs** - for the
+three ways a decision can fail to be graded honestly. It deliberately does **not**
+emit a log per decision: a log line that just repeats a decision's span
+attributes is padding, and a judge reads it as one. We log *failures only*.
+
+### 13.1 The three failure classes
+
+| Failure class (`augmentloop.failure.class`) | Severity | Emitted where | Extra attributes |
+|---|---|---|---|
+| `budget_guard_tripped` | WARN | a live run stops before it can overspend | `augmentloop.budget.usd`, `augmentloop.spend.usd`, `gen_ai.request.model`, `augmentloop.decision.type` |
+| `unknown_model_pricing_miss` | ERROR | a model has no row in the pricing table (§3.2) - typically a stale roster/routing slug | `gen_ai.request.model` |
+| `missing_response_id` | ERROR | a deferred grade is captured with no `gen_ai.response.id` (§6) | *(none - the failure is the absence)* |
+
+These are the three that already exist in the code, not hypotheticals: the
+budget guard (`toyworld.live`), the pricing table's `UnknownModelError`
+(`gradebook.pricing`, hit twice in real runs via retired model slugs), and
+`capture_decision`'s `MissingResponseIdError` (`gradebook.recorder`). The two
+library failures still **fail loud** exactly as before - the log is emitted
+first, then the exception propagates. The log records the event; it does not
+swallow the error.
+
+### 13.2 How the trace/span link happens (no processor needed)
+
+Each log is emitted **while the decision's span is current** (for the budget
+guard, the model-run span). It is a plain `logging` call on the `gradebook`
+logger; the application attaches the OpenTelemetry SDK `LoggingHandler` to that
+logger at its composition root (`python -m toyworld`), and the handler stamps the
+active span's `trace_id` and `span_id` onto the log automatically. No
+trace-parser processor, no manual id copying. The payoff is the one a judge can
+see: **click a failure log in SigNoz, land on the exact decision (or model-run)
+span that produced it.** The handler also attaches `code.*` source-location
+attributes for free.
+
+The `gradebook` logger carries a `NullHandler` by default (library best
+practice), so importing the library never spills these logs to stderr; they go
+nowhere until an application wires up the OTLP bridge.
+
+### 13.3 Downstream
+
+`augmentloop.failure.class` is a stable, low-cardinality discriminator so a
+log-based alert (ticket C7, #52 - "budget guard tripped N times in five
+minutes") and any log dashboard can group and count by failure class without
+parsing message text.
+
+---
+
+## 14. Conformance: the contract, executable against any language (Lane B, ticket #44)
+
+ADR 0002's moat is that this contract is a *cross-language* extension of a
+standard event. Sections 1-9 describe it; this section makes "any language can
+emit it, and we can prove a given implementation does" executable.
+
+- **A second-language emitter** lives at `conformance/ts-emitter/emit.ts`:
+  TypeScript, zero npm dependencies (Node built-ins only), POSTing the OTLP/HTTP
+  JSON the collector accepts. It emits one conforming `gen_ai.evaluation.result`
+  event with the two mandatory extensions - the §9 field table, from a language
+  that is not the reference library.
+- **A conformance checker** lives at `conformance/check_conformance.py`. It
+  validates one event (as language-neutral JSON: `{"name", "attributes"}`)
+  against the §9 frozen table, depending only on the standard library so it can
+  judge an emitter it did not write. **Error-level** findings (wrong event name;
+  missing/invalid `gen_ai.evaluation.name`; missing/invalid
+  `augmentloop.grade.source`; a math/reality grade whose `score.value` is not
+  0.0/1.0 or `score.label` is not correct/incorrect; a negative
+  `augmentloop.cost.usd`) fail conformance; **warning-level** (a missing
+  recommended `gen_ai.response.id`) does not.
+
+The checker is the artifact of record: "language-agnostic" stops being a claim
+in prose and becomes `exit 0` / `exit 1` against real emitted telemetry. See
+`conformance/README.md` for the two one-command invocations.
+
 ## Cross-references
 
 - ADR [0001](adr/0001-machine-checked-grades-only-in-the-headline-metric.md) - machine-checked grades only in the headline metric.
