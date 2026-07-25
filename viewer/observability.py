@@ -92,6 +92,26 @@ def _span(
     }
 
 
+def _replay_log(
+    response_id: str,
+    label: str,
+    *,
+    timestamp_unix_nano: str,
+    body: str,
+    attributes: Mapping[str, Any],
+) -> dict[str, Any]:
+    """Return a deterministic replay log linked to its projected span."""
+    return {
+        "timestamp_unix_nano": timestamp_unix_nano,
+        "severity": "INFO",
+        "body": body,
+        "source": "replay",
+        "trace_id": None,
+        "span_id": stable_hex_id(response_id, label, 16),
+        "attributes": dict(attributes),
+    }
+
+
 def build_replay_observability(agent: Mapping[str, Any]) -> dict[str, Any]:
     """Project committed decision facts into non-navigable replay evidence."""
     response_id = str(agent["response_id"])
@@ -165,6 +185,58 @@ def build_replay_observability(agent: Mapping[str, Any]) -> dict[str, Any]:
             )
         )
 
+    grade_label = "correct" if agent["is_correct"] else "incorrect"
+    logs = [
+        _replay_log(
+            response_id,
+            "request",
+            timestamp_unix_nano="0",
+            body=f"Model request: {model}",
+            attributes={
+                "gen_ai.response.id": response_id,
+                "gen_ai.request.model": model,
+            },
+        ),
+        _replay_log(
+            response_id,
+            "decision",
+            timestamp_unix_nano="1000000",
+            body=(
+                f"Chosen {agent['decision_type']} decision: {agent['chosen']}"
+            ),
+            attributes={
+                "gen_ai.response.id": response_id,
+                "augmentloop.decision.type": agent["decision_type"],
+            },
+        ),
+        _replay_log(
+            response_id,
+            "grade",
+            timestamp_unix_nano="2000000",
+            body=f"Math grade: {grade_label}",
+            attributes={
+                "gen_ai.response.id": response_id,
+                "gen_ai.evaluation.score.label": grade_label,
+                "augmentloop.grade.source": "math",
+            },
+        ),
+    ]
+    if agent.get("outcome") is not None:
+        on_time = bool(agent["outcome"]["on_time"])
+        logs.append(
+            _replay_log(
+                response_id,
+                "outcome",
+                timestamp_unix_nano="3000000",
+                body=f"Reality outcome: {'on time' if on_time else 'late'}",
+                attributes={
+                    "gen_ai.response.id": response_id,
+                    "augmentloop.grade.source": "reality",
+                    "journey.on_time": on_time,
+                },
+            )
+        )
+
     return {
         "mode": "replay",
         "response_id": response_id,
@@ -173,7 +245,7 @@ def build_replay_observability(agent: Mapping[str, Any]) -> dict[str, Any]:
         "evaluation_span_id": stable_hex_id(response_id, "grade", 16),
         "synchronized_at": None,
         "spans": spans,
-        "logs": [],
+        "logs": logs,
         "links": {"dashboard": ""},
     }
 

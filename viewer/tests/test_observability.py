@@ -132,6 +132,71 @@ class ReplayObservabilityTests(unittest.TestCase):
         self.assertNotIn(
             "toyworld.reality.outcome", {span["name"] for span in result["spans"]}
         )
+        self.assertEqual(len(result["logs"]), 3)
+        self.assertNotIn(
+            stable_hex_id("resp-1", "outcome", 16),
+            {log["span_id"] for log in result["logs"]},
+        )
+
+    def test_replay_projection_emits_ordered_structured_fact_logs(self) -> None:
+        """Removing or misattributing any replay fact log must fail this contract."""
+        result = build_replay_observability(AGENT)
+
+        self.assertEqual(
+            result["logs"],
+            [
+                {
+                    "timestamp_unix_nano": "0",
+                    "severity": "INFO",
+                    "body": "Model request: anthropic/claude-haiku-4.5",
+                    "source": "replay",
+                    "trace_id": None,
+                    "span_id": stable_hex_id("resp-1", "request", 16),
+                    "attributes": {
+                        "gen_ai.response.id": "resp-1",
+                        "gen_ai.request.model": "anthropic/claude-haiku-4.5",
+                    },
+                },
+                {
+                    "timestamp_unix_nano": "1000000",
+                    "severity": "INFO",
+                    "body": "Chosen route_choice decision: B",
+                    "source": "replay",
+                    "trace_id": None,
+                    "span_id": stable_hex_id("resp-1", "decision", 16),
+                    "attributes": {
+                        "gen_ai.response.id": "resp-1",
+                        "augmentloop.decision.type": "route_choice",
+                    },
+                },
+                {
+                    "timestamp_unix_nano": "2000000",
+                    "severity": "INFO",
+                    "body": "Math grade: incorrect",
+                    "source": "replay",
+                    "trace_id": None,
+                    "span_id": stable_hex_id("resp-1", "grade", 16),
+                    "attributes": {
+                        "gen_ai.response.id": "resp-1",
+                        "gen_ai.evaluation.score.label": "incorrect",
+                        "augmentloop.grade.source": "math",
+                    },
+                },
+                {
+                    "timestamp_unix_nano": "3000000",
+                    "severity": "INFO",
+                    "body": "Reality outcome: late",
+                    "source": "replay",
+                    "trace_id": None,
+                    "span_id": stable_hex_id("resp-1", "outcome", 16),
+                    "attributes": {
+                        "gen_ai.response.id": "resp-1",
+                        "augmentloop.grade.source": "reality",
+                        "journey.on_time": False,
+                    },
+                },
+            ],
+        )
 
     def test_grade_span_records_math_grade_and_cost(self) -> None:
         """A wrong grade label, source, cost, or parent must fail this contract."""
