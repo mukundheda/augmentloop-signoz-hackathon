@@ -7,6 +7,7 @@ COMPUTED, so the tests pin the computation, not a hand-picked expectation.
 """
 
 import math
+import re
 
 import pytest
 
@@ -18,6 +19,7 @@ from toyworld.world import (
     ETA_ESTIMATE_QUERIES,
     ETA_TOLERANCE_FRACTION,
     GRAPH,
+    MAP_TEXT,
     NEXT_HOP_QUERIES,
     QUERIES_BY_ID,
     ROUTE_CHOICE_QUERIES,
@@ -121,9 +123,70 @@ def test_next_hop_correct_answer_is_the_cheapest_edge():
 def test_route_choice_offers_two_genuinely_different_candidates():
     for query in ROUTE_CHOICE_QUERIES:
         assert query.decision_type == "route_choice"
-        # Both candidate letters appear in the prompt with distinct times.
+        # Both candidate letters appear in the prompt (their times do not -
+        # see test_no_prompt_hands_the_model_a_precomputed_answer).
         assert "A:" in query.prompt and "B:" in query.prompt
         assert query.correct in ("A", "B")
+
+
+def test_eta_parse_reads_a_bare_numeric_reply():
+    parse = ETA_ESTIMATE_QUERIES[0].parse
+    assert parse("17.0") == 17.0
+    assert parse("21.5") == 21.5
+    assert parse("7") == 7.0
+
+
+def test_eta_parse_ignores_junction_ids_and_takes_the_final_answer():
+    """The real claude-sonnet-4.6 reply shape that exposed the parser bug.
+
+    Scored on its FIRST number this reply grades as 1.0 (the `1` inside `J1`)
+    against a true answer of 7.0 - marking a correct answer wrong. Both
+    failure modes are pinned here: junction ids are not quantities, and the
+    answer is the last number, not the first.
+    """
+    reply = (
+        "I need to find the fastest route from J1 to J9.\n\n"
+        "Let me use Dijkstra's algorithm.\n\n"
+        "Starting from J1, initial distances:\n- J1: 0\n\n"
+        "From J1: J5=4.0, J6=6.0\n\nProcess J5 (4.0):\n- J9 = 4.0+3.0 = 7.0\n\n"
+        "The fastest route is J1 -> J5 -> J9, taking 7.0 minutes."
+    )
+    assert ETA_ESTIMATE_QUERIES[0].parse(reply) == 7.0
+
+
+def test_eta_parse_returns_nan_when_there_is_no_number_at_all():
+    """A reply naming only junctions has no quantity in it - NaN, graded
+    wrong, never a crash ("a bad answer is data, not an error")."""
+    assert math.isnan(ETA_ESTIMATE_QUERIES[0].parse("J1 -> J5 -> J9"))
+    assert math.isnan(ETA_ESTIMATE_QUERIES[0].parse("I cannot answer that."))
+
+
+def test_every_prompt_carries_the_whole_map_exactly_once():
+    """No decision type gets a privileged or partial view of the world."""
+    for query in ALL_QUERIES:
+        assert query.prompt.count(MAP_TEXT) == 1, query.query_id
+
+
+def test_no_prompt_hands_the_model_a_precomputed_answer():
+    """The regression guard for the defect this test file's queries once had.
+
+    Every prompt used to ship the arithmetic already done: route_choice
+    printed each candidate's total time ("A: J1 -> J5 -> J9 (7.0 min)") and
+    next_hop printed every outgoing edge's time beside the edge. Both
+    collapsed to "pick the smaller number in front of you", every model in
+    the roster scored identically, and the whole right-sizing claim - route
+    each decision type to the cheapest model still good enough at it - had
+    nothing to stand on, because no decision separated any two models.
+
+    So: travel times may appear ONLY inside the shared map. Once the map is
+    removed, no decimal number may remain anywhere in the question body.
+    (Junction names like J1 are integers-after-a-letter and survive this;
+    edge weights like 4.0 are what it catches.)
+    """
+    for query in ALL_QUERIES:
+        body = query.prompt.replace(MAP_TEXT, "")
+        leaked = re.findall(r"\d+\.\d+", body)
+        assert not leaked, f"{query.query_id} leaks precomputed values: {leaked}"
 
 
 def test_eta_estimate_correct_answer_matches_shortest_path_time():
