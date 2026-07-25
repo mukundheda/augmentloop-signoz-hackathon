@@ -224,6 +224,64 @@ bounded panel (Spec #3), never a substitute for the toy-world substrate.
   panel is scoped to what actually exists, not to what "team fleet" implies;
   this is a known, accepted gap, not something this ticket resolved.
 
+---
+
+## 12. Reason codes + reusable checkers (Lane B, ticket #42)
+
+Two additions that lower the cost of authoring a math grade and make a grade's
+verdict more rigorous than a bare true/false.
+
+### 12.1 The reason sub-code: `augmentloop.grade.reason`
+
+An optional namespaced attribute on the standard event carrying *why* a grade
+got its label. It makes "not machine-checkable" a specific, queryable reason
+instead of one generic bucket, and lets a dashboard break grades down by reason.
+It is **not** mandatory (the mandatory field is still `augmentloop.grade.source`,
+Section 3) and it is emitted as a metric dimension on
+`gradebook.decisions.graded` as well as on the event.
+
+**The codes are a closed, versioned enum** (`REASON_CODES_VERSION`, currently
+**1**, in `gradebook.checkers`). An open-ended reason string becomes unqueryable
+the moment two people spell the same reason differently, so a new code is a
+deliberate change here and in the enum, with the version bumped.
+
+| code | meaning | machine-checked? |
+|---|---|---|
+| `match` | answer provably equals / satisfies the ground truth | yes |
+| `mismatch` | answer provably does not | yes |
+| `no_ground_truth` | no provably-correct answer was supplied | no |
+| `empty_answer` | the model produced nothing to check | no |
+| `ambiguous` | the ground truth under-specifies the answer | no |
+
+Only `match`/`mismatch` are machine-checked; the other three are the sub-coded
+reasons a decision is not machine-checkable (and per ADR 0001 such a decision
+never counts as correct in the headline). A plain-bool checker (e.g. the default
+`operator.eq`) still yields a reason - `match` or `mismatch`.
+
+### 12.2 Reusable checkers
+
+Ready-made checkers in `gradebook.checkers` for the decision shapes we had
+hand-written more than once, so an adopter picks one instead of writing
+comparison logic. Each returns a `CheckResult(passed, reason)`:
+
+- **`verbatim_substring(chosen, reference)`** - the answer must appear verbatim
+  in a reference text (whitespace-normalized, quote marks tolerated). Promoted
+  out of CleanCut's quote extraction, which now consumes it.
+- **`fact_match(chosen, record)`** - normalized equality of an extracted scalar
+  against a known record value (a phone number vs. the CRM, a total vs. a ledger).
+- **`tool_choice(chosen, expected)`** - identity match on a low-cardinality
+  choice (tool name, route id). The toy world's route pick consumes it.
+- **`completed(chosen, done_states)`** - did the decision reach a terminal
+  success state.
+
+`record_decision`'s `checker` accepts either a bare bool (back-compat) or a
+`CheckResult`; when a `CheckResult` is returned, its reason is emitted.
+
+**Deliberately not here: a weighted overall score.** Collapsing several metrics
+into one blended number is precisely what ADR 0001 exists to refuse.
+
+---
+
 ## 13. Failure logs - the three genuine failure classes (ticket C6, #51)
 
 Sections 1-12 govern the *happy path*: every graded decision is one standard
