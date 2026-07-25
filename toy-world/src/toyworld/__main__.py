@@ -23,12 +23,17 @@ be eyeballed against the dashboards.
 from __future__ import annotations
 
 import argparse
+import logging
 import os
 from pathlib import Path
 from typing import TYPE_CHECKING, Optional
 
+from gradebook.logs import LOGGER_NAME
+from opentelemetry.exporter.otlp.proto.http._log_exporter import OTLPLogExporter
 from opentelemetry.exporter.otlp.proto.http.metric_exporter import OTLPMetricExporter
 from opentelemetry.exporter.otlp.proto.http.trace_exporter import OTLPSpanExporter
+from opentelemetry.sdk._logs import LoggerProvider, LoggingHandler
+from opentelemetry.sdk._logs.export import BatchLogRecordProcessor
 from opentelemetry.sdk.metrics import MeterProvider
 from opentelemetry.sdk.metrics.export import PeriodicExportingMetricReader
 from opentelemetry.sdk.resources import Resource
@@ -68,6 +73,32 @@ def _meter_provider(resource: Resource) -> MeterProvider:
     )
 
 
+def _logger_provider(resource: Resource) -> LoggerProvider:
+    provider = LoggerProvider(resource=resource)
+    provider.add_log_record_processor(
+        BatchLogRecordProcessor(OTLPLogExporter(endpoint=f"{ENDPOINT}/v1/logs"))
+    )
+    return provider
+
+
+def _install_log_bridge(provider: LoggerProvider) -> LoggingHandler:
+    """Route gradebook's failure logs (conventions §13) to SigNoz over OTLP.
+
+    Attaches the SDK LoggingHandler to the "gradebook" logger, so a failure log
+    emitted while a decision span is current carries that span's trace/span id
+    automatically - click the log in SigNoz, land on the decision span.
+    """
+    handler = LoggingHandler(level=logging.INFO, logger_provider=provider)
+    logging.getLogger(LOGGER_NAME).addHandler(handler)
+    return handler
+
+
+def _remove_log_bridge(provider: LoggerProvider, handler: LoggingHandler) -> None:
+    logging.getLogger(LOGGER_NAME).removeHandler(handler)
+    provider.force_flush()
+    provider.shutdown()
+
+
 def _print_per_model(by_model: dict) -> None:
     print("per model:")
     for model, row in by_model.items():
@@ -85,6 +116,8 @@ def _run_replay() -> None:
     outcomes = _tracer_provider(outcomes_resource)
     world_meters = _meter_provider(world_resource)
     outcomes_meters = _meter_provider(outcomes_resource)
+    world_logs = _logger_provider(world_resource)
+    log_handler = _install_log_bridge(world_logs)
 
     summary = replay(
         RECORDING,
@@ -97,6 +130,7 @@ def _run_replay() -> None:
     for provider in (world, outcomes, world_meters, outcomes_meters):
         provider.force_flush()
         provider.shutdown()
+    _remove_log_bridge(world_logs, log_handler)
 
     print(f"Replayed {RECORDING.name} -> {ENDPOINT}")
     print(
@@ -132,6 +166,8 @@ def _run_live(
     world_resource = Resource.create({"service.name": "toy-world"})
     world = _tracer_provider(world_resource)
     world_meters = _meter_provider(world_resource)
+    world_logs = _logger_provider(world_resource)
+    log_handler = _install_log_bridge(world_logs)
 
     # Comparison mode runs the whole roster - that is what produces the
     # cost-per-correct-by-model evidence the right-sizing proposal reads.
@@ -161,6 +197,7 @@ def _run_live(
     for telemetry_provider in (world, world_meters):
         telemetry_provider.force_flush()
         telemetry_provider.shutdown()
+    _remove_log_bridge(world_logs, log_handler)
 
     print(f"Live run (budget ${budget_usd:.2f}) -> {ENDPOINT}")
     print(

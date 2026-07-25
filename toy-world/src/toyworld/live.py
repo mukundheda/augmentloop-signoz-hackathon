@@ -21,8 +21,9 @@ from typing import Optional, Protocol, Sequence
 
 from opentelemetry import metrics, trace
 
+from gradebook import logs as gb_logs
 from gradebook import record_decision
-from gradebook.pricing import price
+from gradebook.pricing import UnknownModelError, price
 
 from .world import WORLD, Junction
 
@@ -141,10 +142,26 @@ def run_live(
     summary = LiveSummary()
 
     for model in roster:
-        ceiling = price(model, _EST_INPUT_TOKENS, max_output_tokens)
         with tracer.start_as_current_span(f"model-run {model}"):
+            try:
+                ceiling = price(model, _EST_INPUT_TOKENS, max_output_tokens)
+            except UnknownModelError:
+                # A stale roster/routing slug. Log while the model-run span is
+                # current - there is no decision to link, the whole model is
+                # unpriced - then fail loud as before (conventions §13).
+                gb_logs.unknown_model_pricing_miss(model=model)
+                raise
             for junction in world:
                 if summary.total_cost_usd + ceiling > budget_usd:
+                    # The run stopped before it could overspend. Log while the
+                    # model-run span is current so the failure links to the run
+                    # that hit the cap (conventions §13).
+                    gb_logs.budget_guard_tripped(
+                        budget_usd=budget_usd,
+                        spend_usd=summary.total_cost_usd,
+                        model=model,
+                        decision_type=DECISION_TYPE,
+                    )
                     summary.budget_exhausted = True
                     return summary
                 with tracer.start_as_current_span(f"junction {junction.name} decision"):
