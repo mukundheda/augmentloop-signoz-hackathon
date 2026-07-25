@@ -132,6 +132,20 @@ AI-Estimated Quality panel reads 0 - correct, the replay recording contains no
 decision type crossed with every model, with the three cheapest models sitting
 at 20 out of 20 on `next_hop` above `claude-sonnet-4.6`'s 19.
 
+This is what it looks like on a stack running the committed replay, captured
+from the running dashboard rather than mocked up:
+
+![Gradebook dashboard: cost per 1,000 correct decisions as a timeseries, cost per correct decision by model, cost over time by grade source, and correct rate by model, with the decision type, grade source and model variables at the top](screenshots/dashboard-headline.png)
+
+![The Right-Sizing Grid table: next_hop rows for gemini-2.5-flash-lite, deepseek-chat and gpt-4o-mini each at 20 of 20 correct, sitting above claude-sonnet-4.6 at 19 of 20, with each row's cost alongside](screenshots/right-sizing-grid.png)
+
+The second image is the whole argument in one table. Three of the cheapest
+models in the roster score a perfect 20 on `next_hop` and sort above
+`claude-sonnet-4.6`, which costs between fifteen and thirty times more on that
+decision type. The logs panels below read "No data", which is the correct and
+expected result: a keyless replay trips none of the three failure classes, and
+those panels record discrete failure events rather than a gauge.
+
 Two deliberate absences, so neither reads as an oversight. There is no
 single-number "value" panel for the headline, and no histogram panel despite
 this build emitting a real OpenTelemetry histogram instrument for cost. Both
