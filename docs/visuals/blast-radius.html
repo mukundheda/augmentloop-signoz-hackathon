@@ -1,0 +1,279 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Blast radius - Gradebook</title>
+<style>
+  /* SigNoz Periscope tokens, verified against @signozhq/design-tokens/dist/style.css
+     and frontend/src/container/TraceDetail (dark canvas #0b0c0e). */
+  :root {
+    --bg-ink-500: #0b0c0e;   --bg-ink-400: #121317;  --bg-ink-300: #16181d;
+    --bg-ink-200: #23262e;   --bg-ink-100: #2a2e37;
+    --bg-slate-400: #1d212d; --bg-slate-200: #2c3140; --bg-slate-100: #3c4152;
+    --bg-slate-50: #62687c;
+    --bg-vanilla-100: #fff;  --bg-vanilla-400: #c0c1c3;
+    --bg-robin-500: #4e74f8;
+    --bg-cherry-500: #e5484d; --bg-cherry-600: #b83a3e; --bg-cherry-850: #481618;
+    --bg-cherry-900: #320f10; --bg-cherry-950: #1b0809;
+    --bg-forest-500: #25e192; --bg-forest-900: #072d1d;
+    --bg-amber-500: #ffcc56;
+
+    --text: var(--bg-vanilla-100);
+    --text-dim: var(--bg-vanilla-400);
+    --text-faint: var(--bg-slate-50);
+    --line: var(--bg-slate-200);
+
+    --font: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    --mono: "Geist Mono", "Space Mono", "Fira Code", ui-monospace, SFMono-Regular, Menlo, monospace;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg-ink-500); color: var(--text);
+    font-family: var(--font); font-size: 14px; line-height: 1.45;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  header {
+    display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 14px;
+    padding: 14px 20px; border-bottom: 1px solid var(--line); background: var(--bg-ink-400);
+  }
+  h1 { font-size: 15px; font-weight: 600; margin: 0; letter-spacing: -0.01em; }
+  .crumb { color: var(--text-faint); font-size: 12px; font-family: var(--mono); }
+
+  .stats { display: flex; flex-wrap: wrap; gap: 1px; background: var(--line); border-bottom: 1px solid var(--line); }
+  .stat { flex: 1 1 130px; background: var(--bg-ink-400); padding: 10px 20px; }
+  .stat dt { margin: 0; font-size: 11px; letter-spacing: 0.04em; text-transform: uppercase; color: var(--text-faint); }
+  .stat dd { margin: 2px 0 0; font-family: var(--mono); font-size: 17px; }
+
+  main { display: grid; grid-template-columns: 268px minmax(0, 1fr); gap: 1px; background: var(--line); min-height: calc(100vh - 118px); }
+  @media (max-width: 720px) { main { grid-template-columns: minmax(0, 1fr); } }
+
+  .rail, .canvas { background: var(--bg-ink-500); }
+  .rail { padding: 14px 0; }
+  .rail h2, .canvas h2 {
+    font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase;
+    color: var(--text-faint); margin: 0 0 10px; padding: 0 16px; font-weight: 600;
+  }
+
+  .verdict {
+    display: grid; grid-template-columns: 3px 1fr auto; align-items: center; gap: 10px;
+    width: 100%; text-align: left; padding: 9px 16px 9px 0; border: 0; border-radius: 0;
+    background: none; color: var(--text); font: inherit; cursor: pointer;
+  }
+  .verdict:hover { background: var(--bg-ink-300); }
+  .verdict[aria-pressed="true"] { background: var(--bg-ink-200); }
+  .verdict:focus-visible { outline: 2px solid var(--bg-robin-500); outline-offset: -2px; }
+  .verdict .bar { height: 26px; background: var(--bg-forest-500); border-radius: 0 2px 2px 0; }
+  .verdict.late .bar { background: var(--bg-cherry-500); }
+  .verdict .who { font-family: var(--mono); font-size: 13px; }
+  .verdict .what { display: block; font-size: 11px; color: var(--text-faint); }
+  .verdict .tag { font-size: 11px; font-family: var(--mono); color: var(--bg-forest-500); }
+  .verdict.late .tag { color: var(--bg-cherry-500); }
+
+  .canvas { padding: 16px 20px 28px; }
+  .lede { margin: 0 0 18px; max-width: 68ch; color: var(--text-dim); font-size: 13px; }
+  .lede b { color: var(--text); font-weight: 600; }
+
+  .chain { display: flex; flex-direction: column; gap: 0; max-width: 760px; }
+  .node {
+    border: 1px solid var(--line); border-left: 3px solid var(--bg-slate-100);
+    background: var(--bg-ink-400); border-radius: 3px; padding: 11px 14px;
+  }
+  .node.root { border-left-color: var(--bg-slate-50); }
+  /* The seed is the loudest thing on the page; the radius fades with distance
+     from it, so "the effect spreads" is legible without reading a word. */
+  .node.seed {
+    border-color: var(--bg-cherry-500); border-left-width: 5px;
+    border-left-color: var(--bg-cherry-500); background: var(--bg-cherry-900);
+    box-shadow: 0 0 0 1px var(--bg-cherry-900), 0 6px 22px -12px var(--bg-cherry-500);
+  }
+  .node.hit { border-left-color: var(--bg-cherry-600); background: var(--bg-cherry-950); }
+  .node.clear { opacity: 0.5; }
+
+  .node-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px; }
+  .node-name { font-family: var(--mono); font-size: 13px; }
+  .node-meta { margin-top: 5px; font-size: 12px; color: var(--text-dim); }
+  .node-meta .num { font-family: var(--mono); color: var(--text); }
+
+  .pill {
+    font-size: 10px; letter-spacing: 0.04em; text-transform: uppercase;
+    padding: 2px 7px; border-radius: 999px; border: 1px solid currentColor; font-weight: 600;
+  }
+  .pill.math { color: var(--bg-robin-500); }
+  .pill.reality { color: var(--bg-amber-500); }
+  .pill.correct { color: var(--bg-forest-500); }
+  .pill.incorrect { color: var(--bg-cherry-500); }
+  .pill.blast { color: var(--bg-cherry-500); border-style: dashed; }
+
+  .link-down { margin-left: 26px; padding: 5px 0 5px 16px; border-left: 1px solid var(--line); font-size: 11px; color: var(--text-faint); font-family: var(--mono); }
+  .link-down.hot { border-left: 1px solid var(--bg-cherry-600); color: var(--bg-cherry-500); }
+
+  .link-in {
+    display: flex; align-items: center; gap: 10px; margin: 0 0 0 26px; padding: 8px 0 8px 16px;
+    border-left: 1px dashed var(--bg-amber-500); font-size: 12px; color: var(--bg-amber-500);
+    font-family: var(--mono);
+  }
+
+  .totals { margin-top: 20px; padding-top: 14px; border-top: 1px solid var(--line); max-width: 760px; font-size: 13px; color: var(--text-dim); }
+  .totals .num { font-family: var(--mono); color: var(--text); }
+  footer { padding: 14px 20px 24px; color: var(--text-faint); font-size: 11px; border-top: 1px solid var(--line); }
+  footer code { font-family: var(--mono); color: var(--text-dim); }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Blast radius</h1>
+  <span class="crumb" id="crumb"></span>
+</header>
+
+<dl class="stats" id="stats"></dl>
+
+<main>
+  <nav class="rail" aria-label="Reality verdicts">
+    <h2>Reality verdicts</h2>
+    <div id="verdicts"></div>
+  </nav>
+  <section class="canvas">
+    <h2>Contaminated journey</h2>
+    <p class="lede" id="lede"></p>
+    <div class="chain" id="chain"></div>
+    <p class="totals" id="totals"></p>
+  </section>
+</main>
+
+<footer>
+  Rendered from spans this build already emits - captured by
+  <code>docs/visuals/capture_run.py</code> straight out of the OpenTelemetry SDK, no new
+  instrumentation. The edge each verdict follows is the conventions §6 span link
+  (<code>Role 1</code>), which crosses from <code>toy-world-outcomes</code> into the
+  <code>toy-world</code> journey trace.
+</footer>
+
+<script src="run-data.js"></script>
+<script>
+  const RUN = window.RUN;
+  const money = (n) => '$' + n.toFixed(6);
+  const byId = new Map(RUN.spans.map((s) => [s.spanId, s]));
+  const attr = (s, k) => s.attributes[k];
+
+  const isEval = (s) => s.name === 'gen_ai.evaluation.result';
+  const junctionNo = (s) => parseInt((s.name.match(/junction J(\d+)/) || [])[1], 10);
+
+  // A reality grade is the seed: it links back to the decision span it judges.
+  const verdicts = RUN.spans
+    .filter((s) => isEval(s) && attr(s, 'augmentloop.grade.source') === 'reality')
+    .map((s) => {
+      const target = byId.get(s.links[0].spanId);
+      const journey = RUN.spans.filter((x) => x.traceId === target.traceId);
+      return {
+        span: s,
+        onTime: attr(s, 'gen_ai.evaluation.score.value') === 1,
+        driver: (attr(s, 'gen_ai.evaluation.explanation').match(/^(\S+)/) || [])[1],
+        target,
+        root: journey.find((x) => x.parentSpanId === null),
+        junctions: journey.filter((x) => x.name.startsWith('junction')).sort((a, b) => junctionNo(a) - junctionNo(b)),
+      };
+    })
+    .sort((a, b) => a.driver.localeCompare(b.driver));
+
+  const evalUnder = (junction) =>
+    RUN.spans.find((s) => isEval(s) && s.parentSpanId === junction.spanId);
+
+  function render(v) {
+    // Walk forward: the judged junction and every junction after it in the same
+    // journey consumed the state that wrong turn produced.
+    const seedAt = v.junctions.findIndex((j) => j.spanId === v.target.spanId);
+    const hit = v.onTime ? -1 : seedAt;
+
+    document.getElementById('verdicts').querySelectorAll('button').forEach((b) =>
+      b.setAttribute('aria-pressed', String(b.dataset.id === v.span.spanId)));
+
+    const downstream = hit < 0 ? [] : v.junctions.slice(hit + 1);
+    const blastCost = hit < 0 ? 0 :
+      v.junctions.slice(hit).reduce((sum, j) => sum + (attr(evalUnder(j), 'augmentloop.cost.usd') || 0), 0);
+
+    document.getElementById('lede').innerHTML = v.onTime
+      ? `Reality confirmed <b>${v.driver}</b> arrived on time. The verdict still span-links back to the
+         decision it judges, but nothing downstream is contaminated - this is what a clean radius looks like.`
+      : `Reality proved <b>${v.driver}</b> arrived late. The verdict links back to
+         <b>${v.target.name}</b>; every decision after it in the journey was made in the world that wrong
+         turn produced, so <b>${downstream.length} downstream decision${downstream.length === 1 ? '' : 's'}</b>
+         ${downstream.length === 1 ? 'is' : 'are'} inside the radius.`;
+
+    const chain = [];
+    chain.push(`<div class="node root"><div class="node-head"><span class="node-name">${v.root.name}</span>
+      <span class="pill">trace ${v.root.traceId.slice(0, 8)}</span></div>
+      <div class="node-meta">service <span class="num">${v.root.service}</span></div></div>`);
+
+    v.junctions.forEach((j, i) => {
+      const e = evalUnder(j);
+      const ok = attr(e, 'gen_ai.evaluation.score.value') === 1;
+      const state = hit < 0 ? 'clear' : i === hit ? 'seed' : i > hit ? 'hit' : 'clear';
+      chain.push(`<div class="link-down ${i > hit && hit >= 0 ? 'hot' : ''}">${i > hit && hit >= 0 ? 'downstream of the wrong turn' : 'journey continues'}</div>`);
+      if (i === hit) {
+        chain.push(`<div class="link-in">span link &larr; ${v.span.service} &middot; ${attr(v.span, 'gen_ai.evaluation.name')}
+          &middot; trace ${v.span.traceId.slice(0, 8)}</div>`);
+      }
+      // Intensity decays with distance from the seed: hop 1 is the hottest.
+      const fade = state === 'hit' ? ` style="background: rgba(229, 72, 77, ${(0.16 / (i - hit)).toFixed(3)})"` : '';
+      chain.push(`<div class="node ${state}"${fade}>
+        <div class="node-head">
+          <span class="node-name">${j.name}</span>
+          <span class="pill math">${attr(e, 'augmentloop.grade.source')}</span>
+          <span class="pill ${ok ? 'correct' : 'incorrect'}">${attr(e, 'gen_ai.evaluation.score.label')}</span>
+          ${state === 'seed' ? '<span class="pill blast">blast origin</span>' : ''}
+          ${state === 'hit' ? '<span class="pill blast">in radius</span>' : ''}
+        </div>
+        <div class="node-meta">${attr(e, 'gen_ai.evaluation.explanation')}
+          &middot; <span class="num">${attr(e, 'gen_ai.request.model')}</span>
+          &middot; <span class="num">${money(attr(e, 'augmentloop.cost.usd'))}</span></div>
+      </div>`);
+    });
+    document.getElementById('chain').innerHTML = chain.join('');
+
+    document.getElementById('totals').innerHTML = hit < 0
+      ? `Radius: <span class="num">0</span> decisions. Cost inside the radius:
+         <span class="num">$0.000000</span>.`
+      : `Radius: <span class="num">${v.junctions.length - hit}</span> of
+         <span class="num">${v.junctions.length}</span> decisions in this journey, from
+         <span class="num">${v.target.name}</span> onward. Spend inside the radius:
+         <span class="num">${money(blastCost)}</span> - money paid for decisions taken after the
+         one reality disproved.`;
+  }
+
+  function boot() {
+    const s = RUN.summary;
+    document.getElementById('crumb').textContent =
+      `${RUN.recording} - captured ${RUN.capturedAt} - ${RUN.spans.length} spans`;
+
+    document.getElementById('stats').innerHTML = [
+      ['Decisions', s.decisions],
+      ['Correct', `${s.correct}/${s.decisions}`],
+      ['Reality verdicts', s.outcomes],
+      ['Cost per correct', money(s.costPerCorrectUsd)],
+    ].map(([k, val]) => `<div class="stat"><dt>${k}</dt><dd>${val}</dd></div>`).join('');
+
+    document.getElementById('verdicts').innerHTML = verdicts.map((v) => `
+      <button class="verdict ${v.onTime ? '' : 'late'}" data-id="${v.span.spanId}" aria-pressed="false">
+        <span class="bar"></span>
+        <span><span class="who">${v.driver}</span>
+          <span class="what">${v.target.name}</span></span>
+        <span class="tag">${v.onTime ? 'on time' : 'late'}</span>
+      </button>`).join('');
+
+    document.getElementById('verdicts').addEventListener('click', (ev) => {
+      const btn = ev.target.closest('button');
+      if (btn) render(verdicts.find((v) => v.span.spanId === btn.dataset.id));
+    });
+
+    // Open on the first failure: the radius is the point, an empty one is the footnote.
+    render(verdicts.find((v) => !v.onTime) || verdicts[0]);
+  }
+
+  boot();
+</script>
+</body>
+</html>
