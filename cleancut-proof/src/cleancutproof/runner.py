@@ -30,10 +30,14 @@ from .checkers import filler_checker, lexical_fillers, quote_checker
 
 TRACER_NAME = "cleancutproof"
 
+# Current roster, grounded against OpenRouter's public /models API in #9 and
+# matched to toyworld.live.DEFAULT_ROSTER: cheap tier, premium tier, and a
+# cross-provider cheap contrast. The pre-#24 slugs (claude-3.5-haiku,
+# claude-sonnet-4, gemini-2.0-flash) are retired/delisted and 404 on a live run.
 ROSTER = (
-    "anthropic/claude-3.5-haiku",
-    "anthropic/claude-sonnet-4",
-    "google/gemini-2.0-flash",
+    "anthropic/claude-haiku-4.5",
+    "anthropic/claude-sonnet-4.6",
+    "google/gemini-2.5-flash-lite",
 )
 
 FILLER_PROMPT = (

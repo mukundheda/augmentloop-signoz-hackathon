@@ -66,11 +66,12 @@ def _fake_caller(answers_by_model):
 
 
 ANSWERS = {
-    # model: (filler answer, quote answer, input_tokens)
-    "anthropic/claude-3.5-haiku": ("um uh uh um hmm", VERBATIM_QUOTE, 500),
-    "anthropic/claude-sonnet-4": ("um uh uh um hmm", VERBATIM_QUOTE, 500),
-    # Flash misses a filler and paraphrases the quote - 0/2.
-    "google/gemini-2.0-flash": (
+    # model: (filler answer, quote answer, input_tokens). Keyed by the live
+    # roster slugs (runner.ROSTER); each must exist in gradebook.pricing.PRICES.
+    "anthropic/claude-haiku-4.5": ("um uh uh um hmm", VERBATIM_QUOTE, 500),
+    "anthropic/claude-sonnet-4.6": ("um uh uh um hmm", VERBATIM_QUOTE, 500),
+    # Flash Lite misses a filler and paraphrases the quote - 0/2.
+    "google/gemini-2.5-flash-lite": (
         "um uh hmm",
         "Consistency is better than intensity.",
         500,
@@ -104,10 +105,10 @@ def test_detections_graded_across_the_roster(proof, sample_transcript):
             "quote_extraction",
         }
 
-    flash = summary.by_model["google/gemini-2.0-flash"]
+    flash = summary.by_model["google/gemini-2.5-flash-lite"]
     assert flash["decisions"] == 2 and flash["correct"] == 0
     # Cheaper model, wrong answers: cost-per-correct exposes it, raw cost hides it.
-    assert flash["cost_usd"] < summary.by_model["anthropic/claude-sonnet-4"]["cost_usd"]
+    assert flash["cost_usd"] < summary.by_model["anthropic/claude-sonnet-4.6"]["cost_usd"]
 
 
 def test_response_ids_stay_non_identifying(proof, sample_transcript):
@@ -166,4 +167,4 @@ def test_clip_outcomes_reality_graded_with_span_links(
 def test_budget_cap_fails_loud_before_spending():
     caller = openrouter_caller("fake-key", budget_usd=0.0)
     with pytest.raises(BudgetExceededError):
-        caller("anthropic/claude-3.5-haiku", "hi")  # no network call happens
+        caller("anthropic/claude-haiku-4.5", "hi")  # no network call happens
