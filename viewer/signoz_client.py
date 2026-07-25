@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 import json
+import re
 from typing import Any, Mapping, Protocol, Sequence
 from urllib import request as urllib_request
 
@@ -34,6 +35,8 @@ LOG_FIELDS = [
     "service.name",
     "augmentloop.failure.class",
 ]
+
+_TRACE_ID = re.compile(r"^[0-9a-f]{32}$")
 
 
 class SigNozResponseError(RuntimeError):
@@ -188,5 +191,12 @@ class SigNozClient:
 
 
 def _trace_id_filter(trace_ids: Sequence[str]) -> str:
+    if not trace_ids or any(
+        not isinstance(trace_id, str) or _TRACE_ID.fullmatch(trace_id) is None
+        for trace_id in trace_ids
+    ):
+        raise ValueError(
+            "trace_ids must be a non-empty sequence of canonical 32-hex trace IDs"
+        )
     values = ",".join(f"'{trace_id}'" for trace_id in trace_ids)
     return f"trace_id IN ({values})"

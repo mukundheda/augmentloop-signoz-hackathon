@@ -100,6 +100,26 @@ class SigNozClientTests(unittest.TestCase):
             ],
         )
 
+    def test_trace_query_rejects_quoted_operator_injection(self) -> None:
+        """An injected quote/operator must not broaden a trace raw-read query."""
+        transport = RecordingTransport({"data": {"result": []}})
+        client = SigNozClient("http://localhost:8080", "secret", transport)
+
+        with self.assertRaises(ValueError):
+            client.query_trace_spans(["a" * 32 + "' OR 1 = 1"], 1000, 2000)
+
+        self.assertEqual(transport.requests, [])
+
+    def test_log_query_rejects_empty_trace_ids(self) -> None:
+        """An empty list must not construct an unconstrained log query."""
+        transport = RecordingTransport({"data": {"result": []}})
+        client = SigNozClient("http://localhost:8080", "secret", transport)
+
+        with self.assertRaises(ValueError):
+            client.query_logs([], 1000, 2000)
+
+        self.assertEqual(transport.requests, [])
+
     def test_normalize_raw_rows_accepts_documented_response_variants(self) -> None:
         """Moving raw result rows between supported envelopes must keep working."""
         row = {"trace_id": "a" * 32}
