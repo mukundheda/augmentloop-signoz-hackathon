@@ -155,7 +155,7 @@
     </span>
   </div>
 
-  <div class="track" id="track" aria-hidden="true"></div>
+  <div class="track" id="track"></div>
 
   <p class="param" id="param"></p>
   <p class="note" id="floor-note"></p>
@@ -207,9 +207,12 @@
     if (unparsable) problems.push(unparsable + ' decision(s) whose gen_ai.response.id does not parse to an epoch - the timeline has no honest x-axis without it');
     const uniqueIds = new Set(mathGrades.map(rid));
     if (uniqueIds.size !== mathGrades.length) problems.push('duplicate gen_ai.response.id among decisions - the correlation key is broken');
+    // One verdict, one decision: the count of confirmed decisions must equal
+    // the count of reality verdicts. Fails on a duplicated verdict (two spans
+    // sharing one id) or an unmatched one - unlike a confirmed + unconfirmed
+    // partition over the same array, which is a tautology and can never fire.
     const confirmed = mathGrades.filter((d) => confirmedIds.has(rid(d))).length;
-    const unconfirmed = mathGrades.filter((d) => !confirmedIds.has(rid(d))).length;
-    if (confirmed + unconfirmed !== mathGrades.length) problems.push('confirmed (' + confirmed + ') + unconfirmed (' + unconfirmed + ') does not equal the decision count (' + mathGrades.length + ')');
+    if (confirmed !== realityGrades.length) problems.push('confirmed decisions (' + confirmed + ') do not equal reality verdicts (' + realityGrades.length + ') - a verdict is duplicated or matches no decision');
     const orphans = realityGrades.filter((r) => !uniqueIds.has(rid(r))).length;
     if (orphans) problems.push(orphans + ' reality verdict(s) match no decision by gen_ai.response.id');
     return problems;
@@ -281,13 +284,20 @@
   function laneCaption(type) {
     const of = decisions.filter((d) => d.type === type);
     const conf = of.filter((d) => d.confirmed).length;
+    const ages = of.filter((d) => !d.confirmed).map((d) => W - d.off).sort((a, b) => a - b);
+    const ageTail = ages.length
+      ? 'oldest ' + ages[ages.length - 1] + 's, median ' + median(ages) + 's unconfirmed at run end'
+      : '';
     let extra;
     if (conf === of.length) {
       extra = 'the only type the world grades: <code>journey_on_time</code> is a real signal';
+    } else if (conf === 0) {
+      // The structural claim is earned only by a type reality never grades at all.
+      extra = 'structural, not slow: no outcome signal exists for this type - ' + ageTail;
     } else {
-      const ages = of.filter((d) => !d.confirmed).map((d) => W - d.off).sort((a, b) => a - b);
-      extra = 'structural, not slow: no outcome signal exists for this type - oldest '
-        + ages[ages.length - 1] + 's, median ' + median(ages) + 's unconfirmed at run end';
+      const missing = of.length - conf;
+      extra = 'the world grades this type; ' + missing + ' verdict' + (missing === 1 ? '' : 's')
+        + ' had not landed by run end - ' + ageTail;
     }
     return `<span class="type">${type}</span><span>${conf} of ${of.length} confirmed &middot; ${money(sumCost(of))} &middot; ${extra}</span>`;
   }
@@ -295,7 +305,7 @@
   function renderTrack() {
     const track = document.getElementById('track');
     const grid = [];
-    for (let s = 60; s < W; s += 60) grid.push('<div class="grid" style="left:' + (100 * s / W) + '%"></div>');
+    for (let s = 60; s < W; s += 60) grid.push('<div class="grid" aria-hidden="true" style="left:' + (100 * s / W) + '%"></div>');
     const lanes = TYPES.map((type) => {
       const marks = decisions.map((d, i) => d.type !== type ? '' :
         `<div class="mark ${d.confirmed ? 'confirmed' : ''}" data-i="${i}"
@@ -304,15 +314,17 @@
              : 'never confirmed; ' + (W - d.off) + 's old at run end'}"
            style="left:${(100 * d.off / W)}%"></div>`).join('');
       const unconfirmable = decisions.filter((d) => d.type === type).every((d) => !d.confirmed);
+      // The lane captions stay in the accessibility tree; only the 180 marks
+      // and the decorative chrome are hidden from it.
       return `<div class="lane-head">${laneCaption(type)}</div>
-        <div class="lane ${unconfirmable ? 'unconfirmable' : ''}">${marks}</div>`;
+        <div class="lane ${unconfirmable ? 'unconfirmable' : ''}" aria-hidden="true">${marks}</div>`;
     }).join('');
     const axisTicks = [0, 120, 240, 360].filter((s) => s < W - 30)
       .map((s) => `<span class="${s === 0 ? 'first' : ''}" style="left:${100 * s / W}%">${s ? s + 's' : '0s'}</span>`)
       .join('') + `<span class="last" style="left:100%">${W}s</span>`;
     track.innerHTML = grid.join('') + lanes
-      + `<div class="axis">${axisTicks}</div>`
-      + '<div class="playhead" id="playhead"></div>';
+      + `<div class="axis" aria-hidden="true">${axisTicks}</div>`
+      + '<div class="playhead" id="playhead" aria-hidden="true"></div>';
   }
 
   function renderNotes() {
