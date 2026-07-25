@@ -23,12 +23,19 @@ the model-run trace that made it.
 
 **60 reality verdicts, all 60 judging a `route_choice` decision, all 60
 agreeing with that decision's math grade.** That is the whole population
-recorded in this run, not a sample chosen to look good. Each verdict arrives
-6.0-15.0ms after the decision's math grade, in a different trace and a
-different service, and is still attributable to it by the span link alone.
-Pick any of the 60 verdicts in the rail to see both ends of its hop: the
-decision's model, cost, math grade and explanation, and the verdict's own
-explanation.
+recorded in this run, not a sample chosen to look good. Each verdict lives in
+a different trace and a different service, and is still attributable to it by
+the span link alone. Pick any of the 60 verdicts in the rail to see both ends
+of its hop: the decision's model, cost, math grade and explanation, and the
+verdict's own explanation.
+
+This replay emits every reality verdict in a second pass, after all decision
+spans have already closed (`toy-world/src/toyworld/replay.py`), so the two
+spans' timestamps a few milliseconds apart are interpreter and exporter
+overhead between two sequential loops in one process - not modeled travel
+time. A real verdict would take the time the journey actually took. The page
+does not show a delay figure, so a reader cannot mistake replay overhead for
+system latency.
 
 The span link is the point. It is the piece of architecture that makes a late,
 cross-service, cross-trace verdict attributable to the decision that earned

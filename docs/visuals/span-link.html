@@ -74,6 +74,7 @@
   .verdict .who { font-family: var(--mono); font-size: 13px; }
   .verdict .what { display: block; font-size: 11px; color: var(--text-faint); }
   .verdict .tag { font-size: 11px; font-family: var(--mono); color: var(--bg-forest-500); }
+  .verdict .tag.incorrect { color: var(--bg-cherry-500); }
 
   .canvas { padding: 16px 20px 28px; }
   .lede { margin: 0 0 18px; max-width: 72ch; color: var(--text-dim); font-size: 13px; }
@@ -164,8 +165,7 @@
       const id = (decision.name.match(/route_choice-(\S+)/) || [])[1] || decision.name;
       const model = attr(mathEval, 'gen_ai.request.model');
       const agree = attr(s, 'gen_ai.evaluation.score.label') === attr(mathEval, 'gen_ai.evaluation.score.label');
-      const delayMs = (s.startUnixNano - mathEval.startUnixNano) / 1e6;
-      return { verdict: s, decision, mathEval, id, model, agree, delayMs };
+      return { verdict: s, decision, mathEval, id, model, agree };
     })
     .sort((a, b) => a.id.localeCompare(b.id, undefined, { numeric: true }) || a.model.localeCompare(b.model));
 
@@ -187,7 +187,7 @@
           &middot; service <span class="num">${v.decision.service}</span></div>
       </div>
       <div class="link-in">span link &rarr; ${v.verdict.service} &middot; ${attr(v.verdict, 'gen_ai.evaluation.name')}
-        &middot; trace ${short(v.verdict.traceId)} &middot; +${v.delayMs.toFixed(1)}ms later</div>
+        &middot; trace ${short(v.verdict.traceId)}</div>
       <div class="node verdict-node">
         <div class="node-head">
           <span class="node-name">${attr(v.verdict, 'gen_ai.evaluation.name')}</span>
@@ -201,10 +201,11 @@
       </div>`;
 
     document.getElementById('totals').innerHTML =
-      `This verdict arrived <span class="num">${v.delayMs.toFixed(1)}ms</span> after the decision's math
-       grade, in a different trace (<span class="num">${short(v.verdict.traceId)}</span> vs
+      `This verdict lives in a different trace (<span class="num">${short(v.verdict.traceId)}</span> vs
        <span class="num">${short(v.decision.traceId)}</span>) and a different service - and is still
-       attributable to it by the span link alone.`;
+       attributable to it by the span link alone. (This replay emits every reality verdict in a second
+       pass, after all decision spans have already closed - the recorded order does not model real
+       travel time, and this page does not claim it does.)`;
   }
 
   function boot() {
@@ -214,13 +215,11 @@
 
     const agreeCount = verdicts.filter((v) => v.agree).length;
     const judgedTypes = new Set(verdicts.map((v) => attr(v.mathEval, 'augmentloop.decision.type')));
-    const delays = verdicts.map((v) => v.delayMs);
 
     document.getElementById('stats').innerHTML = [
       ['Reality verdicts', verdicts.length],
       ['Agree with math grade', `${agreeCount}/${verdicts.length}`],
       ['Decision type judged', judgedTypes.size === 1 ? [...judgedTypes][0] : `${judgedTypes.size} types`],
-      ['Verdict arrives', `${Math.min(...delays).toFixed(1)}-${Math.max(...delays).toFixed(1)}ms later`],
     ].map(([k, val]) => `<div class="stat"><dt>${k}</dt><dd>${val}</dd></div>`).join('');
 
     document.getElementById('lede').innerHTML = agreeCount === verdicts.length
@@ -240,7 +239,7 @@
         <span class="bar"></span>
         <span><span class="who">${v.id}</span>
           <span class="what">${v.model}</span></span>
-        <span class="tag">${attr(v.verdict, 'gen_ai.evaluation.score.label')}</span>
+        <span class="tag ${attr(v.verdict, 'gen_ai.evaluation.score.value') === 1 ? '' : 'incorrect'}">${attr(v.verdict, 'gen_ai.evaluation.score.label')}</span>
       </button>`).join('');
 
     document.getElementById('verdicts').addEventListener('click', (ev) => {
