@@ -31,14 +31,17 @@ class OpenRouterClient:
         base_url: str = "https://openrouter.ai/api/v1",
         max_output_tokens: int = 64,
     ):
-        from openai import OpenAI  # lazy: only needed for a real live run
-
+        # Key check BEFORE the SDK import: a missing key must fail loud naming
+        # the env var even on an install without the `[live]` extra, otherwise
+        # a ModuleNotFoundError shadows the real mistake.
         key = api_key or os.environ.get("OPENROUTER_API_KEY")
         if not key:
             raise RuntimeError(
                 "OPENROUTER_API_KEY is not set; live mode needs an OpenRouter key "
                 "(replay mode needs no key - use `python -m toyworld`)."
             )
+        from openai import OpenAI  # lazy: only needed for a real live run
+
         self._client = OpenAI(api_key=key, base_url=base_url)
         self._max_output_tokens = max_output_tokens
 
