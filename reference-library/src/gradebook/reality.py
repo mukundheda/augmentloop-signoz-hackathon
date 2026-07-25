@@ -41,7 +41,8 @@ class RefStore(Protocol):
     """Where pending `DecisionRef`s live between decision time and outcome time.
 
     The default is an in-memory dict (same process). For the webhook/cron hop,
-    supply a store backed by Redis/DB that serializes each ref via `ref_to_ids`.
+    supply a store backed by Redis/DB that serializes each ref via `ref_to_ids`,
+    which emits JSON-safe hex ids for the reason given in that function.
     """
 
     def put(self, key: Any, ref: DecisionRef) -> None: ...
@@ -66,22 +67,40 @@ def ref_to_ids(ref: DecisionRef) -> dict[str, Any]:
 
     For persisting a pending decision across a process boundary (store the dict,
     rebuild with `ref_from_ids` when the outcome signal arrives elsewhere).
+
+    The ids are emitted as **hex strings**, which is OpenTelemetry's own wire
+    format (`032x` for the 128-bit trace id, `016x` for the 64-bit span id), and
+    not as raw ints. The store this is written to is usually Redis or a database,
+    so the value goes through JSON, and `JSON.parse` holds integers exactly only
+    up to 2**53 - 1. A 128-bit trace id serialized as an int comes back out of a
+    JavaScript consumer as a *different* trace id, silently, and the reality
+    grade's span link then points at a trace that does not exist. That failure is
+    invisible from Python, whose ints are arbitrary precision.
     """
     ctx = ref.span_context
     return {
-        "trace_id": ctx.trace_id,
-        "span_id": ctx.span_id,
+        "trace_id": format(ctx.trace_id, "032x"),
+        "span_id": format(ctx.span_id, "016x"),
         "response_id": ref.response_id,
     }
 
 
 def ref_from_ids(ids: dict[str, Any]) -> DecisionRef:
-    """Inverse of `ref_to_ids`."""
+    """Inverse of `ref_to_ids`.
+
+    Accepts the hex strings `ref_to_ids` writes, and still accepts raw ints so a
+    store already holding the previous format keeps working.
+    """
     return DecisionRef.from_ids(
-        trace_id=ids["trace_id"],
-        span_id=ids["span_id"],
+        trace_id=_as_id(ids["trace_id"]),
+        span_id=_as_id(ids["span_id"]),
         response_id=ids["response_id"],
     )
+
+
+def _as_id(value: Any) -> int:
+    """Read a trace/span id written as hex (current) or as a raw int (legacy)."""
+    return value if isinstance(value, int) else int(value, 16)
 
 
 class RealitySignal:
