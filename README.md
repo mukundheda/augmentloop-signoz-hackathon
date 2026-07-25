@@ -12,11 +12,13 @@
 
 | Grade source | Where the verdict comes from | Counts in the headline number? |
 | --- | --- | --- |
-| `math` | a checker computes the provably-correct answer | **yes** |
-| `reality` | the real world proved it, usually later | **yes** |
+| `math` | a checker computes the provably-correct answer | **yes**, this is the headline |
+| `reality` | the real world proved it, usually later | **provable, but adjacent**: its own panels, never summed into the headline |
 | `ai_judge` | another model scored it - an opinion | **no**, labeled secondary view only |
 
 Every evaluation event carries `augmentloop.grade.source`, so that filter lives in the query rather than in this paragraph ([ADR 0001](docs/adr/0001-machine-checked-grades-only-in-the-headline-metric.md)).
+
+Reality sits beside the headline rather than inside it for a structural reason, not a preference. A `route_choice` decision is graded twice, once by the checker and once later by the outcome, and the metrics deliberately carry no per-decision id because that would be unbounded cardinality. So nothing downstream can dedupe the pair, and summing both sources counts those decisions twice: it gives $0.002133 against the $0.002973 we publish, on a denominator of 177 that is 127 math-correct plus 50 reality-correct. That is the same double count behind a flattering figure this project already retracted once. Reality is not the lesser source, it is the only one that can overturn a checker and it does so 15 times in this run, which is exactly why it gets its own panels instead of being averaged into a total it would distort.
 
 ## How it fits together
 
