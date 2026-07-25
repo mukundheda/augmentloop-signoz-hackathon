@@ -110,9 +110,9 @@ recording contains no `ai_judge` grades by design.
 Two one-time setup steps, then two API calls:
 
 1. **Notification channel** - the committed alert rules route to a channel
-   named `blog-demo-email`, and SigNoz rejects a rule whose channel does not
+   named `gradebook-alerts`, and SigNoz rejects a rule whose channel does not
    exist (and rejects rules with no channel at all). Create it: Settings ->
-   Notification Channels -> New channel -> name `blog-demo-email`, type
+   Notification Channels -> New channel -> name `gradebook-alerts`, type
    Webhook, any URL (e.g. `http://localhost:9/noop`) -> Save.
 2. **API key** - Settings -> **Service Accounts** (this is the "API Keys"
    screen; newer SigNoz renamed it) -> New Service Account -> open it and
@@ -137,7 +137,7 @@ The same key and header also drive the MCP server at
 | Symptom | Cause | Fix |
 | --- | --- | --- |
 | Replay prints `Transient error ... connection aborted` then `Failed to export` | OTLP not ready: admin account not created yet, or created moments ago | Do step 3, wait for the readiness probe, re-run the replay |
-| Alert import fails `channels ... do not exist: [blog-demo-email]` | Fresh stack has no notification channels | Step 6.1 |
+| Alert import fails `channels ... do not exist: [gradebook-alerts]` | Fresh stack has no notification channels | Step 6.1 |
 | API calls return `403 forbidden` despite a valid key | Service account has no role | Assign `signoz-editor` in step 6.2 |
 | `casting.yaml.lock` shows as modified in git after casting | `foundryctl` regenerates the lock; formatting differs across versions | Expected; do not commit unless you changed `casting.yaml` |
 | Dashboard panels empty | Time range does not cover the replay batch | Set the dashboard range to include when step 4 ran |
