@@ -20,6 +20,7 @@ the cap is checked *before* each call, so a run aborts rather than overspends.
 
 from __future__ import annotations
 
+import json
 import os
 from typing import Optional
 
@@ -55,12 +56,48 @@ def _provider_for(model: str) -> tuple[str, str, str]:
     )
 
 
+# A capture run is hundreds of sequential calls against providers that rate
+# limit independently. Without this, one transient 429 raises out of the call
+# and discards every decision already paid for in that batch - the exact
+# failure that cost the team a 420-call run, and cost this capture a full
+# batch of Gemini results. Mirrors toyworld.openrouter._create_with_retry:
+# only transient classes are retried (rate limits, provider-side 5xx). A bad
+# key, a dead model slug or a malformed request fails immediately and loudly,
+# because retrying those just burns the clock on a mistake that will not fix
+# itself.
+_RETRY_DELAYS_S: tuple[float, ...] = (2.0, 5.0, 12.0)
+
+
+def _post_with_retry(req, timeout: int):  # type: ignore[no-untyped-def]
+    """POST with backoff on 429 and 5xx; raise immediately on 4xx."""
+    import time
+    import urllib.error
+    import urllib.request
+
+    last: Exception | None = None
+    for attempt in range(len(_RETRY_DELAYS_S) + 1):
+        try:
+            with urllib.request.urlopen(req, timeout=timeout) as resp:
+                return json.load(resp)
+        except urllib.error.HTTPError as exc:
+            # 429 = rate limit, 5xx = provider side. Anything else is ours.
+            if exc.code != 429 and exc.code < 500:
+                raise
+            last = exc
+        except TimeoutError as exc:
+            last = exc
+        if attempt < len(_RETRY_DELAYS_S):
+            time.sleep(_RETRY_DELAYS_S[attempt])
+    assert last is not None
+    raise last
+
+
 def direct_caller(*, budget_usd: float = 0.50, timeout: int = 120) -> ModelCaller:
     """A `ModelCaller` that reaches OpenAI and Gemini directly.
 
-    Drop-in replacement for `openrouter_caller`; same budget semantics.
+    Drop-in replacement for `openrouter_caller`; same budget semantics, plus
+    transient-error retry so one 429 cannot discard a whole batch.
     """
-    import json
     import urllib.request
 
     spent = {"usd": 0.0}
@@ -87,8 +124,7 @@ def direct_caller(*, budget_usd: float = 0.50, timeout: int = 120) -> ModelCalle
                 "Content-Type": "application/json",
             },
         )
-        with urllib.request.urlopen(req, timeout=timeout) as resp:
-            payload = json.load(resp)
+        payload = _post_with_retry(req, timeout)
 
         usage = payload.get("usage") or {}
         reply = ModelReply(
