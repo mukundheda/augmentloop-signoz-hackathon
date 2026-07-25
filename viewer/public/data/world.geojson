@@ -1,0 +1,278 @@
+{
+  "type": "FeatureCollection",
+  "metadata": {
+    "corridor": "Shivajinagar\u2013Deccan\u2013Swargate",
+    "note": "Geography is visual context; travel times are toy-world values."
+  },
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          73.8493,
+          18.5308
+        ]
+      },
+      "properties": {
+        "kind": "start",
+        "label": "Shivajinagar \u00b7 START"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            73.8493,
+            18.5308
+          ],
+          [
+            73.84405000000001,
+            18.523312
+          ],
+          [
+            73.842,
+            18.5164
+          ]
+        ]
+      },
+      "properties": {
+        "kind": "simulation-route",
+        "junction": "J1",
+        "route": "A",
+        "travel_time_min": 7.0,
+        "is_fastest": true,
+        "stage_index": 0
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            73.8493,
+            18.5308
+          ],
+          [
+            73.84725,
+            18.523888000000003
+          ],
+          [
+            73.842,
+            18.5164
+          ]
+        ]
+      },
+      "properties": {
+        "kind": "simulation-route",
+        "junction": "J1",
+        "route": "B",
+        "travel_time_min": 9.0,
+        "is_fastest": false,
+        "stage_index": 0
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          73.8493,
+          18.5308
+        ]
+      },
+      "properties": {
+        "kind": "junction",
+        "label": "J1",
+        "stage_index": 0
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            73.842,
+            18.5164
+          ],
+          [
+            73.8445,
+            18.508524
+          ],
+          [
+            73.8534,
+            18.5018
+          ]
+        ]
+      },
+      "properties": {
+        "kind": "simulation-route",
+        "junction": "J2",
+        "route": "C",
+        "travel_time_min": 5.0,
+        "is_fastest": false,
+        "stage_index": 1
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            73.842,
+            18.5164
+          ],
+          [
+            73.8477,
+            18.5091
+          ],
+          [
+            73.8534,
+            18.5018
+          ]
+        ]
+      },
+      "properties": {
+        "kind": "simulation-route",
+        "junction": "J2",
+        "route": "D",
+        "travel_time_min": 4.0,
+        "is_fastest": true,
+        "stage_index": 1
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            73.842,
+            18.5164
+          ],
+          [
+            73.85090000000001,
+            18.509676
+          ],
+          [
+            73.8534,
+            18.5018
+          ]
+        ]
+      },
+      "properties": {
+        "kind": "simulation-route",
+        "junction": "J2",
+        "route": "E",
+        "travel_time_min": 8.0,
+        "is_fastest": false,
+        "stage_index": 1
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          73.842,
+          18.5164
+        ]
+      },
+      "properties": {
+        "kind": "junction",
+        "label": "J2",
+        "stage_index": 1
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            73.8534,
+            18.5018
+          ],
+          [
+            73.85345000000001,
+            18.493712
+          ],
+          [
+            73.8567,
+            18.4862
+          ]
+        ]
+      },
+      "properties": {
+        "kind": "simulation-route",
+        "junction": "J3",
+        "route": "F",
+        "travel_time_min": 6.0,
+        "is_fastest": true,
+        "stage_index": 2
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            73.8534,
+            18.5018
+          ],
+          [
+            73.85665,
+            18.494288
+          ],
+          [
+            73.8567,
+            18.4862
+          ]
+        ]
+      },
+      "properties": {
+        "kind": "simulation-route",
+        "junction": "J3",
+        "route": "G",
+        "travel_time_min": 6.5,
+        "is_fastest": false,
+        "stage_index": 2
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          73.8534,
+          18.5018
+        ]
+      },
+      "properties": {
+        "kind": "junction",
+        "label": "J3",
+        "stage_index": 2
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          73.8567,
+          18.4862
+        ]
+      },
+      "properties": {
+        "kind": "finish",
+        "label": "Swargate \u00b7 FINISH"
+      }
+    }
+  ]
+}

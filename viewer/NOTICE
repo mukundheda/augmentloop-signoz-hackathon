@@ -1,0 +1,12 @@
+Gradebook Pune Race View
+Copyright 2026 AugmentLoop contributors
+
+This viewer is visually inspired by GoogleCloudPlatform/race-condition:
+https://github.com/GoogleCloudPlatform/race-condition
+
+No source files from race-condition are copied into this implementation.
+
+Map context is derived from OpenStreetMap geography.
+© OpenStreetMap contributors
+https://www.openstreetmap.org/copyright
+
