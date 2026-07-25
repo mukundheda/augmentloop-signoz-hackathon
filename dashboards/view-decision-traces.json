@@ -1,0 +1,44 @@
+{
+  "name": "Judge Run: Decision Traces and Their Late Grades",
+  "category": "judge-run",
+  "sourcePage": "traces",
+  "tags": [
+    "judge-run",
+    "traces",
+    "span-links"
+  ],
+  "compositeQuery": {
+    "queryType": "builder",
+    "panelType": "list",
+    "queries": [
+      {
+        "type": "builder_query",
+        "spec": {
+          "name": "A",
+          "signal": "traces",
+          "stepInterval": 60,
+          "aggregations": [
+            {
+              "expression": "count()"
+            }
+          ],
+          "filter": {
+            "expression": "service.name IN ('toy-world', 'toy-world-outcomes')"
+          },
+          "groupBy": [],
+          "order": [
+            {
+              "key": {
+                "name": "timestamp"
+              },
+              "direction": "desc"
+            }
+          ],
+          "limit": 100,
+          "legend": "decision spans"
+        }
+      }
+    ]
+  },
+  "extraData": "{\"description\":\"The traces half of the judge run, saved so it does not have to be retyped. Both services are in scope on purpose. toy-world carries one trace per model, with one span per query stamped with augmentloop.decision.type and augmentloop.decision.difficulty. toy-world-outcomes carries the deferred reality grades, which arrive later, on their own traces, and span-link back to the route_choice decisions they judge rather than nesting under them. That is the shape worth opening a span to see: pick any toy-world-outcomes span and follow its link back to a decision that was recorded earlier and separately. It is also why the SigNoz service map cannot draw this relationship, since the dependency graph reads in-trace parent and child spans and never cross-trace links (docs/conventions.md section 10.1). Empty list means the same three causes as the metrics view: the replay has not run, the time range does not cover it, or OTLP was not up when it ran.\"}"
+}

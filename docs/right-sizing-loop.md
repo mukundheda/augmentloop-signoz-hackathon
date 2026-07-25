@@ -1,4 +1,4 @@
-# The right-sizing loop (ticket #10)
+# The right-sizing loop
 
 The hero action of this build: **an agent reads what each model costs per correct
 decision, proposes moving a decision type to a cheaper model, a human approves,

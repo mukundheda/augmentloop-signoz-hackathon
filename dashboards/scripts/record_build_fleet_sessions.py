@@ -33,8 +33,8 @@ anywhere in their labels (verified against the live schema: `attrs`,
 `claude_code.token.usage` in `signoz_metrics.time_series_v4` - exhaustively
 listed, no such key). Claude Code telemetry is per-account, not per-project:
 a day's `claude_code.cost.usage` sum for Mukund's account blends every
-project he worked on that day (this hackathon plus PinkTree, Anterric, and
-everything else), with no way to separate them from the metric alone.
+project he worked on that day (this hackathon plus other unrelated work),
+with no way to separate them from the metric alone.
 Attributing a historical PR's cost from wall-clock windows around its commits
 was tried and rejected: this repo's PRs are frequently on stacked branches
 worked concurrently (see PR #21's body: "Stacked on `6-toy-world`"), so
