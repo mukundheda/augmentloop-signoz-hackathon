@@ -56,6 +56,27 @@ and they pack down to a hairline as the count grows. Verified by cloning the
 strip to 176 glyphs in the browser - hue stays legible and the red baseline
 still reads at a glance.
 
+## Regret ledger
+
+An options-book framing: a decision that has been math-graded but has no
+real-world verdict yet is an open position carrying unrealized risk. When
+reality arrives it closes that position green or red.
+
+![Regret ledger, rendered from the committed replay recording on 2026-07-25: 12 positions, 8 open and 4 closed (2 green, 2 red), with the closed book expanded to show driver-1's junction J3 decision, whose math grade of incorrect was overturned by a reality grade of correct](regret-ledger.png)
+
+**12 positions, 8 open, 4 closed - 2 green, 2 red.** $0.002501 sits in open
+positions, unrealized. The closed book is where the interesting row lives:
+`replay-d1-J3` closed **correct** against its own math grade of **incorrect**
+- the checker flagged the route as the slower one, and by the run's own
+numbers it was, but the driver still arrived on time. A position can close
+against its own math grade. That gap is the reason a reality grade exists at
+all, rather than trusting the checker alone.
+
+This is a 12-decision replay, not a claim about a larger book. Eight open
+positions out of twelve is most of the book - that is the honest state of a
+young run, not a gap in the recorder. Click any position for its full detail,
+including the reality verdict's explanation where one has arrived.
+
 ## Regenerating
 
 ```bash
@@ -63,6 +84,7 @@ pip install -e reference-library -e toy-world
 python docs/visuals/capture_run.py     # rewrites run-data.js from a fresh run
 ```
 
-Then open `docs/visuals/blast-radius.html` or `docs/visuals/genome-strip.html`.
-Both read the same `run-data.js`. The replay is deterministic, so the numbers do
-not move between runs; only the trace and span ids do.
+Then open `docs/visuals/blast-radius.html`, `docs/visuals/genome-strip.html`, or
+`docs/visuals/regret-ledger.html`. All three read the same `run-data.js`. The
+replay is deterministic, so the numbers do not move between runs; only the
+trace and span ids do.

@@ -1,0 +1,303 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:,">
+<title>Regret ledger - Gradebook</title>
+<style>
+  /* SigNoz Periscope tokens, verified against @signozhq/design-tokens/dist/style.css.
+     Copied verbatim from docs/visuals/genome-strip.html - do not invent values. */
+  :root {
+    --bg-ink-500: #0b0c0e;  --bg-ink-400: #121317;  --bg-ink-300: #16181d;
+    --bg-ink-200: #23262e;
+    --bg-slate-400: #1d212d; --bg-slate-200: #2c3140; --bg-slate-100: #3c4152;
+    --bg-slate-50: #62687c;
+    --bg-vanilla-100: #fff;  --bg-vanilla-400: #c0c1c3;
+    --bg-robin-500: #4e74f8; --bg-robin-300: #95acfb;
+    --bg-cherry-500: #e5484d; --bg-cherry-900: #320f10;
+    --bg-forest-500: #25e192;
+    --bg-amber-500: #ffcc56; --bg-amber-300: #ffe19a;
+    --bg-sienna-500: #ad7f58;
+
+    --text: var(--bg-vanilla-100);
+    --text-dim: var(--bg-vanilla-400);
+    --text-faint: var(--bg-slate-50);
+    --line: var(--bg-slate-200);
+
+    --font: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    --mono: "Geist Mono", "Space Mono", "Fira Code", ui-monospace, SFMono-Regular, Menlo, monospace;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg-ink-500); color: var(--text);
+    font-family: var(--font); font-size: 14px; line-height: 1.45;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  header {
+    display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 14px;
+    padding: 14px 20px; border-bottom: 1px solid var(--line); background: var(--bg-ink-400);
+  }
+  h1 { font-size: 15px; font-weight: 600; margin: 0; letter-spacing: -0.01em; }
+  .crumb { color: var(--text-faint); font-size: 12px; font-family: var(--mono); }
+
+  .stats { display: flex; flex-wrap: wrap; gap: 1px; background: var(--line); border-bottom: 1px solid var(--line); }
+  .stat { flex: 1 1 140px; background: var(--bg-ink-400); padding: 10px 20px; }
+  .stat dt { margin: 0; font-size: 11px; letter-spacing: 0.04em; text-transform: uppercase; color: var(--text-faint); }
+  .stat dd { margin: 2px 0 0; font-family: var(--mono); font-size: 17px; }
+  .stat.open dd { color: var(--bg-vanilla-400); }
+  .stat.green dd { color: var(--bg-forest-500); }
+  .stat.red dd { color: var(--bg-cherry-500); }
+
+  .wrap { padding: 18px 20px 30px; }
+  h2 {
+    font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase;
+    color: var(--text-faint); margin: 0 0 10px; font-weight: 600;
+  }
+  .section-note { margin: -4px 0 10px; font-size: 12px; color: var(--text-faint); max-width: 68ch; }
+
+  .book { border: 1px solid var(--line); border-radius: 3px; overflow: hidden; background: var(--line); display: flex; flex-direction: column; gap: 1px; }
+  .book-head {
+    display: none; padding: 8px 14px; background: var(--bg-ink-300); font-size: 10px;
+    letter-spacing: 0.05em; text-transform: uppercase; color: var(--text-faint);
+  }
+  @media (min-width: 760px) { .book-head { display: flex; gap: 14px; } }
+
+  .pos {
+    display: flex; flex-wrap: wrap; align-items: center; gap: 5px 14px; width: 100%;
+    text-align: left; border: 0; border-left: 3px solid var(--bg-slate-100);
+    background: var(--bg-ink-400); color: var(--text); font: inherit; cursor: pointer;
+    padding: 10px 14px 10px 11px;
+  }
+  .pos:hover { background: var(--bg-ink-300); }
+  .pos[aria-pressed="true"] { background: var(--bg-ink-200); }
+  .pos:focus-visible { outline: 2px solid var(--bg-robin-500); outline-offset: -2px; }
+  .pos.closed-green { border-left-color: var(--bg-forest-500); }
+  .pos.closed-red { border-left-color: var(--bg-cherry-500); }
+
+  .f-state { flex: 0 0 108px; }
+  .f-id { flex: 1 1 240px; min-width: 0; }
+  .f-id .name { font-family: var(--mono); font-size: 13px; }
+  .f-id .sub { display: block; font-size: 11px; color: var(--text-faint); font-family: var(--mono); }
+  .f-model { flex: 0 0 190px; font-family: var(--mono); font-size: 12px; color: var(--text-dim); }
+  .f-grade { flex: 0 0 100px; }
+  .f-cost { flex: 0 0 90px; font-family: var(--mono); text-align: right; }
+
+  .pill {
+    display: inline-block; font-size: 10px; letter-spacing: 0.04em; text-transform: uppercase;
+    padding: 2px 7px; border-radius: 999px; border: 1px solid currentColor; font-weight: 600;
+  }
+  .pill.state-open { color: var(--text-faint); }
+  .pill.state-green { color: var(--bg-forest-500); }
+  .pill.state-red { color: var(--bg-cherry-500); }
+  .pill.correct { color: var(--bg-forest-500); }
+  .pill.incorrect { color: var(--bg-cherry-500); }
+  .pill.overturned { color: var(--bg-amber-500); border-style: dashed; }
+  .chip {
+    display: inline-block; font-family: var(--mono); font-size: 11px;
+    padding: 2px 7px; border-radius: 999px; border: 1px solid var(--line); color: var(--text-dim);
+  }
+
+  .detail {
+    margin-top: 16px; border: 1px solid var(--line); border-left: 3px solid var(--bg-slate-100);
+    border-radius: 3px; background: var(--bg-ink-400); padding: 12px 14px; min-height: 90px;
+  }
+  .detail.closed-green { border-left-color: var(--bg-forest-500); }
+  .detail.closed-red { border-left-color: var(--bg-cherry-500); }
+  .detail .head { display: flex; flex-wrap: wrap; gap: 8px; align-items: baseline; }
+  .detail .name { font-family: var(--mono); font-size: 13px; }
+  .detail .body { margin-top: 6px; font-size: 12px; color: var(--text-dim); }
+  .detail .body + .body { margin-top: 4px; }
+  .detail .num { font-family: var(--mono); color: var(--text); }
+  .detail .flip {
+    margin-top: 8px; padding: 8px 10px; border: 1px dashed var(--bg-amber-500); border-radius: 3px;
+    font-size: 12px; color: var(--bg-amber-300);
+  }
+
+  .note { margin-top: 20px; max-width: 76ch; font-size: 13px; color: var(--text-dim); }
+  .note b { color: var(--text); font-weight: 600; }
+  footer { padding: 14px 20px 24px; color: var(--text-faint); font-size: 11px; border-top: 1px solid var(--line); }
+  footer code { font-family: var(--mono); color: var(--text-dim); }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Regret ledger</h1>
+  <span class="crumb" id="crumb"></span>
+</header>
+
+<dl class="stats" id="stats"></dl>
+
+<div class="wrap">
+  <h2>Open positions - math-graded, no reality verdict yet</h2>
+  <p class="section-note">Unrealized risk. The checker has an opinion; the world has not weighed in.</p>
+  <div class="book" id="book-open"></div>
+
+  <h2 style="margin-top: 24px;">Closed positions - reality has ruled</h2>
+  <p class="section-note">Settled green or red by a verdict from <code>toy-world-outcomes</code>, matched on <code>gen_ai.response.id</code>.</p>
+  <div class="book" id="book-closed"></div>
+
+  <div class="detail" id="detail"></div>
+  <p class="note" id="note"></p>
+</div>
+
+<footer>
+  Rendered from spans this build already emits - captured by
+  <code>docs/visuals/capture_run.py</code> straight out of the OpenTelemetry SDK, no new
+  instrumentation. A position is a <code>gen_ai.evaluation.result</code> span with
+  <code>augmentloop.grade.source = math</code>; it closes when a
+  <code>toy-world-outcomes</code> span with <code>augmentloop.grade.source = reality</code>
+  shares its <code>gen_ai.response.id</code>.
+</footer>
+
+<script src="run-data.js"></script>
+<script>
+  const RUN = window.RUN;
+  const money = (n) => '$' + n.toFixed(6);
+  const attr = (s, k) => s.attributes[k];
+  const byId = new Map(RUN.spans.map((s) => [s.spanId, s]));
+  const isEval = (s) => s.name === 'gen_ai.evaluation.result';
+
+  const mathGrades = RUN.spans.filter((s) => isEval(s) && attr(s, 'augmentloop.grade.source') === 'math');
+  const realityGrades = RUN.spans.filter((s) => isEval(s) && attr(s, 'augmentloop.grade.source') === 'reality');
+  const realityByRespId = new Map(realityGrades.map((r) => [attr(r, 'gen_ai.response.id'), r]));
+
+  // Match on gen_ai.response.id - the conventions doc's correlation key for
+  // exactly this, and one lookup instead of walking the span link to the
+  // junction and back down to its math grade.
+  const positions = mathGrades.map((m, i) => {
+    const rid = attr(m, 'gen_ai.response.id');
+    const verdict = realityByRespId.get(rid) || null;
+    const junction = byId.get(m.parentSpanId);
+    const cost = attr(m, 'augmentloop.cost.usd') || 0;
+    const mathOk = attr(m, 'gen_ai.evaluation.score.value') === 1;
+    let state = 'open';
+    if (verdict) {
+      const realityOk = attr(verdict, 'gen_ai.evaluation.score.value') === 1;
+      state = realityOk ? 'closed-green' : 'closed-red';
+    }
+    return {
+      i, span: m, verdict, junction, rid, cost, mathOk,
+      overturned: verdict ? mathOk !== (attr(verdict, 'gen_ai.evaluation.score.value') === 1) : false,
+      state,
+    };
+  });
+
+  const open = positions.filter((p) => p.state === 'open');
+  const closed = positions.filter((p) => p.state !== 'open');
+  const closedGreen = closed.filter((p) => p.state === 'closed-green');
+  const closedRed = closed.filter((p) => p.state === 'closed-red');
+  const sumCost = (arr) => arr.reduce((n, p) => n + p.cost, 0);
+
+  function renderStats() {
+    const rows = [
+      ['Positions', positions.length, ''],
+      ['Open', open.length, 'open'],
+      ['Closed green', closedGreen.length, 'green'],
+      ['Closed red', closedRed.length, 'red'],
+      ['Cost in open', money(sumCost(open)), 'open'],
+      ['Cost in closed green', money(sumCost(closedGreen)), 'green'],
+      ['Cost in closed red', money(sumCost(closedRed)), 'red'],
+    ];
+    document.getElementById('stats').innerHTML = rows.map(([k, val, cls]) =>
+      `<div class="stat ${cls}"><dt>${k}</dt><dd>${val}</dd></div>`).join('');
+  }
+
+  function pillFor(p) {
+    if (p.state === 'open') return '<span class="pill state-open">open</span>';
+    if (p.state === 'closed-green') return '<span class="pill state-green">closed &middot; correct</span>';
+    return '<span class="pill state-red">closed &middot; incorrect</span>';
+  }
+
+  function rowHtml(p) {
+    const jname = p.junction ? p.junction.name : 'unknown junction';
+    return `<button class="pos ${p.state}" data-i="${p.i}" aria-pressed="false"
+        aria-label="${attr(p.span, 'gen_ai.evaluation.name')}, ${jname}, ${p.state.replace('-', ' ')}, math grade ${p.mathOk ? 'correct' : 'incorrect'}, ${money(p.cost)}${p.overturned ? ', reality overturned the math grade' : ''}">
+      <span class="f-state">${pillFor(p)}${p.overturned ? '<br><span class="pill overturned" style="margin-top:3px">overturned</span>' : ''}</span>
+      <span class="f-id">
+        <span class="name">${attr(p.span, 'gen_ai.evaluation.name')} &middot; ${jname}</span>
+        <span class="sub">${p.rid}</span>
+      </span>
+      <span class="f-model">${attr(p.span, 'gen_ai.request.model') || ''}</span>
+      <span class="f-grade"><span class="pill ${p.mathOk ? 'correct' : 'incorrect'}">math ${p.mathOk ? 'correct' : 'incorrect'}</span></span>
+      <span class="f-cost">${money(p.cost)}</span>
+    </button>`;
+  }
+
+  function renderBooks() {
+    const head = `<div class="book-head">
+        <span class="f-state">State</span><span class="f-id">Position</span>
+        <span class="f-model">Model</span><span class="f-grade">Math grade</span><span class="f-cost">Cost</span>
+      </div>`;
+    document.getElementById('book-open').innerHTML = head + open.map(rowHtml).join('');
+    document.getElementById('book-closed').innerHTML = head + closed.map(rowHtml).join('');
+  }
+
+  function renderDetail(p) {
+    document.querySelectorAll('.pos').forEach((b) =>
+      b.setAttribute('aria-pressed', String(Number(b.dataset.i) === p.i)));
+    const d = document.getElementById('detail');
+    d.className = 'detail ' + p.state;
+    const jname = p.junction ? p.junction.name : 'unknown junction';
+    let body;
+    if (p.state === 'open') {
+      body = `<div class="body">No reality verdict has arrived for this position. Its math grade is
+        <b>${p.mathOk ? 'correct' : 'incorrect'}</b>, but that is a checker's opinion about what should
+        have happened, not a report of what did. <span class="num">${money(p.cost)}</span> stays counted as
+        unrealized until <code>toy-world-outcomes</code> closes it.</div>`;
+    } else {
+      const realityOk = attr(p.verdict, 'gen_ai.evaluation.score.value') === 1;
+      body = `
+        <div class="body">${attr(p.verdict, 'gen_ai.evaluation.explanation')}</div>
+        <div class="body">math grade <span class="pill ${p.mathOk ? 'correct' : 'incorrect'}">${p.mathOk ? 'correct' : 'incorrect'}</span>
+          &rarr; reality grade <span class="pill ${realityOk ? 'correct' : 'incorrect'}">${realityOk ? 'correct' : 'incorrect'}</span>
+          &middot; cost <span class="num">${money(p.cost)}</span>
+          &middot; verdict service <span class="num">${p.verdict.service}</span></div>`;
+      if (p.overturned) {
+        body += `<div class="flip">Reality overturned the math grade. The checker flagged this route as
+          slower and it was: the run's own numbers say so. But the driver still arrived on time, so the
+          position closes <b>correct</b> against a math grade of <b>incorrect</b>. A position can close
+          against its own math grade - that gap is the reason a reality grade exists at all, rather than
+          trusting the checker alone.</div>`;
+      }
+    }
+    d.innerHTML = `
+      <div class="head">
+        <span class="name">${attr(p.span, 'gen_ai.evaluation.name')} &middot; ${jname}</span>
+        <span class="chip">${p.rid}</span>
+        ${pillFor(p)}
+      </div>
+      ${body}`;
+  }
+
+  function renderNote() {
+    document.getElementById('note').innerHTML =
+      `<b>${positions.length}</b> decisions have been math-graded in this run. <b>${closed.length}</b> have
+       a reality verdict; <b>${open.length}</b> do not. This is a 12-decision replay, not a claim about a
+       larger book - the open count is most of it, which is the honest state of a young run, not a gap in
+       the recorder.`;
+  }
+
+  function boot() {
+    document.getElementById('crumb').textContent =
+      `${RUN.recording} - captured ${RUN.capturedAt} - ${positions.length} positions, ${closed.length} closed`;
+    renderStats();
+    renderBooks();
+    renderNote();
+    document.querySelectorAll('.book').forEach((el) =>
+      el.addEventListener('click', (ev) => {
+        const b = ev.target.closest('button.pos');
+        if (b) renderDetail(positions[Number(b.dataset.i)]);
+      }));
+    // Open on the one position that closed against its own math grade - the
+    // plan calls it the most interesting row in the run, so it is the default.
+    renderDetail(positions.find((p) => p.overturned) || positions[0]);
+  }
+
+  boot();
+</script>
+</body>
+</html>
