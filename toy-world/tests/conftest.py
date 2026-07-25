@@ -1,13 +1,21 @@
 """Test seam, mirroring reference-library/tests: assert on emitted telemetry.
 
 Two independent provider+exporter pairs so tests can tell the decision spans
-(`toy-world`) apart from the late reality grades (`toy-world-outcomes`),
-exactly as `python -m toyworld` wires them.
+(`toy-world`, `world` fixture) apart from the late reality grades
+(`toy-world-outcomes`, `outcomes` fixture), exactly as `python -m toyworld`
+wires them (ticket #33: the `outcomes` service carries route_choice's deferred
+`journey.on_time` grade; `live.py`'s decision spans always go through `world`).
 """
 
+import logging
 from pathlib import Path
 
 import pytest
+from opentelemetry.sdk._logs import LoggerProvider, LoggingHandler
+from opentelemetry.sdk._logs.export import (
+    InMemoryLogRecordExporter,
+    SimpleLogRecordProcessor,
+)
 from opentelemetry.sdk.metrics import MeterProvider
 from opentelemetry.sdk.metrics.export import InMemoryMetricReader
 from opentelemetry.sdk.trace import TracerProvider
@@ -15,6 +23,8 @@ from opentelemetry.sdk.trace.export import SimpleSpanProcessor
 from opentelemetry.sdk.trace.export.in_memory_span_exporter import (
     InMemorySpanExporter,
 )
+
+from gradebook.logs import LOGGER_NAME
 
 RECORDING = Path(__file__).resolve().parents[1] / "recordings" / "replay-v1.jsonl"
 
@@ -86,3 +96,25 @@ def outcomes_metrics():
 @pytest.fixture
 def recording_path() -> Path:
     return RECORDING
+
+
+@pytest.fixture
+def gradebook_log_bridge():
+    """Capture gradebook's failure logs, as `python -m toyworld` routes them.
+
+    Mirrors reference-library/tests: the SDK LoggingHandler on the "gradebook"
+    logger against an in-memory exporter, so a budget-guard trip (conventions
+    §13) can be asserted on as an emitted log record with the model-run span's
+    trace/span id stamped automatically. Yields the exporter.
+    """
+    exporter = InMemoryLogRecordExporter()
+    provider = LoggerProvider()
+    provider.add_log_record_processor(SimpleLogRecordProcessor(exporter))
+    handler = LoggingHandler(level=logging.INFO, logger_provider=provider)
+    logger = logging.getLogger(LOGGER_NAME)
+    logger.addHandler(handler)
+    try:
+        yield exporter
+    finally:
+        logger.removeHandler(handler)
+        provider.shutdown()

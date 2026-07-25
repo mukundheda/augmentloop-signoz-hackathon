@@ -280,6 +280,56 @@ comparison logic. Each returns a `CheckResult(passed, reason)`:
 **Deliberately not here: a weighted overall score.** Collapsing several metrics
 into one blended number is precisely what ADR 0001 exists to refuse.
 
+---
+
+## 13. Failure logs - the three genuine failure classes (ticket C6, #51)
+
+Sections 1-12 govern the *happy path*: every graded decision is one standard
+`gen_ai.evaluation.result` event (§2) plus the two aggregate metrics (§10). This
+section adds the other signal a judging surface expects - **logs** - for the
+three ways a decision can fail to be graded honestly. It deliberately does **not**
+emit a log per decision: a log line that just repeats a decision's span
+attributes is padding, and a judge reads it as one. We log *failures only*.
+
+### 13.1 The three failure classes
+
+| Failure class (`augmentloop.failure.class`) | Severity | Emitted where | Extra attributes |
+|---|---|---|---|
+| `budget_guard_tripped` | WARN | a live run stops before it can overspend | `augmentloop.budget.usd`, `augmentloop.spend.usd`, `gen_ai.request.model`, `augmentloop.decision.type` |
+| `unknown_model_pricing_miss` | ERROR | a model has no row in the pricing table (§3.2) - typically a stale roster/routing slug | `gen_ai.request.model` |
+| `missing_response_id` | ERROR | a deferred grade is captured with no `gen_ai.response.id` (§6) | *(none - the failure is the absence)* |
+
+These are the three that already exist in the code, not hypotheticals: the
+budget guard (`toyworld.live`), the pricing table's `UnknownModelError`
+(`gradebook.pricing`, hit twice in real runs via retired model slugs), and
+`capture_decision`'s `MissingResponseIdError` (`gradebook.recorder`). The two
+library failures still **fail loud** exactly as before - the log is emitted
+first, then the exception propagates. The log records the event; it does not
+swallow the error.
+
+### 13.2 How the trace/span link happens (no processor needed)
+
+Each log is emitted **while the decision's span is current** (for the budget
+guard, the model-run span). It is a plain `logging` call on the `gradebook`
+logger; the application attaches the OpenTelemetry SDK `LoggingHandler` to that
+logger at its composition root (`python -m toyworld`), and the handler stamps the
+active span's `trace_id` and `span_id` onto the log automatically. No
+trace-parser processor, no manual id copying. The payoff is the one a judge can
+see: **click a failure log in SigNoz, land on the exact decision (or model-run)
+span that produced it.** The handler also attaches `code.*` source-location
+attributes for free.
+
+The `gradebook` logger carries a `NullHandler` by default (library best
+practice), so importing the library never spills these logs to stderr; they go
+nowhere until an application wires up the OTLP bridge.
+
+### 13.3 Downstream
+
+`augmentloop.failure.class` is a stable, low-cardinality discriminator so a
+log-based alert (ticket C7, #52 - "budget guard tripped N times in five
+minutes") and any log dashboard can group and count by failure class without
+parsing message text.
+
 ## Cross-references
 
 - ADR [0001](adr/0001-machine-checked-grades-only-in-the-headline-metric.md) - machine-checked grades only in the headline metric.
