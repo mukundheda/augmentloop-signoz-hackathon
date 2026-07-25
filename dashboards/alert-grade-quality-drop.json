@@ -91,7 +91,7 @@
           "matchType": "in_total",
           "op": "below",
           "channels": [
-            "blog-demo-email"
+            "gradebook-alerts"
           ]
         }
       ]

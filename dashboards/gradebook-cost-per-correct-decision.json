@@ -60,7 +60,7 @@
       "contextLinks": {
         "linksData": null
       },
-      "description": "Headline metric (ADR 0001): sum(augmentloop.cost.usd) / count(decisions) where gen_ai.evaluation.score.label='correct' AND augmentloop.grade.source in (math, reality). AI-judge grades are never mixed into this number.",
+      "description": "Headline metric (ADR 0001): (sum(augmentloop.cost.usd) / count(decisions)) * 1000, scaled to legible units, where gen_ai.evaluation.score.label='correct' AND augmentloop.grade.source in (math, reality). AI-judge grades are never mixed into this number. KNOWN OPEN ISSUE (2026-07-24/25): a decision that is math-incorrect but later reality-correct (deferred outcome check) adds to B's correct count without a matching cost in A, since cost only attaches to the math event - denominator can overcount relative to numerator. Not yet resolved; owner Anish/#7.",
       "id": "panel-1-headline-cost-per-correct",
       "legendPosition": "bottom",
       "nullZeroValues": "zero",
@@ -129,8 +129,8 @@
           "queryFormulas": [
             {
               "disabled": false,
-              "expression": "A/B",
-              "legend": "Cost per Correct Decision",
+              "expression": "(A/B)*1000",
+              "legend": "Cost per 1,000 Correct Decisions",
               "queryName": "F1"
             }
           ]
@@ -169,7 +169,7 @@
       "softMax": 0,
       "softMin": 0,
       "timePreferance": "GLOBAL_TIME",
-      "title": "Cost per Correct Decision",
+      "title": "Cost per 1,000 Correct Decisions",
       "yAxisUnit": "none"
     },
     {
