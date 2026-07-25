@@ -57,6 +57,38 @@ ref = capture_decision(response_id="resp_123")
 record_reality_grade(ref, name="clip.kept", correct=True)
 ```
 
+## A reality grade needs no checker (ticket #43)
+
+The common criticism of a portable grading layer is that it "standardizes the
+shape of a verdict it cannot itself produce" - the graders are the hard,
+domain-specific 80%. That is true for **math** grades. It is false for
+**reality** grades: the app already emits the verdict (kept vs discarded,
+thumbs-down, a process exit code), so there is nothing to compare and **no
+checker to write**. `RealitySignal` wraps that existing signal.
+
+Here is the entire diff to add reality grading to an existing command runner
+(`examples/reality_from_exit_code.py`) - the OS exit code is the signal, and it
+is under ten lines with no checker function anywhere:
+
+```diff
++from gradebook import RealitySignal
++signal = RealitySignal("command.succeeded", decision_type="shell_command")
+
++@signal.on_outcome
+ def run_command(step_id, command):
+     return subprocess.run(command, shell=True).returncode == 0   # existing
+
+ # at decision time, under the model-call span:
++signal.observe(step_id, response_id=step_id)
+ run_command(step_id, command)                                    # existing call
+```
+
+`run_command` is unchanged; its own success boolean becomes the grade. The
+signal fires, `record_reality_grade` span-links the grade back to the decision
+and stamps `grade.source = reality`. For the webhook/cron hop where the outcome
+lands in another process, swap the in-memory ref store for one that persists
+`ref_to_ids(...)` and rebuilds with `ref_from_ids(...)` - still no checker.
+
 ## Usage
 
 ```python
