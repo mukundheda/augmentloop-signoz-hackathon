@@ -9,6 +9,7 @@ this library applies; the emitted telemetry - not this API - is the contract.
 """
 
 from .grading import Grade, GradeSource
+from .reality import RealitySignal, ref_from_ids, ref_to_ids
 from .recorder import (
     DecisionRef,
     capture_decision,
@@ -23,4 +24,8 @@ __all__ = [
     "DecisionRef",
     "Grade",
     "GradeSource",
+    # Reality grades from an existing app signal, no checker (ticket #43)
+    "RealitySignal",
+    "ref_to_ids",
+    "ref_from_ids",
 ]
