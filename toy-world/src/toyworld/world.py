@@ -1,78 +1,552 @@
-"""The toy world: a tiny road network where the truth is computable.
+"""The toy world (ticket #33): a 20-junction weighted graph where every
+answer is computable, feeding three decision types of genuinely different
+difficulty.
 
-Three junctions; at each junction a driver picks one of the offered routes,
-each with a known travel time. Because the engine knows every travel time, the
-provably-fastest choice at each junction is just `min` - which is exactly what
-makes every driver decision math-gradeable (spec user story 15).
+One decision type cannot demonstrate the product's central claim - route each
+decision type to the cheapest model that is still good enough at it - because
+there is nothing to compare. This module gives the toy world a real graph (20
+junctions, weighted directed edges) and three decision types built on top of
+the SAME graph and the SAME shortest-path routine, so every answer key is
+computed, never hand-authored (spec ticket #33):
+
+Every prompt hands the model the same thing: the serialized road network
+(`MAP_TEXT`) and a question. No prompt does any of the question's arithmetic
+in advance. What separates the three types is purely how much reasoning is
+left to do over that shared map:
+
+- **eta_estimate** (hard): no candidate routes are offered at all - search
+  the graph for the fastest route from start to destination and estimate its
+  total travel time. A shortest-path search the model has to run itself.
+  Graded within `ETA_TOLERANCE_FRACTION` of the true shortest-path time - a
+  numeric tolerance, not an exact match.
+- **route_choice** (medium): two candidate routes between a start and
+  destination junction, several hops apart, are named but NOT timed; add up
+  each one's edges from the map and say which is faster. Both candidates are
+  real paths through the graph (the true shortest path, and the best
+  alternative that diverges from its first hop).
+- **next_hop** (easy): at one junction, choose the single cheapest outgoing
+  edge - one row of the map, one comparison. A one-step decision, the same
+  shape the toy world had before this ticket, now one of three.
+
+The parenthetical tiers above describe the TYPE. The per-decision `difficulty`
+attribute is separate and is computed from the starting junction's branching
+factor (`difficulty_tier`), so correct-rate can be broken down either way.
+
+Difficulty is tagged per decision from the branching factor of its starting
+junction (`difficulty_tier`) - more outgoing edges to compare is a harder
+decision - and emitted as an attribute so correct-rate can be broken down by
+difficulty, independent of decision type.
+
+route_choice, being the one decision type that represents an actual
+point-to-point journey, also carries a DEFERRED "reality" grade
+(docs/conventions.md section 6, span-link Role 1, mandatory): after the
+decision is made, `journey_on_time` checks whether the journey the model's
+chosen route produces actually arrives close enough to on time. `recorder.py`
+computes this at record time and `replay.py` emits it later, span-linked back
+to the original decision, through the separate `toy-world-outcomes` service -
+same mechanism the pre-#33 toy world used, carried over rather than dropped.
 """
 
 from __future__ import annotations
 
+import heapq
+import re
 from dataclasses import dataclass
+from typing import Any, Callable, Mapping, Optional
+
+# The numeric tolerance for eta_estimate grading (acceptance criterion:
+# "the numeric tolerance stated in code and docs" - also documented in
+# toy-world/README.md). A model's minute estimate is graded correct when it
+# falls within this fraction of the true shortest-path time.
+ETA_TOLERANCE_FRACTION = 0.15
+
+# The numeric tolerance for a route_choice decision's DEFERRED reality grade
+# (docs/conventions.md section 6, span-link Role 1; restored by the #33
+# review - see `journey_on_time` below). Deliberately a *separate* constant
+# from ETA_TOLERANCE_FRACTION: it grades a different question (did the
+# journey the model's chosen route produced actually arrive close enough to
+# on time?), not the exact-match `checker` a route_choice decision is
+# math-graded against, so a wrong-but-only-slightly-slower choice can still
+# arrive "on time" in reality - the whole point of carrying a second,
+# independently-sourced signal rather than mirroring the math grade.
+REALITY_TOLERANCE_FRACTION = 0.20
+
+# The three decision types this world runs, named rather than inlined so the
+# routing table (routing.py) and the emitted `augmentloop.decision.type`
+# attribute can never drift apart - the same discipline live.py's old
+# DECISION_TYPE constant existed for, extended to three types.
+DECISION_TYPE_ROUTE_CHOICE = "route_choice"
+DECISION_TYPE_ETA_ESTIMATE = "eta_estimate"
+DECISION_TYPE_NEXT_HOP = "next_hop"
+DECISION_TYPES: tuple[str, ...] = (
+    DECISION_TYPE_ROUTE_CHOICE,
+    DECISION_TYPE_ETA_ESTIMATE,
+    DECISION_TYPE_NEXT_HOP,
+)
+
+DIFFICULTY_EASY = "easy"
+DIFFICULTY_MEDIUM = "medium"
+DIFFICULTY_HARD = "hard"
 
 
 @dataclass(frozen=True)
-class JunctionDecision:
-    """One driver's route choice at one junction, as replayed or recorded."""
+class Edge:
+    """One directed, weighted road out of a junction."""
 
-    driver: str
-    junction: str
-    options: dict[str, float]  # route name -> travel time (minutes)
-    chosen: str
-    model: str
-    input_tokens: int
-    output_tokens: int
-    response_id: str
-
-    @property
-    def true_fastest(self) -> str:
-        """The provably-correct answer: the route with the lowest travel time.
-
-        Ties break deterministically by route name so replay grading is stable.
-        """
-        return min(sorted(self.options), key=self.options.__getitem__)
+    to: str
+    minutes: float
 
 
 @dataclass(frozen=True)
-class Junction:
-    """One junction's fixed layout: the routes on offer and their travel times.
-
-    This is the world *before* any driver chooses - the shared truth both modes
-    read. Replay records a `chosen` on top of it; live mode asks a real model to
-    choose. Either way the provably-correct answer is `true_fastest`.
-    """
+class JunctionNode:
+    """One junction's fixed layout: its outgoing edges and their travel times."""
 
     name: str
-    options: dict[str, float]  # route name -> travel time (minutes)
+    edges: tuple[Edge, ...]
 
     @property
-    def true_fastest(self) -> str:
-        """The provably-correct answer; ties break by route name for stability."""
-        return min(sorted(self.options), key=self.options.__getitem__)
+    def branching_factor(self) -> int:
+        """How many routes are on offer here - the input to difficulty tiering."""
+        return len(self.edges)
+
+    @property
+    def cheapest_edge(self) -> Edge:
+        """The provably-correct `next_hop` answer: the lowest-weight edge.
+
+        Ties break by destination name for stability (mirrors the old
+        `Junction.true_fastest` tie-break).
+        """
+        return min(self.edges, key=lambda e: (e.minutes, e.to))
 
 
-# The canonical world layout, shared by replay and live so both describe the
-# SAME junctions. These match the committed recording (recordings/replay-v1.jsonl)
-# so a live run and a replay are comparable at each junction.
-WORLD: tuple[Junction, ...] = (
-    Junction("J1", {"A": 7.0, "B": 9.0}),
-    Junction("J2", {"C": 5.0, "D": 4.0, "E": 8.0}),
-    Junction("J3", {"F": 6.0, "G": 6.5}),
+def difficulty_tier(branching_factor: int) -> str:
+    """Map a branching factor to a difficulty tier (spec ticket #33).
+
+    More outgoing edges to compare is a harder decision: 2 -> easy, 3 ->
+    medium, 4+ -> hard. A pure function of the graph's own shape - nothing
+    hand-tuned per decision.
+    """
+    if branching_factor <= 2:
+        return DIFFICULTY_EASY
+    if branching_factor == 3:
+        return DIFFICULTY_MEDIUM
+    return DIFFICULTY_HARD
+
+
+# The canonical 20-junction graph (spec ticket #33: "twenty junctions with
+# weighted edges, so the correct answer is a shortest-path computation rather
+# than a lookup"). Five layers of four junctions (J1-J4 .. J17-J20) flowing
+# forward, plus lateral edges among the last layer so every one of the 20
+# junctions has at least two outgoing edges (every junction can host a
+# next_hop decision). Branching factors (2/3/4) are spread across every layer
+# so all three difficulty tiers exist throughout the graph, not stacked at one
+# end. Edge weights are minutes; every junction's own edges have distinct
+# weights so `cheapest_edge` never needs a real tie-break.
+GRAPH: dict[str, JunctionNode] = {
+    node.name: node
+    for node in (
+        JunctionNode("J1", (Edge("J5", 4.0), Edge("J6", 6.0))),
+        JunctionNode("J2", (Edge("J5", 5.0), Edge("J6", 3.0), Edge("J7", 7.0))),
+        JunctionNode(
+            "J3",
+            (Edge("J6", 4.5), Edge("J7", 5.5), Edge("J8", 6.5), Edge("J5", 8.0)),
+        ),
+        JunctionNode("J4", (Edge("J7", 3.5), Edge("J8", 4.5))),
+        JunctionNode("J5", (Edge("J9", 3.0), Edge("J10", 5.0))),
+        JunctionNode("J6", (Edge("J9", 4.0), Edge("J10", 2.5), Edge("J11", 6.0))),
+        JunctionNode(
+            "J7",
+            (Edge("J10", 3.5), Edge("J11", 4.5), Edge("J12", 5.5), Edge("J9", 7.5)),
+        ),
+        JunctionNode("J8", (Edge("J11", 3.0), Edge("J12", 4.0))),
+        JunctionNode("J9", (Edge("J13", 4.0), Edge("J14", 6.0))),
+        JunctionNode("J10", (Edge("J13", 3.0), Edge("J14", 5.0), Edge("J15", 7.0))),
+        JunctionNode(
+            "J11",
+            (Edge("J14", 4.5), Edge("J15", 5.5), Edge("J16", 6.5), Edge("J13", 8.5)),
+        ),
+        JunctionNode("J12", (Edge("J15", 3.5), Edge("J16", 4.5))),
+        JunctionNode("J13", (Edge("J17", 4.0), Edge("J18", 6.0))),
+        JunctionNode("J14", (Edge("J17", 5.0), Edge("J18", 3.0), Edge("J19", 7.0))),
+        JunctionNode(
+            "J15",
+            (Edge("J18", 4.5), Edge("J19", 5.5), Edge("J20", 6.5), Edge("J17", 8.5)),
+        ),
+        JunctionNode("J16", (Edge("J19", 3.5), Edge("J20", 4.5))),
+        JunctionNode("J17", (Edge("J18", 2.0), Edge("J19", 5.0))),
+        JunctionNode("J18", (Edge("J19", 2.5), Edge("J20", 4.0))),
+        JunctionNode("J19", (Edge("J20", 2.0), Edge("J17", 6.0))),
+        JunctionNode("J20", (Edge("J17", 3.0), Edge("J18", 5.0))),
+    )
+}
+
+assert len(GRAPH) == 20, "spec ticket #33 requires exactly twenty junctions"
+
+
+def _junction_sort_key(name: str) -> int:
+    """Order junctions J1..J20 numerically rather than lexicographically, so
+    the serialized map reads J1, J2, ... J20 instead of J1, J10, J11, ... J2.
+    """
+    return int(name[1:])
+
+
+def _render_map(graph: Mapping[str, JunctionNode]) -> str:
+    """Serialize the whole road network as the lookup table a model has to
+    reason OVER, one junction per line.
+
+    Every prompt in this module carries this and nothing more. That is the
+    point: before this, each prompt shipped its own answer pre-computed
+    alongside the question (route_choice printed both candidates' total times,
+    next_hop printed every outgoing edge's time next to the edge), so the task
+    collapsed to "pick the smaller number that is already on screen" and every
+    model in the roster scored identically. A decision every model gets right
+    for free cannot demonstrate right-sizing - there is no gap to route on.
+    Handing over the raw graph instead, with no per-question arithmetic done
+    in advance, is what makes the three types actually differ in difficulty.
+
+    The answer keys are untouched by this: they are still computed from GRAPH
+    by `shortest_path`/`cheapest_edge`, never read out of the prompt text.
+    """
+    return "\n".join(
+        f"{name}: " + ", ".join(f"{e.to}={e.minutes}" for e in graph[name].edges)
+        for name in sorted(graph, key=_junction_sort_key)
+    )
+
+
+# Built once at import: the same map text is shared by all three decision
+# types, so no type gets a privileged view of the world.
+MAP_TEXT = _render_map(GRAPH)
+
+_MAP_PREAMBLE = (
+    "Road network. Each line is one junction, then the junctions you can "
+    "drive to from it and the travel time in minutes:\n"
+    f"{MAP_TEXT}\n\n"
 )
 
 
-@dataclass(frozen=True)
-class JourneyOutcome:
-    """The real-world verdict on one driver's journey, arriving after the fact.
+class NoPathError(ValueError):
+    """Raised when no path exists between two junctions in the graph."""
 
-    In replay mode this is part of the recording; in live mode it comes from
-    the simulation clock. `on_time` grades whichever decision the recording
-    holds responsible via `graded_response_id` - deliberately the wrong turn
-    that made the driver late (e.g. driver-3's J1), not necessarily the
-    journey-closing junction. Reality grades attach to causes, not to whatever
-    happened last (spec user story 7).
+
+def shortest_path(
+    graph: Mapping[str, JunctionNode], start: str, end: str
+) -> tuple[list[str], float]:
+    """The provably-correct route: Dijkstra's shortest path by total minutes.
+
+    Returns the node sequence (start..end inclusive) and its total time. This
+    is the one true source of the `route_choice` and `eta_estimate` answer
+    keys - a computation over the graph, never a hand-authored lookup.
+    """
+    dist: dict[str, float] = {start: 0.0}
+    prev: dict[str, str] = {}
+    visited: set[str] = set()
+    heap: list[tuple[float, str]] = [(0.0, start)]
+
+    while heap:
+        d, node = heapq.heappop(heap)
+        if node in visited:
+            continue
+        visited.add(node)
+        if node == end:
+            break
+        for edge in graph[node].edges:
+            nd = d + edge.minutes
+            if nd < dist.get(edge.to, float("inf")):
+                dist[edge.to] = nd
+                prev[edge.to] = node
+                heapq.heappush(heap, (nd, edge.to))
+
+    if end not in dist:
+        raise NoPathError(f"no path from {start!r} to {end!r}")
+
+    path = [end]
+    while path[-1] != start:
+        path.append(prev[path[-1]])
+    path.reverse()
+    return path, dist[end]
+
+
+def second_best_path(
+    graph: Mapping[str, JunctionNode], start: str, end: str
+) -> Optional[tuple[list[str], float]]:
+    """A real, different route from `start` to `end`: the best path that does
+    NOT take the true shortest path's first hop.
+
+    Removing the shortest path's first edge and re-running Dijkstra guarantees
+    a genuinely different route (diverges from the first hop) rather than an
+    arbitrary or hand-picked alternative - still a computation over the graph.
+    Returns None when no such alternative exists (the first hop is the only
+    way out of `start`, or the reduced graph is disconnected from `end`).
+    """
+    best_path, _ = shortest_path(graph, start, end)
+    if len(best_path) < 2:
+        return None
+    first_hop_target = best_path[1]
+
+    reduced: dict[str, JunctionNode] = dict(graph)
+    origin = reduced[start]
+    remaining = tuple(e for e in origin.edges if e.to != first_hop_target)
+    if len(remaining) == len(origin.edges):
+        return None  # nothing to remove (shouldn't happen given >=2 edges everywhere)
+    reduced[start] = JunctionNode(start, remaining)
+
+    try:
+        return shortest_path(reduced, start, end)
+    except NoPathError:
+        return None
+
+
+@dataclass(frozen=True)
+class Query:
+    """One decision the toy world asks a model to make.
+
+    Carries everything live mode and the recorder need: the prompt to send,
+    how to parse the reply, the computed correct answer, and how to compare
+    the two - so `openrouter.py`/`direct.py` stay decision-type-agnostic (they
+    just send `prompt` and call `parse`), matching the DECISION_TYPE discipline
+    of never hardcoding a decision's shape in more than one place.
     """
 
-    driver: str
-    on_time: bool
-    graded_response_id: str  # the decision this outcome judges (span-link target)
+    decision_type: str
+    difficulty: str
+    eval_name: str
+    query_id: str
+    prompt: str
+    correct: Any
+    checker: Callable[[Any, Any], bool]
+    parse: Callable[[str], Any]
+    explain: Callable[[Any], str]
+    # Populated only for route_choice queries: label -> that candidate route's
+    # true total travel time. This is the one decision type that represents a
+    # full point-to-point journey (rather than a single hop or a bare number),
+    # so it is the one decision type a later, deferred "reality" grade - did
+    # the journey actually arrive on time? - attaches to (see
+    # `journey_on_time` and `recorder.py`/`replay.py`). None for eta_estimate
+    # and next_hop, which have no journey to arrive anywhere.
+    route_options: Optional[Mapping[str, float]] = None
+
+
+# A quantity in a reply, ignoring the digits inside junction names: `J13` is
+# an identifier, not a number of minutes. The lookbehind rejects any digit run
+# glued to a letter, so `J13` is skipped while `13.0` is kept.
+_QUANTITY = re.compile(r"(?<![A-Za-z])-?\d+(?:\.\d+)?")
+
+
+def _final_number(text: str) -> float:
+    """Pull the model's ANSWER out of a numeric reply. Unparseable text becomes
+    NaN, which never satisfies the tolerance check (Section: "a bad answer is
+    data, not an error" - grading records it as wrong rather than crashing).
+
+    Takes the LAST quantity, not the first, because a model that shows its
+    working states its answer at the END ("...so the total is 7.0 minutes")
+    while every intermediate step comes first. Reading the first number
+    instead graded such a reply on whatever it happened to write down first.
+
+    That was not hypothetical: it silently zeroed the strongest model on the
+    hardest decision type. Asked for an ETA from J1, claude-sonnet-4.6 opens
+    "Let me use Dijkstra's algorithm. Starting from J1, initial distances: -
+    J1: 0", reaches the correct 7.0, and was scored on the `1` scraped out of
+    `J1` - 0/20 on answers it got RIGHT, while two models that guessed a bare
+    wrong number were graded honestly. A grading harness that punishes a model
+    for showing its working is measuring formatting, not correctness, which is
+    the exact failure this project exists to argue against.
+    """
+    matches = _QUANTITY.findall(text)
+    return float(matches[-1]) if matches else float("nan")
+
+
+def _first_token_in(text: str, options: Any) -> str:
+    """Pull the first offered option out of a short reply, matching the old
+    `parse_route`'s robustness: prefer an exact offered value found in the
+    text, else fall back to the raw first token so a bad reply is recorded as
+    a (wrong) choice, not a crash.
+    """
+    stripped = text.strip()
+    for option in options:
+        if option in stripped:
+            return option
+    return stripped.split()[0] if stripped.split() else stripped
+
+
+def within_eta_tolerance(chosen: float, correct: float) -> bool:
+    """eta_estimate's machine check: within `ETA_TOLERANCE_FRACTION` of the
+    true shortest-path time. NaN (unparseable replies) is never within
+    tolerance."""
+    if chosen != chosen:  # NaN check without importing math
+        return False
+    return abs(chosen - correct) <= ETA_TOLERANCE_FRACTION * correct
+
+
+def journey_on_time(chosen_time: float, best_time: float) -> bool:
+    """The route_choice decision's DEFERRED reality grade: did the journey
+    that resulted from the model's chosen route actually arrive on time?
+
+    Still a pure computation over the graph's own known travel times (never
+    hand-authored, same discipline as every other answer key in this module) -
+    just a more lenient, real-world-buffer comparison (`REALITY_TOLERANCE_
+    FRACTION`) than the exact-match `checker` route_choice is math-graded
+    against. `chosen_time` of `float('inf')` (an unparseable/unrecognized
+    reply - see recorder.py) is never on time.
+    """
+    if chosen_time != chosen_time:  # NaN check without importing math
+        return False
+    return chosen_time <= best_time * (1 + REALITY_TOLERANCE_FRACTION)
+
+
+def _next_hop_query(name: str) -> Query:
+    node = GRAPH[name]
+    edge = node.cheapest_edge
+    neighbors = tuple(e.to for e in node.edges)
+    prompt = (
+        f"{_MAP_PREAMBLE}"
+        f"You are at junction {name}. Find that junction's roads in the map "
+        f"above and take the fastest one. Reply with ONLY the name of the "
+        f"junction you would go to next, nothing else."
+    )
+    return Query(
+        decision_type=DECISION_TYPE_NEXT_HOP,
+        difficulty=difficulty_tier(node.branching_factor),
+        eval_name="route.next_hop",
+        query_id=f"next_hop-{name}",
+        prompt=prompt,
+        correct=edge.to,
+        checker=lambda chosen, correct: chosen == correct,
+        parse=lambda text: _first_token_in(text, neighbors),
+        explain=lambda chosen: f"chose {chosen}; cheapest next hop is {edge.to} ({edge.minutes}m)",
+    )
+
+
+def _route_pairs(count: int) -> list[tuple[str, str]]:
+    """Deterministic (start, end) junction pairs spanning 2/3/4-hop routes,
+    filtered to pairs where a genuine second-best alternative exists (so the
+    route_choice/eta_estimate questions are a real decision, not a forced
+    single option). Purely a scan over the fixed GRAPH - no pair is hand-picked
+    for its outcome.
+    """
+    starts = ["J1", "J2", "J3", "J4"]
+    layer2 = ["J9", "J10", "J11", "J12"]
+    layer3 = ["J13", "J14", "J15", "J16"]
+    layer4 = ["J17", "J18", "J19", "J20"]
+
+    candidates = (
+        [(s, e) for s in starts for e in layer2]
+        + [(s, e) for s in starts for e in layer3]
+        + [(s, e) for s in starts for e in layer4]
+    )
+
+    pairs: list[tuple[str, str]] = []
+    for start, end in candidates:
+        try:
+            _, best_time = shortest_path(GRAPH, start, end)
+        except NoPathError:
+            continue  # not every start reaches every candidate end
+        alt = second_best_path(GRAPH, start, end)
+        if alt is None:
+            continue
+        _, alt_time = alt
+        if alt_time > best_time:  # a genuine, non-tied second option
+            pairs.append((start, end))
+        if len(pairs) == count:
+            break
+
+    if len(pairs) < count:
+        raise NoPathError(
+            f"only found {len(pairs)} route pairs with a genuine alternative; "
+            f"need {count} - widen the candidate scan or adjust GRAPH weights"
+        )
+    return pairs
+
+
+def _route_choice_query(start: str, end: str) -> Query:
+    best_path, best_time = shortest_path(GRAPH, start, end)
+    alt = second_best_path(GRAPH, start, end)
+    assert alt is not None  # guaranteed by _route_pairs' filter
+    alt_path, alt_time = alt
+
+    # Label order comes from sorting the path tuples themselves, not from
+    # which one is faster - so the letter never leaks the correct answer.
+    candidates = sorted([(best_path, best_time), (alt_path, alt_time)])
+    labels = "AB"
+    options = {labels[i]: time for i, (_, time) in enumerate(candidates)}
+    paths_by_label = {labels[i]: path for i, (path, _) in enumerate(candidates)}
+    correct_label = min(options, key=lambda label: options[label])
+
+    # The candidate PATHS are offered; their total times are not. Summing each
+    # path's edges out of the map is the actual work of this decision.
+    offered = "; ".join(
+        f"{label}: {' -> '.join(paths_by_label[label])}" for label in labels
+    )
+    prompt = (
+        f"{_MAP_PREAMBLE}"
+        f"Two candidate routes from {start} to {end} - {offered}. "
+        f"Add up each route's travel times from the map and reply with ONLY "
+        f"the single letter of the faster route, nothing else."
+    )
+    difficulty = difficulty_tier(GRAPH[start].branching_factor)
+    return Query(
+        decision_type=DECISION_TYPE_ROUTE_CHOICE,
+        difficulty=difficulty,
+        eval_name="route.fastest",
+        query_id=f"route_choice-{start}-{end}",
+        prompt=prompt,
+        correct=correct_label,
+        checker=lambda chosen, correct: chosen == correct,
+        parse=lambda text: _first_token_in(text, labels),
+        explain=lambda chosen: (
+            f"chose {chosen} ({options.get(chosen, '?')}m); "
+            f"true fastest {correct_label} ({options[correct_label]}m)"
+        ),
+        route_options=options,
+    )
+
+
+def _eta_estimate_query(start: str, end: str) -> Query:
+    _, best_time = shortest_path(GRAPH, start, end)
+    # No candidate routes are offered here at all - finding the fastest one is
+    # the model's problem, which is what makes this the hardest of the three.
+    prompt = (
+        f"{_MAP_PREAMBLE}"
+        f"Work out the fastest route from {start} to {end} using the map "
+        f"above, and estimate its total travel time. Reply with ONLY the "
+        f"number of minutes, nothing else."
+    )
+    difficulty = difficulty_tier(GRAPH[start].branching_factor)
+    return Query(
+        decision_type=DECISION_TYPE_ETA_ESTIMATE,
+        difficulty=difficulty,
+        eval_name="route.eta",
+        query_id=f"eta_estimate-{start}-{end}",
+        prompt=prompt,
+        correct=best_time,
+        checker=within_eta_tolerance,
+        parse=_final_number,
+        explain=lambda chosen: (
+            f"estimated {chosen}m; true fastest time is {best_time}m "
+            f"(tolerance +/-{ETA_TOLERANCE_FRACTION:.0%})"
+        ),
+    )
+
+
+# Twenty queries per decision type (spec ticket #33: "roughly 180 decisions
+# behind a single run" = 3 decision types x 3 roster models x 20 queries).
+_ROUTE_PAIRS = _route_pairs(20)
+
+NEXT_HOP_QUERIES: tuple[Query, ...] = tuple(_next_hop_query(name) for name in sorted(GRAPH))
+ROUTE_CHOICE_QUERIES: tuple[Query, ...] = tuple(
+    _route_choice_query(s, e) for s, e in _ROUTE_PAIRS
+)
+ETA_ESTIMATE_QUERIES: tuple[Query, ...] = tuple(
+    _eta_estimate_query(s, e) for s, e in _ROUTE_PAIRS
+)
+
+ALL_QUERIES: tuple[Query, ...] = (
+    ROUTE_CHOICE_QUERIES + ETA_ESTIMATE_QUERIES + NEXT_HOP_QUERIES
+)
+
+assert len(ALL_QUERIES) == 60, "spec ticket #33: 20 queries per decision type"
+
+# Looked up by the recorder/replay (recorder.py, replay.py) to recompute a
+# query's correct answer, checker, and difficulty fresh from this module
+# rather than trusting a stored value in a recording file - the answer key
+# stays computed, never a frozen copy that could drift from the graph.
+QUERIES_BY_ID: dict[str, Query] = {q.query_id: q for q in ALL_QUERIES}

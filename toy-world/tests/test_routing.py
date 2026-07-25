@@ -1,4 +1,5 @@
-"""Ticket #10 - the production routing table the right-sizing loop edits.
+"""Ticket #10 - the production routing table the right-sizing loop edits;
+extended by ticket #33 to three decision types, each independently routable.
 
 Right-sizing reroutes a *decision type* to a cheaper model (CONTEXT.md
 "Right-sizing"; conventions.md section on `augmentloop.decision.type`). The
@@ -17,6 +18,7 @@ from toyworld.routing import (
     load_routing,
     routed_model,
 )
+from toyworld.world import DECISION_TYPES
 
 
 def _write(tmp_path, mapping):
@@ -35,7 +37,7 @@ def test_committed_routing_file_is_loadable_and_priced():
     """The real committed table must always be valid - it drives `--production`."""
     routing = load_routing(DEFAULT_ROUTING_PATH)
 
-    assert "route_choice" in routing
+    assert set(routing) == set(DECISION_TYPES)
 
 
 def test_rejects_a_model_with_no_pricing_row(tmp_path):
@@ -98,44 +100,53 @@ def test_routed_model_fails_loud_on_an_unrouted_decision_type():
     assert "filler_detection" in str(excinfo.value)
 
 
-def test_routing_the_decision_type_narrows_the_run_to_one_model(
+def test_each_decision_type_can_be_routed_to_a_different_model(
     world, world_metrics
 ):
-    """A production run must exercise ONLY the routed model.
-
-    This is what makes a before/after pair meaningful: if the roster leaked in,
-    the "after" run would still be paying for the premium model it just stopped
-    routing to.
-    """
-    from toyworld.live import DECISION_TYPE, run_live
+    """A production run must exercise ONLY each decision type's routed model,
+    and different types can route to different models independently - this is
+    what makes "reroute next_hop to the cheap model, leave route_choice on the
+    premium one" a real, expressible right-sizing proposal (ticket #33)."""
+    from toyworld.live import run_live
+    from toyworld.world import ALL_QUERIES
 
     provider, exporter = world
     meter_provider, _ = world_metrics
-    routing = {DECISION_TYPE: "google/gemini-2.5-flash-lite"}
+    routing = {
+        "route_choice": "anthropic/claude-sonnet-4.6",
+        "eta_estimate": "anthropic/claude-haiku-4.5",
+        "next_hop": "google/gemini-2.5-flash-lite",
+    }
 
-    seen: list[str] = []
+    seen: dict[str, set[str]] = {}
 
     class RecordingClient:
-        def decide(self, *, model, junction):
+        def decide(self, *, model, query):
+            seen.setdefault(query.decision_type, set()).add(model)
             from toyworld.live import ModelDecision
 
-            seen.append(model)
             return ModelDecision(
-                chosen=junction.true_fastest,
+                chosen=query.correct,
                 input_tokens=200,
                 output_tokens=10,
-                response_id=f"r-{len(seen)}",
+                response_id=f"r-{query.query_id}-{model}",
             )
 
-    run_live(
+    pairs = [(routed_model(routing, q.decision_type), q) for q in ALL_QUERIES]
+    summary = run_live(
         RecordingClient(),
-        budget_usd=1.0,
-        roster=(routed_model(routing, DECISION_TYPE),),
+        budget_usd=10.0,
+        pairs=pairs,
         world_provider=provider,
         world_meter_provider=meter_provider,
     )
 
-    assert set(seen) == {"google/gemini-2.5-flash-lite"}
+    assert seen == {
+        "route_choice": {"anthropic/claude-sonnet-4.6"},
+        "eta_estimate": {"anthropic/claude-haiku-4.5"},
+        "next_hop": {"google/gemini-2.5-flash-lite"},
+    }
+    assert summary.decisions == len(ALL_QUERIES)
 
 
 def test_production_without_live_is_refused_before_any_call(monkeypatch):
@@ -143,6 +154,18 @@ def test_production_without_live_is_refused_before_any_call(monkeypatch):
     from toyworld.__main__ import main
 
     monkeypatch.setattr("sys.argv", ["toyworld", "--production"])
+
+    with pytest.raises(SystemExit) as excinfo:
+        main()
+
+    assert excinfo.value.code == 2
+
+
+def test_record_without_live_is_refused_before_any_call(monkeypatch):
+    """`--record` captures a live run; it is meaningless without `--live`."""
+    from toyworld.__main__ import main
+
+    monkeypatch.setattr("sys.argv", ["toyworld", "--record"])
 
     with pytest.raises(SystemExit) as excinfo:
         main()
