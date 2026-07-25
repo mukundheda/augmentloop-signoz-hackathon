@@ -24,9 +24,20 @@ from typing import Callable, Optional
 
 from opentelemetry import metrics, trace
 
-from gradebook import capture_decision, record_decision, record_reality_grade
+from gradebook import (
+    CheckResult,
+    capture_decision,
+    record_decision,
+    record_reality_grade,
+    verbatim_substring,
+)
 
-from .checkers import filler_checker, lexical_fillers, quote_checker
+from .checkers import filler_checker, lexical_fillers
+
+
+def _passed(outcome) -> bool:
+    """Normalize a checker return (bool or CheckResult) to a bool for the tally."""
+    return outcome.passed if isinstance(outcome, CheckResult) else bool(outcome)
 
 TRACER_NAME = "cleancutproof"
 
@@ -176,8 +187,10 @@ def run_detections(
             "quote.verbatim",
             "quote_extraction",
             QUOTE_PROMPT,
-            # The transcript itself is the "correct" side for the substring check.
-            lambda chosen, correct: quote_checker(chosen, correct),
+            # The library's reusable verbatim-substring checker (ticket #42): it
+            # returns a CheckResult, so the emitted grade carries the reason code
+            # (MATCH / MISMATCH / EMPTY_ANSWER) rather than a bare true/false.
+            verbatim_substring,
             transcript,
         ),
     )
@@ -201,7 +214,7 @@ def run_detections(
                         tracer_provider=provider,
                         meter_provider=meter_provider,
                     )
-                    is_correct = checker(reply.text, correct)
+                    is_correct = _passed(checker(reply.text, correct))
                     cost = price(model, reply.input_tokens, reply.output_tokens)
                     summary.decisions += 1
                     summary.correct += int(is_correct)

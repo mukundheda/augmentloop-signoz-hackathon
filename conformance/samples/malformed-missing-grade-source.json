@@ -1,0 +1,9 @@
+{
+  "name": "gen_ai.evaluation.result",
+  "attributes": {
+    "gen_ai.evaluation.name": "quote.verbatim",
+    "gen_ai.evaluation.score.value": 1.0,
+    "gen_ai.evaluation.score.label": "correct",
+    "gen_ai.response.id": "bad-1"
+  }
+}
