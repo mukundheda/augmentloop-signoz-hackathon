@@ -81,7 +81,7 @@
               "disabled": true,
               "expression": "A",
               "filter": {
-                "expression": "gen_ai.evaluation.score.label = 'correct' AND augmentloop.grade.source IN ('math','reality')"
+                "expression": "gen_ai.evaluation.score.label = 'correct' AND augmentloop.grade.source IN ('math','reality') AND augmentloop.decision.type = 'route_choice'"
               },
               "functions": [],
               "groupBy": [],
@@ -109,7 +109,7 @@
               "disabled": true,
               "expression": "B",
               "filter": {
-                "expression": "gen_ai.evaluation.score.label = 'correct' AND augmentloop.grade.source IN ('math','reality')"
+                "expression": "gen_ai.evaluation.score.label = 'correct' AND augmentloop.grade.source IN ('math','reality') AND augmentloop.decision.type = 'route_choice'"
               },
               "functions": [],
               "groupBy": [],
@@ -197,7 +197,7 @@
               "disabled": true,
               "expression": "A",
               "filter": {
-                "expression": "gen_ai.evaluation.score.label = 'correct' AND augmentloop.grade.source IN ('math','reality')"
+                "expression": "gen_ai.evaluation.score.label = 'correct' AND augmentloop.grade.source IN ('math','reality') AND augmentloop.decision.type = 'route_choice'"
               },
               "functions": [],
               "groupBy": [
@@ -231,7 +231,7 @@
               "disabled": true,
               "expression": "B",
               "filter": {
-                "expression": "gen_ai.evaluation.score.label = 'correct' AND augmentloop.grade.source IN ('math','reality')"
+                "expression": "gen_ai.evaluation.score.label = 'correct' AND augmentloop.grade.source IN ('math','reality') AND augmentloop.decision.type = 'route_choice'"
               },
               "functions": [],
               "groupBy": [
@@ -325,7 +325,7 @@
               "disabled": true,
               "expression": "A",
               "filter": {
-                "expression": "gen_ai.evaluation.score.label = 'correct' AND augmentloop.grade.source IN ('math','reality')"
+                "expression": "gen_ai.evaluation.score.label = 'correct' AND augmentloop.grade.source IN ('math','reality') AND augmentloop.decision.type = 'route_choice'"
               },
               "functions": [],
               "groupBy": [
@@ -359,7 +359,7 @@
               "disabled": true,
               "expression": "B",
               "filter": {
-                "expression": "augmentloop.grade.source IN ('math','reality')"
+                "expression": "augmentloop.grade.source IN ('math','reality') AND augmentloop.decision.type = 'route_choice'"
               },
               "functions": [],
               "groupBy": [
@@ -453,7 +453,7 @@
               "disabled": false,
               "expression": "A",
               "filter": {
-                "expression": "augmentloop.grade.source = 'math'"
+                "expression": "augmentloop.grade.source = 'math' AND augmentloop.decision.type = 'route_choice'"
               },
               "functions": [],
               "groupBy": [],
@@ -481,7 +481,7 @@
               "disabled": false,
               "expression": "B",
               "filter": {
-                "expression": "augmentloop.grade.source = 'reality'"
+                "expression": "augmentloop.grade.source = 'reality' AND augmentloop.decision.type = 'route_choice'"
               },
               "functions": [],
               "groupBy": [],
@@ -562,7 +562,7 @@
               "disabled": false,
               "expression": "A",
               "filter": {
-                "expression": "augmentloop.grade.source = 'ai_judge'"
+                "expression": "augmentloop.grade.source = 'ai_judge' AND augmentloop.decision.type = 'route_choice'"
               },
               "functions": [],
               "groupBy": [],
