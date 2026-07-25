@@ -74,15 +74,6 @@
       "y": 18
     },
     {
-      "h": 7,
-      "i": "panel-9-cost-distribution",
-      "moved": false,
-      "static": false,
-      "w": 12,
-      "x": 12,
-      "y": 18
-    },
-    {
       "h": 6,
       "i": "panel-10-failure-classes",
       "moved": false,
@@ -124,10 +115,6 @@
       "widgets": []
     },
     "panel-8-right-sizing-table": {
-      "collapsed": false,
-      "widgets": []
-    },
-    "panel-9-cost-distribution": {
       "collapsed": false,
       "widgets": []
     }
@@ -172,12 +159,12 @@
       "contextLinks": {
         "linksData": null
       },
-      "description": " SCOPED (2026-07-26): this panel is pinned to the demo services (toy-world and toy-world-outcomes). Gradebook is a portable layer and several other services on this stack emit through the same contract, so an unscoped panel silently blends them and stops reconciling with `python -m toyworld`. The 'Services Emitting Through the Contract' panel shows the full set on purpose. Headline metric (ADR 0001, definition fixed in C9/#54): (sum(augmentloop.cost.usd) / count(correct decisions)) * 1000, scoped to augmentloop.grade.source = 'math'. The numerator A is ALL math cost - money spent on WRONG answers included - so this is what we spent per answer we got right, not the flattering cost-of-only-correct-answers version. Denominator B is correct math decisions. Scoping to math (a decision emits at most one math grade) structurally removes the earlier double-count that reality grades caused, so this reconciles to the cent with the CLI's total_cost / correct on the same run. Reality grades are NOT blended into this number - they have their own adjacent panels (reality correct rate & count). AI-judge grades are never in the headline (ADR 0001). SCOPING: augmentloop.decision.type is limited to the four model-decision types (route_choice from the toy world, filler_detection/quote_extraction/clip_scoring from the CleanCut substrate), deliberately excluding build_session, the #13 meta build-fleet unit - a whole agent session, not a single graded model decision - which skewed this headline 534x on 2026-07-25. SERVICE SCOPE (ruling recorded on #47, 2026-07-25): every panel additionally excludes service.name = 'agent-gradebook-test', a test harness whose graded decisions were reaching this judge-facing headline. Excluding the known test service (rather than allowlisting 'real' services) was the deliberate choice: at ruling time a fourth, legitimate service (agent-gradebook-verify) was already emitting graded decisions outside any allowlist that existed then, which an allowlist would have silently dropped from the headline. VARIABLES (#48): $decision_type, $model, and $grade_source are dashboard variables (DYNAMIC, attribute-backed off augmentloop.decision.type / gen_ai.request.model / augmentloop.grade.source on the metrics signal), replacing the old hardcoded decision-type allowlist. Every panel filters augmentloop.decision.type != 'build_session' UNCONDITIONALLY (not gated by the variable) so build_session stays excluded no matter what a judge selects; augmentloop.decision.type IN ($decision_type) is the selectable part, which is why a newly emitted decision type (e.g. eta_estimate, next_hop, or the pacing_choice type observed live on 2026-07-25) appears in the dropdown automatically with no panel edits. $model is applied the same way on every panel. $grade_source is NOT wired into this panel, panels 2-4, or the ai-judge panel 5 - each has an ADR-0001-driven fixed grade source (this one: math only per #54) that a shared dashboard variable must not be allowed to override; it is wired only into the two reality panels below.",
+      "description": "The headline: cost per 1,000 correct decisions, scoped to grade.source = 'math' and to the demo services so it reconciles with `python -m toyworld`. Rendered as a timeseries rather than a single big number for a concrete reason: this SigNoz version does not evaluate builder formulas on the scalar query path a value panel uses, so the same (A/B)*1000 formula that returns 1.507 as a timeseries came back empty as a scalar, and the value panel's nullZeroValues setting rendered that emptiness as a confident 0. A headline that silently reads zero is worse than one that reads a line, so the panel type changed rather than the number being quietly dropped.",
       "id": "panel-1-headline-cost-per-correct",
       "legendPosition": "bottom",
       "nullZeroValues": "zero",
       "opacity": "1",
-      "panelTypes": "value",
+      "panelTypes": "graph",
       "query": {
         "builder": {
           "queryData": [
@@ -931,7 +918,7 @@
       "contextLinks": {
         "linksData": null
       },
-      "description": "The finding this project exists to show, as a native SigNoz table rather than a number in the README: every decision type crossed with every model, correct rate and cost per correct decision in the same row. Read down the next_hop column, then the eta_estimate column. Three separate models (deepseek-chat, gpt-4o-mini and gemini-2.5-flash-lite) each score 20 out of 20 on next_hop, beating claude-sonnet-4.6's 19 while costing between 26 and 86 times less across the run. Three models score 0 out of 20 on eta_estimate, where sonnet gets 19. No ordering of these seven models is true in both columns, which is why routing keys on decision type rather than picking one model for the whole program. SCOPED (2026-07-26): this panel is pinned to the demo services (toy-world and toy-world-outcomes). Gradebook is a portable layer and several other services on this stack emit through the same contract, so an unscoped panel silently blends them and stops reconciling with `python -m toyworld`. The 'Services Emitting Through the Contract' panel shows the full set on purpose.",
+      "description": "The finding this project exists to show, native in SigNoz: every decision type crossed with every model, with the correct count, the number graded and the dollars spent in one row. Sort by correct against cost and read the next_hop rows: three of the cheapest models in the roster each score 20 out of 20 and sit above claude-sonnet-4.6's 19, at a fraction of its cost. Then read the eta_estimate rows, where three models score zero and sonnet scores 19. Derived ratio columns are deliberately absent: this SigNoz version does not evaluate builder formulas on the table/scalar query path (they return n/a), so the raw counts are shown rather than a column that renders empty. Scoped to grade.source = 'math' and to the demo services so it reconciles with `python -m toyworld`.",
       "id": "panel-8-right-sizing-table",
       "legendPosition": "bottom",
       "nullZeroValues": "zero",
@@ -949,7 +936,7 @@
                 }
               ],
               "dataSource": "metrics",
-              "disabled": true,
+              "disabled": false,
               "expression": "A",
               "filter": {
                 "expression": "gen_ai.evaluation.score.label = 'correct' AND augmentloop.grade.source = 'math' AND service.name IN ('toy-world', 'toy-world-outcomes') AND augmentloop.decision.type != 'build_session' AND augmentloop.decision.type IN ($decision_type) AND gen_ai.request.model IN ($model)"
@@ -970,12 +957,7 @@
               "having": [],
               "legend": "correct",
               "limit": 100,
-              "orderBy": [
-                {
-                  "columnName": "__result",
-                  "order": "desc"
-                }
-              ],
+              "orderBy": [],
               "queryName": "A",
               "stepInterval": null
             },
@@ -988,7 +970,7 @@
                 }
               ],
               "dataSource": "metrics",
-              "disabled": true,
+              "disabled": false,
               "expression": "B",
               "filter": {
                 "expression": "augmentloop.grade.source = 'math' AND service.name IN ('toy-world', 'toy-world-outcomes') AND augmentloop.decision.type != 'build_session' AND augmentloop.decision.type IN ($decision_type) AND gen_ai.request.model IN ($model)"
@@ -1009,12 +991,7 @@
               "having": [],
               "legend": "graded",
               "limit": 100,
-              "orderBy": [
-                {
-                  "columnName": "__result",
-                  "order": "desc"
-                }
-              ],
+              "orderBy": [],
               "queryName": "B",
               "stepInterval": null
             },
@@ -1027,7 +1004,7 @@
                 }
               ],
               "dataSource": "metrics",
-              "disabled": true,
+              "disabled": false,
               "expression": "C",
               "filter": {
                 "expression": "augmentloop.grade.source = 'math' AND service.name IN ('toy-world', 'toy-world-outcomes') AND augmentloop.decision.type != 'build_session' AND augmentloop.decision.type IN ($decision_type) AND gen_ai.request.model IN ($model)"
@@ -1048,46 +1025,12 @@
               "having": [],
               "legend": "cost",
               "limit": 100,
-              "orderBy": [
-                {
-                  "columnName": "__result",
-                  "order": "desc"
-                }
-              ],
+              "orderBy": [],
               "queryName": "C",
               "stepInterval": null
             }
           ],
-          "queryFormulas": [
-            {
-              "disabled": false,
-              "expression": "(A/B)*100",
-              "having": [],
-              "legend": "correct rate %",
-              "limit": 100,
-              "orderBy": [
-                {
-                  "columnName": "__result",
-                  "order": "desc"
-                }
-              ],
-              "queryName": "F1"
-            },
-            {
-              "disabled": false,
-              "expression": "C/A",
-              "having": [],
-              "legend": "cost per correct",
-              "limit": 100,
-              "orderBy": [
-                {
-                  "columnName": "__result",
-                  "order": "desc"
-                }
-              ],
-              "queryName": "F2"
-            }
-          ]
+          "queryFormulas": []
         },
         "id": "panel-8-right-sizing-table-query",
         "queryType": "builder"
@@ -1124,93 +1067,6 @@
       "softMin": 0,
       "timePreferance": "GLOBAL_TIME",
       "title": "Right-Sizing Grid: Decision Type x Model",
-      "yAxisUnit": "none"
-    },
-    {
-      "contextLinks": {
-        "linksData": null
-      },
-      "description": "gradebook.decision.cost.usd is a real OpenTelemetry histogram instrument rather than a gauge, so it carries bucket boundaries; this panel reads them directly instead of collapsing the run to a mean. The long right tail is the expensive model paying for tokens it spends reasoning through a shortest-path calculation. A mean would hide both that tail and the spike at the cheap end. SCOPED (2026-07-26): this panel is pinned to the demo services (toy-world and toy-world-outcomes). Gradebook is a portable layer and several other services on this stack emit through the same contract, so an unscoped panel silently blends them and stops reconciling with `python -m toyworld`. The 'Services Emitting Through the Contract' panel shows the full set on purpose.",
-      "id": "panel-9-cost-distribution",
-      "legendPosition": "bottom",
-      "nullZeroValues": "zero",
-      "opacity": "1",
-      "panelTypes": "histogram",
-      "query": {
-        "builder": {
-          "queryData": [
-            {
-              "aggregations": [
-                {
-                  "metricName": "gradebook.decision.cost.usd.bucket",
-                  "spaceAggregation": "sum",
-                  "timeAggregation": "latest"
-                }
-              ],
-              "dataSource": "metrics",
-              "disabled": false,
-              "expression": "A",
-              "filter": {
-                "expression": "augmentloop.grade.source = 'math' AND service.name IN ('toy-world', 'toy-world-outcomes') AND augmentloop.decision.type != 'build_session' AND augmentloop.decision.type IN ($decision_type) AND gen_ai.request.model IN ($model)"
-              },
-              "functions": [],
-              "groupBy": [
-                {
-                  "dataType": "string",
-                  "key": "gen_ai.request.model",
-                  "type": "tag"
-                }
-              ],
-              "having": [],
-              "legend": "{{gen_ai.request.model}}",
-              "limit": 100,
-              "orderBy": [
-                {
-                  "columnName": "__result",
-                  "order": "desc"
-                }
-              ],
-              "queryName": "A",
-              "stepInterval": null
-            }
-          ],
-          "queryFormulas": []
-        },
-        "id": "panel-9-cost-distribution-query",
-        "queryType": "builder"
-      },
-      "selectedLogFields": [
-        {
-          "fieldContext": "log",
-          "name": "timestamp",
-          "signal": "logs",
-          "type": "log"
-        },
-        {
-          "fieldContext": "log",
-          "name": "body",
-          "signal": "logs",
-          "type": "log"
-        }
-      ],
-      "selectedTracesFields": [
-        {
-          "fieldContext": "resource",
-          "fieldDataType": "string",
-          "name": "service.name",
-          "signal": "traces"
-        },
-        {
-          "fieldContext": "span",
-          "fieldDataType": "string",
-          "name": "name",
-          "signal": "traces"
-        }
-      ],
-      "softMax": 0,
-      "softMin": 0,
-      "timePreferance": "GLOBAL_TIME",
-      "title": "Cost per Decision: Distribution by Model",
       "yAxisUnit": "none"
     },
     {
@@ -1254,12 +1110,7 @@
               "having": [],
               "legend": "events",
               "limit": 100,
-              "orderBy": [
-                {
-                  "columnName": "__result",
-                  "order": "desc"
-                }
-              ],
+              "orderBy": [],
               "queryName": "A",
               "stepInterval": null
             }
@@ -1333,12 +1184,7 @@
               "having": [],
               "legend": "failures",
               "limit": 100,
-              "orderBy": [
-                {
-                  "columnName": "__result",
-                  "order": "desc"
-                }
-              ],
+              "orderBy": [],
               "queryName": "A",
               "stepInterval": null
             }
@@ -1425,12 +1271,7 @@
               "having": [],
               "legend": "grades",
               "limit": 100,
-              "orderBy": [
-                {
-                  "columnName": "__result",
-                  "order": "desc"
-                }
-              ],
+              "orderBy": [],
               "queryName": "A",
               "stepInterval": null
             }
