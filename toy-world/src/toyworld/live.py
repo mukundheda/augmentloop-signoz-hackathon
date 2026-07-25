@@ -28,6 +28,12 @@ from .world import WORLD, Junction
 
 TRACER_NAME = "toyworld"
 
+# The one kind of decision this world makes. Named rather than inlined because
+# right-sizing (ticket #10) reroutes a decision *type* to a cheaper model, so
+# the routing table and the emitted `augmentloop.decision.type` attribute must
+# agree on the exact string.
+DECISION_TYPE = "route_choice"
+
 # The comparison roster (CONTEXT.md): two Claude price tiers for the right-sizing
 # story plus a cross-provider contrast. Every model must exist in the Gradebook
 # pricing table, or pricing fails loud before any span is emitted.
@@ -151,7 +157,7 @@ def run_live(
                         correct=correct,
                         input_tokens=decision.input_tokens,
                         output_tokens=decision.output_tokens,
-                        decision_type="route_choice",
+                        decision_type=DECISION_TYPE,
                         response_id=decision.response_id,
                         explanation=(
                             f"chose {decision.chosen} "
