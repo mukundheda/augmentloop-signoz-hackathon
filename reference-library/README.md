@@ -10,6 +10,28 @@ The conventions doc is language-agnostic and is the real contract; this library
 is a convenience for Python callers. Any stack that emits the same event is
 compliant.
 
+## Zero required dependencies
+
+The core depends on **`opentelemetry-api` only** - no SDK, no exporter, no HTTP
+client. Whoever wires telemetry (the app, the SigNoz setup, or a test) supplies
+the SDK and OTLP exporter as extras. This is a deliberate adoption property, not
+an accident: adding Gradebook to an existing OTel-instrumented app pulls in
+nothing it doesn't already have, so "does this cost me a dependency tree?" is
+not a reason to say no. Grading logic is pure functions
+([`gradebook.checkers`](src/gradebook/checkers.py)); the reusable checkers and
+reason codes add no dependency either.
+
+## Reusable checkers + reason codes (ticket #42)
+
+Ready-made checkers for the decision shapes worth not hand-rolling -
+`verbatim_substring`, `fact_match`, `tool_choice`, `completed` - each returning a
+`CheckResult(passed, reason)`. The reason is a closed, versioned enum
+(`ReasonCode`) emitted as `augmentloop.grade.reason`, so "not machine-checkable"
+is a specific, queryable reason (`no_ground_truth`, `empty_answer`, `ambiguous`)
+rather than one generic bucket. Full contract: [`docs/conventions.md`](../docs/conventions.md)
+§12. `cleancut-proof` (quote extraction) and `toy-world` (route choice) both
+consume these rather than hand-rolling their comparison.
+
 ## Scope
 
 **Walking skeleton (ticket #5):** the thinnest complete path - one

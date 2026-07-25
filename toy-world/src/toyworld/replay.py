@@ -23,7 +23,13 @@ from typing import Iterable, Optional
 
 from opentelemetry import metrics, trace
 
-from gradebook import DecisionRef, capture_decision, record_decision, record_reality_grade
+from gradebook import (
+    DecisionRef,
+    capture_decision,
+    record_decision,
+    record_reality_grade,
+    tool_choice,
+)
 
 from .world import JourneyOutcome, JunctionDecision
 
@@ -110,6 +116,11 @@ def replay(
                             f"chose {d.chosen} ({d.options[d.chosen]}m); "
                             f"true fastest {correct_route} ({d.options[correct_route]}m)"
                         ),
+                        # A route pick is a tool/branch choice - the library's
+                        # reusable tool_choice checker (ticket #42), consumed here
+                        # instead of the default equality, so the grade carries a
+                        # reason code.
+                        checker=tool_choice,
                         tracer_provider=provider,
                         meter_provider=world_meter_provider,
                     )

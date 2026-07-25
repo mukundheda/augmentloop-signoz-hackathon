@@ -26,6 +26,7 @@ def record(
     cost_usd: Optional[float],
     model: Optional[str] = None,
     decision_type: Optional[str] = None,
+    grade_reason: Optional[str] = None,
     meter_provider: Optional[metrics.MeterProvider] = None,
 ) -> None:
     """Increment the decisions-graded counter and record cost, if known.
@@ -42,6 +43,9 @@ def record(
         attributes[conv.REQUEST_MODEL] = model
     if decision_type is not None:
         attributes[conv.DECISION_TYPE] = decision_type
+    # Reason as a metric dimension so the dashboard can break grades down by it.
+    if grade_reason is not None:
+        attributes[conv.GRADE_REASON] = grade_reason
 
     meter.create_counter(
         conv.METRIC_DECISIONS_GRADED,

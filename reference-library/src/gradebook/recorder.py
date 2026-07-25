@@ -134,6 +134,9 @@ def record_decision(
         span.set_attribute(conv.SCORE_LABEL, grade.label)
         span.set_attribute(conv.GRADE_SOURCE, grade.source.value)
         span.set_attribute(conv.COST_USD, cost_usd)
+        # The reason sub-code (§12): why this grade got its label, queryable.
+        if grade.reason is not None:
+            span.set_attribute(conv.GRADE_REASON, grade.reason.value)
 
         # Recommended (section 7): echo model + tokens so the observatory is a
         # single-table query with no join. Always available here.
@@ -155,6 +158,7 @@ def record_decision(
             cost_usd=cost_usd,
             model=model,
             decision_type=decision_type,
+            grade_reason=grade.reason.value if grade.reason is not None else None,
             meter_provider=meter_provider,
         )
 
