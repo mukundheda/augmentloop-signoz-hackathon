@@ -42,8 +42,8 @@ jobs:
             -e "cleancut-proof[test]" \
             mypy==1.14.1
 
-      - name: Run tests (reference-library, toy-world, cleancut-proof)
-        run: python -m pytest reference-library toy-world cleancut-proof
+      - name: Run tests (reference-library, toy-world, cleancut-proof, conformance)
+        run: python -m pytest reference-library toy-world cleancut-proof conformance
 
       - name: Type check (mypy)
         run: python -m mypy reference-library/src/gradebook toy-world/src/toyworld cleancut-proof/src/cleancutproof
