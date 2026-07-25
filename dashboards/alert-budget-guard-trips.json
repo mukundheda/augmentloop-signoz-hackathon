@@ -1,0 +1,90 @@
+{
+  "alert": "Gradebook Budget Guard Repeated Trips",
+  "alertType": "LOGS_BASED_ALERT",
+  "description": "Fires when the budget guard (reference-library/src/gradebook/logs.py:budget_guard_tripped, emitted from toy-world's live run loop when a call would breach the per-run cap) trips 3 or more times within a rolling 5-minute window. This is a discrete failure-event stream - each trip is one WARN log carrying augmentloop.failure.class=budget_guard_tripped - which is what logs and log-based alerts are for and what a metrics counter expresses badly. Filter matches the structured attribute, not the log body text, so it is immune to the warning message's wording changing. Rationale for N=3 in 5m, not N=1: a single trip is the budget cap doing its job (a run correctly stopped before overspending) and is not on its own an incident. Three or more trips inside 5 minutes means either the per-run cap is set too low for real usage, or something is retrying against an already-exhausted budget in a loop - either is worth a human looking at it. The 3-in-5m burst shape mirrors an existing rule on this account for a different failure class (the upwork-job-screener anthropic.chat error-burst rule), so it is a proven threshold pattern here, not a first guess. Threshold implementation note: op=above is strictly greater-than (confirmed against that same reference rule's description, 'exceeds 3'), so target is set to 2, not 3, to make the rule actually fire at 3+ trips rather than requiring 4+. Query verified live on 2026-07-26: POST /api/v5/query_range with this exact compositeQuery against real budget_guard_tripped logs (emitted through the same OTLP LoggingHandler path toy-world/__main__.py wires up) returned count()=4 for 4 emitted trips inside the query window. One deployment note found while verifying: a brand-new attribute key is not queryable in SigNoz's log search expression until at least one matching log has been ingested (a fresh key returns 'not found' from the search-expression parser before that) - not a bug, just an ordering constraint to know about when testing this rule from a cold stack.",
+  "ruleType": "threshold_rule",
+  "version": "v5",
+  "schemaVersion": "v2alpha1",
+  "condition": {
+    "compositeQuery": {
+      "queryType": "builder",
+      "panelType": "graph",
+      "queries": [
+        {
+          "type": "builder_query",
+          "spec": {
+            "name": "A",
+            "signal": "logs",
+            "stepInterval": 60,
+            "source": "",
+            "aggregations": [
+              {
+                "expression": "count()"
+              }
+            ],
+            "filter": {
+              "expression": "augmentloop.failure.class = 'budget_guard_tripped'"
+            },
+            "groupBy": [],
+            "order": [
+              {
+                "key": {
+                  "name": "count()"
+                },
+                "direction": "desc"
+              }
+            ],
+            "limit": 100,
+            "legend": "budget guard trips"
+          }
+        }
+      ]
+    },
+    "selectedQueryName": "A",
+    "thresholds": {
+      "kind": "basic",
+      "spec": [
+        {
+          "name": "critical",
+          "target": 2,
+          "targetUnit": "",
+          "recoveryTarget": null,
+          "matchType": "in_total",
+          "op": "above",
+          "channels": [
+            "gradebook-alerts"
+          ]
+        }
+      ]
+    }
+  },
+  "labels": {
+    "severity": "critical",
+    "team": "gradebook"
+  },
+  "evaluation": {
+    "kind": "rolling",
+    "spec": {
+      "evalWindow": "5m",
+      "frequency": "1m"
+    }
+  },
+  "disabled": false,
+  "preferredChannels": [
+    "gradebook-alerts"
+  ],
+  "notificationSettings": {
+    "groupBy": [],
+    "renotify": {
+      "enabled": true,
+      "interval": "10m",
+      "alertStates": [
+        "firing"
+      ]
+    }
+  },
+  "annotations": {
+    "description": "Gradebook budget guard tripped {{$value}} times in the last 5 minutes - 3 or more trips in that window is the repeated-trip threshold that needs a human look.",
+    "summary": "Gradebook budget guard tripped repeatedly"
+  }
+}

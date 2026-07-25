@@ -148,17 +148,22 @@ curl.exe -s -X POST http://localhost:8080/api/v2/rules -H "SIGNOZ-API-KEY: <your
 curl.exe -s -X POST http://localhost:8080/api/v2/rules -H "SIGNOZ-API-KEY: <your-key>" -H "Content-Type: application/json" --data-binary "@dashboards/alert-grade-quality-drop.json"
 curl.exe -s -X POST http://localhost:8080/api/v2/rules -H "SIGNOZ-API-KEY: <your-key>" -H "Content-Type: application/json" --data-binary "@dashboards/alert-grade-quality-anomaly.json"
 curl.exe -s -X POST http://localhost:8080/api/v2/rules -H "SIGNOZ-API-KEY: <your-key>" -H "Content-Type: application/json" --data-binary "@dashboards/alert-grading-pipeline-silent.json"
+curl.exe -s -X POST http://localhost:8080/api/v2/rules -H "SIGNOZ-API-KEY: <your-key>" -H "Content-Type: application/json" --data-binary "@dashboards/alert-budget-guard-trips.json"
 ```
 
-Five rules exist for this build: `alert-grade-quality-drop.json` (static 50%
+Six rules exist for this build: `alert-grade-quality-drop.json` (static 50%
 floor, kept intentionally alongside the anomaly rule - see its description
 for why), `alert-spend-spike.json`, `alert-grade-quality-anomaly.json`
 (seasonal anomaly on correct-decision volume, #49 - the primary
-grade-quality detector), and `alert-grading-pipeline-silent.json` (fires
-when no decisions of any kind have been graded for 10 minutes, #50). Every
-rule's `description` field carries the reasoning behind its design choices
-and any deployment-specific gotchas discovered while building it - read it
-before changing the query or thresholds.
+grade-quality detector), `alert-grading-pipeline-silent.json` (fires when no
+decisions of any kind have been graded for 10 minutes, #50), and
+`alert-budget-guard-trips.json` (log-based: fires when the budget guard
+trips 3 or more times within a rolling 5-minute window - a discrete
+failure-event stream, which is what logs and log-based alerts express
+cleanly and a metrics counter cannot). Every rule's `description` field
+carries the reasoning behind its design choices and any deployment-specific
+gotchas discovered while building it - read it before changing the query or
+thresholds.
 
 **Verified live on 2026-07-25.** Both new rules were confirmed evaluating on
 the running stack, not merely accepted by the API: the ruler logs an `Eval`
