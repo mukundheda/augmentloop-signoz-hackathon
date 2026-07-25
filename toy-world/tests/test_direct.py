@@ -1,6 +1,8 @@
 """Ticket #9 - direct-provider live client (temporary stopgap while OpenRouter
 credits are provisioned): Anthropic native SDK + Google's OpenAI-compatible
-Gemini endpoint.
+Gemini endpoint. Updated by ticket #33 for the Query-based `decide` signature
+(decision-type-agnostic: the client just sends `query.prompt` and calls
+`query.parse`).
 
 Fakes are duck-typed stand-ins for the real `anthropic` and `openai` SDK
 response shapes DirectClient reads from - no SDK import, no key, no spend -
@@ -12,9 +14,9 @@ import pytest
 
 from toyworld.direct import DirectClient
 from toyworld.live import DEFAULT_ROSTER, ModelDecision, run_live
-from toyworld.world import WORLD
+from toyworld.world import ALL_QUERIES, ROUTE_CHOICE_QUERIES
 
-J1 = WORLD[0]  # {"A": 7.0, "B": 9.0}; true fastest "A"
+Q1 = ROUTE_CHOICE_QUERIES[0]  # a lettered A/B route_choice query, like old J1
 
 
 # --- fakes: duck-typed stand-ins for the real SDK response shapes ---
@@ -122,7 +124,7 @@ def test_routes_anthropic_slugs_to_the_anthropic_fake():
     gemini_client = FakeGeminiClient(_ChatResponse("A"))
     client = DirectClient(anthropic_client=anthropic_client, gemini_client=gemini_client)
 
-    client.decide(model="anthropic/claude-haiku-4.5", junction=J1)
+    client.decide(model="anthropic/claude-haiku-4.5", query=Q1)
 
     assert len(anthropic_client.messages.calls) == 1
     assert len(gemini_client.chat.completions.calls) == 0
@@ -133,7 +135,7 @@ def test_routes_google_slugs_to_the_gemini_fake():
     gemini_client = FakeGeminiClient(_ChatResponse("A"))
     client = DirectClient(anthropic_client=anthropic_client, gemini_client=gemini_client)
 
-    client.decide(model="google/gemini-2.5-flash-lite", junction=J1)
+    client.decide(model="google/gemini-2.5-flash-lite", query=Q1)
 
     assert len(gemini_client.chat.completions.calls) == 1
     assert len(anthropic_client.messages.calls) == 0
@@ -148,7 +150,7 @@ def test_anthropic_response_parses_into_correct_model_decision_fields():
     )
     client = DirectClient(anthropic_client=FakeAnthropicClient(response))
 
-    decision = client.decide(model="anthropic/claude-haiku-4.5", junction=J1)
+    decision = client.decide(model="anthropic/claude-haiku-4.5", query=Q1)
 
     assert decision == ModelDecision(
         chosen="A", input_tokens=321, output_tokens=7, response_id="msg_abc123"
@@ -163,7 +165,7 @@ def test_anthropic_thinking_block_before_text_block_is_skipped():
     response.content = [_AnthropicThinkingBlock(), _AnthropicTextBlock("A")]
     client = DirectClient(anthropic_client=FakeAnthropicClient(response))
 
-    decision = client.decide(model="anthropic/claude-sonnet-5", junction=J1)
+    decision = client.decide(model="anthropic/claude-sonnet-5", query=Q1)
 
     assert decision.chosen == "A"
     assert decision.response_id == "msg_think1"
@@ -173,13 +175,14 @@ def test_anthropic_call_omits_temperature_and_sets_max_tokens():
     anthropic_client = FakeAnthropicClient(_AnthropicResponse("A"))
     client = DirectClient(anthropic_client=anthropic_client)
 
-    client.decide(model="anthropic/claude-haiku-4.5", junction=J1)
+    client.decide(model="anthropic/claude-haiku-4.5", query=Q1)
 
     call_kwargs = anthropic_client.messages.calls[0]
     # Anthropic calls never pass temperature (brief, and unlike the OpenAI-
     # compatible path which is fine setting temperature=0).
     assert "temperature" not in call_kwargs
     assert call_kwargs["max_tokens"] == 64
+    assert call_kwargs["messages"][0]["content"] == Q1.prompt
 
 
 # --- fail-loud on missing keys ---
@@ -190,7 +193,7 @@ def test_missing_anthropic_key_fails_loud_naming_the_env_var(monkeypatch):
     client = DirectClient()
 
     with pytest.raises(RuntimeError, match="ANTHROPIC_API_KEY"):
-        client.decide(model="anthropic/claude-haiku-4.5", junction=J1)
+        client.decide(model="anthropic/claude-haiku-4.5", query=Q1)
 
 
 def test_missing_gemini_key_fails_loud_naming_the_env_var(monkeypatch):
@@ -198,7 +201,7 @@ def test_missing_gemini_key_fails_loud_naming_the_env_var(monkeypatch):
     client = DirectClient()
 
     with pytest.raises(RuntimeError, match="GEMINI_API_KEY"):
-        client.decide(model="google/gemini-2.5-flash-lite", junction=J1)
+        client.decide(model="google/gemini-2.5-flash-lite", query=Q1)
 
 
 def test_anthropic_only_use_never_raises_about_gemini(monkeypatch):
@@ -207,7 +210,7 @@ def test_anthropic_only_use_never_raises_about_gemini(monkeypatch):
     anthropic_client = FakeAnthropicClient(_AnthropicResponse("A"))
     client = DirectClient(anthropic_client=anthropic_client)
 
-    decision = client.decide(model="anthropic/claude-haiku-4.5", junction=J1)
+    decision = client.decide(model="anthropic/claude-haiku-4.5", query=Q1)
 
     assert decision.chosen == "A"
 
@@ -219,7 +222,7 @@ def test_unknown_prefix_fails_loud_naming_the_slug():
     client = DirectClient()
 
     with pytest.raises(RuntimeError, match="mistral/foo"):
-        client.decide(model="mistral/foo", junction=J1)
+        client.decide(model="mistral/foo", query=Q1)
 
 
 # --- protocol conformance end to end ---
@@ -228,20 +231,18 @@ def test_unknown_prefix_fails_loud_naming_the_slug():
 def test_run_live_with_direct_client_fakes_produces_a_correct_summary(world):
     """DirectClient must plug into run_live exactly like OpenRouterClient or the
     test FakeClient does - proving it satisfies the ModelClient protocol, not
-    just its own unit tests."""
+    just its own unit tests. Every fake answers via `query.parse`/`query.correct`
+    directly (not string-matching the prompt), so it is agnostic to which of
+    the three decision types it's answering."""
     provider, _ = world
-
-    def _route_from_prompt(content: str) -> str:
-        for junction in WORLD:
-            if junction.name in content:
-                return junction.true_fastest
-        return "?"
 
     anthropic_calls = []
 
     class RoutingAnthropicMessages:
         def create(self, **kwargs):
-            chosen = _route_from_prompt(kwargs["messages"][0]["content"])
+            content = kwargs["messages"][0]["content"]
+            query = next(q for q in ALL_QUERIES if q.prompt == content)
+            chosen = str(query.correct)
             anthropic_calls.append(chosen)
             return _AnthropicResponse(chosen, response_id=f"msg-{len(anthropic_calls)}")
 
@@ -253,7 +254,9 @@ def test_run_live_with_direct_client_fakes_produces_a_correct_summary(world):
 
     class RoutingChatCompletions:
         def create(self, **kwargs):
-            chosen = _route_from_prompt(kwargs["messages"][0]["content"])
+            content = kwargs["messages"][0]["content"]
+            query = next(q for q in ALL_QUERIES if q.prompt == content)
+            chosen = str(query.correct)
             gemini_calls.append(chosen)
             return _ChatResponse(chosen, response_id=f"chat-{len(gemini_calls)}")
 
@@ -270,11 +273,11 @@ def test_run_live_with_direct_client_fakes_produces_a_correct_summary(world):
         gemini_client=RoutingGeminiClient(),
     )
 
-    summary = run_live(client, budget_usd=1.0, world_provider=provider)
+    summary = run_live(client, budget_usd=10.0, world_provider=provider)
 
-    assert summary.decisions == len(DEFAULT_ROSTER) * len(WORLD)
+    assert summary.decisions == len(DEFAULT_ROSTER) * len(ALL_QUERIES)
     assert summary.correct == summary.decisions  # every fake always answers correctly
     assert not summary.budget_exhausted
     assert set(summary.by_model) == set(DEFAULT_ROSTER)
-    assert len(anthropic_calls) == 2 * len(WORLD)  # 2 anthropic/* slugs in the roster
-    assert len(gemini_calls) == 1 * len(WORLD)  # 1 google/* slug in the roster
+    assert len(anthropic_calls) == 2 * len(ALL_QUERIES)  # 2 anthropic/* slugs in the roster
+    assert len(gemini_calls) == 1 * len(ALL_QUERIES)  # 1 google/* slug in the roster

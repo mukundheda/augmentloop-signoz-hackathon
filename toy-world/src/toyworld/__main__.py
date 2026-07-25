@@ -1,23 +1,28 @@
 """One command for the judge: `python -m toyworld` (spec user story 12).
 
 Replays the committed recording through the Gradebook library and exports the
-resulting spans to the Foundry SigNoz stack over OTLP/HTTP. Two logical
-services are emitted - `toy-world` (journeys + decisions) and
-`toy-world-outcomes` (the late reality grades) - so both appear in SigNoz and
-the deferred grade demonstrably crosses a service boundary.
+resulting spans to the Foundry SigNoz stack over OTLP/HTTP, service
+`toy-world`. Three decision types run (ticket #33: route_choice, eta_estimate,
+next_hop) over the 20-junction graph in `world.py`.
 
 `python -m toyworld --live` (ticket #9) instead runs every roster model over
-the same junctions through real model calls, under a per-run budget cap
-(`--budget`, default $0.50), to populate the model-vs-model comparison.
-`--provider openrouter` (the default) needs `OPENROUTER_API_KEY`.
-`--provider direct` is a TEMPORARY stopgap for while OpenRouter credits are
-provisioned: it reaches Anthropic natively (`ANTHROPIC_API_KEY`) and Gemini via
-its OpenAI-compatible endpoint (`GEMINI_API_KEY`) instead. Either way, live
-mode needs the `[live]` extra; replay needs neither.
+every query through real model calls, under a per-run budget cap (`--budget`,
+default $0.50), to populate the model-vs-model comparison. `--provider
+openrouter` (the default) needs `OPENROUTER_API_KEY`. `--provider direct` is a
+TEMPORARY stopgap for while OpenRouter credits are provisioned: it reaches
+Anthropic natively (`ANTHROPIC_API_KEY`) and Gemini via its OpenAI-compatible
+endpoint (`GEMINI_API_KEY`) instead. Either way, live mode needs the `[live]`
+extra; replay needs neither.
+
+`python -m toyworld --live --record` (ticket #33) additionally writes every
+decision to a replay file (`--output`, default `recordings/replay-v1.jsonl`)
+as it happens - the mechanism that lets a real run become the next committed
+recording, instead of a hand-authored one. See `recorder.py`'s docstring.
 
 Endpoint defaults to http://localhost:4318; override with
-OTEL_EXPORTER_OTLP_ENDPOINT. The run also prints a summary so the numbers can
-be eyeballed against the dashboards.
+OTEL_EXPORTER_OTLP_ENDPOINT. The run also prints a summary - overall, by
+model, and by (model, decision type) - so the numbers can be eyeballed against
+the dashboards.
 """
 
 from __future__ import annotations
@@ -77,39 +82,43 @@ def _print_per_model(by_model: dict) -> None:
         )
 
 
-def _run_replay() -> None:
-    world_resource = Resource.create({"service.name": "toy-world"})
-    outcomes_resource = Resource.create({"service.name": "toy-world-outcomes"})
+def _print_per_model_type(by_model_type: dict) -> None:
+    print("per model x decision type:")
+    for (model, decision_type), row in sorted(by_model_type.items()):
+        print(
+            f"  {model} / {decision_type}: "
+            f"{row['correct']:.0f}/{row['decisions']:.0f} correct, "
+            f"${row['cost_usd']:.6f}"
+        )
 
-    world = _tracer_provider(world_resource)
-    outcomes = _tracer_provider(outcomes_resource)
-    world_meters = _meter_provider(world_resource)
-    outcomes_meters = _meter_provider(outcomes_resource)
+
+def _run_replay() -> None:
+    resource = Resource.create({"service.name": "toy-world"})
+    world = _tracer_provider(resource)
+    world_meters = _meter_provider(resource)
 
     summary = replay(
         RECORDING,
         world_provider=world,
-        outcomes_provider=outcomes,
         world_meter_provider=world_meters,
-        outcomes_meter_provider=outcomes_meters,
     )
 
-    for provider in (world, outcomes, world_meters, outcomes_meters):
+    for provider in (world, world_meters):
         provider.force_flush()
         provider.shutdown()
 
     print(f"Replayed {RECORDING.name} -> {ENDPOINT}")
     print(
         f"decisions={summary.decisions}  correct={summary.correct}  "
-        f"reality_outcomes={summary.outcomes}  "
         f"total_cost=${summary.total_cost_usd:.6f}"
     )
     if summary.cost_per_correct_usd is not None:
         print(f"cost per correct decision: ${summary.cost_per_correct_usd:.6f}")
     _print_per_model(summary.by_model)
-    print("Open SigNoz -> Traces: filter service.name=toy-world for the journey")
-    print("waterfalls; the late journey.on_time grades under toy-world-outcomes")
-    print("span-link back to the decisions they judge.")
+    _print_per_model_type(summary.by_model_type)
+    print("Open SigNoz -> Traces: filter service.name=toy-world; each model is one")
+    print("trace, each query one span carrying augmentloop.decision.type and")
+    print("augmentloop.decision.difficulty.")
 
 
 def _make_client(provider: str) -> "OpenRouterClient | DirectClient":
@@ -124,39 +133,59 @@ def _make_client(provider: str) -> "OpenRouterClient | DirectClient":
     return OpenRouterClient()
 
 
+def _production_pairs(routing_path: Path):
+    """Every query, routed to whichever model the committed table currently
+    assigns to ITS decision type (ticket #33: three types can each be routed
+    independently, not one model for the whole run)."""
+    from .routing import load_routing, routed_model
+    from .world import ALL_QUERIES
+
+    routing = load_routing(routing_path)
+    pairs = [(routed_model(routing, q.decision_type), q) for q in ALL_QUERIES]
+    for decision_type, model in sorted(routing.items()):
+        print(f"Production routing ({routing_path.name}): {decision_type} -> {model}")
+    return pairs
+
+
 def _run_live(
-    budget_usd: float, provider: str, routing_path: Optional[Path] = None
+    budget_usd: float,
+    provider: str,
+    routing_path: Optional[Path],
+    record: bool,
+    output_path: Path,
 ) -> None:
-    from .live import DECISION_TYPE, DEFAULT_ROSTER, run_live
+    from .live import run_live
+    from .recorder import record_live
 
-    world_resource = Resource.create({"service.name": "toy-world"})
-    world = _tracer_provider(world_resource)
-    world_meters = _meter_provider(world_resource)
+    resource = Resource.create({"service.name": "toy-world"})
+    world = _tracer_provider(resource)
+    world_meters = _meter_provider(resource)
 
-    # Comparison mode runs the whole roster - that is what produces the
-    # cost-per-correct-by-model evidence the right-sizing proposal reads.
-    # Production mode (ticket #10) runs only the model the committed routing
-    # table currently assigns to this decision type, so a run before and a run
-    # after an approved reroute are directly comparable.
-    roster = DEFAULT_ROSTER
-    if routing_path is not None:
-        from .routing import load_routing, routed_model
+    # Comparison mode (pairs=None -> the full roster x query cross-product) is
+    # what produces the cost-per-correct-by-model-by-type evidence the
+    # right-sizing proposal reads. Production mode (ticket #10, extended by
+    # #33) instead runs only the model the committed routing table currently
+    # assigns to EACH decision type, so a run before and a run after an
+    # approved reroute are directly comparable.
+    pairs = _production_pairs(routing_path) if routing_path is not None else None
 
-        routing = load_routing(routing_path)
-        model = routed_model(routing, DECISION_TYPE)
-        roster = (model,)
-        print(
-            f"Production routing ({routing_path.name}): "
-            f"{DECISION_TYPE} -> {model}"
+    if record:
+        summary = record_live(
+            _make_client(provider),
+            budget_usd=budget_usd,
+            pairs=pairs,
+            output_path=output_path,
+            world_provider=world,
+            world_meter_provider=world_meters,
         )
-
-    summary = run_live(
-        _make_client(provider),
-        budget_usd=budget_usd,
-        roster=roster,
-        world_provider=world,
-        world_meter_provider=world_meters,
-    )
+    else:
+        summary = run_live(
+            _make_client(provider),
+            budget_usd=budget_usd,
+            pairs=pairs,
+            world_provider=world,
+            world_meter_provider=world_meters,
+        )
 
     for telemetry_provider in (world, world_meters):
         telemetry_provider.force_flush()
@@ -171,8 +200,12 @@ def _run_live(
     if summary.cost_per_correct_usd is not None:
         print(f"cost per correct decision: ${summary.cost_per_correct_usd:.6f}")
     _print_per_model(summary.by_model)
+    _print_per_model_type(summary.by_model_type)
+    if record:
+        print(f"Recorded {summary.decisions} decisions -> {output_path}")
     print("Open SigNoz -> Traces: filter service.name=toy-world; each model is one")
-    print("trace. The cost-per-correct-by-model panel is the right-sizing evidence.")
+    print("trace. The cost-per-correct-by-model-by-type panel is the right-sizing")
+    print("evidence.")
 
 
 def main() -> None:
@@ -201,7 +234,7 @@ def main() -> None:
     parser.add_argument(
         "--production",
         action="store_true",
-        help="run only the model the committed routing table assigns to this "
+        help="run only the models the committed routing table assigns to each "
         "decision type, instead of the whole comparison roster (ticket #10). "
         "Use this for the before/after either side of an approved reroute",
     )
@@ -213,6 +246,20 @@ def main() -> None:
         help=f"routing table for --production (default: {DEFAULT_ROUTING_PATH.name} "
         "beside the package, which is the committed table the approval step edits)",
     )
+    parser.add_argument(
+        "--record",
+        action="store_true",
+        help="write every --live decision to --output as a replay recording "
+        "(ticket #33). Needs --live; the recording is what a future "
+        "`python -m toyworld` (no flags) replays",
+    )
+    parser.add_argument(
+        "--output",
+        type=Path,
+        default=RECORDING,
+        metavar="PATH",
+        help=f"where --record writes the recording (default: {RECORDING})",
+    )
     args = parser.parse_args()
 
     if args.production and not args.live:
@@ -222,11 +269,20 @@ def main() -> None:
             "whose models are already fixed."
         )
 
+    if args.record and not args.live:
+        parser.error(
+            "--record captures a real run into a replay file, so it needs "
+            "--live. Replay has nothing new to capture: it already reads a "
+            "recording."
+        )
+
     if args.live:
         _run_live(
             args.budget,
             args.provider,
             routing_path=args.routing if args.production else None,
+            record=args.record,
+            output_path=args.output,
         )
     else:
         _run_replay()

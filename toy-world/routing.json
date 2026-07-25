@@ -1,3 +1,5 @@
 {
-  "route_choice": "anthropic/claude-sonnet-4.6"
+  "route_choice": "anthropic/claude-sonnet-4.6",
+  "eta_estimate": "anthropic/claude-sonnet-4.6",
+  "next_hop": "anthropic/claude-sonnet-4.6"
 }

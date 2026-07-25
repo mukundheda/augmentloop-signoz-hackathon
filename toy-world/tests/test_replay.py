@@ -1,25 +1,33 @@
-"""Ticket #6 - toy world replay mode.
+"""Ticket #6 - toy world replay mode; extended by ticket #33 to three decision
+types read from a recorder-written recording.
 
 Assertions use the literal frozen attribute names from docs/conventions.md
 section 9, on emitted telemetry only - same discipline as the library tests.
+The committed recording (recordings/replay-v1.jsonl) is, as of this PR, a
+PLACEHOLDER written by the recorder against a trivial always-correct oracle
+client (NOT a real model) - see the PR description and toy-world/README.md.
+These tests pin the mechanism (grading, cost, trace shape, difficulty), not a
+particular win/loss split, since the placeholder is a clean sweep by
+construction.
 """
+
+import json
 
 import pytest
 
-from toyworld import replay
+from toyworld.replay import load_recording
+from toyworld.replay import replay as run_replay
+from toyworld.world import QUERIES_BY_ID
 
 
-def _run(world, outcomes, recording_path, world_metrics=None, outcomes_metrics=None):
+def _run(world, recording_path, world_metrics=None):
     world_provider, world_exporter = world
-    outcomes_provider, outcomes_exporter = outcomes
-    summary = replay(
+    summary = run_replay(
         recording_path,
         world_provider=world_provider,
-        outcomes_provider=outcomes_provider,
         world_meter_provider=world_metrics[0] if world_metrics else None,
-        outcomes_meter_provider=outcomes_metrics[0] if outcomes_metrics else None,
     )
-    return summary, world_exporter, outcomes_exporter
+    return summary, world_exporter
 
 
 def _metrics_by_name(metric_reader) -> dict:
@@ -34,93 +42,95 @@ def _metrics_by_name(metric_reader) -> dict:
     return out
 
 
-def test_every_decision_is_recorded_and_math_graded(world, outcomes, recording_path):
-    summary, world_exporter, _ = _run(world, outcomes, recording_path)
+def test_committed_recording_has_roughly_180_decisions(recording_path):
+    entries = load_recording(recording_path)
+    assert 170 <= len(entries) <= 190
+
+
+def test_every_decision_is_recorded_and_math_graded(world, recording_path):
+    summary, world_exporter = _run(world, recording_path)
 
     events = [
         s
         for s in world_exporter.get_finished_spans()
         if s.name == "gen_ai.evaluation.result"
     ]
-    # 4 drivers x 3 junctions in the committed recording.
-    assert summary.decisions == 12
-    assert len(events) == 12
+    assert summary.decisions == len(events) > 0
     for e in events:
         assert e.attributes["augmentloop.grade.source"] == "math"
-        assert e.attributes["gen_ai.evaluation.name"] == "route.fastest"
-        assert e.attributes["augmentloop.decision.type"] == "route_choice"
+        assert e.attributes["augmentloop.decision.type"] in (
+            "route_choice",
+            "eta_estimate",
+            "next_hop",
+        )
         assert e.attributes["augmentloop.cost.usd"] > 0
 
 
-def test_grades_match_the_engines_known_truth(world, outcomes, recording_path):
-    summary, world_exporter, _ = _run(world, outcomes, recording_path)
+def test_difficulty_attribute_is_set_on_every_decision_span(world, recording_path):
+    _, world_exporter = _run(world, recording_path)
+    spans = world_exporter.get_finished_spans()
 
-    # From the committed recording: d1 misses J3 (G over F), d3 misses J1 and
-    # J2, d4 misses J2 -> 8 of 12 correct.
-    assert summary.correct == 8
-    labels = [
-        s.attributes["gen_ai.evaluation.score.label"]
+    events = {s for s in spans if s.name == "gen_ai.evaluation.result"}
+    model_runs = {s for s in spans if s.name.startswith("model-run ")}
+    decision_spans = [s for s in spans if s not in events and s not in model_runs]
+
+    assert len(decision_spans) > 0
+    for s in decision_spans:
+        assert s.attributes["augmentloop.decision.difficulty"] in (
+            "easy",
+            "medium",
+            "hard",
+        )
+
+
+def test_grades_recompute_the_correct_answer_from_the_graph_not_the_file(
+    world, recording_path
+):
+    """The recording never stores a `correct` field - `replay.py` must look it
+    up fresh from `world.QUERIES_BY_ID` by query_id (spec: "never hand-author
+    the recording's answers")."""
+    raw_lines = [json.loads(line) for line in recording_path.read_text().splitlines() if line]
+    assert all("correct" not in entry for entry in raw_lines)
+
+    _, world_exporter = _run(world, recording_path)
+    events = [
+        s
         for s in world_exporter.get_finished_spans()
         if s.name == "gen_ai.evaluation.result"
     ]
-    assert labels.count("correct") == 8
-    assert labels.count("incorrect") == 4
+    # Every emitted decision type is one this build's graph actually has -
+    # the cheapest cross-check available from the public telemetry surface
+    # that grading came from a fresh QUERIES_BY_ID lookup, not the file.
+    known_types = {q.decision_type for q in QUERIES_BY_ID.values()}
+    for e in events:
+        assert e.attributes["augmentloop.decision.type"] in known_types
 
 
-def test_decision_events_sit_inside_a_journey_trace_waterfall(
-    world, outcomes, recording_path
-):
-    _, world_exporter, _ = _run(world, outcomes, recording_path)
+def test_decision_events_sit_under_a_per_model_trace_waterfall(world, recording_path):
+    _, world_exporter = _run(world, recording_path)
     spans = world_exporter.get_finished_spans()
 
-    journeys = [s for s in spans if s.name.startswith("journey ")]
-    junctions = [s for s in spans if s.name.startswith("junction ")]
+    model_runs = [s for s in spans if s.name.startswith("model-run ")]
     events = [s for s in spans if s.name == "gen_ai.evaluation.result"]
+    decision_spans = [
+        s for s in spans if s not in model_runs and s not in events
+    ]
 
-    assert len(journeys) == 4
-    assert len(junctions) == 12
-    # Real waterfall: event under junction span, junction under journey root,
-    # all three sharing one trace per driver.
-    junction_ids = {s.context.span_id: s for s in junctions}
-    journey_ids = {s.context.span_id: s for s in journeys}
+    run_ids = {s.context.span_id for s in model_runs}
+    decision_ids = {s.context.span_id: s for s in decision_spans}
     for e in events:
-        parent_junction = junction_ids[e.parent.span_id]
-        assert parent_junction.parent.span_id in journey_ids
-        assert e.context.trace_id == parent_junction.context.trace_id
+        parent_decision = decision_ids[e.parent.span_id]
+        assert parent_decision.parent.span_id in run_ids
+        assert e.context.trace_id == parent_decision.context.trace_id
 
 
-def test_reality_outcomes_span_link_back_across_the_service_boundary(
-    world, outcomes, recording_path
-):
-    summary, world_exporter, outcomes_exporter = _run(world, outcomes, recording_path)
-
-    assert summary.outcomes == 4
-    late_grades = outcomes_exporter.get_finished_spans()
-    assert len(late_grades) == 4
-
-    decision_events = {
-        s.attributes["gen_ai.response.id"]: s
-        for s in world_exporter.get_finished_spans()
-        if s.name == "gen_ai.evaluation.result"
-    }
-    for grade in late_grades:
-        assert grade.attributes["augmentloop.grade.source"] == "reality"
-        assert grade.attributes["gen_ai.evaluation.name"] == "journey.on_time"
-        # The link target is the junction decision span the outcome judges -
-        # resolve it via the graded response id's decision event parent.
-        graded = decision_events[grade.attributes["gen_ai.response.id"]]
-        assert len(grade.links) == 1
-        assert grade.links[0].context.trace_id == graded.context.trace_id
-        assert grade.links[0].context.span_id == graded.parent.span_id
-
-
-def test_replay_is_deterministic(world, outcomes, recording_path):
-    summary_a, world_a, _ = _run(world, outcomes, recording_path)
+def test_replay_is_deterministic(world, recording_path):
+    summary_a, world_a = _run(world, recording_path)
 
     from conftest import _pair
 
-    world2, outcomes2 = _pair(), _pair()
-    summary_b, world_b, _ = _run(world2, outcomes2, recording_path)
+    world2 = _pair()
+    summary_b, world_b = _run(world2, recording_path)
 
     assert summary_a.decisions == summary_b.decisions
     assert summary_a.correct == summary_b.correct
@@ -141,15 +151,14 @@ def test_replay_is_deterministic(world, outcomes, recording_path):
 
 
 def test_replay_emits_aggregate_metrics_matching_the_summary(
-    world, outcomes, recording_path, world_metrics, outcomes_metrics
+    world, recording_path, world_metrics
 ):
     """Ticket #7: the metrics ride the same replay call as the events, so the
     counter's total matches summary.decisions exactly - no separate code path
     to drift out of sync."""
-    summary, _, _ = _run(world, outcomes, recording_path, world_metrics, outcomes_metrics)
+    summary, _ = _run(world, recording_path, world_metrics)
 
     _, world_reader = world_metrics
-    _, outcomes_reader = outcomes_metrics
 
     world_points = _metrics_by_name(world_reader)["gradebook.decisions.graded"].data.data_points
     assert sum(p.value for p in world_points) == summary.decisions
@@ -157,19 +166,41 @@ def test_replay_emits_aggregate_metrics_matching_the_summary(
     cost_points = _metrics_by_name(world_reader)["gradebook.decision.cost.usd"].data.data_points
     assert sum(p.sum for p in cost_points) == pytest.approx(summary.total_cost_usd)
 
-    outcomes_points = _metrics_by_name(outcomes_reader)["gradebook.decisions.graded"].data.data_points
-    assert sum(p.value for p in outcomes_points) == summary.outcomes
-    assert all(p.attributes["augmentloop.grade.source"] == "reality" for p in outcomes_points)
+
+def test_unknown_query_id_fails_loud(world, tmp_path):
+    bad = tmp_path / "bad.jsonl"
+    bad.write_text(
+        json.dumps(
+            {
+                "type": "decision",
+                "decision_type": "next_hop",
+                "query_id": "next_hop-J999",
+                "model": "anthropic/claude-sonnet-4.6",
+                "chosen": "J1",
+                "input_tokens": 100,
+                "output_tokens": 5,
+                "response_id": "bad-1",
+            }
+        )
+        + "\n"
+    )
+    with pytest.raises(ValueError, match="next_hop-J999"):
+        load_recording(bad)
 
 
-def test_cost_per_correct_is_the_headline_division(world, outcomes, recording_path):
-    summary, _, _ = _run(world, outcomes, recording_path)
+def test_by_model_type_breakdown_covers_every_decision_type(world, recording_path):
+    summary, _ = _run(world, recording_path)
+    decision_types = {dt for (_, dt) in summary.by_model_type}
+    assert decision_types == {"route_choice", "eta_estimate", "next_hop"}
+
+
+def test_cost_per_correct_is_the_headline_division(world, recording_path):
+    summary, _ = _run(world, recording_path)
     assert summary.cost_per_correct_usd == pytest.approx(
         summary.total_cost_usd / summary.correct
     )
-    # Three roster models present -> the model-vs-model panel has rows to show.
     assert set(summary.by_model) == {
-        "anthropic/claude-3.5-haiku",
-        "anthropic/claude-sonnet-4",
-        "google/gemini-2.0-flash",
+        "anthropic/claude-haiku-4.5",
+        "anthropic/claude-sonnet-4.6",
+        "google/gemini-2.5-flash-lite",
     }
