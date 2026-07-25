@@ -1,8 +1,14 @@
 import type {
+  AgentLog,
+  AgentObservability,
+  AgentSpan,
   AgentDecision,
+  AttributeValue,
   Coordinate,
+  CoverageState,
   DecisionType,
   Difficulty,
+  EvidenceSource,
   RaceRun
 } from "./domain";
 
@@ -28,6 +34,22 @@ const asNumber = (value: unknown, label: string): number => {
   return value;
 };
 
+const asOptionalString = (value: unknown, label: string): string | undefined => {
+  if (value === undefined || value === null) return undefined;
+  return asString(value, label);
+};
+
+const asOptionalText = (value: unknown, label: string): string | undefined => {
+  if (value === undefined || value === null) return undefined;
+  if (typeof value !== "string") throw new Error(`${label} must be a string`);
+  return value;
+};
+
+const asStringArray = (value: unknown, label: string): string[] => {
+  if (!Array.isArray(value)) throw new Error(`${label} must be an array`);
+  return value.map((item, index) => asString(item, `${label} ${index}`));
+};
+
 const asCoordinate = (value: unknown, label: string): Coordinate => {
   if (!Array.isArray(value) || value.length !== 2) throw new Error(`${label} must be [lon,lat]`);
   return [asNumber(value[0], label), asNumber(value[1], label)];
@@ -35,10 +57,137 @@ const asCoordinate = (value: unknown, label: string): Coordinate => {
 
 const DECISION_TYPES = new Set(["route_choice", "eta_estimate", "next_hop"]);
 const DIFFICULTIES = new Set(["easy", "medium", "hard"]);
+const HEX_32 = /^[0-9a-f]{32}$/;
+const HEX_16 = /^[0-9a-f]{16}$/;
+const NANOSECONDS = /^\d+$/;
+const SPAN_STATUSES = new Set(["unset", "ok", "error"]);
+const EVIDENCE_SOURCES = new Set(["signoz", "replay"]);
+const LOG_SEVERITIES = new Set(["TRACE", "DEBUG", "INFO", "WARN", "ERROR", "FATAL"]);
+
+const asCanonicalId = (value: unknown, label: string, pattern: RegExp): string => {
+  const identifier = asString(value, label);
+  if (!pattern.test(identifier)) throw new Error(`${label} must be canonical lowercase hexadecimal`);
+  return identifier;
+};
+
+const asOptionalCanonicalId = (value: unknown, label: string, pattern: RegExp): string | undefined => {
+  if (value === undefined || value === null) return undefined;
+  return asCanonicalId(value, label, pattern);
+};
+
+const asNanoseconds = (value: unknown, label: string): string => {
+  const timestamp = asString(value, label);
+  if (!NANOSECONDS.test(timestamp)) throw new Error(`${label} must be a decimal-string nanosecond timestamp`);
+  return timestamp;
+};
+
+const asAttributes = (value: unknown, label: string): Record<string, AttributeValue> => {
+  const record = asRecord(value, label);
+  const attributes: Record<string, AttributeValue> = {};
+  for (const [key, attribute] of Object.entries(record)) {
+    if (typeof attribute === "string" || typeof attribute === "boolean") {
+      attributes[key] = attribute;
+    } else if (typeof attribute === "number" && Number.isFinite(attribute)) {
+      attributes[key] = attribute;
+    } else {
+      throw new Error(`${label}.${key} must be a primitive finite value`);
+    }
+  }
+  return attributes;
+};
+
+const parseSpan = (value: unknown, index: number, mode: EvidenceSource): AgentSpan => {
+  const span = asRecord(value, `span ${index}`);
+  const source = asString(span.source, `span ${index} source`);
+  if (!EVIDENCE_SOURCES.has(source) || source !== mode) throw new Error(`span ${index} source does not match observability mode`);
+  const traceId = asOptionalCanonicalId(span.trace_id, `span ${index} trace id`, HEX_32);
+  if (mode === "replay" && traceId !== undefined) throw new Error("replay spans must not expose a trace ID");
+  const status = asString(span.status, `span ${index} status`);
+  if (!SPAN_STATUSES.has(status)) throw new Error(`span ${index} has an unknown status`);
+  return {
+    span_id: asCanonicalId(span.span_id, `span ${index} id`, HEX_16),
+    parent_span_id: asOptionalCanonicalId(span.parent_span_id, `span ${index} parent span id`, HEX_16),
+    trace_id: traceId,
+    name: asString(span.name, `span ${index} name`),
+    service_name: asString(span.service_name, `span ${index} service name`),
+    start_time_unix_nano: asNanoseconds(span.start_time_unix_nano, `span ${index} timestamp`),
+    duration_ms: asNumber(span.duration_ms, `span ${index} duration`),
+    status: status as AgentSpan["status"],
+    source: source as EvidenceSource,
+    attributes: asAttributes(span.attributes, `span ${index} attributes`),
+    linked_span_ids: asStringArray(span.linked_span_ids, `span ${index} linked span ids`).map((id, linkedIndex) =>
+      asCanonicalId(id, `span ${index} linked span ${linkedIndex}`, HEX_16)
+    )
+  };
+};
+
+const parseLog = (value: unknown, index: number, mode: EvidenceSource): AgentLog => {
+  const log = asRecord(value, `log ${index}`);
+  const source = asString(log.source, `log ${index} source`);
+  if (!EVIDENCE_SOURCES.has(source) || source !== mode) throw new Error(`log ${index} source does not match observability mode`);
+  const traceId = asOptionalCanonicalId(log.trace_id, `log ${index} trace id`, HEX_32);
+  if (mode === "replay" && traceId !== undefined) throw new Error("replay logs must not expose a trace ID");
+  const severity = asString(log.severity, `log ${index} severity`);
+  if (!LOG_SEVERITIES.has(severity)) throw new Error(`log ${index} has an unknown severity`);
+  return {
+    timestamp_unix_nano: asNanoseconds(log.timestamp_unix_nano, `log ${index} timestamp`),
+    severity: severity as AgentLog["severity"],
+    body: asString(log.body, `log ${index} body`),
+    source: source as EvidenceSource,
+    trace_id: traceId,
+    span_id: asOptionalCanonicalId(log.span_id, `log ${index} span id`, HEX_16),
+    attributes: asAttributes(log.attributes, `log ${index} attributes`)
+  };
+};
+
+const parseLinks = (value: unknown): AgentObservability["links"] => {
+  const links = asRecord(value, "observability links");
+  return {
+    trace: asOptionalText(links.trace, "trace link"),
+    logs: asOptionalText(links.logs, "logs link"),
+    dashboard: asOptionalText(links.dashboard, "dashboard link"),
+    traceSearch: asOptionalText(links.traceSearch, "trace search link")
+  };
+};
+
+const parseObservability = (value: unknown, responseId: string): AgentObservability => {
+  const observation = asRecord(value, "observability");
+  const mode = asString(observation.mode, "observability mode");
+  if (mode !== "signoz" && mode !== "replay") throw new Error("observability mode must be signoz or replay");
+  if (asString(observation.response_id, "observability response id") !== responseId) {
+    throw new Error("observability response id must match agent response id");
+  }
+  const traceId = asOptionalCanonicalId(observation.trace_id, "observability trace id", HEX_32);
+  const evaluationSpanId = asOptionalCanonicalId(observation.evaluation_span_id, "observability evaluation span id", HEX_16);
+  if (mode === "signoz" && (traceId === undefined || evaluationSpanId === undefined)) {
+    throw new Error("signoz observability requires trace and evaluation span IDs");
+  }
+  if (mode === "replay" && traceId !== undefined) throw new Error("replay observability must not expose a trace ID");
+  if (!Array.isArray(observation.spans) || !Array.isArray(observation.logs)) {
+    throw new Error("observability spans and logs must be arrays");
+  }
+  const spans = observation.spans.map((span, index) => parseSpan(span, index, mode));
+  const spanIds = new Set<string>();
+  for (const span of spans) {
+    if (spanIds.has(span.span_id)) throw new Error(`duplicate observability span ${span.span_id}`);
+    spanIds.add(span.span_id);
+  }
+  return {
+    mode,
+    response_id: responseId,
+    service_name: asString(observation.service_name, "observability service name"),
+    trace_id: traceId,
+    evaluation_span_id: evaluationSpanId,
+    synchronized_at: asOptionalString(observation.synchronized_at, "observability synchronized at"),
+    spans,
+    logs: observation.logs.map((log, index) => parseLog(log, index, mode)),
+    links: parseLinks(observation.links)
+  };
+};
 
 export function parseRaceData(value: unknown): RaceRun {
   const root = asRecord(value, "run");
-  if (root.schema_version !== 2) throw new Error("unsupported schema version");
+  if (root.schema_version !== 3) throw new Error("unsupported schema version");
   if (!Array.isArray(root.agents) || !Array.isArray(root.outcomes)) {
     throw new Error("agents and outcomes must be arrays");
   }
@@ -78,14 +227,38 @@ export function parseRaceData(value: unknown): RaceRun {
       cost_usd: asNumber(agent.cost_usd, "cost"),
       input_tokens: asNumber(agent.input_tokens, "input tokens"),
       output_tokens: asNumber(agent.output_tokens, "output tokens"),
-      outcome: agent.outcome as AgentDecision["outcome"]
+      outcome: agent.outcome as AgentDecision["outcome"],
+      observability: parseObservability(agent.observability, responseId)
     };
   });
+  const matchedEvidence = agents.filter((agent) =>
+    agent.observability.mode === "signoz"
+    && agent.observability.trace_id !== undefined
+    && HEX_32.test(agent.observability.trace_id)
+    && agent.observability.evaluation_span_id !== undefined
+    && HEX_16.test(agent.observability.evaluation_span_id)
+  ).length;
+  const derivedCoverage: CoverageState = matchedEvidence === 0
+    ? { kind: "offline" as const, matched: 0, total: agents.length }
+    : matchedEvidence === agents.length
+      ? { kind: "connected" as const, matched: matchedEvidence, total: agents.length }
+      : { kind: "partial" as const, matched: matchedEvidence, total: agents.length };
+  const coverage = asRecord(root.observability_coverage, "observability coverage");
+  const coverageKind = asString(coverage.kind, "observability coverage kind");
+  const coverageMatched = asNumber(coverage.matched, "observability coverage matched");
+  const coverageTotal = asNumber(coverage.total, "observability coverage total");
+  if (
+    coverageKind !== derivedCoverage.kind
+    || coverageMatched !== derivedCoverage.matched
+    || coverageTotal !== derivedCoverage.total
+  ) {
+    throw new Error("observability coverage must match agent evidence");
+  }
   const totals = asRecord(root.totals, "totals");
   const byType = asRecord(totals.by_type, "by type") as RaceRun["totals"]["by_type"];
   const byModel = asRecord(totals.by_model, "by model") as Record<string, number>;
   return {
-    schema_version: 2,
+    schema_version: 3,
     generated_from: asString(root.generated_from, "generated from"),
     agents,
     outcomes: root.outcomes as RaceRun["outcomes"],
@@ -99,7 +272,8 @@ export function parseRaceData(value: unknown): RaceRun {
         : asNumber(totals.cost_per_correct_usd, "cost per correct"),
       by_type: byType,
       by_model: byModel
-    }
+    },
+    observability_coverage: derivedCoverage
   };
 }
 

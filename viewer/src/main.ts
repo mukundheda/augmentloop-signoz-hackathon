@@ -1,6 +1,7 @@
 import "./styles.css";
-import type { PuneMap, RoadMapping } from "./domain";
+import type { PuneMap, RoadMapping, SigNozConfig } from "./domain";
 import { createHud, type HudProgress } from "./hud";
+import { observabilityCoverage, parseSigNozConfig } from "./observability";
 import { parseRaceData } from "./replay";
 import { RaceScene, type CameraPreset } from "./scene";
 
@@ -8,6 +9,20 @@ async function loadJson<T>(url: string): Promise<T> {
   const response = await fetch(url);
   if (!response.ok) throw new Error(`Could not load ${url} (${response.status})`);
   return response.json() as Promise<T>;
+}
+
+const offlineConfig: SigNozConfig = {
+  signoz_origin: null,
+  dashboard_path: null,
+  service_names: ["toy-world", "toy-world-outcomes"]
+};
+
+function publicSigNozConfig(value: unknown): SigNozConfig {
+  try {
+    return parseSigNozConfig(value);
+  } catch {
+    return offlineConfig;
+  }
 }
 
 async function boot() {
@@ -50,16 +65,19 @@ async function boot() {
   `;
 
   try {
-    const [rawRun, map, roads] = await Promise.all([
+    const [rawRun, map, roads, rawConfig] = await Promise.all([
       loadJson<unknown>("/data/run.json"),
       loadJson<PuneMap>("/data/pune-map.geojson"),
-      loadJson<RoadMapping>("/data/toyworld-roads.json")
+      loadJson<RoadMapping>("/data/toyworld-roads.json"),
+      loadJson<unknown>("/data/signoz-config.json").catch(() => offlineConfig)
     ]);
     const run = parseRaceData(rawRun);
+    const config = publicSigNozConfig(rawConfig);
     const viewport = app.querySelector<HTMLElement>(".viewport")!;
     const panel = app.querySelector<HTMLElement>(".side-panel")!;
     const scene = new RaceScene(viewport, map, roads);
-    const hud = createHud(panel, run);
+    const hud = createHud(panel, run, config);
+    hud.setCoverage(observabilityCoverage(run.agents));
     let speed = 1;
     let progress: HudProgress = { completed: 0, correct: 0, cost: 0, wave: 0, waves: 0 };
 

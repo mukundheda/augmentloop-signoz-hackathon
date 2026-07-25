@@ -12,10 +12,13 @@ from collections import Counter, defaultdict
 from pathlib import Path
 from typing import Any, Iterable
 
+from observability import build_replay_observability, coverage_for, load_sidecar
+
 ROOT = Path(__file__).resolve().parents[1]
 DATA_DIR = ROOT / "viewer" / "public" / "data"
 RECORDING = ROOT / "toy-world" / "recordings" / "replay-v1.jsonl"
 OSM_SOURCE = ROOT / ".scratch" / "osm-pune-source.json"
+SIGNOZ_SIDECAR = ROOT / ".scratch" / "viewer-signoz-observability.json"
 
 
 def _load_module(name: str, path: Path):
@@ -265,9 +268,13 @@ def _load_recording(path: Path) -> tuple[list[dict[str, Any]], list[dict[str, An
     return decisions, outcomes
 
 
-def build_run_document(recording_path: Path = RECORDING) -> dict[str, Any]:
+def build_run_document(
+    recording_path: Path = RECORDING,
+    sidecar_path: Path = SIGNOZ_SIDECAR,
+) -> dict[str, Any]:
     mapping = build_road_mapping()
     decisions, outcomes = _load_recording(recording_path)
+    synchronized = load_sidecar(sidecar_path)["entries"]
     outcome_by_response = {
         outcome["graded_response_id"]: outcome for outcome in outcomes
     }
@@ -285,40 +292,48 @@ def build_run_document(recording_path: Path = RECORDING) -> dict[str, Any]:
         )
         total_cost += cost
         correct_count += int(is_correct)
-        agents.append(
-            {
-                "agent_id": f"agent-{index + 1:03d}",
-                "response_id": decision["response_id"],
-                "model": decision["model"],
-                "color": MODEL_COLORS.get(decision["model"], "#ffcc66"),
-                "decision_type": query.decision_type,
-                "difficulty": query.difficulty,
-                "query_id": query.query_id,
-                "start": start,
-                "destination": destination,
-                "chosen": decision["chosen"],
-                "correct_answer": query.correct,
-                "is_correct": is_correct,
-                "chosen_path": list(chosen_path),
-                "correct_path": list(correct_path),
-                "chosen_polyline": _combine_path(chosen_path, mapping),
-                "correct_polyline": _combine_path(correct_path, mapping),
-                "cost_usd": cost,
-                "input_tokens": decision["input_tokens"],
-                "output_tokens": decision["output_tokens"],
-                "outcome": outcome_by_response.get(decision["response_id"]),
-            }
+        agent = {
+            "agent_id": f"agent-{index + 1:03d}",
+            "response_id": decision["response_id"],
+            "model": decision["model"],
+            "color": MODEL_COLORS.get(decision["model"], "#ffcc66"),
+            "decision_type": query.decision_type,
+            "difficulty": query.difficulty,
+            "query_id": query.query_id,
+            "start": start,
+            "destination": destination,
+            "chosen": decision["chosen"],
+            "correct_answer": query.correct,
+            "is_correct": is_correct,
+            "chosen_path": list(chosen_path),
+            "correct_path": list(correct_path),
+            "chosen_polyline": _combine_path(chosen_path, mapping),
+            "correct_polyline": _combine_path(correct_path, mapping),
+            "cost_usd": cost,
+            "input_tokens": decision["input_tokens"],
+            "output_tokens": decision["output_tokens"],
+            "outcome": outcome_by_response.get(decision["response_id"]),
+        }
+        synchronized_entry = synchronized.get(decision["response_id"])
+        agent["observability"] = (
+            synchronized_entry
+            if synchronized_entry is not None
+            else build_replay_observability(agent)
         )
+        agents.append(agent)
     response_ids = {agent["response_id"] for agent in agents}
     if any(outcome["graded_response_id"] not in response_ids for outcome in outcomes):
         raise ValueError("recording contains an outcome with no decision")
     by_type = Counter(agent["decision_type"] for agent in agents)
     by_model = Counter(agent["model"] for agent in agents)
     return {
-        "schema_version": 2,
+        "schema_version": 3,
         "generated_from": "toy-world/recordings/replay-v1.jsonl",
         "agents": agents,
         "outcomes": outcomes,
+        "observability_coverage": coverage_for(
+            agent["observability"] for agent in agents
+        ),
         "totals": {
             "decisions": len(agents),
             "correct": correct_count,
@@ -330,6 +345,15 @@ def build_run_document(recording_path: Path = RECORDING) -> dict[str, Any]:
             "by_type": dict(by_type),
             "by_model": dict(by_model),
         },
+    }
+
+
+def build_signoz_config() -> dict[str, Any]:
+    """Return public-only SigNoz navigation configuration."""
+    return {
+        "signoz_origin": "http://localhost:8080",
+        "dashboard_path": None,
+        "service_names": ["toy-world", "toy-world-outcomes"],
     }
 
 
@@ -413,6 +437,7 @@ def export_data(output_dir: Path = DATA_DIR) -> None:
         "toyworld-roads.json": build_road_mapping(),
         "pune-map.geojson": build_pune_map(),
         "run.json": build_run_document(),
+        "signoz-config.json": build_signoz_config(),
     }
     for filename, value in assets.items():
         (output_dir / filename).write_text(

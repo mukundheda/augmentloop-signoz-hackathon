@@ -1,4 +1,5 @@
-import type { AgentDecision, RaceRun } from "./domain";
+import type { AgentDecision, CoverageState, RaceRun, SigNozConfig } from "./domain";
+import { createInspector, type AgentInspector } from "./inspector";
 
 export interface HudProgress {
   completed: number;
@@ -13,6 +14,7 @@ export interface Hud {
   update(progress: HudProgress): void;
   showAgent(agent: AgentDecision): void;
   setState(state: string): void;
+  setCoverage(coverage: CoverageState): void;
 }
 
 const usd = (value: number | null) => value === null ? "—" : `$${value.toFixed(6)}`;
@@ -23,7 +25,13 @@ const typeLabel: Record<string, string> = {
   next_hop: "NEXT HOP"
 };
 
-export function createHud(parent: HTMLElement, run: RaceRun): Hud {
+const fallbackConfig: SigNozConfig = {
+  signoz_origin: null,
+  dashboard_path: null,
+  service_names: []
+};
+
+export function createHud(parent: HTMLElement, run: RaceRun, config: SigNozConfig = fallbackConfig): Hud {
   const models = Object.entries(run.totals.by_model);
   const hud = document.createElement("aside");
   hud.className = "hud";
@@ -31,7 +39,7 @@ export function createHud(parent: HTMLElement, run: RaceRun): Hud {
     <div class="eyebrow">GRADEBOOK · TOY WORLD / PUNE</div>
     <div class="hud-title-row">
       <div><h1>AGENT ROAD NETWORK</h1><p>20 junctions · 180 decisions · real road geometry</p></div>
-      <span class="live-pill"><i></i><span data-state>READY</span></span>
+      <div class="hud-statuses"><span class="coverage-pill offline" data-coverage>REPLAY MODE · SIGNOZ OFFLINE</span><span class="live-pill"><i></i><span data-state>READY</span></span></div>
     </div>
     <div class="metrics">
       <div><span>DECISIONS</span><strong data-decisions>0/${run.totals.decisions}</strong></div>
@@ -47,7 +55,7 @@ export function createHud(parent: HTMLElement, run: RaceRun): Hud {
     </div>
     <div class="model-list">
       ${models.map(([model, count]) => `
-        <div><span class="model-swatch" style="--model:${run.agents.find((a) => a.model === model)?.color ?? "#fff"}"></span><span>${model.split("/").at(-1)}</span><b>${count}</b></div>
+        <div><span class="model-swatch" style="--model:${run.agents.find((agent) => agent.model === model)?.color ?? "#fff"}"></span><span>${model.split("/").at(-1)}</span><b>${count}</b></div>
       `).join("")}
     </div>
     <section class="agent-drawer" data-agent-drawer>
@@ -58,11 +66,23 @@ export function createHud(parent: HTMLElement, run: RaceRun): Hud {
   parent.appendChild(hud);
 
   const find = (selector: string) => hud.querySelector<HTMLElement>(selector);
+  const drawer = find("[data-agent-drawer]");
+  const inspector: AgentInspector | undefined = drawer ? createInspector(drawer, config) : undefined;
   return {
     element: hud,
     setState(state) {
       const target = find("[data-state]");
       if (target) target.textContent = state;
+    },
+    setCoverage(coverage) {
+      const target = find("[data-coverage]");
+      if (!target) return;
+      target.textContent = coverage.kind === "connected"
+        ? `SIGNOZ CONNECTED · ${coverage.matched}/${coverage.total}`
+        : coverage.kind === "partial"
+          ? `SIGNOZ PARTIAL · ${coverage.matched}/${coverage.total}`
+          : "REPLAY MODE · SIGNOZ OFFLINE";
+      target.className = `coverage-pill ${coverage.kind}`;
     },
     update(progress) {
       const decisions = find("[data-decisions]");
@@ -77,26 +97,9 @@ export function createHud(parent: HTMLElement, run: RaceRun): Hud {
       if (wave) wave.textContent = `${progress.wave}/${progress.waves}`;
     },
     showAgent(agent) {
-      const drawer = find("[data-agent-drawer]");
-      if (!drawer) return;
-      const result = agent.is_correct ? "CORRECT" : "WRONG";
-      drawer.innerHTML = `
-        <div class="drawer-head"><span class="agent-color" style="--agent:${agent.color}"></span><div><b>${agent.agent_id.toUpperCase()}</b><span>${agent.model.split("/").at(-1)}</span></div><em class="${agent.is_correct ? "good" : "bad"}">${result}</em></div>
-        <dl>
-          <div><dt>TYPE</dt><dd>${typeLabel[agent.decision_type]}</dd></div>
-          <div><dt>DIFFICULTY</dt><dd>${agent.difficulty.toUpperCase()}</dd></div>
-          <div><dt>QUERY</dt><dd>${agent.query_id}</dd></div>
-          <div><dt>JOURNEY</dt><dd>${agent.start} → ${agent.destination}</dd></div>
-          <div><dt>CHOSEN</dt><dd>${String(agent.chosen)}</dd></div>
-          <div><dt>CORRECT</dt><dd>${String(agent.correct_answer)}</dd></div>
-          <div><dt>PATH</dt><dd>${agent.chosen_path.join(" → ")}</dd></div>
-          <div><dt>COST</dt><dd>${usd(agent.cost_usd)}</dd></div>
-          <div><dt>TOKENS</dt><dd>${agent.input_tokens} in · ${agent.output_tokens} out</dd></div>
-          ${agent.outcome ? `<div><dt>REALITY</dt><dd class="${agent.outcome.on_time ? "good" : "bad"}">${agent.outcome.on_time ? "ON TIME" : "LATE"}</dd></div>` : ""}
-        </dl>
-      `;
+      inspector?.show(agent);
       const log = find("[data-event-log]");
-      if (log) log.textContent = `${agent.agent_id} · ${typeLabel[agent.decision_type]} · ${result}`;
+      if (log) log.textContent = `${agent.agent_id} · ${typeLabel[agent.decision_type]} · ${agent.is_correct ? "CORRECT" : "WRONG"}`;
     }
   };
 }

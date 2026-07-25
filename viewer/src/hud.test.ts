@@ -1,9 +1,9 @@
 import { describe, expect, it } from "vitest";
 import { createHud } from "./hud";
-import type { RaceRun } from "./domain";
+import type { CoverageState, RaceRun, SigNozConfig } from "./domain";
 
 const run = {
-  schema_version: 2,
+  schema_version: 3,
   generated_from: "fixture",
   agents: [],
   outcomes: [],
@@ -25,5 +25,22 @@ describe("schema-v2 HUD", () => {
     expect(hud.element.querySelector("[data-type=route_choice]")).not.toBeNull();
     expect(hud.element.querySelector("[data-type=eta_estimate]")).not.toBeNull();
     expect(hud.element.querySelector("[data-type=next_hop]")).not.toBeNull();
+  });
+
+  it.each([
+    [{ kind: "connected", matched: 180, total: 180 }, "SIGNOZ CONNECTED · 180/180"],
+    [{ kind: "partial", matched: 142, total: 180 }, "SIGNOZ PARTIAL · 142/180"],
+    [{ kind: "offline", matched: 0, total: 180 }, "REPLAY MODE · SIGNOZ OFFLINE"]
+  ])("renders explicit observability coverage", (coverage, expected) => {
+    const root = document.createElement("div");
+    const config: SigNozConfig = {
+      signoz_origin: "https://signoz.example.test",
+      dashboard_path: "/dashboard/gradebook",
+      service_names: ["toy-world"]
+    };
+    const hud = createHud(root, run, config);
+    hud.setCoverage(coverage as CoverageState);
+
+    expect(root.textContent).toContain(expected);
   });
 });

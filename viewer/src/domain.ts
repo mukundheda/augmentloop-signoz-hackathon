@@ -23,7 +23,67 @@ export interface AgentDecision {
   input_tokens: number;
   output_tokens: number;
   outcome: DeferredOutcome | null;
+  observability: AgentObservability;
 }
+
+export type ObservabilityMode = "signoz" | "replay";
+export type SpanStatus = "unset" | "ok" | "error";
+export type EvidenceSource = "signoz" | "replay";
+export type AttributeValue = string | number | boolean;
+
+export interface AgentSpan {
+  span_id: string;
+  parent_span_id?: string;
+  trace_id?: string;
+  name: string;
+  service_name: string;
+  start_time_unix_nano: string;
+  duration_ms: number;
+  status: SpanStatus;
+  source: EvidenceSource;
+  attributes: Record<string, AttributeValue>;
+  linked_span_ids: string[];
+}
+
+export interface AgentLog {
+  timestamp_unix_nano: string;
+  severity: "TRACE" | "DEBUG" | "INFO" | "WARN" | "ERROR" | "FATAL";
+  body: string;
+  source: EvidenceSource;
+  trace_id?: string;
+  span_id?: string;
+  attributes: Record<string, AttributeValue>;
+}
+
+export interface SigNozLinks {
+  trace?: string;
+  logs?: string;
+  dashboard?: string;
+  traceSearch?: string;
+}
+
+export interface AgentObservability {
+  mode: ObservabilityMode;
+  response_id: string;
+  service_name: string;
+  trace_id?: string;
+  evaluation_span_id?: string;
+  synchronized_at?: string;
+  spans: AgentSpan[];
+  logs: AgentLog[];
+  links?: SigNozLinks;
+}
+
+export interface SigNozConfig {
+  signoz_origin: string | null;
+  dashboard_path: string | null;
+  service_names: string[];
+}
+
+export type CoverageState =
+  | { kind: "connected"; matched: number; total: number }
+  | { kind: "partial"; matched: number; total: number }
+  | { kind: "offline"; matched: 0; total: number };
 
 export interface DeferredOutcome {
   graded_response_id: string;
@@ -42,11 +102,12 @@ export interface RaceTotals {
 }
 
 export interface RaceRun {
-  schema_version: 2;
+  schema_version: 3;
   generated_from: string;
   agents: AgentDecision[];
   outcomes: DeferredOutcome[];
   totals: RaceTotals;
+  observability_coverage?: CoverageState;
 }
 
 export interface MapFeature {
