@@ -115,10 +115,26 @@ just adds another identical batch.
 SigNoz UI -> Dashboards -> New Dashboard -> **Import JSON** -> upload
 `dashboards/gradebook-cost-per-correct-decision.json` -> Import and Next.
 
-The panels (cost per correct by model, correct-rate by model, cost over time
-by grade source) light up from the replay batch on the default "Last 30
-minutes" range. The AI-Estimated Quality panel reads 0 - correct, the replay
-recording contains no `ai_judge` grades by design.
+Twelve panels across six panel types (value, bar, timeseries, table, list and
+histogram) light up from the replay batch on the default "Last 30 minutes"
+range. The AI-Estimated Quality panel reads 0 - correct, the replay recording
+contains no `ai_judge` grades by design. Two panels are worth opening first:
+**Right-Sizing Grid** is the finding this project exists to show, every
+decision type crossed with every model, and **Cost per Decision: Distribution
+by Model** reads the real bucket boundaries of the OpenTelemetry histogram
+instrument rather than collapsing the run to a mean.
+
+**Keep the time range on your own replay run.** The reconciliation panels are
+pinned to the demo services (`toy-world` and `toy-world-outcomes`), because
+Gradebook is a portable layer and any stack running a second emitter through
+the same contract would otherwise blend it into the headline. The
+**Services Emitting Through the Contract** panel shows that full set on
+purpose. Scoping fixes the service axis but not the time axis: a dashboard
+aggregates every run inside the selected window, so if you run the replay more
+than once, widen or narrow the range deliberately. On a range covering exactly
+one replay, the headline reconciles with what `python -m toyworld` printed:
+127 correct, and $0.377553 to within a rounding residue in the fifth decimal
+that comes from histogram sum storage.
 
 ## 6. Import the alert rules
 
@@ -151,7 +167,8 @@ curl.exe -s -X POST http://localhost:8080/api/v2/rules -H "SIGNOZ-API-KEY: <your
 curl.exe -s -X POST http://localhost:8080/api/v2/rules -H "SIGNOZ-API-KEY: <your-key>" -H "Content-Type: application/json" --data-binary "@dashboards/alert-budget-guard-trips.json"
 ```
 
-Six rules exist for this build: `alert-grade-quality-drop.json` (static 50%
+Five rules ship for this build, spanning all three of SigNoz's rule types
+(threshold, anomaly, and log-based): `alert-grade-quality-drop.json` (static 50%
 floor, kept intentionally alongside the anomaly rule - see its description
 for why), `alert-spend-spike.json`, `alert-grade-quality-anomaly.json`
 (seasonal anomaly on correct-decision volume, #49 - the primary
@@ -183,7 +200,7 @@ That is the concrete reason the static 50% floor in
 `alert-grade-quality-drop.json` stays wired up alongside it rather than being
 replaced by it.
 
-## 7. Open the judge-run health saved view
+## 7. Open the judge-run saved views
 
 `dashboards/view-judge-run-health.json` is a saved Explorer view (Metrics ->
 graph of `gradebook.decisions.graded`, grouped by `augmentloop.grade.source`
@@ -193,7 +210,20 @@ the API (there is no import-JSON button for saved views in the UI):
 
 ```powershell
 curl.exe -s -X POST http://localhost:8080/api/v1/explorer/views -H "SIGNOZ-API-KEY: <your-key>" -H "Content-Type: application/json" --data-binary "@dashboards/view-judge-run-health.json"
+curl.exe -s -X POST http://localhost:8080/api/v1/explorer/views -H "SIGNOZ-API-KEY: <your-key>" -H "Content-Type: application/json" --data-binary "@dashboards/view-decision-traces.json"
+curl.exe -s -X POST http://localhost:8080/api/v1/explorer/views -H "SIGNOZ-API-KEY: <your-key>" -H "Content-Type: application/json" --data-binary "@dashboards/view-failure-events.json"
 ```
+
+That is one saved view per signal. Besides the metrics view described below,
+**Traces Explorer -> Saved Views -> "Judge Run: Decision Traces and Their Late
+Grades"** scopes to `toy-world` and `toy-world-outcomes` together, which is the
+only place the deferred reality grade is visible: open any
+`toy-world-outcomes` span and follow its link back to the `route_choice`
+decision it judges, recorded earlier and on a separate trace. **Logs Explorer
+-> Saved Views -> "Judge Run: Failure Events"** filters on the
+`augmentloop.failure.class` attribute rather than message text. An empty list
+there is the expected result on a keyless replay: those are discrete failure
+events, not a gauge, and a replay trips none of them.
 
 Then in SigNoz: Metrics Explorer -> Saved Views -> "Judge Run Health:
 Decisions Graded". Set the range to **Last 30 minutes** right after running
@@ -219,6 +249,9 @@ The same key and header also drive the MCP server at
 | API calls return `403 forbidden` despite a valid key | Service account has no role | Assign `signoz-editor` in step 6.2 |
 | `casting.yaml.lock` shows as modified in git after casting | `foundryctl` regenerates the lock; formatting differs across versions | Expected; do not commit unless you changed `casting.yaml` |
 | Dashboard panels empty | Time range does not cover the replay batch | Set the dashboard range to include when step 4 ran |
+| The headline number does not match what `python -m toyworld` printed | Almost always the time range: a dashboard aggregates every run in the window, so two replays show roughly double the decisions. Cross-service blending is already handled, since the reconciliation panels are pinned to `toy-world` and `toy-world-outcomes` | Narrow the range to a single replay. Expect an exact match on decision counts and a residue in the fifth decimal on cost, which is histogram sum storage precision, not a grading disagreement |
+| On first load, panels look blended across decision types, models or grade sources | The three dashboard variables are DYNAMIC and attribute-backed, and this SigNoz version's saved dashboard schema has no field to persist a default selection (confirmed by round-tripping the live PUT/GET: the API accepts and echoes the variable back with no default or selectedValue key). With the ALL option on, an unpicked variable matches everything | Pick values from the `decision_type`, `model` and `grade_source` dropdowns at the top of the dashboard. This is a UI limitation, not a query defect, and each affected panel's description says so |
+| `Gradebook Meta: Grading Our Own Build Sessions` is empty and stays empty | Expected. That dashboard filters `augmentloop.decision.type = 'build_session'`, which is populated only from this team's own git history via `dashboards/scripts/record_build_fleet_sessions.py`. It is a third proof surface, not part of the judge path, and nothing in this walkthrough imports it | Nothing to fix. Ignore it, or read the script's module docstring for what it records and why most rows carry no cost |
 | A rule POSTs `{"status":"success"}` but never appears to fire, ever | Posted to `/api/v1/rules` instead of `/api/v2/rules` (SigNoz issue #10823) | Recreate via `/api/v2/rules`; always poll `GET /api/v2/rules/{id}` across two evaluation cycles before trusting a rule is live |
 | A metrics query/alert/view on `gradebook.decisions.graded` (or similar) returns rows-scanned > 0 but a null/empty result | `timeAggregation: increase` or `rate` silently returns no data once the query window is roughly 6 hours or more, in this deployment | Keep `evalWindow` / Explorer time range short (well under a day); confirmed working up to ~3h in this project's testing, regardless of `groupBy` |
 | An `alertOnAbsent`-only rule is rejected with `condition.thresholds: field is required` (or `condition.target`/`op`/`matchType` for the v1 shape) | This SigNoz version does not support absence as the sole condition on either schema version, despite what the platform's own docs/skills suggest | Add a structurally-inert threshold alongside `alertOnAbsent` (e.g. `op: below, target: 0` on a metric that can never go negative) so the schema validates while absence remains the only condition that can practically fire - see `dashboards/alert-grading-pipeline-silent.json`'s description |
