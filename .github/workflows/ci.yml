@@ -1,0 +1,49 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test-and-typecheck:
+    name: Tests + mypy
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+          cache-dependency-path: |
+            reference-library/pyproject.toml
+            toy-world/pyproject.toml
+            cleancut-proof/pyproject.toml
+
+      # gradebook also exists as an unrelated package on PyPI. reference-library
+      # MUST be named in the same pip invocation as toy-world/cleancut-proof or
+      # pip resolves their `gradebook` dependency against that stranger's
+      # package instead of the local editable install (see #30). The [live]
+      # extra on toy-world is installed here too so mypy checks toyworld's
+      # openai/anthropic imports against the real SDK types instead of
+      # reporting import-not-found for a dependency that is genuinely optional
+      # at runtime (see #55).
+      - name: Install packages
+        run: |
+          pip install \
+            -e reference-library \
+            -e "toy-world[test,live]" \
+            -e "cleancut-proof[test]" \
+            mypy==1.14.1
+
+      - name: Run tests (reference-library, toy-world, cleancut-proof)
+        run: python -m pytest reference-library toy-world cleancut-proof
+
+      - name: Type check (mypy)
+        run: python -m mypy reference-library/src/gradebook toy-world/src/toyworld cleancut-proof/src/cleancutproof

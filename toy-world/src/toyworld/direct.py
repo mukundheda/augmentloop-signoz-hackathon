@@ -83,8 +83,10 @@ class DirectClient:
 
     def _anthropic(self) -> Any:
         if self._anthropic_client is None:
-            from anthropic import Anthropic  # lazy: only needed for a real Anthropic call
-
+            # Key check BEFORE the SDK import: a missing key is the far more
+            # likely mistake, and it must fail loud naming the env var even on
+            # an install without the `[live]` extra. Importing first would
+            # shadow that with a ModuleNotFoundError.
             key = self._anthropic_api_key or os.environ.get("ANTHROPIC_API_KEY")
             if not key:
                 raise RuntimeError(
@@ -93,13 +95,14 @@ class DirectClient:
                     "needs no key - use `python -m toyworld`; the OpenRouter "
                     "provider needs OPENROUTER_API_KEY instead)."
                 )
+            from anthropic import Anthropic  # lazy: only needed for a real Anthropic call
+
             self._anthropic_client = Anthropic(api_key=key)
         return self._anthropic_client
 
     def _gemini(self) -> Any:
         if self._gemini_client is None:
-            from openai import OpenAI  # lazy: only needed for a real Gemini call
-
+            # Key check before the SDK import - see _anthropic above.
             key = self._gemini_api_key or os.environ.get("GEMINI_API_KEY")
             if not key:
                 raise RuntimeError(
@@ -108,6 +111,8 @@ class DirectClient:
                     "no key - use `python -m toyworld`; the OpenRouter provider "
                     "needs OPENROUTER_API_KEY instead)."
                 )
+            from openai import OpenAI  # lazy: only needed for a real Gemini call
+
             self._gemini_client = OpenAI(
                 api_key=key,
                 base_url="https://generativelanguage.googleapis.com/v1beta/openai/",

@@ -119,10 +119,20 @@ this PR.
 
 ## Test
 
+From the repo root, on Python 3.10 or newer:
+
 ```bash
-pip install -e "toy-world[test]"
+pip install -e reference-library -e "toy-world[test]"
 cd toy-world && pytest
 ```
 
 All assertions are on emitted telemetry (in-memory exporter) or the computed
 answer key (`world.py`'s pure graph functions), never internals.
+No API keys, and the `[live]` extra is not needed - the live clients check for
+their key before importing a provider SDK, so their fail-loud paths are
+testable without one.
+
+**Both packages must be in the same `pip install`.** `gradebook` is also an
+unrelated project on PyPI; installing `toy-world` on its own resolves the
+dependency against that one and every test dies at collection. `tests/conftest.py`
+detects this and prints the fix.
