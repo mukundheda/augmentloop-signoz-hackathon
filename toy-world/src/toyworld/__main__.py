@@ -18,7 +18,7 @@ endpoint (`GEMINI_API_KEY`) instead. Either way, live mode needs the `[live]`
 extra; replay needs neither.
 
 `python -m toyworld --live --record` (ticket #33) additionally writes every
-decision to a replay file (`--output`, default `recordings/replay-v1.jsonl`)
+decision to a replay file (`--output`, default `recordings/replay-v2.jsonl`)
 as it happens - the mechanism that lets a real run become the next committed
 recording, instead of a hand-authored one. See `recorder.py`'s docstring.
 
