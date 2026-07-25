@@ -7,9 +7,9 @@ so live mode can still produce real numbers before the OpenRouter key lands.
 Anthropic slugs (`anthropic/*`) go through the native `anthropic` SDK. Google
 slugs (`google/*`) go through the `openai` SDK pointed at Gemini's
 OpenAI-compatible endpoint - same chat-completions shape `openrouter.py`
-already speaks. Both providers share `openrouter.py`'s prompt text and reply
-parsing (`toyworld.live.build_prompt` / `parse_route`), so the comparison stays
-fair regardless of which client answered.
+already speaks. Both providers send the same `query.prompt` and call the same
+`query.parse` (ticket #33's `Query`, `world.py`), so the comparison stays fair
+regardless of which client answered or which decision type the query is.
 
 Requires `ANTHROPIC_API_KEY` for anthropic/* roster models and `GEMINI_API_KEY`
 for google/* roster models, each checked lazily on the first call that needs
@@ -22,8 +22,8 @@ from __future__ import annotations
 import os
 from typing import Any, Optional
 
-from .live import ModelDecision, build_prompt, parse_route
-from .world import Junction
+from .live import ModelDecision
+from .world import Query
 
 # OpenRouter-style slug -> native Anthropic model id. Only the roster's Claude
 # slugs need an entry here; an anthropic/* slug with no mapping fails loud
@@ -68,11 +68,11 @@ class DirectClient:
         self._gemini_client = gemini_client
         self._max_output_tokens = max_output_tokens
 
-    def decide(self, *, model: str, junction: Junction) -> ModelDecision:
+    def decide(self, *, model: str, query: Query) -> ModelDecision:
         if model.startswith("anthropic/"):
-            return self._decide_anthropic(model=model, junction=junction)
+            return self._decide_anthropic(model=model, query=query)
         if model.startswith("google/"):
-            return self._decide_google(model=model, junction=junction)
+            return self._decide_google(model=model, query=query)
         raise RuntimeError(
             f"DirectClient has no route for model {model!r}; only anthropic/* "
             "(native Anthropic SDK) and google/* (Gemini OpenAI-compatible "
@@ -83,8 +83,10 @@ class DirectClient:
 
     def _anthropic(self) -> Any:
         if self._anthropic_client is None:
-            from anthropic import Anthropic  # lazy: only needed for a real Anthropic call
-
+            # Key check BEFORE the SDK import: a missing key is the far more
+            # likely mistake, and it must fail loud naming the env var even on
+            # an install without the `[live]` extra. Importing first would
+            # shadow that with a ModuleNotFoundError.
             key = self._anthropic_api_key or os.environ.get("ANTHROPIC_API_KEY")
             if not key:
                 raise RuntimeError(
@@ -93,13 +95,14 @@ class DirectClient:
                     "needs no key - use `python -m toyworld`; the OpenRouter "
                     "provider needs OPENROUTER_API_KEY instead)."
                 )
+            from anthropic import Anthropic  # lazy: only needed for a real Anthropic call
+
             self._anthropic_client = Anthropic(api_key=key)
         return self._anthropic_client
 
     def _gemini(self) -> Any:
         if self._gemini_client is None:
-            from openai import OpenAI  # lazy: only needed for a real Gemini call
-
+            # Key check before the SDK import - see _anthropic above.
             key = self._gemini_api_key or os.environ.get("GEMINI_API_KEY")
             if not key:
                 raise RuntimeError(
@@ -108,13 +111,15 @@ class DirectClient:
                     "no key - use `python -m toyworld`; the OpenRouter provider "
                     "needs OPENROUTER_API_KEY instead)."
                 )
+            from openai import OpenAI  # lazy: only needed for a real Gemini call
+
             self._gemini_client = OpenAI(
                 api_key=key,
                 base_url="https://generativelanguage.googleapis.com/v1beta/openai/",
             )
         return self._gemini_client
 
-    def _decide_anthropic(self, *, model: str, junction: Junction) -> ModelDecision:
+    def _decide_anthropic(self, *, model: str, query: Query) -> ModelDecision:
         native_id = ANTHROPIC_MODEL_IDS.get(model)
         if native_id is None:
             raise RuntimeError(
@@ -127,7 +132,7 @@ class DirectClient:
         response = client.messages.create(
             model=native_id,
             max_tokens=self._max_output_tokens,
-            messages=[{"role": "user", "content": build_prompt(junction)}],
+            messages=[{"role": "user", "content": query.prompt}],
         )
         # First TEXT block, not content[0]: on models where adaptive thinking
         # is on by default (e.g. claude-sonnet-5, already in the mapping above),
@@ -138,25 +143,25 @@ class DirectClient:
             (block.text for block in response.content if block.type == "text"), ""
         )
         return ModelDecision(
-            chosen=parse_route(text, junction.options),
+            chosen=query.parse(text),
             input_tokens=response.usage.input_tokens,
             output_tokens=response.usage.output_tokens,
             response_id=response.id,
         )
 
-    def _decide_google(self, *, model: str, junction: Junction) -> ModelDecision:
+    def _decide_google(self, *, model: str, query: Query) -> ModelDecision:
         native_id = model.split("/", 1)[1]
         client = self._gemini()
         response = client.chat.completions.create(
             model=native_id,
             max_tokens=self._max_output_tokens,
             temperature=0,
-            messages=[{"role": "user", "content": build_prompt(junction)}],
+            messages=[{"role": "user", "content": query.prompt}],
         )
         content = response.choices[0].message.content or ""
         usage = response.usage
         return ModelDecision(
-            chosen=parse_route(content, junction.options),
+            chosen=query.parse(content),
             input_tokens=usage.prompt_tokens if usage else 0,
             output_tokens=usage.completion_tokens if usage else 0,
             response_id=response.id,

@@ -13,12 +13,14 @@ from toyworld.live import DEFAULT_ROSTER, ModelDecision, run_live
 class _Client:
     """A deterministic, free stand-in model that always picks the true fastest."""
 
-    def decide(self, *, model, junction):
+    def decide(self, *, model, query):
+        # #33 replaced the single-junction API with per-query decisions; the
+        # correct answer now comes off the query itself.
         return ModelDecision(
-            chosen=junction.true_fastest,
+            chosen=query.correct,
             input_tokens=200,
             output_tokens=10,
-            response_id=f"live-{model}-{junction.name}",
+            response_id=f"live-{model}-{query.query_id}",
         )
 
 
