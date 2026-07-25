@@ -24,8 +24,9 @@ from typing import Callable, Optional, Protocol, Sequence
 
 from opentelemetry import metrics, trace
 
+from gradebook import logs as gb_logs
 from gradebook import record_decision
-from gradebook.pricing import price
+from gradebook.pricing import UnknownModelError, price
 
 from .world import ALL_QUERIES, Query
 
@@ -50,9 +51,26 @@ DEFAULT_ROSTER: tuple[str, ...] = (
     "google/gemini-2.5-flash-lite",
 )
 
+# The output cap sent to every model, shared by both clients (openrouter.py,
+# direct.py) so the budget guard's ceiling below and the cap actually sent to
+# the API can never drift apart.
+#
+# This was 64, which was correct only while every prompt could be answered
+# with a single token. Once the prompts started handing over the raw map and
+# asking for real work, 64 began TRUNCATING any model that shows its working:
+# claude-sonnet-4.6 hit the cap on 20/20 eta_estimate replies and ~30% of
+# route_choice replies, was cut off mid-Dijkstra before ever stating its
+# answer, and scored 0/20 on a decision type it can actually do. Grading a
+# model on a sentence we stopped it from finishing measures our cap, not its
+# ability. Gemini answers bare and never came close to either limit, so the
+# cap penalised exactly the model that reasoned.
+MAX_OUTPUT_TOKENS = 1024
+
 # Conservative token counts used only to pre-estimate a call's cost ceiling for
 # the budget guard. Real cost is always computed from the actual response.
-_EST_INPUT_TOKENS = 256
+# Raised with the prompts: every prompt now carries the serialized 20-junction
+# map (~220 tokens) rather than a one-line question.
+_EST_INPUT_TOKENS = 384
 
 
 @dataclass(frozen=True)
@@ -110,7 +128,7 @@ def run_live(
     pairs: Optional[Sequence[tuple[str, Query]]] = None,
     roster: Sequence[str] = DEFAULT_ROSTER,
     queries: Sequence[Query] = ALL_QUERIES,
-    max_output_tokens: int = 64,
+    max_output_tokens: int = MAX_OUTPUT_TOKENS,
     world_provider: Optional[trace.TracerProvider] = None,
     world_meter_provider: Optional[metrics.MeterProvider] = None,
     on_decision: Optional[Callable[[str, Query, ModelDecision, bool, float], None]] = None,
@@ -147,10 +165,29 @@ def run_live(
     # `default_pairs` and `--production`'s per-decision-type pairs are both
     # already model-major/type-contiguous, so groupby needs no sort.
     for model, model_pairs in groupby(run_pairs, key=lambda pair: pair[0]):
-        ceiling = price(model, _EST_INPUT_TOKENS, max_output_tokens)
         with tracer.start_as_current_span(f"model-run {model}"):
+            # Priced INSIDE the model-run span on purpose: an unknown-model
+            # pricing miss (§13) has no decision to link to, so the model-run
+            # span is the only thing that can carry it.
+            try:
+                ceiling = price(model, _EST_INPUT_TOKENS, max_output_tokens)
+            except UnknownModelError:
+                # A stale roster/routing slug. Log while the model-run span is
+                # current - there is no decision to link, the whole model is
+                # unpriced - then fail loud as before (conventions §13).
+                gb_logs.unknown_model_pricing_miss(model=model)
+                raise
             for _, query in model_pairs:
                 if summary.total_cost_usd + ceiling > budget_usd:
+                    # The run stopped before it could overspend. Log while the
+                    # model-run span is current so the failure links to the run
+                    # that hit the cap (conventions §13).
+                    gb_logs.budget_guard_tripped(
+                        budget_usd=budget_usd,
+                        spend_usd=summary.total_cost_usd,
+                        model=model,
+                        decision_type=query.decision_type,
+                    )
                     summary.budget_exhausted = True
                     return summary
 

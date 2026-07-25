@@ -13,7 +13,7 @@ pre-built clients precisely so tests never touch a real SDK or key.
 import pytest
 
 from toyworld.direct import DirectClient
-from toyworld.live import DEFAULT_ROSTER, ModelDecision, run_live
+from toyworld.live import DEFAULT_ROSTER, MAX_OUTPUT_TOKENS, ModelDecision, run_live
 from toyworld.world import ALL_QUERIES, ROUTE_CHOICE_QUERIES
 
 Q1 = ROUTE_CHOICE_QUERIES[0]  # a lettered A/B route_choice query, like old J1
@@ -181,7 +181,9 @@ def test_anthropic_call_omits_temperature_and_sets_max_tokens():
     # Anthropic calls never pass temperature (brief, and unlike the OpenAI-
     # compatible path which is fine setting temperature=0).
     assert "temperature" not in call_kwargs
-    assert call_kwargs["max_tokens"] == 64
+    # Bound to the shared constant, not a literal: the cap has to stay big
+    # enough for a model that shows its working (see live.MAX_OUTPUT_TOKENS).
+    assert call_kwargs["max_tokens"] == MAX_OUTPUT_TOKENS
     assert call_kwargs["messages"][0]["content"] == Q1.prompt
 
 

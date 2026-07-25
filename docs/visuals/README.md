@@ -79,24 +79,26 @@ An options-book framing: a decision that has been math-graded but has no
 real-world verdict yet is an open position carrying unrealized risk. When
 reality arrives it closes that position green or red.
 
-![Regret ledger, rendered from the committed replay recording on 2026-07-25: 180 positions, 120 open and 60 closed (60 green, 0 red), the open and closed books each capped in their own scroll container, with the closed book showing route_choice-J1-J9's position, math-graded correct and closed correct by its reality verdict](regret-ledger.png)
+![Regret ledger, rendered from the committed replay recording on 2026-07-25: 180 positions, 120 open and 60 closed (50 green, 10 red), the open and closed books each capped in their own scroll container, with the closed book showing route_choice-J1-J9's position, math-graded correct and closed correct by its reality verdict](regret-ledger.png)
 
-**180 positions, 120 open, 60 closed - 60 green, 0 red.** $0.033368 sits in
-open positions, unrealized; $0.007862 in positions reality confirmed correct;
-$0.000000 in positions reality found wrong, because none did. Do not read a
-track record into that: every closed position in this run happens to be
-green, and none has closed red yet to test whether the ledger would show one
-honestly. The stronger, honest line is in the open book instead - $0.025874
-sits in `eta_estimate` decisions the checker grades **58/60 wrong**, and not
-one of the 60 has a real-world verdict. That is unrealized risk in the literal
-sense: an opinion the world has not weighed in on.
+**180 positions, 120 open, 60 closed - 50 green, 10 red.** $0.319381 sits in
+open positions, unrealized; $0.048113 in positions reality confirmed correct;
+$0.010059 in positions reality found wrong. The book closes both ways in this
+run, so the red state is exercised rather than merely implemented. In the open
+book, $0.276440 sits in `eta_estimate` decisions the checker grades **23/60
+wrong**, and not one of the 60 has a real-world verdict. That is unrealized
+risk in the literal sense: an opinion the world has not weighed in on.
 
 The `OVERTURNED` state - a position that closes against its own math grade -
-never fires in this run; 0 of the 60 closed positions disagree with their math
-grade. The code path that renders it stays, for a run where reality does
-disagree, but this page says plainly when a state has zero instances rather
-than leaving a legend entry or example for something a reader will never see
-here.
+fires **15 times** in this run, and every instance runs the same direction:
+math graded the route choice wrong, reality still closed it green. Those are
+decisions where the model picked the slower of two routes and the journey
+arrived inside the 20% real-world tolerance anyway. That is the case the two
+grade sources exist to separate. A system that derived its reality grade from
+its math grade would report 60 agreements and learn nothing; carrying an
+independently sourced second signal is what makes the disagreement visible at
+all. Fifteen positions where "wrong" and "fine in practice" are both true is a
+more useful artifact than sixty where they never diverge.
 
 180 decisions is well past the 8-row open book the page was first built
 against, so both books now scroll inside a capped rail instead of running the
