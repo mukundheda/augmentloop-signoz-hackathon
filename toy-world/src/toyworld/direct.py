@@ -31,6 +31,9 @@ from .world import Junction
 ANTHROPIC_MODEL_IDS: dict[str, str] = {
     "anthropic/claude-haiku-4.5": "claude-haiku-4-5",
     "anthropic/claude-sonnet-4.6": "claude-sonnet-4-6",
+    # Forward-looking entry only: NOT in DEFAULT_ROSTER or gradebook.PRICES yet.
+    # It exists to exercise the adaptive-thinking content-block parse (test_direct).
+    # Add a PRICES row before ever putting it in a live roster, or price() will raise.
     "anthropic/claude-sonnet-5": "claude-sonnet-5",
 }
 
