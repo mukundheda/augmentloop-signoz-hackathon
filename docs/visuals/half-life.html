@@ -200,7 +200,8 @@
   // Display parameters, chosen for legibility - not derived from the data,
   // because no reality verdict in this run carries a timestamp to fit a rate to.
   const HALF_LIFE_S = 120;   // seconds of standing unconfirmed per halving
-  const SPEED = 20;          // playback speedup: 446s of run in ~22s
+  const SPEED = 20;          // playback speedup: a fixed multiplier, independent
+                             // of how long the recorded run happens to span
   const CHATTER_PER_OPEN = 0.15; // display clicks per chattering decision per second
   const FULL_H = 52; // px
   const FLOOR_H = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--floor-h')); // px; reads the same --floor-h the CSS floor uses
@@ -254,7 +255,7 @@
     rid: rid(d),
     confirmed: confirmedIds.has(rid(d)),
   })).sort((a, b) => a.off - b.off);
-  const W = decisions[decisions.length - 1].off; // 446 in the committed run
+  const W = decisions[decisions.length - 1].off; // this run's actual span, read from the data - not a fixed constant
 
   const confirmed = decisions.filter((d) => d.confirmed);
   const unconfirmed = decisions.filter((d) => !d.confirmed);
@@ -316,10 +317,22 @@
     return `<span class="type">${type}</span><span>${conf} of ${of.length} confirmed &middot; ${money(sumCost(of))} &middot; ${extra}</span>`;
   }
 
+  // Picks a human-friendly tick spacing for a track W seconds wide, so the
+  // axis keeps roughly the same number of labeled ticks whether the run spans
+  // minutes or an hour, rather than a spacing hand-tuned to one run's length
+  // going stale the moment the run gets longer or shorter.
+  function niceStep(rough) {
+    const steps = [10, 15, 30, 60, 120, 180, 300, 600, 900, 1800, 3600];
+    for (const s of steps) if (rough <= s) return s;
+    return Math.ceil(rough / 3600) * 3600;
+  }
+
   function renderTrack() {
     const track = document.getElementById('track');
+    const tickStep = niceStep(W / 5);
+    const gridStep = tickStep / 2;
     const grid = [];
-    for (let s = 60; s < W; s += 60) grid.push('<div class="grid" aria-hidden="true" style="left:' + (100 * s / W) + '%"></div>');
+    for (let s = gridStep; s < W; s += gridStep) grid.push('<div class="grid" aria-hidden="true" style="left:' + (100 * s / W) + '%"></div>');
     const lanes = TYPES.map((type) => {
       const marks = decisions.map((d, i) => d.type !== type ? '' :
         `<div class="mark ${d.confirmed ? 'confirmed' : ''}" data-i="${i}"
@@ -328,12 +341,14 @@
              : 'never confirmed; ' + (W - d.off) + 's old at run end'}"
            style="left:${(100 * d.off / W)}%"></div>`).join('');
       const unconfirmable = decisions.filter((d) => d.type === type).every((d) => !d.confirmed);
-      // The lane captions stay in the accessibility tree; only the 180 marks
-      // and the decorative chrome are hidden from it.
+      // The lane captions stay in the accessibility tree; only the per-decision
+      // marks and the decorative chrome are hidden from it.
       return `<div class="lane-head">${laneCaption(type)}</div>
         <div class="lane ${unconfirmable ? 'unconfirmable' : ''}" aria-hidden="true">${marks}</div>`;
     }).join('');
-    const axisTicks = [0, 120, 240, 360].filter((s) => s < W - 30)
+    const ticks = [];
+    for (let s = 0; s < W; s += tickStep) ticks.push(s);
+    const axisTicks = ticks.filter((s) => s < W - tickStep * 0.25)
       .map((s) => `<span class="${s === 0 ? 'first' : ''}" style="left:${100 * s / W}%">${s ? s + 's' : '0s'}</span>`)
       .join('') + `<span class="last" style="left:100%">${W}s</span>`;
     track.innerHTML = grid.join('') + lanes
@@ -364,9 +379,19 @@
       models[d.model].n++;
       if (d.confirmed) models[d.model].c++;
     });
+    const modelEntries = Object.entries(models);
+    // The per-model list is illustrative, not the point - and a model roster
+    // that grows arms a long, unbounded sentence. When every model lands on
+    // the same n/c (true whenever the decision-type grid is balanced, which
+    // is what "decided by type, not by model" is claiming), say that once
+    // instead of repeating it once per model.
+    const allSame = modelEntries.every(([, v]) => v.n === modelEntries[0][1].n && v.c === modelEntries[0][1].c);
+    const modelClause = allSame
+      ? `all <b>${modelEntries.length}</b> models confirm exactly <b>${modelEntries[0][1].c} of ${modelEntries[0][1].n}</b>`
+      : modelEntries.map(([m, v]) => '<code>' + m + '</code> confirms ' + v.c + ' of ' + v.n).join(', ');
     document.getElementById('model-note').innerHTML =
       'Confirmation is decided by decision type, not by model: '
-      + Object.entries(models).map(([m, v]) => '<code>' + m + '</code> confirms ' + v.c + ' of ' + v.n).join(', ')
+      + modelClause
       + '. Read the lanes, not the vendors.';
   }
 

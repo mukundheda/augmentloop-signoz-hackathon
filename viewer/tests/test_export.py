@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+from collections import Counter
 from pathlib import Path
 import sys
 import unittest
@@ -38,11 +39,39 @@ class ExportV2Tests(unittest.TestCase):
             for line in RECORDING.read_text(encoding="utf-8").splitlines()
             if json.loads(line)["type"] == "decision"
         )
-        self.assertEqual(decision_lines, 180)
         self.assertEqual(len(run["agents"]), decision_lines)
         self.assertEqual(
             len({agent["response_id"] for agent in run["agents"]}), decision_lines
         )
+
+    def test_exported_grid_is_complete_and_balanced(self) -> None:
+        """A literal decision count only ever held for one roster size.
+
+        What actually matters is the shape: every model crossed with every
+        decision type, the same number of queries in each cell. The viewer is
+        read by comparing one model against another down a column, so an
+        unbalanced grid would let a model's easy cell inflate its total.
+        """
+        run = build_run_document(RECORDING)
+        cells = Counter(
+            (agent["model"], agent["decision_type"]) for agent in run["agents"]
+        )
+        models = {agent["model"] for agent in run["agents"]}
+        types = {agent["decision_type"] for agent in run["agents"]}
+        self.assertEqual(set(cells), {(m, t) for m in models for t in types})
+        self.assertEqual(len(set(cells.values())), 1, f"unbalanced grid: {cells}")
+
+    def test_every_model_gets_its_own_colour(self) -> None:
+        """Two models rendering as one another is invisible in every total.
+
+        A model with no MODEL_COLORS entry falls back to amber, and so does the
+        next one, and that amber also collides with the yellow ghost trail
+        marking the optimal alternative. Nothing about the run document looks
+        wrong when this happens.
+        """
+        run = build_run_document(RECORDING)
+        by_model = {agent["model"]: agent["color"] for agent in run["agents"]}
+        self.assertEqual(len(set(by_model.values())), len(by_model), by_model)
 
     def test_exports_all_three_decision_types(self) -> None:
         run = build_run_document(RECORDING)

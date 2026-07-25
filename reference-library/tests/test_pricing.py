@@ -1,17 +1,20 @@
 """Roster refresh regression guard (ticket #9).
 
-`replay` re-prices the committed recording (toy-world/recordings/replay-v1.jsonl)
-from PRICES at run time, so the OLD roster slugs must keep pricing successfully
-even after DEFAULT_ROSTER moves on to current models - dropping one of these
-rows would silently break replay's cost numbers, not just live mode. The new
-roster slugs must price successfully too, or a live run fails loud before any
-call is even placed.
+`replay` re-prices whatever recording it is given from PRICES at run time, and a
+slug missing from the table fails the run rather than skipping a row. So retired
+roster slugs must keep pricing successfully even after DEFAULT_ROSTER moves on.
+The current roster slugs must price successfully too, or a live run fails loud
+before any call is even placed.
+
+The committed recording is now toy-world/recordings/replay-v2.jsonl, and neither
+it nor replay-v1.jsonl references the retired slugs below any more. They are
+guarded here for older local recordings, not for anything in this repo.
 """
 
 from gradebook.pricing import PRICES, price
 
-# The slugs recorded in toy-world/recordings/replay-v1.jsonl. These stay in
-# PRICES forever, even once DEFAULT_ROSTER has moved past them.
+# Retired slugs, no longer present in any committed recording. These stay in
+# PRICES so an older local recording still prices rather than failing the run.
 OLD_REPLAY_SLUGS = (
     "anthropic/claude-3.5-haiku",
     "anthropic/claude-sonnet-4",

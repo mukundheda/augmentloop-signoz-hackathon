@@ -1,8 +1,9 @@
 # Gradebook Pune Toy-World View
 
 A standalone Three.js replay of the current 20-junction toy world. Every one
-of the committed recording's 180 decisions becomes an animated agent moving
-along locally bundled OpenStreetMap roads in central Pune.
+of the committed recording's 420 decisions becomes an animated agent moving
+along locally bundled OpenStreetMap roads in central Pune, one colour per
+roster model.
 
 The viewer supports all three decision types:
 
@@ -10,10 +11,11 @@ The viewer supports all three decision types:
 - `eta_estimate`: the shortest journey whose time the model estimated
 - `next_hop`: the chosen outgoing road segment
 
-Agents replay in waves of 24. Model colors remain visible while math-correct
-routes resolve green, wrong routes red, and the optimal alternative appears as
-a yellow ghost. Deferred reality outcomes pulse their linked route after the
-last wave.
+Agents replay in waves of 24, so the seven-model run is 18 waves and takes a
+little over ninety seconds at 1x. Use the speed control to shorten it. Model
+colors remain visible while math-correct routes resolve green, wrong routes
+red, and the optimal alternative appears as a yellow ghost. Deferred reality
+outcomes pulse their linked route after the last wave.
 
 ## Run
 

@@ -4,9 +4,9 @@
 
 "Our AI is doing well" is usually an assertion. Gradebook is a small OpenTelemetry layer that makes it a measurement: every AI decision is recorded as a standard `gen_ai.evaluation.result` event, stamped with where its grade's authority came from - a deterministic checker (`math`), a real-world outcome (`reality`), or another model's opinion (`ai_judge`). Only the first two ever enter the headline number, **cost per correct decision**, which is what the SigNoz dashboards show. Agents propose, humans decide: the agent can propose moving a decision type to a cheaper model, but a human approves the diff and nothing applies itself.
 
-![Grade provenance strip: 240 glyphs, one per grade, covering the 180 decisions in the committed run; blue for math grades and amber for reality grades, wrong decisions carrying a red foot along the baseline, with a legend reading 180 math, 60 reality and 0 ai_judge](docs/visuals/genome-strip.png)
+![Grade provenance strip: 560 glyphs, one per grade, covering the 420 decisions in the committed run; blue for math grades and amber for reality grades, wrong decisions carrying a red foot along the baseline, with a legend reading 420 math, 140 reality and 0 ai_judge](docs/visuals/genome-strip.png)
 
-*Every grade in the committed run, one glyph, in the order it arrived: 240 grades over 180 decisions, because each of the 60 `route_choice` decisions is graded twice - once by the checker, once later by the outcome. Hue is where that grade's authority came from; the red feet along the baseline are the wrong decisions. **180 `math`, 60 `reality`, 0 `ai_judge`.** The zero is the point: a model's opinion never silently enters the number. Two more renders over the same run are in [`docs/visuals/`](docs/visuals/) - static files, no server, no API key.*
+*Every grade in the committed run, one glyph, in the order it arrived: 560 grades over 420 decisions, because each of the 140 `route_choice` decisions is graded twice - once by the checker, once later by the outcome. Hue is where that grade's authority came from; the red feet along the baseline are the wrong decisions. **420 `math`, 140 `reality`, 0 `ai_judge`.** The zero is the point: a model's opinion never silently enters the number. Two more renders over the same run are in [`docs/visuals/`](docs/visuals/) - static files, no server, no API key.*
 
 ## What counts as proof
 
@@ -18,7 +18,7 @@
 
 Every evaluation event carries `augmentloop.grade.source`, so that filter lives in the query rather than in this paragraph ([ADR 0001](docs/adr/0001-machine-checked-grades-only-in-the-headline-metric.md)). We raised the same evaluator-provenance question upstream, in [a comment on OpenTelemetry semantic-conventions-genai PR #359](https://github.com/open-telemetry/semantic-conventions-genai/pull/359#issuecomment-5079243760).
 
-Reality sits beside the headline rather than inside it for a structural reason, not a preference. A `route_choice` decision is graded twice, once by the checker and once later by the outcome, and the metrics deliberately carry no per-decision id because that would be unbounded cardinality. So nothing downstream can dedupe the pair, and summing both sources counts those decisions twice: it gives $0.002133 against the $0.002973 we publish, on a denominator of 177 that is 127 math-correct plus 50 reality-correct. That is the same double count behind a flattering figure this project already retracted once. Reality is not the lesser source, it is the only one that can overturn a checker and it does so 15 times in this run, which is exactly why it gets its own panels instead of being averaged into a total it would distort.
+Reality sits beside the headline rather than inside it for a structural reason, not a preference. A `route_choice` decision is graded twice, once by the checker and once later by the outcome, and the metrics deliberately carry no per-decision id because that would be unbounded cardinality. So nothing downstream can dedupe the pair, and summing both sources counts those decisions twice: it gives $0.001038 against the $0.001507 we publish, on a denominator of 389 that is 268 math-correct plus 121 reality-correct. That is the same double count behind a flattering figure this project already retracted once. Reality is not the lesser source, it is the only one that can overturn a checker and it does so 43 times in this run, which is exactly why it gets its own panels instead of being averaged into a total it would distort.
 
 ## How it fits together
 
@@ -63,7 +63,7 @@ python -m toyworld
 
 The demo is a toy traffic world: AI drivers pick a route, estimate an arrival time, and choose a next hop, and the world already knows the right answer to each, so every decision is machine-gradeable. It is a demonstration of the mechanism, not production scale.
 
-Both grade sources in this run are computed by the world itself: the `reality` verdict is a looser on-time check applied after the fact, not an outside event. What is real is the mechanism - the verdict arrives late, from a separate service and a separate trace, span-linked back to the decision it judges, and it overturns the math grade on 15 of 60.
+Both grade sources in this run are computed by the world itself: the `reality` verdict is a looser on-time check applied after the fact, not an outside event. What is real is the mechanism - the verdict arrives late, from a separate service and a separate trace, span-linked back to the decision it judges, and it overturns the math grade on 43 of 140.
 
 Replay mode is the default. It replays a committed recording deterministically - no API keys, no model calls, same numbers on every machine - and fills the SigNoz dashboards from a judge's own laptop once SigNoz is up ([cold-machine walkthrough](docs/judge-run.md)). Live mode (real models, `[live]` extra, one OpenRouter key) is opt-in; nothing about the proof depends on it.
 
@@ -73,15 +73,19 @@ From a live OpenRouter run captured 2026-07-25 and committed as the replay recor
 
 | Model | `eta_estimate` | `next_hop` | `route_choice` | Correct | Cost |
 | --- | --- | --- | --- | --- | --- |
-| `anthropic/claude-sonnet-4.6` | 20/20 | 19/20 | 14/20 | 53/60 | $0.278031 |
-| `anthropic/claude-haiku-4.5` | 17/20 | 16/20 | 9/20 | 42/60 | $0.096187 |
+| `mistralai/mistral-small-24b-instruct-2501` | 14/20 | 15/20 | 11/20 | 40/60 | $0.003264 |
 | `google/gemini-2.5-flash-lite` | **0/20** | **20/20** | 12/20 | 32/60 | $0.003335 |
+| `meta-llama/llama-3.3-70b-instruct` | **0/20** | 16/20 | 12/20 | 28/60 | $0.004057 |
+| `openai/gpt-4o-mini` | **0/20** | **20/20** | 13/20 | 33/60 | $0.004606 |
+| `deepseek/deepseek-chat` | 13/20 | **20/20** | 7/20 | 40/60 | $0.010634 |
+| `anthropic/claude-haiku-4.5` | 18/20 | 16/20 | 9/20 | 43/60 | $0.096187 |
+| `anthropic/claude-sonnet-4.6` | 19/20 | 19/20 | 14/20 | 52/60 | $0.281721 |
 
-Read the gemini row. On `next_hop` it is the best model in the run - 20/20, ahead of sonnet's 19/20 - for $0.001101 against sonnet's $0.031380 on that decision type, and 1/83rd of sonnet's cost across the run as a whole. On `eta_estimate` it is unusable: 0/20. The same model, in the same run, is the right choice for one decision type and the wrong choice for another. That is why routing here keys on decision type rather than on the program ([docs/right-sizing-loop.md](docs/right-sizing-loop.md)).
+Read the gemini row. On `next_hop` it ties for the best score in the run - 20/20, matched by `openai/gpt-4o-mini` and `deepseek/deepseek-chat`, ahead of sonnet's 19/20 - for $0.001101 against sonnet's $0.031380 on that decision type: 28.5x less than sonnet (`gpt-4o-mini` is 20.6x less, `deepseek` 15.6x less), and 1/84th of sonnet's cost across the run as a whole. On `eta_estimate` two of those three collapse to 0/20, gemini and `gpt-4o-mini`, while `deepseek` holds 13/20 and sonnet scores 19/20 at 188.8x gemini's cost on that decision type alone. The same model, in the same run, is the right choice for one decision type and the wrong choice for another, and no ranking of the seven models survives both columns. That is why routing here keys on decision type rather than on the program ([docs/right-sizing-loop.md](docs/right-sizing-loop.md)).
 
-Across all 180 decisions: 127 correct, $0.377553 spent, **$0.002973 per correct decision**.
+Across all 420 decisions: 268 correct, $0.403804 spent, **$0.001507 per correct decision**.
 
-20 decisions per model per type is a small sample and this is one run, so read the per-type split as a signal worth routing on, not a settled ranking of these three models. `python -m toyworld` prints these same numbers, so the dashboards can be checked against ground truth.
+20 decisions per model per type is a small sample and this is one run, so read the per-type split as a signal worth routing on, not a settled ranking of these seven models. `python -m toyworld` prints these same numbers, so the dashboards can be checked against ground truth.
 
 ## See it move
 
@@ -91,9 +95,9 @@ Three renders over the same committed run, all static files in [`docs/visuals/`]
 | --- | --- |
 | [Genome strip](docs/visuals/genome-strip.html) | every grade in arrival order, coloured by where its authority came from (the image at the top of this README) |
 | [Span link](docs/visuals/span-link.html) | one decision and the reality grade that arrives later on a separate trace and links back to it |
-| [Regret ledger](docs/visuals/regret-ledger.html) | every decision as an open position that closes when the outcome lands. 50 close green, 10 close red, and `OVERTURNED` fires 15 times, each one a model that took the slower route and still arrived inside tolerance. That case is exactly why two grade sources exist rather than one |
+| [Regret ledger](docs/visuals/regret-ledger.html) | every decision as an open position that closes when the outcome lands. 121 close green, 19 close red, and `OVERTURNED` fires 43 times, each one a model that took the slower route and still arrived inside tolerance. That case is exactly why two grade sources exist rather than one |
 
-And the whole run as motion: [`viewer/`](viewer/README.md) replays all 180 decisions as agents driving locally bundled OpenStreetMap roads through central Pune. Model colours stay visible in transit, math-correct routes resolve green and wrong ones red, the optimal alternative trails as a yellow ghost, and the deferred reality outcomes pulse their linked route after the last wave. Overview, top-down, street and follow cameras.
+And the whole run as motion: [`viewer/`](viewer/README.md) replays all 420 decisions as agents driving locally bundled OpenStreetMap roads through central Pune. Model colours stay visible in transit, math-correct routes resolve green and wrong ones red, the optimal alternative trails as a yellow ghost, and the deferred reality outcomes pulse their linked route after the last wave. Overview, top-down, street and follow cameras.
 
 ```bash
 cd viewer && python export.py && npm install && npm run dev

@@ -20,32 +20,40 @@ way. Each decision is recorded through the
 [Gradebook reference library](../reference-library/README.md).
 
 **Replay mode is the default and the point:** the committed recording
-(`recordings/replay-v1.jsonl`) replays deterministically, needs **no API
+(`recordings/replay-v2.jsonl`) replays deterministically, needs **no API
 keys**, and fills the SigNoz dashboards from a judge's own machine.
 
-> **The committed recording is a real `--live --record` run** (all 180
-> decisions, 3 roster models x 3 decision types x 20 queries, $0.377553 total
-> spend, 127 correct) against real OpenRouter models: not hand-authored, not
+> **The committed recording is a real `--live --record` run** (all 420
+> decisions, 7 roster models x 3 decision types x 20 queries, $0.403804 total
+> spend, 268 correct) against real OpenRouter models: not hand-authored, not
 > tuned, not filtered. The honest result is a genuine **split**, which is the
 > whole argument for grading per decision type rather than publishing one
 > score per model:
 >
 > | model | eta_estimate | next_hop | route_choice | cost |
 > |---|---|---|---|---|
-> | claude-sonnet-4.6 | 20/20 | 19/20 | 14/20 | $0.278031 |
-> | claude-haiku-4.5 | 17/20 | 16/20 | 9/20 | $0.096187 |
+> | mistral-small-24b-instruct-2501 | 14/20 | 15/20 | 11/20 | $0.003264 |
 > | gemini-2.5-flash-lite | 0/20 | 20/20 | 12/20 | $0.003335 |
+> | llama-3.3-70b-instruct | 0/20 | 16/20 | 12/20 | $0.004057 |
+> | gpt-4o-mini | 0/20 | 20/20 | 13/20 | $0.004606 |
+> | deepseek-chat | 13/20 | 20/20 | 7/20 | $0.010634 |
+> | claude-haiku-4.5 | 18/20 | 16/20 | 9/20 | $0.096187 |
+> | claude-sonnet-4.6 | 19/20 | 19/20 | 14/20 | $0.281721 |
 >
-> Gemini Flash-Lite **beats** Sonnet on `next_hop` (20 vs 19) at roughly one
-> twenty-eighth of the cost, and scores **zero** on `eta_estimate` where Sonnet
-> is perfect. No single ranking of these three models is true across all three
-> columns. See `python -m toyworld`'s own printed breakdown for the numbers.
+> Gemini Flash-Lite **beats** Sonnet on `next_hop` (20 vs 19, tied there with
+> gpt-4o-mini and deepseek-chat) at roughly one twenty-eighth of the cost on
+> that decision type, and scores **zero** on `eta_estimate`, where Sonnet
+> itself tops out at 19/20, not a clean sweep. No single ranking of these
+> seven models is true across all three columns. See `python -m toyworld`'s
+> own printed breakdown for the numbers.
 >
 > An earlier version of this file reported a clean sweep at ~$0.04. That was
 > not a result, it was three defects in our own grader: prompts that shipped
 > their own answers, a parser that read the digit out of a junction id, and a
 > 64-token output cap that truncated the strongest model mid-calculation. All
-> three are fixed with regression guards.
+> three are fixed with regression guards. A later version reported a 3-model,
+> 180-decision split ($0.377553 total, 127 correct); those figures are
+> superseded by the 7-model, 420-decision run documented above.
 
 ## Run it (one command)
 
@@ -62,7 +70,7 @@ Endpoint defaults to `http://localhost:4318`; override with
 ## Live mode
 
 Live mode runs **every roster model over every query with real calls** -
-3 decision types x 3 roster models x 20 queries = ~180 decisions - so the same
+3 decision types x 7 roster models x 20 queries = ~420 decisions - so the same
 decision type is graded and priced across models. The panel itself ships on
 the "Gradebook: Cost per Correct Decision" dashboard, grouped dynamically by
 `gen_ai.request.model`, and all three decision types are selectable there
@@ -70,15 +78,17 @@ through the dashboard's own decision-type filter.
 
 ```bash
 pip install -e reference-library -e 'toy-world[live]'    # note the [live] extra
-export OPENROUTER_API_KEY=...                             # one key reaches all 3 models
+export OPENROUTER_API_KEY=...                             # one key reaches all 7 models
 python -m toyworld --live --budget 0.50                  # cap defaults to $0.50/run
 ```
 
 The budget cap is enforced **before each call** (a call it can't afford is
-never placed), never on Max plans. The current roster is `claude-haiku-4.5`,
-`claude-sonnet-4.6`, and `gemini-2.5-flash-lite` (grounded against
+never placed), never on Max plans. The current roster, cheapest to most
+expensive, is `mistral-small-24b-instruct-2501`, `gemini-2.5-flash-lite`,
+`llama-3.3-70b-instruct`, `gpt-4o-mini`, `deepseek-chat`, `claude-haiku-4.5`,
+and `claude-sonnet-4.6`, spanning six providers (grounded against
 OpenRouter's live `/models` catalog; the spec's original "Gemini Flash" was
-delisted, so the Flash-Lite tier stands in for the cross-provider leg).
+delisted, so the Flash-Lite tier stands in for that leg).
 
 `--provider direct` is a temporary fallback for while OpenRouter credits are
 provisioned: Anthropic natively (`ANTHROPIC_API_KEY`) + Gemini via its
@@ -97,7 +107,7 @@ hand-authored one:
 
 ```bash
 python -m toyworld --live --record --budget 2.00
-# writes recordings/replay-v1.jsonl (default; override with --output)
+# writes recordings/replay-v2.jsonl (default; override with --output)
 ```
 
 The recording stores only what the model actually answered (`chosen`, token

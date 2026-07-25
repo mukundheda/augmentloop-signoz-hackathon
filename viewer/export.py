@@ -14,7 +14,7 @@ from typing import Any, Iterable
 
 ROOT = Path(__file__).resolve().parents[1]
 DATA_DIR = ROOT / "viewer" / "public" / "data"
-RECORDING = ROOT / "toy-world" / "recordings" / "replay-v1.jsonl"
+RECORDING = ROOT / "toy-world" / "recordings" / "replay-v2.jsonl"
 OSM_SOURCE = ROOT / ".scratch" / "osm-pune-source.json"
 
 
@@ -53,10 +53,19 @@ HIGHWAY_WIDTHS = {
     "service": 0.055,
     "unclassified": 0.07,
 }
+# One hue per roster model, chosen to stay apart from the scene's three semantic
+# colours: green resolves a correct route, red a wrong one, yellow trails the
+# optimal alternative. A model with no entry here falls back to amber, which
+# collides with that yellow ghost, so every roster model needs a real hue.
+# Ordered cheapest to most expensive, matching live.DEFAULT_ROSTER.
 MODEL_COLORS = {
+    "mistralai/mistral-small-24b-instruct-2501": "#c6f24d",
+    "google/gemini-2.5-flash-lite": "#66f0a9",
+    "meta-llama/llama-3.3-70b-instruct": "#ffa14d",
+    "openai/gpt-4o-mini": "#ff7ae0",
+    "deepseek/deepseek-chat": "#5b8cff",
     "anthropic/claude-haiku-4.5": "#55d7ff",
     "anthropic/claude-sonnet-4.6": "#a88bff",
-    "google/gemini-2.5-flash-lite": "#66f0a9",
 }
 _NUMBER = re.compile(r"-?\d+(?:\.\d+)?")
 
@@ -312,11 +321,20 @@ def build_run_document(recording_path: Path = RECORDING) -> dict[str, Any]:
     response_ids = {agent["response_id"] for agent in agents}
     if any(outcome["graded_response_id"] not in response_ids for outcome in outcomes):
         raise ValueError("recording contains an outcome with no decision")
+    # Every roster model needs its own hue or the viewer renders several models in
+    # the same fallback amber and the legend stops meaning anything. Fail here
+    # rather than ship a run document that looks fine and reads wrong.
+    uncoloured = sorted({a["model"] for a in agents} - set(MODEL_COLORS))
+    if uncoloured:
+        raise ValueError(
+            f"no MODEL_COLORS entry for {', '.join(uncoloured)} - add one per model "
+            "in export.py before exporting"
+        )
     by_type = Counter(agent["decision_type"] for agent in agents)
     by_model = Counter(agent["model"] for agent in agents)
     return {
         "schema_version": 2,
-        "generated_from": "toy-world/recordings/replay-v1.jsonl",
+        "generated_from": recording_path.relative_to(ROOT).as_posix(),
         "agents": agents,
         "outcomes": outcomes,
         "totals": {

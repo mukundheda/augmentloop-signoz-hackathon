@@ -286,8 +286,19 @@ def test_cost_per_correct_is_the_headline_division(world, outcomes, recording_pa
     assert summary.cost_per_correct_usd == pytest.approx(
         summary.total_cost_usd / summary.correct
     )
-    assert set(summary.by_model) == {
-        "anthropic/claude-haiku-4.5",
-        "anthropic/claude-sonnet-4.6",
-        "google/gemini-2.5-flash-lite",
-    }
+
+
+def test_summary_reports_every_model_in_the_recording(world, outcomes, recording_path):
+    """Named as a property, not as a hardcoded roster.
+
+    This used to assert one literal set of three model slugs, which meant it
+    only ever confirmed that the roster had not changed. What matters is that
+    the breakdown loses nobody: a model present in the recording but missing
+    from `by_model` would silently drop out of the right-sizing comparison
+    while every total still added up.
+    """
+    summary, _, _ = _run(world, outcomes, recording_path)
+    decisions, _ = load_recording(recording_path)
+    assert set(summary.by_model) == {d.model for d in decisions}
+    assert sum(row["decisions"] for row in summary.by_model.values()) == len(decisions)
+    assert sum(row["correct"] for row in summary.by_model.values()) == summary.correct
