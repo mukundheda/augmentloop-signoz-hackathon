@@ -53,7 +53,7 @@
           "matchType": "in_total",
           "op": "above",
           "channels": [
-            "blog-demo-email"
+            "gradebook-alerts"
           ]
         }
       ]

@@ -10,7 +10,8 @@ the decisions they judge (conventions §6, span-link Role 1).
 **Replay mode is the default and the point:** the committed recording
 (`recordings/replay-v1.jsonl`) replays deterministically, needs **no API
 keys**, and fills the SigNoz dashboards from a judge's own machine. Live mode
-(real models via OpenRouter) is ticket #9.
+(real models via OpenRouter) is the #9 data foundation for the
+model-vs-model comparison; see [Live mode](#live-mode-9) below.
 
 ## Run it (one command)
 
@@ -23,6 +24,31 @@ python -m toyworld
 
 Endpoint defaults to `http://localhost:4318`; override with
 `OTEL_EXPORTER_OTLP_ENDPOINT`.
+
+## Live mode (#9)
+
+Live mode runs **every roster model over the same junctions with real calls**,
+under a per-run budget cap, so the same decision is graded and priced across
+models - the data the model-vs-model comparison panel reads from. The panel
+itself already ships on the #7 dashboard ("Gradebook: Cost per Correct
+Decision"), grouped dynamically by `gen_ai.request.model`, so new roster slugs
+appear automatically with no dashboard change.
+
+```bash
+pip install -e reference-library -e 'toy-world[live]'    # note the [live] extra
+export OPENROUTER_API_KEY=...                             # one key reaches all 3 models
+python -m toyworld --live --budget 0.50                  # cap defaults to $0.50/run
+```
+
+The budget cap is enforced **before each call** (a call it can't afford is
+never placed), never on Max plans. The current roster is `claude-haiku-4.5`,
+`claude-sonnet-4.6`, and `gemini-2.5-flash-lite` (grounded against
+OpenRouter's live `/models` catalog; the spec's original "Gemini Flash" was
+delisted, so the Flash-Lite tier stands in for the cross-provider leg).
+
+`--provider direct` is a temporary fallback for while OpenRouter credits are
+provisioned: Anthropic natively (`ANTHROPIC_API_KEY`) + Gemini via its
+OpenAI-compatible endpoint (`GEMINI_API_KEY`). OpenRouter stays the default.
 
 ## What you see in SigNoz
 
