@@ -25,17 +25,17 @@ Replay mode is the default. It replays a committed recording deterministically -
 
 Every evaluation event carries `augmentloop.grade.source`, so that filter lives in the query rather than in this paragraph ([ADR 0001](docs/adr/0001-machine-checked-grades-only-in-the-headline-metric.md)).
 
-### Same three junctions, three models
+### Same three decision types, three models
 
-From the committed replay recording, run 2026-07-25, priced from the shared pricing table:
+From a live OpenRouter run captured 2026-07-25 and committed as the replay recording, priced from the shared pricing table:
 
 | Model | Correct | Cost |
 | --- | --- | --- |
-| `anthropic/claude-sonnet-4` | 3/3 | $0.002382 |
-| `anthropic/claude-3.5-haiku` | 4/6 | $0.001274 |
-| `google/gemini-2.0-flash` | 1/3 | $0.000079 |
+| `google/gemini-2.5-flash-lite` | 42/60 | $0.000343 |
+| `anthropic/claude-haiku-4.5` | 40/60 | $0.008092 |
+| `anthropic/claude-sonnet-4.6` | 40/60 | $0.032796 |
 
-12 decisions, 8 correct, **$0.000467 per correct decision**. The cheapest model is also the worst one here - which is exactly why right-sizing is measured per decision type instead of assumed. `python -m toyworld` prints these same numbers, so the dashboards can be checked against ground truth.
+180 decisions, 122 correct, **$0.000338 per correct decision**. The cheapest model here is also the most correct one: `gemini-2.5-flash-lite` gets 42/60 right for $0.000343, while `anthropic/claude-sonnet-4.6` gets 40/60 right for $0.032796 - roughly 95x the cost for fewer correct answers. That inverts the old headline on this page, which assumed the cheapest model would be the worst; the underlying point survives - measure per decision type instead of assuming - but the evidence now points the other way. This is one run of 60 decisions per model across three decision types, not a general claim that cheap models win: nearly all of the error sits in `eta_estimate` decisions (2/60 correct across the whole run), so the decision-type mix is doing at least as much work as the model choice. `python -m toyworld` prints these same numbers, so the dashboards can be checked against ground truth.
 
 ## How it is built
 
