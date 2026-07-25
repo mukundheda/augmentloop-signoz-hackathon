@@ -45,7 +45,7 @@ Every graded decision in the run is one glyph, in the order it was graded.
 **Hue is where the grade's authority came from**, saturation is whether it was
 right, height is what it cost.
 
-![Grade provenance strip: 16 glyphs, blue for math grades and amber for reality grades, wrong decisions carrying a red foot along the baseline, with a legend showing 12 math, 4 reality and 0 ai_judge](genome-strip.png)
+![Grade provenance strip: 240 glyphs, blue for math grades and amber for reality grades, wrong decisions carrying a red foot along the baseline, with a legend showing 180 math (58 wrong), 60 reality (0 wrong) and 0 ai_judge](genome-strip.png)
 
 Blue is a `math` grade, amber is a `reality` grade, and sienna is reserved for
 `ai_judge`. A wrong decision washes out and keeps a fully saturated cherry foot,
@@ -53,16 +53,18 @@ so bad runs read as red streaks along the baseline without inspecting a single
 glyph. The dashed divider is where the run crosses into `toy-world-outcomes` -
 the late grades that arrive after the decisions they judge.
 
-**12 math, 4 reality, 0 ai_judge.** The zero is the point, not an omission: an
-AI's opinion never silently enters the headline number ([ADR
+**180 math (58 wrong), 60 reality (0 wrong), 0 ai_judge.** The zero is the
+point, not an omission: an AI's opinion never silently enters the headline
+number ([ADR
 0001](../adr/0001-machine-checked-grades-only-in-the-headline-metric.md)), and
 the strip shows that as a fact about the run rather than a promise in prose.
 Click any glyph for its model, cost and reasoning.
 
-The glyphs scale with the run: at 16 decisions they are wide enough to click,
-and they pack down to a hairline as the count grows. Verified by cloning the
-strip to 176 glyphs in the browser - hue stays legible and the red baseline
-still reads at a glance.
+The glyph-width formula clamps between 6px and 30px so the strip scales from a
+handful of decisions up to the thousands the idea is really for. At this run's
+240 real glyphs it has already packed down to the 6px floor - checked directly
+against this data rather than a simulated clone: still clickable, and hue and
+the red baseline still read at a glance.
 
 ## Regret ledger
 
@@ -70,20 +72,29 @@ An options-book framing: a decision that has been math-graded but has no
 real-world verdict yet is an open position carrying unrealized risk. When
 reality arrives it closes that position green or red.
 
-![Regret ledger, rendered from the committed replay recording on 2026-07-25: 12 positions, 8 open and 4 closed (2 green, 2 red), with the closed book expanded to show driver-1's junction J3 decision, whose math grade of incorrect was overturned by a reality grade of correct](regret-ledger.png)
+![Regret ledger, rendered from the committed replay recording on 2026-07-25: 180 positions, 120 open and 60 closed (60 green, 0 red), the open and closed books each capped in their own scroll container, with the closed book showing route_choice-J1-J9's position, math-graded correct and closed correct by its reality verdict](regret-ledger.png)
 
-**12 positions, 8 open, 4 closed - 2 green, 2 red.** $0.002501 sits in open
-positions, unrealized. The closed book is where the interesting row lives:
-`replay-d1-J3` closed **correct** against its own math grade of **incorrect**
-- the checker flagged the route as the slower one, and by the run's own
-numbers it was, but the driver still arrived on time. A position can close
-against its own math grade. That gap is the reason a reality grade exists at
-all, rather than trusting the checker alone.
+**180 positions, 120 open, 60 closed - 60 green, 0 red.** $0.033368 sits in
+open positions, unrealized; $0.007862 in positions reality confirmed correct;
+$0.000000 in positions reality found wrong, because none did. Do not read a
+track record into that: every closed position in this run happens to be
+green, and none has closed red yet to test whether the ledger would show one
+honestly. The stronger, honest line is in the open book instead - $0.025874
+sits in `eta_estimate` decisions the checker grades **58/60 wrong**, and not
+one of the 60 has a real-world verdict. That is unrealized risk in the literal
+sense: an opinion the world has not weighed in on.
 
-This is a 12-decision replay, not a claim about a larger book. Eight open
-positions out of twelve is most of the book - that is the honest state of a
-young run, not a gap in the recorder. Click any position for its full detail,
-including the reality verdict's explanation where one has arrived.
+The `OVERTURNED` state - a position that closes against its own math grade -
+never fires in this run; 0 of the 60 closed positions disagree with their math
+grade. The code path that renders it stays, for a run where reality does
+disagree, but this page says plainly when a state has zero instances rather
+than leaving a legend entry or example for something a reader will never see
+here.
+
+180 decisions is well past the 8-row open book the page was first built
+against, so both books now scroll inside a capped rail instead of running the
+page off the bottom. Click any position for its full detail, including the
+reality verdict's explanation where one has arrived.
 
 ## Regenerating
 
@@ -92,7 +103,7 @@ pip install -e reference-library -e toy-world
 python docs/visuals/capture_run.py     # rewrites run-data.js from a fresh run
 ```
 
-Then open `docs/visuals/blast-radius.html`, `docs/visuals/genome-strip.html`, or
+Then open `docs/visuals/span-link.html`, `docs/visuals/genome-strip.html`, or
 `docs/visuals/regret-ledger.html`. All three read the same `run-data.js`. The
 replay is deterministic, so the numbers do not move between runs; only the
 trace and span ids do.

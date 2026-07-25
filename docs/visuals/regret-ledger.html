@@ -58,10 +58,17 @@
   }
   .section-note { margin: -4px 0 10px; font-size: 12px; color: var(--text-faint); max-width: 68ch; }
 
-  .book { border: 1px solid var(--line); border-radius: 3px; overflow: hidden; background: var(--line); display: flex; flex-direction: column; gap: 1px; }
+  /* A book can hold well over a hundred rows (this run's open book has 120) -
+     without a cap it runs the whole page off the bottom of the viewport. */
+  .book {
+    border: 1px solid var(--line); border-radius: 3px; background: var(--line);
+    display: flex; flex-direction: column; gap: 1px;
+    max-height: 480px; overflow-y: auto;
+  }
   .book-head {
     display: none; padding: 8px 14px; background: var(--bg-ink-300); font-size: 10px;
     letter-spacing: 0.05em; text-transform: uppercase; color: var(--text-faint);
+    position: sticky; top: 0; z-index: 1;
   }
   @media (min-width: 760px) { .book-head { display: flex; gap: 14px; } }
 
@@ -137,7 +144,7 @@
   <div class="book" id="book-open"></div>
 
   <h2 style="margin-top: 24px;">Closed positions - reality has ruled</h2>
-  <p class="section-note">Settled green or red by a verdict from <code>toy-world-outcomes</code>, matched on <code>gen_ai.response.id</code>.</p>
+  <p class="section-note" id="closed-note">Settled green or red by a verdict from <code>toy-world-outcomes</code>, matched on <code>gen_ai.response.id</code>.</p>
   <div class="book" id="book-closed"></div>
 
   <div class="detail" id="detail"></div>
@@ -273,12 +280,28 @@
       ${body}`;
   }
 
+  // OVERTURNED - a position that closes against its own math grade - is the
+  // ledger's most interesting state, and this run has none. State that as a
+  // fact about the run rather than letting the state quietly never appear:
+  // same reasoning as the genome strip's ai_judge = 0 (ADR 0001).
+  function renderClosedNote() {
+    const overturned = closed.filter((p) => p.overturned).length;
+    document.getElementById('closed-note').innerHTML =
+      `Settled green or red by a verdict from <code>toy-world-outcomes</code>, matched on
+       <code>gen_ai.response.id</code>. <b>${overturned}</b> of <b>${closed.length}</b> closed positions
+       overturned their own math grade this run - closed against it rather than with it.`;
+  }
+
   function renderNote() {
+    const etaPositions = positions.filter((p) => attr(p.span, 'augmentloop.decision.type') === 'eta_estimate');
+    const etaWrong = etaPositions.filter((p) => !p.mathOk).length;
+    const etaCost = sumCost(etaPositions);
     document.getElementById('note').innerHTML =
       `<b>${positions.length}</b> decisions have been math-graded in this run. <b>${closed.length}</b> have
-       a reality verdict; <b>${open.length}</b> do not. This is a 12-decision replay, not a claim about a
-       larger book - the open count is most of it, which is the honest state of a young run, not a gap in
-       the recorder.`;
+       a reality verdict; <b>${open.length}</b> do not - open is most of the book, which is the state of a
+       run whose reality verdicts still lag behind its decisions, not a gap in the recorder. Of that open
+       risk, <b>${money(etaCost)}</b> sits in <code>eta_estimate</code> decisions the checker grades
+       <b>${etaWrong}/${etaPositions.length}</b> wrong, and not one of them has a real-world verdict yet.`;
   }
 
   function boot() {
@@ -286,14 +309,17 @@
       `${RUN.recording} - captured ${RUN.capturedAt} - ${positions.length} positions, ${closed.length} closed`;
     renderStats();
     renderBooks();
+    renderClosedNote();
     renderNote();
     document.querySelectorAll('.book').forEach((el) =>
       el.addEventListener('click', (ev) => {
         const b = ev.target.closest('button.pos');
         if (b) renderDetail(positions[Number(b.dataset.i)]);
       }));
-    // Open on the one position that closed against its own math grade - the
-    // plan calls it the most interesting row in the run, so it is the default.
+    // Open on the one position that closed against its own math grade, if this
+    // run has one - that is the most interesting row a ledger can show. This
+    // run has none (0 overturned), so this falls through to the first position;
+    // the branch stays live for a run where reality does disagree with math.
     renderDetail(positions.find((p) => p.overturned) || positions[0]);
   }
 
