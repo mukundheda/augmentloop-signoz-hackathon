@@ -87,7 +87,9 @@ is under ten lines with no checker function anywhere:
 signal fires, `record_reality_grade` span-links the grade back to the decision
 and stamps `grade.source = reality`. For the webhook/cron hop where the outcome
 lands in another process, swap the in-memory ref store for one that persists
-`ref_to_ids(...)` and rebuilds with `ref_from_ids(...)` - still no checker.
+`ref_to_ids(...)` and rebuilds with `ref_from_ids(...)` - still no checker. Those
+ids serialize as hex strings, OpenTelemetry's own wire format, so a trace id
+survives JSON intact even where numbers are IEEE 754 doubles.
 
 ## Usage
 
