@@ -24,8 +24,9 @@ from typing import Callable, Optional, Protocol, Sequence
 
 from opentelemetry import metrics, trace
 
+from gradebook import logs as gb_logs
 from gradebook import record_decision
-from gradebook.pricing import price
+from gradebook.pricing import UnknownModelError, price
 
 from .world import ALL_QUERIES, Query
 
@@ -147,10 +148,29 @@ def run_live(
     # `default_pairs` and `--production`'s per-decision-type pairs are both
     # already model-major/type-contiguous, so groupby needs no sort.
     for model, model_pairs in groupby(run_pairs, key=lambda pair: pair[0]):
-        ceiling = price(model, _EST_INPUT_TOKENS, max_output_tokens)
         with tracer.start_as_current_span(f"model-run {model}"):
+            # Priced INSIDE the model-run span on purpose: an unknown-model
+            # pricing miss (§13) has no decision to link to, so the model-run
+            # span is the only thing that can carry it.
+            try:
+                ceiling = price(model, _EST_INPUT_TOKENS, max_output_tokens)
+            except UnknownModelError:
+                # A stale roster/routing slug. Log while the model-run span is
+                # current - there is no decision to link, the whole model is
+                # unpriced - then fail loud as before (conventions §13).
+                gb_logs.unknown_model_pricing_miss(model=model)
+                raise
             for _, query in model_pairs:
                 if summary.total_cost_usd + ceiling > budget_usd:
+                    # The run stopped before it could overspend. Log while the
+                    # model-run span is current so the failure links to the run
+                    # that hit the cap (conventions §13).
+                    gb_logs.budget_guard_tripped(
+                        budget_usd=budget_usd,
+                        spend_usd=summary.total_cost_usd,
+                        model=model,
+                        decision_type=query.decision_type,
+                    )
                     summary.budget_exhausted = True
                     return summary
 
