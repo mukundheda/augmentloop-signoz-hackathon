@@ -1,0 +1,7 @@
+clip_id,predicted_viral_score,kept
+sample-clip-01,0.72,true
+sample-clip-02,0.31,false
+sample-clip-03,0.58,false
+sample-clip-04,0.44,true
+sample-clip-05,0.81,true
+sample-clip-06,0.39,false
