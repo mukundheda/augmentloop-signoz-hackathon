@@ -31,11 +31,11 @@ From a live OpenRouter run captured 2026-07-25 and committed as the replay recor
 
 | Model | Correct | Cost |
 | --- | --- | --- |
-| `google/gemini-2.5-flash-lite` | 42/60 | $0.000343 |
-| `anthropic/claude-haiku-4.5` | 40/60 | $0.008092 |
-| `anthropic/claude-sonnet-4.6` | 40/60 | $0.032796 |
+| `anthropic/claude-sonnet-4.6` | 53/60 | $0.278031 |
+| `anthropic/claude-haiku-4.5` | 42/60 | $0.096187 |
+| `google/gemini-2.5-flash-lite` | 32/60 | $0.003335 |
 
-180 decisions, 122 correct, **$0.000338 per correct decision**. The strongest result here is cost, not accuracy: `anthropic/claude-sonnet-4.6` costs $0.032796 for 40/60 correct, roughly 95x what `google/gemini-2.5-flash-lite` costs ($0.000343) for 42/60. That 42-vs-40 gap is not a real signal: all three models are 20/20 on `route_choice` and 20/20 on `next_hop`; the entire spread is `eta_estimate`, where `gemini-2.5-flash-lite` gets 2/20 and both Claude models get 0/20 - a two-answer margin, not evidence one model is more accurate than another. This is one run of 60 decisions per model across three decision types, not a general claim that cheap models win: nearly all of the error sits in `eta_estimate` decisions (2/60 correct across the whole run), so the decision-type mix is doing at least as much work as the model choice. `python -m toyworld` prints these same numbers, so the dashboards can be checked against ground truth.
+The per-type split is the finding that matters: `google/gemini-2.5-flash-lite` is 20/20 on `next_hop`, edging out `anthropic/claude-sonnet-4.6`'s 19/20, at roughly 1/83rd of sonnet's cost for the run ($0.003335 vs $0.278031) - and that same gemini run scores 0/20 on `eta_estimate`, where sonnet is 20/20. One model, best choice for one decision type and unusable for another, in the same 60-decision run: that is why this project routes per decision type rather than per program (`docs/right-sizing-loop.md`), and it's the clearest evidence for it so far. 180 decisions, 127 correct, **$0.002973 per correct decision**. 20 decisions per model per type is a small sample and this is one run, so read the per-type pattern as a signal worth routing on, not a settled ranking of these three models. `python -m toyworld` prints these same numbers, so the dashboards can be checked against ground truth.
 
 ## How it is built
 
