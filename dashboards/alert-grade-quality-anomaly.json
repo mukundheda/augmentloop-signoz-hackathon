@@ -1,0 +1,77 @@
+{
+  "alert": "Gradebook Grade Quality Anomaly",
+  "alertType": "METRIC_BASED_ALERT",
+  "description": "Anomaly rule (#49) replacing the static 50% floor as the PRIMARY grade-quality detector. Seasonal decomposition (daily) z-scores the volume of correct math+reality decisions (gradebook.decisions.graded, filtered gen_ai.evaluation.score.label='correct' AND augmentloop.grade.source IN ('math','reality')) against its own recent history, catching a quality regression even when the baseline correct-rate itself drifts with the model roster (lifetime baseline ~58.8%, not fixed at 50%). DESIGN NOTE 1 (single query, not a ratio): SigNoz anomaly rules seasonally-decompose ONE query-builder series (confirmed against the platform's own canonical anomaly-rule example, ee/query-service/rules/anomaly.go + pkg/apiserver/signozapiserver/ruler_examples.go 'metric_anomaly' - a single builder_query, never a two-query formula). We anomaly-detect the COUNT of correct decisions rather than the correct-RATE ratio the static rule used; assuming decision throughput doesn't collapse in lockstep, a drop in the correct-count series is the same failure signature a rate drop would show, expressed the way this rule type actually supports. DESIGN NOTE 2 (evalWindow=1h, not 24h): the platform's own canonical anomaly example uses evalWindow=24h/frequency=3h, but empirically verified against this deployment's live data (2026-07-25, gradebook.decisions.graded, timeAggregation=increase): increase()/rate() return real values for windows up to ~3h and silently return null (no error) for windows of 6h+ regardless of groupBy or request type. evalWindow is kept at 1h (frequency 1m, confirmed inside the working range) to guarantee the underlying query actually returns data every cycle - a real, deployment-verified gotcha, not a stylistic choice. DESIGN NOTE 3 (seasonality=daily, z=3): 'daily' is the pragmatic middle choice given only ~1 week of hackathon-era history exists (weekly seasonality needs multiple weeks of baseline to mean anything; hourly is likely too tight for the current low, bursty event volume). z_score_threshold=3 sits mid-range of the requested 2.0-4.0 band. HONESTY CAVEAT: with only a few days of sparse, bursty (manually-triggered replay) history, the seasonal baseline this rule computes is thin - it will get more meaningful as real usage accumulates; it is not claimed to be well-calibrated yet, only wired up and verifiably evaluating.",
+  "ruleType": "anomaly_rule",
+  "version": "v5",
+  "evalWindow": "1h",
+  "frequency": "1m",
+  "condition": {
+    "compositeQuery": {
+      "queryType": "builder",
+      "panelType": "graph",
+      "queries": [
+        {
+          "type": "builder_query",
+          "spec": {
+            "name": "A",
+            "signal": "metrics",
+            "stepInterval": 300,
+            "aggregations": [
+              {
+                "metricName": "gradebook.decisions.graded",
+                "temporality": "cumulative",
+                "timeAggregation": "increase",
+                "spaceAggregation": "sum"
+              }
+            ],
+            "filter": {
+              "expression": "gen_ai.evaluation.score.label = 'correct' AND augmentloop.grade.source IN ('math','reality')"
+            },
+            "groupBy": [],
+            "functions": [
+              {
+                "name": "anomaly",
+                "args": [
+                  {
+                    "name": "z_score_threshold",
+                    "value": 3
+                  }
+                ]
+              }
+            ],
+            "order": [
+              {
+                "key": {
+                  "name": "__result"
+                },
+                "direction": "desc"
+              }
+            ],
+            "limit": 100,
+            "legend": "correct decisions (math+reality)"
+          }
+        }
+      ]
+    },
+    "op": "below",
+    "matchType": "all_the_times",
+    "target": 3,
+    "algorithm": "standard",
+    "seasonality": "daily",
+    "selectedQueryName": "A",
+    "requireMinPoints": true,
+    "requiredNumPoints": 3
+  },
+  "labels": {
+    "severity": "critical",
+    "team": "gradebook"
+  },
+  "preferredChannels": [
+    "gradebook-alerts"
+  ],
+  "annotations": {
+    "description": "Correct-decision volume (math+reality) is anomalously low (z-score {{$value}}, threshold {{$threshold}}) relative to its recent seasonal baseline.",
+    "summary": "Gradebook correct-decision volume anomaly"
+  }
+}
