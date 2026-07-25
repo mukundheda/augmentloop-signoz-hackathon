@@ -1,5 +1,5 @@
 {
-  "description": "Gradebook T4 observatory: the headline cost-per-correct-decision metric (ADR 0001; scoped to the math grade source, with reality shown in its own adjacent panels per C9/#54), per-model right-sizing evidence, correct-rate for the grade-quality-drop alert, cost-over-time for the spend-spike alert, and a clearly-labeled AI-judge secondary view that never counts toward the headline. Built for issue #7 (T4).",
+  "description": "Gradebook T4 observatory: the headline cost-per-correct-decision metric (ADR 0001; scoped to the math grade source, with reality shown in its own adjacent panels per C9/#54), per-model right-sizing evidence, correct-rate for the grade-quality-drop alert, cost-over-time for the spend-spike alert, and a clearly-labeled AI-judge secondary view that never counts toward the headline. Built for issue #7 (T4). All panels exclude the agent-gradebook-test harness service from the judge-facing numbers (#47). $decision_type, $model, and $grade_source dashboard variables (#48) replace the hardcoded decision-type allowlist; see panel-1's description for the exact scoping rules.",
   "layout": [
     {
       "h": 4,
@@ -71,14 +71,42 @@
     "signoz-hackathon"
   ],
   "title": "Gradebook: Cost per Correct Decision",
-  "variables": {},
+  "variables": {
+    "decision_type": {
+      "dynamicVariablesAttribute": "augmentloop.decision.type",
+      "dynamicVariablesSource": "Metrics",
+      "id": "aa558acc-067f-4335-a788-e29ffa99be91",
+      "multiSelect": true,
+      "name": "decision_type",
+      "showALLOption": true,
+      "type": "DYNAMIC"
+    },
+    "grade_source": {
+      "dynamicVariablesAttribute": "augmentloop.grade.source",
+      "dynamicVariablesSource": "Metrics",
+      "id": "665d142e-82e2-4324-a3a2-c3b45d60ee10",
+      "multiSelect": true,
+      "name": "grade_source",
+      "showALLOption": true,
+      "type": "DYNAMIC"
+    },
+    "model": {
+      "dynamicVariablesAttribute": "gen_ai.request.model",
+      "dynamicVariablesSource": "Metrics",
+      "id": "c1d48d0c-8b6b-4344-968d-3ec064df78ae",
+      "multiSelect": true,
+      "name": "model",
+      "showALLOption": true,
+      "type": "DYNAMIC"
+    }
+  },
   "version": "v5",
   "widgets": [
     {
       "contextLinks": {
         "linksData": null
       },
-      "description": "Headline metric (ADR 0001, definition fixed in C9/#54): (sum(augmentloop.cost.usd) / count(correct decisions)) * 1000, scoped to augmentloop.grade.source = 'math'. The numerator A is ALL math cost - money spent on WRONG answers included - so this is what we spent per answer we got right, not the flattering cost-of-only-correct-answers version. Denominator B is correct math decisions. Scoping to math (a decision emits at most one math grade) structurally removes the earlier double-count that reality grades caused, so this reconciles to the cent with the CLI's total_cost / correct on the same run. Reality grades are NOT blended into this number - they have their own adjacent panels (reality correct rate & count). AI-judge grades are never in the headline (ADR 0001). SCOPING: augmentloop.decision.type is limited to the four model-decision types (route_choice from the toy world, filler_detection/quote_extraction/clip_scoring from the CleanCut substrate), deliberately excluding build_session, the #13 meta build-fleet unit - a whole agent session, not a single graded model decision - which skewed this headline 534x on 2026-07-25.",
+      "description": "Headline metric (ADR 0001, definition fixed in C9/#54): (sum(augmentloop.cost.usd) / count(correct decisions)) * 1000, scoped to augmentloop.grade.source = 'math'. The numerator A is ALL math cost - money spent on WRONG answers included - so this is what we spent per answer we got right, not the flattering cost-of-only-correct-answers version. Denominator B is correct math decisions. Scoping to math (a decision emits at most one math grade) structurally removes the earlier double-count that reality grades caused, so this reconciles to the cent with the CLI's total_cost / correct on the same run. Reality grades are NOT blended into this number - they have their own adjacent panels (reality correct rate & count). AI-judge grades are never in the headline (ADR 0001). SCOPING: augmentloop.decision.type is limited to the four model-decision types (route_choice from the toy world, filler_detection/quote_extraction/clip_scoring from the CleanCut substrate), deliberately excluding build_session, the #13 meta build-fleet unit - a whole agent session, not a single graded model decision - which skewed this headline 534x on 2026-07-25. SERVICE SCOPE (ruling recorded on #47, 2026-07-25): every panel additionally excludes service.name = 'agent-gradebook-test', a test harness whose graded decisions were reaching this judge-facing headline. Excluding the known test service (rather than allowlisting 'real' services) was the deliberate choice: at ruling time a fourth, legitimate service (agent-gradebook-verify) was already emitting graded decisions outside any allowlist that existed then, which an allowlist would have silently dropped from the headline. VARIABLES (#48): $decision_type, $model, and $grade_source are dashboard variables (DYNAMIC, attribute-backed off augmentloop.decision.type / gen_ai.request.model / augmentloop.grade.source on the metrics signal), replacing the old hardcoded decision-type allowlist. Every panel filters augmentloop.decision.type != 'build_session' UNCONDITIONALLY (not gated by the variable) so build_session stays excluded no matter what a judge selects; augmentloop.decision.type IN ($decision_type) is the selectable part, which is why a newly emitted decision type (e.g. eta_estimate, next_hop, or the pacing_choice type observed live on 2026-07-25) appears in the dropdown automatically with no panel edits. $model is applied the same way on every panel. $grade_source is NOT wired into this panel, panels 2-4, or the ai-judge panel 5 - each has an ADR-0001-driven fixed grade source (this one: math only per #54) that a shared dashboard variable must not be allowed to override; it is wired only into the two reality panels below.",
       "id": "panel-1-headline-cost-per-correct",
       "legendPosition": "bottom",
       "nullZeroValues": "zero",
@@ -99,7 +127,7 @@
               "disabled": true,
               "expression": "A",
               "filter": {
-                "expression": "augmentloop.grade.source = 'math' AND augmentloop.decision.type IN ('route_choice','filler_detection','quote_extraction','clip_scoring')"
+                "expression": "augmentloop.grade.source = 'math' AND augmentloop.decision.type != 'build_session' AND augmentloop.decision.type IN ($decision_type) AND service.name != 'agent-gradebook-test' AND gen_ai.request.model IN ($model)"
               },
               "functions": [],
               "groupBy": [],
@@ -127,7 +155,7 @@
               "disabled": true,
               "expression": "B",
               "filter": {
-                "expression": "gen_ai.evaluation.score.label = 'correct' AND augmentloop.grade.source = 'math' AND augmentloop.decision.type IN ('route_choice','filler_detection','quote_extraction','clip_scoring')"
+                "expression": "gen_ai.evaluation.score.label = 'correct' AND augmentloop.grade.source = 'math' AND augmentloop.decision.type != 'build_session' AND augmentloop.decision.type IN ($decision_type) AND service.name != 'agent-gradebook-test' AND gen_ai.request.model IN ($model)"
               },
               "functions": [],
               "groupBy": [],
@@ -194,7 +222,7 @@
       "contextLinks": {
         "linksData": null
       },
-      "description": "Same headline formula grouped by gen_ai.request.model. This is the right-sizing evidence: same task, cheaper model, correctness held, cost per correct decision drops.",
+      "description": "Same headline formula grouped by gen_ai.request.model. This is the right-sizing evidence: same task, cheaper model, correctness held, cost per correct decision drops. Excludes service.name = 'agent-gradebook-test' (#47). VARIABLES (#48): $decision_type (with augmentloop.decision.type != 'build_session' enforced unconditionally alongside it) and $model are applied here; $grade_source is deliberately NOT, to avoid a shared variable pulling ai_judge into a correctness claim or collapsing the math/reality comparison.",
       "id": "panel-2-cost-per-correct-by-model",
       "legendPosition": "bottom",
       "nullZeroValues": "zero",
@@ -215,7 +243,7 @@
               "disabled": true,
               "expression": "A",
               "filter": {
-                "expression": "gen_ai.evaluation.score.label = 'correct' AND augmentloop.grade.source IN ('math','reality') AND augmentloop.decision.type IN ('route_choice','filler_detection','quote_extraction','clip_scoring')"
+                "expression": "gen_ai.evaluation.score.label = 'correct' AND augmentloop.grade.source IN ('math','reality') AND augmentloop.decision.type != 'build_session' AND augmentloop.decision.type IN ($decision_type) AND service.name != 'agent-gradebook-test' AND gen_ai.request.model IN ($model)"
               },
               "functions": [],
               "groupBy": [
@@ -249,7 +277,7 @@
               "disabled": true,
               "expression": "B",
               "filter": {
-                "expression": "gen_ai.evaluation.score.label = 'correct' AND augmentloop.grade.source IN ('math','reality') AND augmentloop.decision.type IN ('route_choice','filler_detection','quote_extraction','clip_scoring')"
+                "expression": "gen_ai.evaluation.score.label = 'correct' AND augmentloop.grade.source IN ('math','reality') AND augmentloop.decision.type != 'build_session' AND augmentloop.decision.type IN ($decision_type) AND service.name != 'agent-gradebook-test' AND gen_ai.request.model IN ($model)"
               },
               "functions": [],
               "groupBy": [
@@ -322,7 +350,7 @@
       "contextLinks": {
         "linksData": null
       },
-      "description": "count(correct, math+reality) / count(all math+reality grades) x 100, grouped by model. Feeds the grade-quality-drop alert baseline.",
+      "description": "count(correct, math+reality) / count(all math+reality grades) x 100, grouped by model. Feeds the grade-quality-drop alert baseline. Excludes service.name = 'agent-gradebook-test' (#47). VARIABLES (#48): $decision_type (with augmentloop.decision.type != 'build_session' enforced unconditionally alongside it) and $model are applied here; $grade_source is deliberately NOT, to avoid a shared variable pulling ai_judge into a correctness claim or collapsing the math/reality comparison.",
       "id": "panel-3-correct-rate-by-model",
       "legendPosition": "bottom",
       "nullZeroValues": "zero",
@@ -343,7 +371,7 @@
               "disabled": true,
               "expression": "A",
               "filter": {
-                "expression": "gen_ai.evaluation.score.label = 'correct' AND augmentloop.grade.source IN ('math','reality') AND augmentloop.decision.type IN ('route_choice','filler_detection','quote_extraction','clip_scoring')"
+                "expression": "gen_ai.evaluation.score.label = 'correct' AND augmentloop.grade.source IN ('math','reality') AND augmentloop.decision.type != 'build_session' AND augmentloop.decision.type IN ($decision_type) AND service.name != 'agent-gradebook-test' AND gen_ai.request.model IN ($model)"
               },
               "functions": [],
               "groupBy": [
@@ -377,7 +405,7 @@
               "disabled": true,
               "expression": "B",
               "filter": {
-                "expression": "augmentloop.grade.source IN ('math','reality') AND augmentloop.decision.type IN ('route_choice','filler_detection','quote_extraction','clip_scoring')"
+                "expression": "augmentloop.grade.source IN ('math','reality') AND augmentloop.decision.type != 'build_session' AND augmentloop.decision.type IN ($decision_type) AND service.name != 'agent-gradebook-test' AND gen_ai.request.model IN ($model)"
               },
               "functions": [],
               "groupBy": [
@@ -450,7 +478,7 @@
       "contextLinks": {
         "linksData": null
       },
-      "description": "sum(augmentloop.cost.usd) over time, split math vs reality grade source. Feeds the spend-spike alert.",
+      "description": "sum(augmentloop.cost.usd) over time, split math vs reality grade source. Feeds the spend-spike alert. Excludes service.name = 'agent-gradebook-test' (#47). VARIABLES (#48): $decision_type (with augmentloop.decision.type != 'build_session' enforced unconditionally alongside it) and $model are applied here; $grade_source is deliberately NOT, to avoid a shared variable pulling ai_judge into a correctness claim or collapsing the math/reality comparison.",
       "id": "panel-4-cost-over-time",
       "legendPosition": "bottom",
       "nullZeroValues": "zero",
@@ -471,7 +499,7 @@
               "disabled": false,
               "expression": "A",
               "filter": {
-                "expression": "augmentloop.grade.source = 'math' AND augmentloop.decision.type IN ('route_choice','filler_detection','quote_extraction','clip_scoring')"
+                "expression": "augmentloop.grade.source = 'math' AND augmentloop.decision.type != 'build_session' AND augmentloop.decision.type IN ($decision_type) AND service.name != 'agent-gradebook-test' AND gen_ai.request.model IN ($model)"
               },
               "functions": [],
               "groupBy": [],
@@ -499,7 +527,7 @@
               "disabled": false,
               "expression": "B",
               "filter": {
-                "expression": "augmentloop.grade.source = 'reality' AND augmentloop.decision.type IN ('route_choice','filler_detection','quote_extraction','clip_scoring')"
+                "expression": "augmentloop.grade.source = 'reality' AND augmentloop.decision.type != 'build_session' AND augmentloop.decision.type IN ($decision_type) AND service.name != 'agent-gradebook-test' AND gen_ai.request.model IN ($model)"
               },
               "functions": [],
               "groupBy": [],
@@ -559,7 +587,7 @@
       "contextLinks": {
         "linksData": null
       },
-      "description": "Decisions graded with augmentloop.grade.source = ai_judge. Per ADR 0001, these NEVER count toward the headline cost-per-correct-decision number. Expected empty until an ai_judge grader ships (no ai_judge grade source is emitted anywhere in the codebase yet, as of ticket #7) - an empty panel here is correct, not a bug.",
+      "description": "Decisions graded with augmentloop.grade.source = ai_judge. Per ADR 0001, these NEVER count toward the headline cost-per-correct-decision number. Expected empty until an ai_judge grader ships (no ai_judge grade source is emitted anywhere in the codebase yet, as of ticket #7) - an empty panel here is correct, not a bug. Excludes service.name = 'agent-gradebook-test' (#47). VARIABLES (#48): $decision_type (with augmentloop.decision.type != 'build_session' enforced unconditionally alongside it) and $model are applied here; $grade_source is deliberately NOT, to avoid a shared variable pulling ai_judge into a correctness claim or collapsing the math/reality comparison.",
       "id": "panel-5-ai-judge-secondary",
       "legendPosition": "bottom",
       "nullZeroValues": "zero",
@@ -580,7 +608,7 @@
               "disabled": false,
               "expression": "A",
               "filter": {
-                "expression": "augmentloop.grade.source = 'ai_judge' AND augmentloop.decision.type IN ('route_choice','filler_detection','quote_extraction','clip_scoring')"
+                "expression": "augmentloop.grade.source = 'ai_judge' AND augmentloop.decision.type != 'build_session' AND augmentloop.decision.type IN ($decision_type) AND service.name != 'agent-gradebook-test' AND gen_ai.request.model IN ($model)"
               },
               "functions": [],
               "groupBy": [],
@@ -640,7 +668,7 @@
       "contextLinks": {
         "linksData": null
       },
-      "description": "Reality-graded correct rate (C9/#54): count(correct reality grades) / count(all reality grades) x 100, scoped to augmentloop.grade.source = 'reality'. Kept ADJACENT to the headline rather than blended into it - delayed reality grading is genuinely ours, and it stays visible on its own terms (ADR 0001 sets a ceiling on the headline, not a floor requiring both sources). Expected sparse: reality grades arrive later than the decisions they judge.",
+      "description": "Reality-graded correct rate (C9/#54): count(correct reality grades) / count(all reality grades) x 100, scoped to augmentloop.grade.source = 'reality'. Kept ADJACENT to the headline rather than blended into it - delayed reality grading is genuinely ours, and it stays visible on its own terms (ADR 0001 sets a ceiling on the headline, not a floor requiring both sources). Expected sparse: reality grades arrive later than the decisions they judge. Excludes service.name = 'agent-gradebook-test' (#47). VARIABLE (#48): augmentloop.grade.source is now driven by $grade_source instead of a hardcoded 'reality' literal, so a judge can switch this panel to inspect math or ai_judge grades in the same slot. KNOWN LIMITATION: this dashboard's saved schema has no persisted default-value field for a DYNAMIC variable (confirmed by round-tripping through the live PUT/GET on 2026-07-25 - the API accepted and echoed back the variable with no default/selectedValue key), so on first load with showALLOption this panel may show math+reality+ai_judge blended rather than reality alone until 'reality' is picked from the dropdown. Disclosed here rather than silently shipped.",
       "id": "panel-6-reality-correct-rate",
       "legendPosition": "bottom",
       "nullZeroValues": "zero",
@@ -661,7 +689,7 @@
               "disabled": true,
               "expression": "A",
               "filter": {
-                "expression": "gen_ai.evaluation.score.label = 'correct' AND augmentloop.grade.source = 'reality' AND augmentloop.decision.type IN ('route_choice','filler_detection','quote_extraction','clip_scoring')"
+                "expression": "gen_ai.evaluation.score.label = 'correct' AND augmentloop.grade.source = $grade_source AND augmentloop.decision.type != 'build_session' AND augmentloop.decision.type IN ($decision_type) AND service.name != 'agent-gradebook-test' AND gen_ai.request.model IN ($model)"
               },
               "functions": [],
               "groupBy": [],
@@ -689,7 +717,7 @@
               "disabled": true,
               "expression": "B",
               "filter": {
-                "expression": "augmentloop.grade.source = 'reality' AND augmentloop.decision.type IN ('route_choice','filler_detection','quote_extraction','clip_scoring')"
+                "expression": "augmentloop.grade.source = $grade_source AND augmentloop.decision.type != 'build_session' AND augmentloop.decision.type IN ($decision_type) AND service.name != 'agent-gradebook-test' AND gen_ai.request.model IN ($model)"
               },
               "functions": [],
               "groupBy": [],
@@ -756,7 +784,7 @@
       "contextLinks": {
         "linksData": null
       },
-      "description": "Count of reality-graded decisions (C9/#54): count of augmentloop.grade.source = 'reality' grades. The 'count' half of the adjacent reality view that C9 kept out of the headline. Reality grades carry no cost attribute (a late outcome check is not a priced model call), which is exactly why they belong here and not in the cost-per-correct numerator.",
+      "description": "Count of reality-graded decisions (C9/#54): count of augmentloop.grade.source = 'reality' grades. The 'count' half of the adjacent reality view that C9 kept out of the headline. Reality grades carry no cost attribute (a late outcome check is not a priced model call), which is exactly why they belong here and not in the cost-per-correct numerator. Excludes service.name = 'agent-gradebook-test' (#47). VARIABLE (#48): augmentloop.grade.source is now driven by $grade_source instead of a hardcoded 'reality' literal, so a judge can switch this panel to inspect math or ai_judge grades in the same slot. KNOWN LIMITATION: this dashboard's saved schema has no persisted default-value field for a DYNAMIC variable (confirmed by round-tripping through the live PUT/GET on 2026-07-25 - the API accepted and echoed back the variable with no default/selectedValue key), so on first load with showALLOption this panel may show math+reality+ai_judge blended rather than reality alone until 'reality' is picked from the dropdown. Disclosed here rather than silently shipped.",
       "id": "panel-7-reality-count",
       "legendPosition": "bottom",
       "nullZeroValues": "zero",
@@ -777,7 +805,7 @@
               "disabled": false,
               "expression": "A",
               "filter": {
-                "expression": "augmentloop.grade.source = 'reality' AND augmentloop.decision.type IN ('route_choice','filler_detection','quote_extraction','clip_scoring')"
+                "expression": "augmentloop.grade.source = $grade_source AND augmentloop.decision.type != 'build_session' AND augmentloop.decision.type IN ($decision_type) AND service.name != 'agent-gradebook-test' AND gen_ai.request.model IN ($model)"
               },
               "functions": [],
               "groupBy": [],
