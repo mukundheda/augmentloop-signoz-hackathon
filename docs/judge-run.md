@@ -83,17 +83,32 @@ python -m venv .venv
 
 ```
 Replayed replay-v1.jsonl -> http://localhost:4318
-decisions=12  correct=8  reality_outcomes=4  total_cost=$0.003735
-cost per correct decision: $0.000467
+decisions=180  correct=127  reality_outcomes=60  total_cost=$0.377553
+cost per correct decision: $0.002973
 per model:
-  anthropic/claude-3.5-haiku: 4/6 correct, $0.001274
-  anthropic/claude-sonnet-4: 3/3 correct, $0.002382
-  google/gemini-2.0-flash: 1/3 correct, $0.000079
+  anthropic/claude-haiku-4.5: 42/60 correct, $0.096187
+  anthropic/claude-sonnet-4.6: 53/60 correct, $0.278031
+  google/gemini-2.5-flash-lite: 32/60 correct, $0.003335
+per model x decision type:
+  anthropic/claude-haiku-4.5 / eta_estimate: 17/20 correct, $0.071355
+  anthropic/claude-haiku-4.5 / next_hop: 16/20 correct, $0.010460
+  anthropic/claude-haiku-4.5 / route_choice: 9/20 correct, $0.014372
+  anthropic/claude-sonnet-4.6 / eta_estimate: 20/20 correct, $0.203985
+  anthropic/claude-sonnet-4.6 / next_hop: 19/20 correct, $0.031380
+  anthropic/claude-sonnet-4.6 / route_choice: 14/20 correct, $0.042666
+  google/gemini-2.5-flash-lite / eta_estimate: 0/20 correct, $0.001100
+  google/gemini-2.5-flash-lite / next_hop: 20/20 correct, $0.001101
+  google/gemini-2.5-flash-lite / route_choice: 12/20 correct, $0.001134
 ```
 
-In SigNoz you now have services `toy-world` and `toy-world-outcomes`, journey
-trace waterfalls, and 16 `gen_ai.evaluation.result` events. The replay is
-deterministic; re-running it just adds another identical batch.
+(The trailing "Open SigNoz -> Traces" hint is omitted here for brevity; the
+command prints it too.)
+
+In SigNoz you now have services `toy-world` and `toy-world-outcomes`, one trace
+per model, and 240 `gen_ai.evaluation.result` events - 180 math grades plus the
+60 late `journey.on_time` reality grades that span-link back to the
+`route_choice` decisions they judge. The replay is deterministic; re-running it
+just adds another identical batch.
 
 ## 5. Import the Gradebook dashboard
 
