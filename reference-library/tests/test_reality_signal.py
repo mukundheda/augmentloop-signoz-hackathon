@@ -5,6 +5,8 @@ signal is the verdict. These tests exercise that seam and assert on emitted
 telemetry (the literal frozen attribute names), never on library internals.
 """
 
+import json
+
 from gradebook import RealitySignal, ref_from_ids, ref_to_ids
 
 
@@ -120,3 +122,49 @@ def test_cross_process_via_serialized_ids(tracer_provider, exporter):
     assert span.attributes["augmentloop.grade.source"] == "reality"
     assert span.links[0].context.trace_id == decision_ctx.trace_id
     assert span.links[0].context.span_id == decision_ctx.span_id
+
+
+def test_serialized_ids_survive_a_real_json_round_trip(tracer_provider, exporter):
+    """The store is Redis or a database, so the ids go through actual JSON.
+
+    The test above round-trips a Python dict, which cannot fail this way: Python
+    ints are arbitrary precision. Real JSON consumed by anything with IEEE 754
+    numbers (`JSON.parse` holds integers exactly only to 2**53 - 1) would silently
+    round a 128-bit trace id to a different trace id, and the span link would then
+    point at a trace that does not exist.
+    """
+    persisted: dict = {}
+
+    class JsonStore:
+        def put(self, key, ref):
+            persisted[key] = json.dumps(ref_to_ids(ref))
+
+        def pop(self, key):
+            blob = persisted.pop(key, None)
+            return ref_from_ids(json.loads(blob)) if blob else None
+
+    sig = RealitySignal(
+        "appointment.landed",
+        store=JsonStore(),
+        tracer_provider=tracer_provider,
+    )
+    decision_ctx = _observe_under_span(sig, tracer_provider, "appt-2", "resp-6")
+    exporter.clear()
+
+    ids = json.loads(persisted["appt-2"])
+    assert isinstance(ids["trace_id"], str) and len(ids["trace_id"]) == 32
+    assert isinstance(ids["span_id"], str) and len(ids["span_id"]) == 16
+    assert int(ids["trace_id"], 16) == decision_ctx.trace_id
+    assert decision_ctx.trace_id > 2**53 - 1, "a real trace id exceeds JS exact-int range"
+
+    assert sig.record("appt-2", True) is True
+    span = exporter.get_finished_spans()[0]
+    assert span.links[0].context.trace_id == decision_ctx.trace_id
+    assert span.links[0].context.span_id == decision_ctx.span_id
+
+
+def test_ref_from_ids_still_reads_the_legacy_raw_int_form():
+    # A store written before the hex change keeps working.
+    ref = ref_from_ids({"trace_id": 12345678901234567890, "span_id": 1234567890, "response_id": "r"})
+    assert ref.span_context.trace_id == 12345678901234567890
+    assert ref.span_context.span_id == 1234567890

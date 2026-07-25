@@ -90,7 +90,12 @@ def check_event(event: dict) -> list[Finding]:
     value = attrs.get(SCORE_VALUE)
     label = attrs.get(SCORE_LABEL)
     if source in MACHINE_SOURCES:
-        if value not in (0.0, 1.0, 0, 1):
+        # `_is_number` first: Python's `True == 1`, so a bare membership test
+        # accepts a JSON `true` here. That matters more in this checker than
+        # almost anywhere else, because its whole job is judging emitters
+        # written in other languages, where `true` is a native literal and
+        # `score.value: isCorrect` is one keystroke from `isCorrect ? 1 : 0`.
+        if not _is_number(value) or value not in (0.0, 1.0):
             findings.append(
                 Finding("error", f"{SCORE_VALUE} must be 0.0 or 1.0 for a {source} grade, got {value!r}")
             )
