@@ -1,5 +1,5 @@
 {
-  "description": "Gradebook T4 observatory: the headline cost-per-correct-decision metric (ADR 0001, math+reality grade sources only), per-model right-sizing evidence, correct-rate for the grade-quality-drop alert, cost-over-time for the spend-spike alert, and a clearly-labeled AI-judge secondary view that never counts toward the headline. Built for issue #7 (T4).",
+  "description": "Gradebook T4 observatory: the headline cost-per-correct-decision metric (ADR 0001; scoped to the math grade source, with reality shown in its own adjacent panels per C9/#54), per-model right-sizing evidence, correct-rate for the grade-quality-drop alert, cost-over-time for the spend-spike alert, and a clearly-labeled AI-judge secondary view that never counts toward the headline. Built for issue #7 (T4).",
   "layout": [
     {
       "h": 4,
@@ -45,6 +45,24 @@
       "w": 4,
       "x": 8,
       "y": 14
+    },
+    {
+      "h": 4,
+      "i": "panel-6-reality-correct-rate",
+      "moved": false,
+      "static": false,
+      "w": 4,
+      "x": 0,
+      "y": 14
+    },
+    {
+      "h": 4,
+      "i": "panel-7-reality-count",
+      "moved": false,
+      "static": false,
+      "w": 4,
+      "x": 4,
+      "y": 14
     }
   ],
   "panelMap": {},
@@ -60,7 +78,7 @@
       "contextLinks": {
         "linksData": null
       },
-      "description": "Headline metric (ADR 0001): (sum(augmentloop.cost.usd) / count(decisions)) * 1000, scaled to legible units, where gen_ai.evaluation.score.label='correct' AND augmentloop.grade.source in (math, reality). AI-judge grades are never mixed into this number. KNOWN OPEN ISSUE (2026-07-24/25): a decision that is math-incorrect but later reality-correct (deferred outcome check) adds to B's correct count without a matching cost in A, since cost only attaches to the math event - denominator can overcount relative to numerator. Not yet resolved; owner Anish/#7. SCOPING: every panel filters augmentloop.decision.type to the four model-decision types (route_choice from the toy world, filler_detection/quote_extraction/clip_scoring from the CleanCut substrate). This deliberately excludes build_session, the meta build-fleet unit from #13, which is a whole agent session priced in real dollars rather than a single graded model decision - blending it in skewed this headline 534x on 2026-07-25.",
+      "description": "Headline metric (ADR 0001, definition fixed in C9/#54): (sum(augmentloop.cost.usd) / count(correct decisions)) * 1000, scoped to augmentloop.grade.source = 'math'. The numerator A is ALL math cost - money spent on WRONG answers included - so this is what we spent per answer we got right, not the flattering cost-of-only-correct-answers version. Denominator B is correct math decisions. Scoping to math (a decision emits at most one math grade) structurally removes the earlier double-count that reality grades caused, so this reconciles to the cent with the CLI's total_cost / correct on the same run. Reality grades are NOT blended into this number - they have their own adjacent panels (reality correct rate & count). AI-judge grades are never in the headline (ADR 0001). SCOPING: augmentloop.decision.type is limited to the four model-decision types (route_choice from the toy world, filler_detection/quote_extraction/clip_scoring from the CleanCut substrate), deliberately excluding build_session, the #13 meta build-fleet unit - a whole agent session, not a single graded model decision - which skewed this headline 534x on 2026-07-25.",
       "id": "panel-1-headline-cost-per-correct",
       "legendPosition": "bottom",
       "nullZeroValues": "zero",
@@ -81,12 +99,12 @@
               "disabled": true,
               "expression": "A",
               "filter": {
-                "expression": "gen_ai.evaluation.score.label = 'correct' AND augmentloop.grade.source IN ('math','reality') AND augmentloop.decision.type IN ('route_choice','filler_detection','quote_extraction','clip_scoring')"
+                "expression": "augmentloop.grade.source = 'math' AND augmentloop.decision.type IN ('route_choice','filler_detection','quote_extraction','clip_scoring')"
               },
               "functions": [],
               "groupBy": [],
               "having": [],
-              "legend": "Total cost (correct, math+reality)",
+              "legend": "Total cost (all math decisions)",
               "limit": 100,
               "orderBy": [
                 {
@@ -109,12 +127,12 @@
               "disabled": true,
               "expression": "B",
               "filter": {
-                "expression": "gen_ai.evaluation.score.label = 'correct' AND augmentloop.grade.source IN ('math','reality') AND augmentloop.decision.type IN ('route_choice','filler_detection','quote_extraction','clip_scoring')"
+                "expression": "gen_ai.evaluation.score.label = 'correct' AND augmentloop.grade.source = 'math' AND augmentloop.decision.type IN ('route_choice','filler_detection','quote_extraction','clip_scoring')"
               },
               "functions": [],
               "groupBy": [],
               "having": [],
-              "legend": "Correct decisions (math+reality)",
+              "legend": "Correct decisions (math)",
               "limit": 100,
               "orderBy": [
                 {
@@ -616,6 +634,203 @@
       "softMin": 0,
       "timePreferance": "GLOBAL_TIME",
       "title": "AI-Estimated Quality (secondary view, NOT in headline)",
+      "yAxisUnit": "none"
+    },
+    {
+      "contextLinks": {
+        "linksData": null
+      },
+      "description": "Reality-graded correct rate (C9/#54): count(correct reality grades) / count(all reality grades) x 100, scoped to augmentloop.grade.source = 'reality'. Kept ADJACENT to the headline rather than blended into it - delayed reality grading is genuinely ours, and it stays visible on its own terms (ADR 0001 sets a ceiling on the headline, not a floor requiring both sources). Expected sparse: reality grades arrive later than the decisions they judge.",
+      "id": "panel-6-reality-correct-rate",
+      "legendPosition": "bottom",
+      "nullZeroValues": "zero",
+      "opacity": "1",
+      "panelTypes": "value",
+      "query": {
+        "builder": {
+          "queryData": [
+            {
+              "aggregations": [
+                {
+                  "metricName": "gradebook.decisions.graded",
+                  "spaceAggregation": "sum",
+                  "timeAggregation": "latest"
+                }
+              ],
+              "dataSource": "metrics",
+              "disabled": true,
+              "expression": "A",
+              "filter": {
+                "expression": "gen_ai.evaluation.score.label = 'correct' AND augmentloop.grade.source = 'reality' AND augmentloop.decision.type IN ('route_choice','filler_detection','quote_extraction','clip_scoring')"
+              },
+              "functions": [],
+              "groupBy": [],
+              "having": [],
+              "legend": "reality correct",
+              "limit": 100,
+              "orderBy": [
+                {
+                  "columnName": "__result",
+                  "order": "desc"
+                }
+              ],
+              "queryName": "A",
+              "stepInterval": null
+            },
+            {
+              "aggregations": [
+                {
+                  "metricName": "gradebook.decisions.graded",
+                  "spaceAggregation": "sum",
+                  "timeAggregation": "latest"
+                }
+              ],
+              "dataSource": "metrics",
+              "disabled": true,
+              "expression": "B",
+              "filter": {
+                "expression": "augmentloop.grade.source = 'reality' AND augmentloop.decision.type IN ('route_choice','filler_detection','quote_extraction','clip_scoring')"
+              },
+              "functions": [],
+              "groupBy": [],
+              "having": [],
+              "legend": "reality total",
+              "limit": 100,
+              "orderBy": [
+                {
+                  "columnName": "__result",
+                  "order": "desc"
+                }
+              ],
+              "queryName": "B",
+              "stepInterval": null
+            }
+          ],
+          "queryFormulas": [
+            {
+              "disabled": false,
+              "expression": "(A/B)*100",
+              "legend": "Reality correct rate",
+              "queryName": "F1"
+            }
+          ]
+        },
+        "id": "panel-6-reality-correct-rate-query",
+        "queryType": "builder"
+      },
+      "selectedLogFields": [
+        {
+          "fieldContext": "log",
+          "name": "timestamp",
+          "signal": "logs",
+          "type": "log"
+        },
+        {
+          "fieldContext": "log",
+          "name": "body",
+          "signal": "logs",
+          "type": "log"
+        }
+      ],
+      "selectedTracesFields": [
+        {
+          "fieldContext": "resource",
+          "fieldDataType": "string",
+          "name": "service.name",
+          "signal": "traces"
+        },
+        {
+          "fieldContext": "span",
+          "fieldDataType": "string",
+          "name": "name",
+          "signal": "traces"
+        }
+      ],
+      "softMax": 0,
+      "softMin": 0,
+      "timePreferance": "GLOBAL_TIME",
+      "title": "Reality Correct Rate (%) (adjacent, NOT in headline)",
+      "yAxisUnit": "percent"
+    },
+    {
+      "contextLinks": {
+        "linksData": null
+      },
+      "description": "Count of reality-graded decisions (C9/#54): count of augmentloop.grade.source = 'reality' grades. The 'count' half of the adjacent reality view that C9 kept out of the headline. Reality grades carry no cost attribute (a late outcome check is not a priced model call), which is exactly why they belong here and not in the cost-per-correct numerator.",
+      "id": "panel-7-reality-count",
+      "legendPosition": "bottom",
+      "nullZeroValues": "zero",
+      "opacity": "1",
+      "panelTypes": "value",
+      "query": {
+        "builder": {
+          "queryData": [
+            {
+              "aggregations": [
+                {
+                  "metricName": "gradebook.decisions.graded",
+                  "spaceAggregation": "sum",
+                  "timeAggregation": "latest"
+                }
+              ],
+              "dataSource": "metrics",
+              "disabled": false,
+              "expression": "A",
+              "filter": {
+                "expression": "augmentloop.grade.source = 'reality' AND augmentloop.decision.type IN ('route_choice','filler_detection','quote_extraction','clip_scoring')"
+              },
+              "functions": [],
+              "groupBy": [],
+              "having": [],
+              "legend": "reality decisions",
+              "limit": 100,
+              "orderBy": [
+                {
+                  "columnName": "__result",
+                  "order": "desc"
+                }
+              ],
+              "queryName": "A",
+              "stepInterval": null
+            }
+          ],
+          "queryFormulas": []
+        },
+        "id": "panel-7-reality-count-query",
+        "queryType": "builder"
+      },
+      "selectedLogFields": [
+        {
+          "fieldContext": "log",
+          "name": "timestamp",
+          "signal": "logs",
+          "type": "log"
+        },
+        {
+          "fieldContext": "log",
+          "name": "body",
+          "signal": "logs",
+          "type": "log"
+        }
+      ],
+      "selectedTracesFields": [
+        {
+          "fieldContext": "resource",
+          "fieldDataType": "string",
+          "name": "service.name",
+          "signal": "traces"
+        },
+        {
+          "fieldContext": "span",
+          "fieldDataType": "string",
+          "name": "name",
+          "signal": "traces"
+        }
+      ],
+      "softMax": 0,
+      "softMin": 0,
+      "timePreferance": "GLOBAL_TIME",
+      "title": "Reality-Graded Decisions (count)",
       "yAxisUnit": "none"
     }
   ]
