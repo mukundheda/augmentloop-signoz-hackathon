@@ -1,8 +1,10 @@
 """Test seam, mirroring reference-library/tests: assert on emitted telemetry.
 
 Two independent provider+exporter pairs so tests can tell the decision spans
-(`toy-world`) apart from the late reality grades (`toy-world-outcomes`),
-exactly as `python -m toyworld` wires them.
+(`toy-world`, `world` fixture) apart from the late reality grades
+(`toy-world-outcomes`, `outcomes` fixture), exactly as `python -m toyworld`
+wires them (ticket #33: the `outcomes` service carries route_choice's deferred
+`journey.on_time` grade; `live.py`'s decision spans always go through `world`).
 """
 
 from pathlib import Path
