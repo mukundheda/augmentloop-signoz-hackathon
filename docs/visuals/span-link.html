@@ -1,0 +1,257 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:,">
+<title>Verdict attribution - Gradebook</title>
+<style>
+  /* SigNoz Periscope tokens, verified against @signozhq/design-tokens/dist/style.css
+     and frontend/src/container/TraceDetail (dark canvas #0b0c0e). */
+  :root {
+    --bg-ink-500: #0b0c0e;   --bg-ink-400: #121317;  --bg-ink-300: #16181d;
+    --bg-ink-200: #23262e;   --bg-ink-100: #2a2e37;
+    --bg-slate-400: #1d212d; --bg-slate-200: #2c3140; --bg-slate-100: #3c4152;
+    --bg-slate-50: #62687c;
+    --bg-vanilla-100: #fff;  --bg-vanilla-400: #c0c1c3;
+    --bg-robin-500: #4e74f8;
+    --bg-cherry-500: #e5484d; --bg-cherry-600: #b83a3e; --bg-cherry-850: #481618;
+    --bg-cherry-900: #320f10; --bg-cherry-950: #1b0809;
+    --bg-forest-500: #25e192; --bg-forest-900: #072d1d;
+    --bg-amber-500: #ffcc56;
+
+    --text: var(--bg-vanilla-100);
+    --text-dim: var(--bg-vanilla-400);
+    --text-faint: var(--bg-slate-50);
+    --line: var(--bg-slate-200);
+
+    --font: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    --mono: "Geist Mono", "Space Mono", "Fira Code", ui-monospace, SFMono-Regular, Menlo, monospace;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg-ink-500); color: var(--text);
+    font-family: var(--font); font-size: 14px; line-height: 1.45;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  header {
+    display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 14px;
+    padding: 14px 20px; border-bottom: 1px solid var(--line); background: var(--bg-ink-400);
+  }
+  h1 { font-size: 15px; font-weight: 600; margin: 0; letter-spacing: -0.01em; }
+  .crumb { color: var(--text-faint); font-size: 12px; font-family: var(--mono); }
+
+  .stats { display: flex; flex-wrap: wrap; gap: 1px; background: var(--line); border-bottom: 1px solid var(--line); }
+  .stat { flex: 1 1 150px; background: var(--bg-ink-400); padding: 10px 20px; }
+  .stat dt { margin: 0; font-size: 11px; letter-spacing: 0.04em; text-transform: uppercase; color: var(--text-faint); }
+  .stat dd { margin: 2px 0 0; font-family: var(--mono); font-size: 17px; }
+
+  main { display: grid; grid-template-columns: 268px minmax(0, 1fr); gap: 1px; background: var(--line); min-height: calc(100vh - 118px); }
+  @media (max-width: 720px) { main { grid-template-columns: minmax(0, 1fr); } }
+
+  .rail, .canvas { background: var(--bg-ink-500); }
+  .rail {
+    padding: 14px 0; align-self: start; position: sticky; top: 0;
+    max-height: calc(100vh - 118px); overflow-y: auto;
+  }
+  @media (max-width: 720px) { .rail { position: static; max-height: 320px; } }
+  .rail h2, .canvas h2 {
+    font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase;
+    color: var(--text-faint); margin: 0 0 10px; padding: 0 16px; font-weight: 600;
+  }
+
+  .verdict {
+    display: grid; grid-template-columns: 3px 1fr auto; align-items: center; gap: 10px;
+    width: 100%; text-align: left; padding: 9px 16px 9px 0; border: 0; border-radius: 0;
+    background: none; color: var(--text); font: inherit; cursor: pointer;
+  }
+  .verdict:hover { background: var(--bg-ink-300); }
+  .verdict[aria-pressed="true"] { background: var(--bg-ink-200); }
+  .verdict:focus-visible { outline: 2px solid var(--bg-robin-500); outline-offset: -2px; }
+  .verdict .bar { height: 26px; background: var(--bg-amber-500); border-radius: 0 2px 2px 0; }
+  .verdict .who { font-family: var(--mono); font-size: 13px; }
+  .verdict .what { display: block; font-size: 11px; color: var(--text-faint); }
+  .verdict .tag { font-size: 11px; font-family: var(--mono); color: var(--bg-forest-500); }
+
+  .canvas { padding: 16px 20px 28px; }
+  .lede { margin: 0 0 18px; max-width: 72ch; color: var(--text-dim); font-size: 13px; }
+  .lede b { color: var(--text); font-weight: 600; }
+
+  .hop { display: flex; flex-direction: column; gap: 0; max-width: 760px; }
+  .node {
+    border: 1px solid var(--line); border-left: 3px solid var(--bg-slate-100);
+    background: var(--bg-ink-400); border-radius: 3px; padding: 11px 14px;
+  }
+  .node.decision { border-left-color: var(--bg-robin-500); }
+  .node.verdict-node { border-left-color: var(--bg-amber-500); }
+
+  .node-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px; }
+  .node-name { font-family: var(--mono); font-size: 13px; }
+  .node-meta { margin-top: 5px; font-size: 12px; color: var(--text-dim); }
+  .node-meta .num { font-family: var(--mono); color: var(--text); }
+
+  .pill {
+    font-size: 10px; letter-spacing: 0.04em; text-transform: uppercase;
+    padding: 2px 7px; border-radius: 999px; border: 1px solid currentColor; font-weight: 600;
+  }
+  .pill.math { color: var(--bg-robin-500); }
+  .pill.reality { color: var(--bg-amber-500); }
+  .pill.correct { color: var(--bg-forest-500); }
+  .pill.incorrect { color: var(--bg-cherry-500); }
+
+  .link-in {
+    display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin: 0 0 0 26px; padding: 8px 0 8px 16px;
+    border-left: 1px dashed var(--bg-amber-500); font-size: 12px; color: var(--bg-amber-500);
+    font-family: var(--mono);
+  }
+
+  .totals { margin-top: 20px; padding-top: 14px; border-top: 1px solid var(--line); max-width: 760px; font-size: 13px; color: var(--text-dim); }
+  .totals .num { font-family: var(--mono); color: var(--text); }
+  footer { padding: 14px 20px 24px; color: var(--text-faint); font-size: 11px; border-top: 1px solid var(--line); }
+  footer code { font-family: var(--mono); color: var(--text-dim); }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Verdict attribution</h1>
+  <span class="crumb" id="crumb"></span>
+</header>
+
+<dl class="stats" id="stats"></dl>
+
+<main>
+  <nav class="rail" aria-label="Reality verdicts">
+    <h2>Reality verdicts</h2>
+    <div id="verdicts"></div>
+  </nav>
+  <section class="canvas">
+    <h2>Cross-trace attribution</h2>
+    <p class="lede" id="lede"></p>
+    <div class="hop" id="hop"></div>
+    <p class="totals" id="totals"></p>
+  </section>
+</main>
+
+<footer>
+  Rendered from spans this build already emits - captured by
+  <code>docs/visuals/capture_run.py</code> straight out of the OpenTelemetry SDK, no new
+  instrumentation. The edge each verdict follows is the conventions §6 span link
+  (<code>Role 1</code>), which crosses from <code>toy-world-outcomes</code> into the
+  <code>toy-world</code> model-run trace. A model-run's 60 decision spans are independent
+  probes, not a sequential journey, so this page shows only the one hop the data supports:
+  a verdict and the single decision it judges - not a blast radius, because there is nothing
+  downstream to contaminate.
+</footer>
+
+<script src="run-data.js"></script>
+<script>
+  const RUN = window.RUN;
+  const money = (n) => '$' + n.toFixed(6);
+  const short = (id) => id.slice(0, 8);
+  const byId = new Map(RUN.spans.map((s) => [s.spanId, s]));
+  const attr = (s, k) => s.attributes[k];
+  const isEval = (s) => s.name === 'gen_ai.evaluation.result';
+
+  // A reality verdict is the seed: it span-links back to the one decision it judges.
+  const verdicts = RUN.spans
+    .filter((s) => isEval(s) && attr(s, 'augmentloop.grade.source') === 'reality')
+    .map((s) => {
+      const decision = byId.get(s.links[0].spanId);
+      const mathEval = RUN.spans.find((e) => isEval(e) && e.parentSpanId === decision.spanId);
+      const id = (decision.name.match(/route_choice-(\S+)/) || [])[1] || decision.name;
+      const model = attr(mathEval, 'gen_ai.request.model');
+      const agree = attr(s, 'gen_ai.evaluation.score.label') === attr(mathEval, 'gen_ai.evaluation.score.label');
+      const delayMs = (s.startUnixNano - mathEval.startUnixNano) / 1e6;
+      return { verdict: s, decision, mathEval, id, model, agree, delayMs };
+    })
+    .sort((a, b) => a.id.localeCompare(b.id, undefined, { numeric: true }) || a.model.localeCompare(b.model));
+
+  function render(v) {
+    document.getElementById('verdicts').querySelectorAll('button').forEach((b) =>
+      b.setAttribute('aria-pressed', String(b.dataset.id === v.verdict.spanId)));
+
+    document.getElementById('hop').innerHTML = `
+      <div class="node decision">
+        <div class="node-head">
+          <span class="node-name">${v.decision.name}</span>
+          <span class="pill math">math</span>
+          <span class="pill ${attr(v.mathEval, 'gen_ai.evaluation.score.value') === 1 ? 'correct' : 'incorrect'}">${attr(v.mathEval, 'gen_ai.evaluation.score.label')}</span>
+        </div>
+        <div class="node-meta">${attr(v.mathEval, 'gen_ai.evaluation.explanation')}
+          &middot; model <span class="num">${v.model}</span>
+          &middot; cost <span class="num">${money(attr(v.mathEval, 'augmentloop.cost.usd'))}</span></div>
+        <div class="node-meta">trace <span class="num">${short(v.decision.traceId)}</span>
+          &middot; service <span class="num">${v.decision.service}</span></div>
+      </div>
+      <div class="link-in">span link &rarr; ${v.verdict.service} &middot; ${attr(v.verdict, 'gen_ai.evaluation.name')}
+        &middot; trace ${short(v.verdict.traceId)} &middot; +${v.delayMs.toFixed(1)}ms later</div>
+      <div class="node verdict-node">
+        <div class="node-head">
+          <span class="node-name">${attr(v.verdict, 'gen_ai.evaluation.name')}</span>
+          <span class="pill reality">reality</span>
+          <span class="pill ${attr(v.verdict, 'gen_ai.evaluation.score.value') === 1 ? 'correct' : 'incorrect'}">${attr(v.verdict, 'gen_ai.evaluation.score.label')}</span>
+          <span class="pill ${v.agree ? 'correct' : 'incorrect'}">${v.agree ? 'agrees with math' : 'disagrees with math'}</span>
+        </div>
+        <div class="node-meta">${attr(v.verdict, 'gen_ai.evaluation.explanation')}</div>
+        <div class="node-meta">trace <span class="num">${short(v.verdict.traceId)}</span>
+          &middot; service <span class="num">${v.verdict.service}</span></div>
+      </div>`;
+
+    document.getElementById('totals').innerHTML =
+      `This verdict arrived <span class="num">${v.delayMs.toFixed(1)}ms</span> after the decision's math
+       grade, in a different trace (<span class="num">${short(v.verdict.traceId)}</span> vs
+       <span class="num">${short(v.decision.traceId)}</span>) and a different service - and is still
+       attributable to it by the span link alone.`;
+  }
+
+  function boot() {
+    const s = RUN.summary;
+    document.getElementById('crumb').textContent =
+      `${RUN.recording} - captured ${RUN.capturedAt} - ${RUN.spans.length} spans, ${new Set(RUN.spans.map((x) => x.traceId)).size} traces`;
+
+    const agreeCount = verdicts.filter((v) => v.agree).length;
+    const judgedTypes = new Set(verdicts.map((v) => attr(v.mathEval, 'augmentloop.decision.type')));
+    const delays = verdicts.map((v) => v.delayMs);
+
+    document.getElementById('stats').innerHTML = [
+      ['Reality verdicts', verdicts.length],
+      ['Agree with math grade', `${agreeCount}/${verdicts.length}`],
+      ['Decision type judged', judgedTypes.size === 1 ? [...judgedTypes][0] : `${judgedTypes.size} types`],
+      ['Verdict arrives', `${Math.min(...delays).toFixed(1)}-${Math.max(...delays).toFixed(1)}ms later`],
+    ].map(([k, val]) => `<div class="stat"><dt>${k}</dt><dd>${val}</dd></div>`).join('');
+
+    document.getElementById('lede').innerHTML = agreeCount === verdicts.length
+      ? `<b>All ${verdicts.length} of ${verdicts.length}</b> reality verdicts in this run agree with the math
+         grade of the decision they judge - that is the whole population recorded, not a sample picked to
+         look good. Each verdict below is a single span link crossing from <b>toy-world-outcomes</b> back into
+         the <b>toy-world</b> model-run that made the decision it is grading. Pick one to see both ends of
+         the hop.`
+      : `<b>${agreeCount} of ${verdicts.length}</b> reality verdicts in this run agree with the math grade of
+         the decision they judge; <b>${verdicts.length - agreeCount}</b> disagree. Each verdict below is a
+         single span link crossing from <b>toy-world-outcomes</b> back into the <b>toy-world</b> model-run
+         that made the decision it is grading. Pick one to see both ends of the hop.`;
+
+    document.getElementById('verdicts').innerHTML = verdicts.map((v) => `
+      <button class="verdict" data-id="${v.verdict.spanId}" aria-pressed="false"
+        aria-label="${v.id}, ${v.model}, verdict ${attr(v.verdict, 'gen_ai.evaluation.score.label')}">
+        <span class="bar"></span>
+        <span><span class="who">${v.id}</span>
+          <span class="what">${v.model}</span></span>
+        <span class="tag">${attr(v.verdict, 'gen_ai.evaluation.score.label')}</span>
+      </button>`).join('');
+
+    document.getElementById('verdicts').addEventListener('click', (ev) => {
+      const btn = ev.target.closest('button');
+      if (btn) render(verdicts.find((v) => v.verdict.spanId === btn.dataset.id));
+    });
+
+    render(verdicts[0]);
+  }
+
+  boot();
+</script>
+</body>
+</html>

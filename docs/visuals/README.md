@@ -9,27 +9,35 @@ is the one that would have gone to SigNoz.
 They are static files, so they open with a double-click and need no server, no
 SigNoz, and no API key.
 
-## Blast radius
+## Verdict attribution
 
-When reality proves one decision wrong, every decision taken after it was made
-in the world that wrong decision produced. This walks the conventions §6 span
-link from a reality verdict back to the decision it judges, then forward
-through the journey, and prices what sits inside the radius.
+A model-run trace holds 60 independent decision spans, not a sequential
+journey - so there is no downstream to contaminate when reality disagrees with
+one of them, and no `junction J<n>` span to walk forward through. What the data
+still supports is the single hop: the conventions §6 span link (`Role 1`) that
+carries a reality verdict, in service `toy-world-outcomes` and its own trace,
+back to the one `route_choice` decision it judges, in service `toy-world` and
+the model-run trace that made it.
 
-![Blast radius, rendered from the committed replay recording on 2026-07-25: reality proved driver-3 arrived late, the verdict span-links back to the junction J1 decision, and the two decisions after it are shown inside the radius](blast-radius.png)
+![Verdict attribution, rendered from the committed replay recording on 2026-07-25: the reality verdict for route_choice-J1-J10, decided by anthropic/claude-sonnet-4.6, span-links back across trace and service to the decision it judges, both graded correct](span-link.png)
 
-Reality proved `driver-3` arrived late. The verdict lives in a different trace
-and a different service (`toy-world-outcomes`), and links back across that
-boundary to `junction J1 decision`, where `google/gemini-2.0-flash` chose route
-B at 9.0m over the true fastest A at 7.0m. The two junctions after it are
-inside the radius: **3 of 3 decisions in the journey, $0.000079 of spend from
-the disproved decision onward.** Click any of the four verdicts to re-seed it -
-`driver-4`'s origin is J2, so J1 stays outside the radius, and the two on-time
-verdicts show what a clean radius looks like.
+**60 reality verdicts, all 60 judging a `route_choice` decision, all 60
+agreeing with that decision's math grade.** That is the whole population
+recorded in this run, not a sample chosen to look good. Each verdict arrives
+6.0-15.0ms after the decision's math grade, in a different trace and a
+different service, and is still attributable to it by the span link alone.
+Pick any of the 60 verdicts in the rail to see both ends of its hop: the
+decision's model, cost, math grade and explanation, and the verdict's own
+explanation.
 
 The span link is the point. It is the piece of architecture that makes a late,
-cross-service, cross-trace verdict attributable to the decision that earned it,
-and it is otherwise invisible plumbing.
+cross-service, cross-trace verdict attributable to the decision that earned
+it, and it is otherwise invisible plumbing. This page no longer claims a blast
+radius - the old copy walked "every decision after the wrong one in the same
+journey," which was true when a trace was one driver's journey through three
+junctions, and is false now that a trace is 60 independent probes. Shipping
+that claim over this data would assert a causal chain that does not exist, so
+it was cut rather than left to render an empty radius.
 
 ## Grade provenance (genome strip)
 
