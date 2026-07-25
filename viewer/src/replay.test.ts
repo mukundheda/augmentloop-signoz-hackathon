@@ -21,11 +21,19 @@ const agent = (index: number) => ({
   cost_usd: 0.001,
   input_tokens: 10,
   output_tokens: 2,
-  outcome: null
+  outcome: null,
+  observability: {
+    mode: "replay",
+    response_id: `response-${index}`,
+    service_name: "toy-world",
+    spans: [],
+    logs: [],
+    links: { dashboard: "" }
+  }
 });
 
 const fixture = {
-  schema_version: 2,
+  schema_version: 3,
   generated_from: "fixture",
   agents: Array.from({ length: 50 }, (_, index) => agent(index + 1)),
   outcomes: [],
@@ -37,7 +45,8 @@ const fixture = {
     cost_per_correct_usd: 0.001,
     by_type: { route_choice: 16, eta_estimate: 17, next_hop: 17 },
     by_model: { "anthropic/claude-haiku-4.5": 50 }
-  }
+  },
+  observability_coverage: { kind: "offline", matched: 0, total: 50 }
 };
 
 describe("schema-v2 replay", () => {
