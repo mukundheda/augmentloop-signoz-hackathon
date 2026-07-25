@@ -191,6 +191,39 @@ This gap is separate from, but related to, the service-map limitation in the T3 
 
 ---
 
+## 11. T10 extension: grading our own build-agent fleet (ticket #13)
+
+Section 10 extended the recording contract with two aggregate metrics so the
+toy-world substrate could be charted. Ticket #13 reuses that same extension -
+**no new schema** - to grade the humans-plus-agents building this repo
+against the same contract: a third proof surface, capped at exactly one
+bounded panel (Spec #3), never a substitute for the toy-world substrate.
+
+- **The decision** is one ticket's Claude Code build-agent session (team
+  convention: one ticket = one branch = one PR). `augmentloop.decision.type =
+  "build_session"` marks it - the same low-cardinality field Section 7 already
+  recommends, reused rather than replaced.
+- **The grade** is `augmentloop.grade.source = "reality"`: the ticket's PR
+  merging is the fact that this repo's own definition of done cleared
+  (`CLAUDE.md`: "/spec-review passes both axes AND the full test suite is
+  green"). `gen_ai.evaluation.name = "build_agent.ticket_shipped"` is the
+  stable metric id.
+- **Cost** follows Section 3.2 unchanged - attached only where known, never a
+  fabricated zero. In practice this means most historical tickets in this
+  dataset carry **no** cost attribute: `claude_code.*` telemetry (the Claude
+  Code CLI's own OTel export) carries no repository/workspace/cwd label
+  anywhere in its schema, so a day's or a ticket-window's dollar figure would
+  blend every project the human was working on, not just this repo - verified
+  against the live schema, not assumed. Recorded via
+  `dashboards/scripts/record_build_fleet_sessions.py`; see that script's
+  module docstring for the full reasoning, including why the git history's
+  stacked/concurrent branches also rule out a wall-clock-window split.
+- **Honest team-fleet scope**: as of this ticket, only one of the four humans
+  on this build (Mukund) has `claude_code.*` telemetry landing in the live
+  stack at all - the others' tunnels never connected or died mid-build. The
+  panel is scoped to what actually exists, not to what "team fleet" implies;
+  this is a known, accepted gap, not something this ticket resolved.
+
 ## Cross-references
 
 - ADR [0001](adr/0001-machine-checked-grades-only-in-the-headline-metric.md) - machine-checked grades only in the headline metric.

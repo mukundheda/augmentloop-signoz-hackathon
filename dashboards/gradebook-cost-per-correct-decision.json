@@ -60,7 +60,7 @@
       "contextLinks": {
         "linksData": null
       },
-      "description": "Headline metric (ADR 0001): (sum(augmentloop.cost.usd) / count(decisions)) * 1000, scaled to legible units, where gen_ai.evaluation.score.label='correct' AND augmentloop.grade.source in (math, reality). AI-judge grades are never mixed into this number. KNOWN OPEN ISSUE (2026-07-24/25): a decision that is math-incorrect but later reality-correct (deferred outcome check) adds to B's correct count without a matching cost in A, since cost only attaches to the math event - denominator can overcount relative to numerator. Not yet resolved; owner Anish/#7.",
+      "description": "Headline metric (ADR 0001): (sum(augmentloop.cost.usd) / count(decisions)) * 1000, scaled to legible units, where gen_ai.evaluation.score.label='correct' AND augmentloop.grade.source in (math, reality). AI-judge grades are never mixed into this number. KNOWN OPEN ISSUE (2026-07-24/25): a decision that is math-incorrect but later reality-correct (deferred outcome check) adds to B's correct count without a matching cost in A, since cost only attaches to the math event - denominator can overcount relative to numerator. Not yet resolved; owner Anish/#7. SCOPING: every panel filters augmentloop.decision.type to the four model-decision types (route_choice from the toy world, filler_detection/quote_extraction/clip_scoring from the CleanCut substrate). This deliberately excludes build_session, the meta build-fleet unit from #13, which is a whole agent session priced in real dollars rather than a single graded model decision - blending it in skewed this headline 534x on 2026-07-25.",
       "id": "panel-1-headline-cost-per-correct",
       "legendPosition": "bottom",
       "nullZeroValues": "zero",
@@ -81,7 +81,7 @@
               "disabled": true,
               "expression": "A",
               "filter": {
-                "expression": "gen_ai.evaluation.score.label = 'correct' AND augmentloop.grade.source IN ('math','reality')"
+                "expression": "gen_ai.evaluation.score.label = 'correct' AND augmentloop.grade.source IN ('math','reality') AND augmentloop.decision.type IN ('route_choice','filler_detection','quote_extraction','clip_scoring')"
               },
               "functions": [],
               "groupBy": [],
@@ -109,7 +109,7 @@
               "disabled": true,
               "expression": "B",
               "filter": {
-                "expression": "gen_ai.evaluation.score.label = 'correct' AND augmentloop.grade.source IN ('math','reality')"
+                "expression": "gen_ai.evaluation.score.label = 'correct' AND augmentloop.grade.source IN ('math','reality') AND augmentloop.decision.type IN ('route_choice','filler_detection','quote_extraction','clip_scoring')"
               },
               "functions": [],
               "groupBy": [],
@@ -197,7 +197,7 @@
               "disabled": true,
               "expression": "A",
               "filter": {
-                "expression": "gen_ai.evaluation.score.label = 'correct' AND augmentloop.grade.source IN ('math','reality')"
+                "expression": "gen_ai.evaluation.score.label = 'correct' AND augmentloop.grade.source IN ('math','reality') AND augmentloop.decision.type IN ('route_choice','filler_detection','quote_extraction','clip_scoring')"
               },
               "functions": [],
               "groupBy": [
@@ -231,7 +231,7 @@
               "disabled": true,
               "expression": "B",
               "filter": {
-                "expression": "gen_ai.evaluation.score.label = 'correct' AND augmentloop.grade.source IN ('math','reality')"
+                "expression": "gen_ai.evaluation.score.label = 'correct' AND augmentloop.grade.source IN ('math','reality') AND augmentloop.decision.type IN ('route_choice','filler_detection','quote_extraction','clip_scoring')"
               },
               "functions": [],
               "groupBy": [
@@ -325,7 +325,7 @@
               "disabled": true,
               "expression": "A",
               "filter": {
-                "expression": "gen_ai.evaluation.score.label = 'correct' AND augmentloop.grade.source IN ('math','reality')"
+                "expression": "gen_ai.evaluation.score.label = 'correct' AND augmentloop.grade.source IN ('math','reality') AND augmentloop.decision.type IN ('route_choice','filler_detection','quote_extraction','clip_scoring')"
               },
               "functions": [],
               "groupBy": [
@@ -359,7 +359,7 @@
               "disabled": true,
               "expression": "B",
               "filter": {
-                "expression": "augmentloop.grade.source IN ('math','reality')"
+                "expression": "augmentloop.grade.source IN ('math','reality') AND augmentloop.decision.type IN ('route_choice','filler_detection','quote_extraction','clip_scoring')"
               },
               "functions": [],
               "groupBy": [
@@ -453,7 +453,7 @@
               "disabled": false,
               "expression": "A",
               "filter": {
-                "expression": "augmentloop.grade.source = 'math'"
+                "expression": "augmentloop.grade.source = 'math' AND augmentloop.decision.type IN ('route_choice','filler_detection','quote_extraction','clip_scoring')"
               },
               "functions": [],
               "groupBy": [],
@@ -481,7 +481,7 @@
               "disabled": false,
               "expression": "B",
               "filter": {
-                "expression": "augmentloop.grade.source = 'reality'"
+                "expression": "augmentloop.grade.source = 'reality' AND augmentloop.decision.type IN ('route_choice','filler_detection','quote_extraction','clip_scoring')"
               },
               "functions": [],
               "groupBy": [],
@@ -562,7 +562,7 @@
               "disabled": false,
               "expression": "A",
               "filter": {
-                "expression": "augmentloop.grade.source = 'ai_judge'"
+                "expression": "augmentloop.grade.source = 'ai_judge' AND augmentloop.decision.type IN ('route_choice','filler_detection','quote_extraction','clip_scoring')"
               },
               "functions": [],
               "groupBy": [],

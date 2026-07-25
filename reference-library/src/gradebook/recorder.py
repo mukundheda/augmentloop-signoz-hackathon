@@ -167,6 +167,7 @@ def record_reality_grade(
     model: Optional[str] = None,
     input_tokens: Optional[int] = None,
     output_tokens: Optional[int] = None,
+    cost_usd: Optional[float] = None,
     decision_type: Optional[str] = None,
     explanation: Optional[str] = None,
     tracer_provider: Optional[trace.TracerProvider] = None,
@@ -184,10 +185,19 @@ def record_reality_grade(
             rebuilt across a process boundary (`DecisionRef.from_ids`).
         name: What was graded (`gen_ai.evaluation.name`), e.g. "clip.kept".
         correct: The real-world verdict; a reality grade is binary.
-        model / input_tokens / output_tokens: Optional; when all are known the
-            decision is priced from the same single pricing table. When absent,
-            no cost attribute is emitted (cost is only attached "where cost is
-            known" - never a fabricated zero).
+        model / input_tokens / output_tokens: Optional; when all are known and
+            `cost_usd` is not given, the decision is priced from the same
+            single pricing table. When none of the three is known, no cost
+            attribute is emitted (cost is only attached "where cost is known" -
+            never a fabricated zero).
+        cost_usd: Optional pre-computed dollar figure, for callers who already
+            have an authoritative cost from the same underlying token data
+            (e.g. a model provider's own billing telemetry) and want to attach
+            it directly rather than re-deriving an approximation through
+            gradebook's own pricing table. Takes priority over model/token
+            pricing when provided; `model`/`input_tokens`/`output_tokens` may
+            still be passed alongside it purely for the recommended
+            `gen_ai.request.model` / `gen_ai.usage.*_tokens` fields (section 7).
         decision_type: Optional kind of decision (`augmentloop.decision.type`).
         explanation: Optional free-form reason (`gen_ai.evaluation.explanation`).
         tracer_provider: SDK provider to emit through; defaults to the globally
@@ -199,8 +209,9 @@ def record_reality_grade(
     provider = tracer_provider or trace.get_tracer_provider()
     tracer = provider.get_tracer("gradebook")
 
-    cost_usd: Optional[float] = None
-    if model is not None and input_tokens is not None and output_tokens is not None:
+    if cost_usd is None and (
+        model is not None and input_tokens is not None and output_tokens is not None
+    ):
         cost_usd = pricing.price(model, input_tokens, output_tokens)
 
     grade_label = CORRECT if correct else INCORRECT

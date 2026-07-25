@@ -148,6 +148,60 @@ def test_ref_survives_a_process_boundary_via_ids(tracer_provider, exporter):
     assert grade_span.attributes["gen_ai.response.id"] == "resp_decision_1"
 
 
+def test_precomputed_cost_bypasses_the_pricing_table(tracer_provider, exporter):
+    """Ticket #13 (T10): a caller with an already-known real dollar figure
+
+    (e.g. a model's own billing telemetry) can pass it straight through,
+    instead of re-deriving an approximation via model + token counts against
+    gradebook's own pricing table. Section 3.2 requires cost to come from a
+    pricing table applied to token counts - an authoritative, already-computed
+    dollar figure from the same underlying token data satisfies that intent
+    without forcing every caller to price a model that was never added to
+    gradebook.pricing.PRICES.
+    """
+    from gradebook import record_reality_grade
+
+    ref, _ = _capture_ref_during_decision(tracer_provider)
+    exporter.clear()
+
+    record_reality_grade(
+        ref,
+        name="build_agent.ticket_shipped",
+        correct=True,
+        cost_usd=0.4217,
+        tracer_provider=tracer_provider,
+    )
+
+    attrs = exporter.get_finished_spans()[0].attributes
+    assert attrs["augmentloop.cost.usd"] == pytest.approx(0.4217)
+
+
+def test_precomputed_cost_wins_over_model_and_tokens(tracer_provider, exporter):
+    """An explicit cost_usd is authoritative even if model/tokens are also
+    passed (e.g. for the recommended gen_ai.request.model / usage.*_tokens
+    fields) - it must not be silently overwritten by a pricing.price()
+    recomputation from those fields.
+    """
+    from gradebook import record_reality_grade
+
+    ref, _ = _capture_ref_during_decision(tracer_provider)
+    exporter.clear()
+
+    record_reality_grade(
+        ref,
+        name="build_agent.ticket_shipped",
+        correct=True,
+        cost_usd=1.2345,
+        model="claude-sonnet-5",
+        input_tokens=100,
+        output_tokens=100,
+        tracer_provider=tracer_provider,
+    )
+
+    attrs = exporter.get_finished_spans()[0].attributes
+    assert attrs["augmentloop.cost.usd"] == pytest.approx(1.2345)
+
+
 def test_optional_context_attributes_carried_when_provided(tracer_provider, exporter):
     from gradebook import record_reality_grade
 

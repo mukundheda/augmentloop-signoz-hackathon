@@ -1,0 +1,27 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "cleancutproof"
+version = "0.0.1"
+description = "CleanCut real-substrate proof (T8): math-grade filler detection + quote extraction across the model roster, reality-grade historical clip decisions. Blog/screencast material only; client content never enters the repo."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+dependencies = [
+  "gradebook",
+  "opentelemetry-sdk>=1.27",
+  "opentelemetry-exporter-otlp-proto-http>=1.27",
+]
+
+[project.optional-dependencies]
+test = [
+  "pytest>=8",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/cleancutproof"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
