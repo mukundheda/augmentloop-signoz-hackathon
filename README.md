@@ -25,17 +25,17 @@ Replay mode is the default. It replays a committed recording deterministically -
 
 Every evaluation event carries `augmentloop.grade.source`, so that filter lives in the query rather than in this paragraph ([ADR 0001](docs/adr/0001-machine-checked-grades-only-in-the-headline-metric.md)).
 
-### Same three junctions, three models
+### Same three decision types, three models
 
-From the committed replay recording, run 2026-07-25, priced from the shared pricing table:
+From a live OpenRouter run captured 2026-07-25 and committed as the replay recording, priced from the shared pricing table:
 
 | Model | Correct | Cost |
 | --- | --- | --- |
-| `anthropic/claude-sonnet-4` | 3/3 | $0.002382 |
-| `anthropic/claude-3.5-haiku` | 4/6 | $0.001274 |
-| `google/gemini-2.0-flash` | 1/3 | $0.000079 |
+| `anthropic/claude-sonnet-4.6` | 53/60 | $0.278031 |
+| `anthropic/claude-haiku-4.5` | 42/60 | $0.096187 |
+| `google/gemini-2.5-flash-lite` | 32/60 | $0.003335 |
 
-12 decisions, 8 correct, **$0.000467 per correct decision**. The cheapest model is also the worst one here - which is exactly why right-sizing is measured per decision type instead of assumed. `python -m toyworld` prints these same numbers, so the dashboards can be checked against ground truth.
+The per-type split is the finding that matters: `google/gemini-2.5-flash-lite` is 20/20 on `next_hop`, edging out `anthropic/claude-sonnet-4.6`'s 19/20, at roughly 1/83rd of sonnet's cost for the run ($0.003335 vs $0.278031) - and that same gemini run scores 0/20 on `eta_estimate`, where sonnet is 20/20. One model, best choice for one decision type and unusable for another, in the same 60-decision run: that is why this project routes per decision type rather than per program (`docs/right-sizing-loop.md`), and it's the clearest evidence for it so far. 180 decisions, 127 correct, **$0.002973 per correct decision**. 20 decisions per model per type is a small sample and this is one run, so read the per-type pattern as a signal worth routing on, not a settled ranking of these three models. `python -m toyworld` prints these same numbers, so the dashboards can be checked against ground truth.
 
 ## How it is built
 
