@@ -160,6 +160,10 @@ class ProofSummary:
     clip_outcomes: int = 0
     clip_correct: int = 0
     by_model: dict[str, dict[str, float]] = field(default_factory=dict)
+    # (model, decision_type) -> counts. The two jobs fail very differently -
+    # exhaustive filler enumeration is a much harder ask than pulling one
+    # verbatim quote - so a single per-model number hides the real finding.
+    by_model_type: dict[tuple[str, str], dict[str, float]] = field(default_factory=dict)
 
     @property
     def cost_per_correct_usd(self) -> Optional[float]:
@@ -241,6 +245,13 @@ def run_detections(
                     row["decisions"] += 1
                     row["correct"] += int(is_correct)
                     row["cost_usd"] += cost
+                    trow = summary.by_model_type.setdefault(
+                        (model, decision_type),
+                        {"decisions": 0, "correct": 0, "cost_usd": 0.0},
+                    )
+                    trow["decisions"] += 1
+                    trow["correct"] += int(is_correct)
+                    trow["cost_usd"] += cost
 
     return summary
 
