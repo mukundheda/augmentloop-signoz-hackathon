@@ -56,7 +56,7 @@ if TYPE_CHECKING:
     from .openrouter import OpenRouterClient
 
 ENDPOINT = os.environ.get("OTEL_EXPORTER_OTLP_ENDPOINT", "http://localhost:4318")
-RECORDING = Path(__file__).resolve().parents[2] / "recordings" / "replay-v1.jsonl"
+RECORDING = Path(__file__).resolve().parents[2] / "recordings" / "replay-v2.jsonl"
 
 
 def _tracer_provider(resource: Resource) -> TracerProvider:

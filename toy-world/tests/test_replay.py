@@ -6,6 +6,7 @@ Assertions use the literal frozen attribute names from docs/conventions.md
 section 9, on emitted telemetry only - same discipline as the library tests.
 """
 
+import collections
 import json
 
 import pytest
@@ -40,9 +41,25 @@ def _metrics_by_name(metric_reader) -> dict:
     return out
 
 
-def test_committed_recording_has_roughly_180_decisions(recording_path):
+def test_committed_recording_covers_a_complete_balanced_grid(recording_path):
+    """The recording must be the full roster crossed with every decision type,
+    20 queries in each cell.
+
+    This replaces an assertion on a literal decision count, which only held for
+    one roster size and said nothing about shape. Balance is the property that
+    actually matters: an unbalanced grid would let one model's easy cell inflate
+    a per-model total, and the right-sizing comparison reads down the columns.
+    """
     decisions, _ = load_recording(recording_path)
-    assert 170 <= len(decisions) <= 190
+    models = {d.model for d in decisions}
+    types = {d.decision_type for d in decisions}
+    assert types == {"route_choice", "eta_estimate", "next_hop"}
+    assert len(models) >= 3
+
+    per_cell = collections.Counter((d.model, d.decision_type) for d in decisions)
+    assert len(per_cell) == len(models) * len(types), "grid has a missing cell"
+    assert set(per_cell.values()) == {20}, f"unbalanced grid: {per_cell}"
+    assert len(decisions) == len(models) * len(types) * 20
 
 
 def test_committed_recording_has_one_outcome_per_route_choice_decision(recording_path):

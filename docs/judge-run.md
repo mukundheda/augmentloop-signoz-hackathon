@@ -82,33 +82,42 @@ python -m venv .venv
 (macOS/Linux: `.venv/bin/pip` / `.venv/bin/python`.) Expected output:
 
 ```
-Replayed replay-v1.jsonl -> http://localhost:4318
-decisions=180  correct=127  reality_outcomes=60  total_cost=$0.377553
-cost per correct decision: $0.002973
+Replayed replay-v2.jsonl -> http://localhost:4318
+decisions=420  correct=268  reality_outcomes=140  total_cost=$0.403804
+cost per correct decision: $0.001507
 per model:
-  anthropic/claude-haiku-4.5: 42/60 correct, $0.096187
-  anthropic/claude-sonnet-4.6: 53/60 correct, $0.278031
+  mistralai/mistral-small-24b-instruct-2501: 40/60 correct, $0.003264
   google/gemini-2.5-flash-lite: 32/60 correct, $0.003335
+  meta-llama/llama-3.3-70b-instruct: 28/60 correct, $0.004057
+  openai/gpt-4o-mini: 33/60 correct, $0.004606
+  deepseek/deepseek-chat: 40/60 correct, $0.010634
+  anthropic/claude-haiku-4.5: 43/60 correct, $0.096187
+  anthropic/claude-sonnet-4.6: 52/60 correct, $0.281721
 per model x decision type:
-  anthropic/claude-haiku-4.5 / eta_estimate: 17/20 correct, $0.071355
-  anthropic/claude-haiku-4.5 / next_hop: 16/20 correct, $0.010460
-  anthropic/claude-haiku-4.5 / route_choice: 9/20 correct, $0.014372
-  anthropic/claude-sonnet-4.6 / eta_estimate: 20/20 correct, $0.203985
+  ... 21 rows, one per model and decision type. The three that matter most:
+  deepseek/deepseek-chat / next_hop: 20/20 correct, $0.002012
+  openai/gpt-4o-mini / next_hop: 20/20 correct, $0.001520
   anthropic/claude-sonnet-4.6 / next_hop: 19/20 correct, $0.031380
-  anthropic/claude-sonnet-4.6 / route_choice: 14/20 correct, $0.042666
-  google/gemini-2.5-flash-lite / eta_estimate: 0/20 correct, $0.001100
-  google/gemini-2.5-flash-lite / next_hop: 20/20 correct, $0.001101
-  google/gemini-2.5-flash-lite / route_choice: 12/20 correct, $0.001134
 ```
 
-(The trailing "Open SigNoz -> Traces" hint is omitted here for brevity; the
-command prints it too.)
+(The per model x decision type section is elided above only for length; the
+command prints all 21 rows, plus a trailing "Open SigNoz -> Traces" hint.)
+
+Read those last three lines against each other. Two of the cheapest models in
+the roster each score a perfect 20 on `next_hop` and beat the most expensive
+one, which drops a point, while costing roughly a twentieth as much on that
+decision type. Then look at `eta_estimate`, where `gpt-4o-mini`,
+`llama-3.3-70b-instruct` and `gemini-2.5-flash-lite` all score 0 out of 20 and
+`claude-sonnet-4.6` scores 19. No ranking of these seven models survives both
+columns, which is the entire argument for routing per decision type.
 
 In SigNoz you now have services `toy-world` and `toy-world-outcomes`, one trace
-per model, and 240 `gen_ai.evaluation.result` events - 180 math grades plus the
-60 late `journey.on_time` reality grades that span-link back to the
-`route_choice` decisions they judge. The replay is deterministic; re-running it
-just adds another identical batch.
+per model, and 560 `gen_ai.evaluation.result` events - 420 math grades plus the
+140 late `journey.on_time` reality grades that span-link back to the
+`route_choice` decisions they judge. Of those 140, 43 overturn the math grade,
+every one in the same direction: the checker called the route wrong because it
+was not the shortest, and the journey still arrived inside tolerance. The
+replay is deterministic; re-running it just adds another identical batch.
 
 ## 5. Import the Gradebook dashboard
 
@@ -133,7 +142,7 @@ purpose. Scoping fixes the service axis but not the time axis: a dashboard
 aggregates every run inside the selected window, so if you run the replay more
 than once, widen or narrow the range deliberately. On a range covering exactly
 one replay, the headline reconciles with what `python -m toyworld` printed:
-127 correct, and $0.377553 to within a rounding residue in the fifth decimal
+268 correct, and $0.403804 to within a rounding residue in the fifth decimal
 that comes from histogram sum storage.
 
 ## 6. Import the alert rules
