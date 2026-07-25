@@ -19,11 +19,11 @@ carries a reality verdict, in service `toy-world-outcomes` and its own trace,
 back to the one `route_choice` decision it judges, in service `toy-world` and
 the model-run trace that made it.
 
-![Verdict attribution, rendered from the committed replay recording on 2026-07-25: the reality verdict for route_choice-J1-J10, decided by anthropic/claude-sonnet-4.6, span-links back across trace and service to the decision it judges, both graded correct](span-link.png)
+![Verdict attribution, rendered from the committed replay recording on 2026-07-25: the reality verdict for route_choice-J1-J9, decided by anthropic/claude-haiku-4.5, span-links back across trace and service to the decision it judges, both graded correct](span-link.png)
 
-**60 reality verdicts, all 60 judging a `route_choice` decision, all 60
-agreeing with that decision's math grade.** That is the whole population
-recorded in this run, not a sample chosen to look good. Each verdict lives in
+**60 reality verdicts, all 60 judging a `route_choice` decision, 45 of them
+agreeing with that decision's math grade and 15 overturning it.** That is the
+whole population recorded in this run, not a sample chosen to look good. Each verdict lives in
 a different trace and a different service, and is still attributable to it by
 the span link alone. Pick any of the 60 verdicts in the rail to see both ends
 of its hop: the decision's model, cost, math grade and explanation, and the
@@ -52,7 +52,7 @@ Every graded decision in the run is one glyph, in the order it was graded.
 **Hue is where the grade's authority came from**, saturation is whether it was
 right, height is what it cost.
 
-![Grade provenance strip: 240 glyphs, blue for math grades and amber for reality grades, wrong decisions carrying a red foot along the baseline, with a legend showing 180 math (58 wrong), 60 reality (0 wrong) and 0 ai_judge](genome-strip.png)
+![Grade provenance strip: 240 glyphs, blue for math grades and amber for reality grades, wrong decisions carrying a red foot along the baseline, with a legend showing 180 math (53 wrong), 60 reality (10 wrong) and 0 ai_judge](genome-strip.png)
 
 Blue is a `math` grade, amber is a `reality` grade, and sienna is reserved for
 `ai_judge`. A wrong decision washes out and keeps a fully saturated cherry foot,
@@ -60,7 +60,7 @@ so bad runs read as red streaks along the baseline without inspecting a single
 glyph. The dashed divider is where the run crosses into `toy-world-outcomes` -
 the late grades that arrive after the decisions they judge.
 
-**180 math (58 wrong), 60 reality (0 wrong), 0 ai_judge.** The zero is the
+**180 math (53 wrong), 60 reality (10 wrong), 0 ai_judge.** The zero is the
 point, not an omission: an AI's opinion never silently enters the headline
 number ([ADR
 0001](../adr/0001-machine-checked-grades-only-in-the-headline-metric.md)), and
