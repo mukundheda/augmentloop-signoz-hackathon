@@ -156,6 +156,22 @@ protocol, which is what "harness neutral" has to mean if it means anything. Both
 are hand written illustrative shapes, labelled as such in the files themselves,
 and no harness package is imported anywhere in this directory.
 
+## Where the schemas differ from the originating issue
+
+The spec in issue #101 carried illustrative JSON that the frozen schemas do not
+accept. In each case the schema is what implementations follow, and the
+difference is deliberate rather than an oversight. Recorded here so a reader
+working from the issue text is not left guessing which one is authoritative.
+
+| Issue text | Schema | Why |
+| --- | --- | --- |
+| `cost_provenance: "token_estimate"` | `provider_token_estimate` or `harness_token_estimate` | Token counts from the provider and token counts a harness estimated are not equally trustworthy, and the precedence order has to be able to tell them apart. |
+| evaluator `kind: "command"` | `command_exit_code` | Names what is actually checked. The exit status is the verdict; the command is how it is obtained. |
+| `artifact_digest: "sha256:..."` as a string | object with `algorithm` and `digest` | A string forces every consumer to parse a prefix convention, and silently accepts a digest whose algorithm nobody agreed on. |
+| `chosen: "search_database"` as a bare string | the tagged value union | See [ADR 0005](../docs/adr/0005-values-carried-by-reference-or-digest-from-v1.md). A bare string cannot distinguish an empty answer from an uncaptured one, and cannot carry a digest. |
+| "application-provided checker callback" listed among deterministic evaluators without qualification | callback must declare `determinism` | This is the hole that would have let a model's opinion reach the headline metric. |
+| "attach run-level cost to the terminal verified task decision" | no schema field identifies a terminal decision | Left to the implementations as an explicit option, defaulting to the last graded decision on the documented convention that callers list decisions in run order. Inventing a schema field for it would have been guessing at a concept the protocol does not otherwise model. |
+
 ## Relationship to Gradebook
 
 This layer produces graded decisions. Emitting them is still the existing

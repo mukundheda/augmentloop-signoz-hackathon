@@ -22,7 +22,17 @@ But requiring derivation for everyone throws away real information. Some harness
 - When present, it is used exactly as supplied, and the record carries which of the two happened. An id whose provenance is unknown is an id nobody can reason about later.
 - Either way, a duplicate id whose content digest differs is REJECTED, not overwritten and not silently accepted. Two different decisions wearing one id is a corruption that gets worse the longer it goes unnoticed, so it fails at ingestion where someone can still fix the adapter.
 
-Derivation deliberately excludes everything mutable: the chosen value, evidence, usage references, timestamps, and cost. Including any of those would mean a decision changed identity when a late outcome arrived, which would break the reality link that ADR 0001 depends on.
+Derivation covers exactly eight fields: harness, run id, session id, agent id, decision type, evaluation name, task id, and the chosen value. It excludes evidence, usage references, model, trace and span ids, harness version, timestamps, and cost. Those can all grow or arrive after the decision, and including any of them would mean a decision changed identity when a late outcome landed, which would break the reality link ADR 0001 depends on.
+
+### Amended 2026-07-26: the chosen value is included
+
+The first version of this ADR excluded the chosen value, on the grounds that it was mutable. That was wrong on both the fact and the consequence, and the TypeScript implementation caught it.
+
+On the fact: the chosen value is fixed at the moment the decision is made. Unlike evidence and usage, which accumulate, it never changes afterwards. It was never in the same category as the fields listed above.
+
+On the consequence, which matters more: excluding it silently corrupts the headline metric. Two attempts at the same task, in the same run, by the same agent, differ in nothing else that derivation looks at. Both would derive the same id, the second would be rejected as a duplicate whose content differs, and the failed attempt would disappear. Issue #101 requires the opposite in as many words: "Failed attempts count toward efficiency", and "The numerator includes incorrect attempts". An identity rule that deletes failed attempts defeats the cost-per-correct metric on the side that makes it honest.
+
+The limit this does not solve, stated rather than hidden: two attempts that produce an identical chosen value still collide. Nothing in the record distinguishes them, because the protocol has no attempt or sequence field. An adapter that needs identical retries counted separately must supply explicit decision ids, which is one of the reasons adapter-supplied ids remain permitted.
 
 ## Consequences
 
