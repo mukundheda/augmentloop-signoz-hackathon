@@ -1,7 +1,7 @@
 # Dashboards, alert rules and saved views
 
 Everything SigNoz shows for this project, committed as JSON so it can be imported
-rather than rebuilt by hand. Nine files: two dashboards, five alert rules, three
+rather than rebuilt by hand. Ten files: two dashboards, five alert rules, three
 saved views.
 
 Import each one in the SigNoz UI. Dashboards go to **Dashboards -> New -> Import
