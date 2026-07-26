@@ -45,5 +45,20 @@ jobs:
       - name: Run tests (reference-library, toy-world, cleancut-proof, conformance)
         run: python -m pytest reference-library toy-world cleancut-proof conformance
 
+      # ADR 0002's claim is that the contract is cross-language, not
+      # Python-specific. The conformance tests above only prove that against a
+      # committed JSON fixture, so without this step the TypeScript emitter is
+      # never actually executed and the fixture could silently drift away from
+      # it. `--json` skips the OTLP POST, so this needs no collector and no
+      # network. The emitter has zero npm dependencies, so there is nothing to
+      # install beyond Node itself.
+      - name: Set up Node (for the TypeScript emitter)
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Conformance across languages (TypeScript emitter -> Python checker)
+        run: node conformance/ts-emitter/emit.ts --json | python conformance/check_conformance.py -
+
       - name: Type check (mypy)
         run: python -m mypy reference-library/src/gradebook toy-world/src/toyworld cleancut-proof/src/cleancutproof
