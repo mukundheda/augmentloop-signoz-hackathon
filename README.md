@@ -57,6 +57,17 @@ only by which decision was being made.*
 newest decision type, graded against a ground-truth CSV built from real
 views-per-day data across 45 items.*
 
+### The same dashboard, scoped to CleanCut
+
+![The Gradebook dashboard with the decision type variable set to filler_detection: the cost per correct decision by model panel now shows only CleanCut's roster of openai/gpt-4o, openai/gpt-4o-mini and google/gemini-2.5-flash-lite, with cost over time by grade source and correct rate percent by model below](docs/screenshots/cleancut-dashboard-filtered.png)
+
+*One control does the whole two-act story. Set `$decision_type` to
+`filler_detection` and every panel re-scopes from the toy world to CleanCut: the
+roster changes to the models CleanCut actually runs, and the headline number is
+computed by the same query it was a moment ago. Nothing about the dashboard is
+specific to either substrate, which is the point of putting the grade on the
+telemetry rather than in a bespoke eval report.*
+
 ### What actually lands
 
 - **Services** — `toy-world` and `cleancut-proof` (the decisions), plus `toy-world-outcomes` and `cleancut-outcomes` (the late reality grades). The deferred grade demonstrably crosses a service boundary, as it would in a real system.
