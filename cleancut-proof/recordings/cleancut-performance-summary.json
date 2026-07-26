@@ -1,0 +1,63 @@
+{
+  "started_at_utc": "2026-07-26T15:21:30.449352+00:00",
+  "completed_at_utc": null,
+  "processed_items": 10,
+  "total_items": 45,
+  "decisions": 30,
+  "correct": 22,
+  "cost_usd": 0.0099724,
+  "by_model": {
+    "openai/gpt-4o": {
+      "decisions": 10,
+      "correct": 7,
+      "cost_usd": 0.009049999999999999
+    },
+    "openai/gpt-4o-mini": {
+      "decisions": 10,
+      "correct": 6,
+      "cost_usd": 0.0005405999999999999
+    },
+    "google/gemini-2.5-flash-lite": {
+      "decisions": 10,
+      "correct": 9,
+      "cost_usd": 0.00038180000000000006
+    }
+  },
+  "by_model_type": {
+    "openai/gpt-4o|performance_prediction": {
+      "decisions": 10,
+      "correct": 7,
+      "cost_usd": 0.009049999999999999
+    },
+    "openai/gpt-4o-mini|performance_prediction": {
+      "decisions": 10,
+      "correct": 6,
+      "cost_usd": 0.0005405999999999999
+    },
+    "google/gemini-2.5-flash-lite|performance_prediction": {
+      "decisions": 10,
+      "correct": 9,
+      "cost_usd": 0.00038180000000000006
+    }
+  },
+  "confusion_by_model": {
+    "openai/gpt-4o": {
+      "tp": 5,
+      "tn": 2,
+      "fp": 2,
+      "fn": 1
+    },
+    "openai/gpt-4o-mini": {
+      "tp": 5,
+      "tn": 1,
+      "fp": 3,
+      "fn": 1
+    },
+    "google/gemini-2.5-flash-lite": {
+      "tp": 6,
+      "tn": 3,
+      "fp": 1,
+      "fn": 0
+    }
+  }
+}
