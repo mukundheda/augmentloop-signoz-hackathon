@@ -1,0 +1,19 @@
+{
+  "schema_version": "1.0",
+  "task_id": "repair-auth-017",
+  "decision_type": "task_completion",
+  "evaluation_name": "repository.tests_pass",
+  "authority": "math",
+  "evaluator": {
+    "kind": "command_exit_code",
+    "command": [
+      "npm",
+      "test",
+      "--",
+      "--run"
+    ],
+    "expected_exit_code": 0,
+    "timeout_seconds": 120,
+    "working_directory": "/workspace"
+  }
+}

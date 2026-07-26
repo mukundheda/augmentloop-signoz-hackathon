@@ -1,0 +1,12 @@
+{
+  "schema_version": "1.0",
+  "usage_id": "usage-prov-provider_reported",
+  "scope": "model_invocation",
+  "run_id": "run-42",
+  "cost_provenance": "provider_reported",
+  "provider_cost_usd": 0.0184,
+  "model": "anthropic/claude-sonnet-4.6",
+  "provider_response_id": "response-abc",
+  "input_tokens": 1200,
+  "output_tokens": 340
+}

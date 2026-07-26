@@ -1,0 +1,16 @@
+{
+  "schema_version": "1.0",
+  "task_id": "repair-auth-017",
+  "decision_type": "task_completion",
+  "evaluation_name": "repository.tests_pass",
+  "authority": "math",
+  "evaluator": {
+    "kind": "callback",
+    "name": "repo_state_checker",
+    "options": {
+      "strict": true,
+      "max_diff_lines": 200
+    },
+    "determinism": "deterministic"
+  }
+}

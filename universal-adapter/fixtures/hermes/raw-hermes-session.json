@@ -1,0 +1,99 @@
+{
+  "_note": "ILLUSTRATIVE SHAPE, hand written for conformance testing. This is NOT captured output from any real installation and no harness package is imported, installed or required to use this fixture. Field names are modelled only on the hook families named in issue #101 and may not match any released version. The point of the file is the SHAPE of the normalization, not fidelity to a vendor API. Hermes is described in issue #101 as exposing Python lifecycle and tool hooks, so this shape is a nested per-session event stream with tool events nested under the model call that requested them.",
+  "_format": "hermes.session_event_stream.v0-illustrative",
+  "session": {
+    "session_id": "session-9",
+    "run_id": "run-42",
+    "harness": "hermes",
+    "harness_version": "0.0.0-illustrative",
+    "task": {
+      "task_id": "repair-auth-017",
+      "environment": "benchmark"
+    },
+    "agent": {
+      "agent_id": "coder-1",
+      "parent_agent_id": "orchestrator-0",
+      "model": "anthropic/claude-sonnet-4.6"
+    },
+    "events": [
+      {
+        "hook": "on_session_start",
+        "sequence": 0,
+        "ts": "2026-07-26T09:00:00Z"
+      },
+      {
+        "hook": "post_llm_call",
+        "sequence": 1,
+        "ts": "2026-07-26T09:00:11Z",
+        "provider_response_id": "response-abc",
+        "model": "anthropic/claude-sonnet-4.6",
+        "usage": {
+          "input_tokens": 1200,
+          "output_tokens": 340,
+          "cached_input_tokens": 800
+        },
+        "otel": {
+          "trace_id": "4bf92f3577b34da6a3ce929d0e0e4736",
+          "span_id": "00f067aa0ba902b7"
+        },
+        "children": [
+          {
+            "hook": "post_tool_call",
+            "sequence": 2,
+            "tool_call_id": "toolcall-7",
+            "tool_name": "search_database",
+            "status": "ok",
+            "otel": {
+              "trace_id": "4bf92f3577b34da6a3ce929d0e0e4736",
+              "span_id": "00f067aa0ba902b7"
+            }
+          }
+        ]
+      },
+      {
+        "hook": "post_llm_call",
+        "sequence": 3,
+        "ts": "2026-07-26T09:01:04Z",
+        "provider_response_id": "response-def",
+        "model": "anthropic/claude-sonnet-4.6",
+        "usage": {
+          "input_tokens": 900,
+          "output_tokens": 120,
+          "cached_input_tokens": 0
+        },
+        "otel": {
+          "trace_id": "4bf92f3577b34da6a3ce929d0e0e4736",
+          "span_id": "b7ad6b7169203331"
+        },
+        "children": [
+          {
+            "hook": "post_tool_call",
+            "sequence": 4,
+            "tool_call_id": "toolcall-8",
+            "tool_name": "run_project_tests",
+            "status": "ok",
+            "command_name": "project-test-suite",
+            "exit_code": 0,
+            "duration_ms": 41230,
+            "artifact_sha256": "9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08",
+            "otel": {
+              "trace_id": "4bf92f3577b34da6a3ce929d0e0e4736",
+              "span_id": "b7ad6b7169203331"
+            }
+          }
+        ]
+      },
+      {
+        "hook": "on_session_end",
+        "sequence": 5,
+        "ts": "2026-07-26T09:01:52Z",
+        "final_workspace_ref": "workspace-after-agent",
+        "final_workspace_sha256": "9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08",
+        "claim": {
+          "success": true,
+          "reason": "tests_reported_green"
+        }
+      }
+    ]
+  }
+}

@@ -1,0 +1,101 @@
+[
+  {
+    "schema_version": "1.0",
+    "decision": {
+      "decision_id": "ruflo:swarm-77:traj-11:1",
+      "decision_type": "tool_choice",
+      "evaluation_name": "agent.tool_choice_appropriate",
+      "chosen": {
+        "kind": "inline",
+        "value": "search_database"
+      }
+    },
+    "subject": {
+      "harness": "ruflo",
+      "harness_version": "0.0.0-illustrative",
+      "run_id": "swarm-77",
+      "session_id": "session-3",
+      "agent_id": "coder-1",
+      "parent_agent_id": "orchestrator-0",
+      "model": "anthropic/claude-sonnet-4.6"
+    },
+    "correlation": {
+      "provider_response_id": null,
+      "trace_id": "1c1d2e3f405162738495a6b7c8d9e0f1",
+      "span_id": "0102030405060708",
+      "task_id": "repair-auth-017"
+    },
+    "evidence": [
+      {
+        "evidence_id": "ruflo:swarm-77:traj-11:1:span",
+        "kind": "otel_span",
+        "trace_id": "1c1d2e3f405162738495a6b7c8d9e0f1",
+        "span_id": "0102030405060708"
+      }
+    ],
+    "usage_refs": [
+      "ruflo:swarm-77:session-total"
+    ],
+    "metadata": {
+      "environment": "benchmark"
+    }
+  },
+  {
+    "schema_version": "1.0",
+    "decision": {
+      "decision_id": "ruflo:swarm-77:task:repair-auth-017",
+      "decision_type": "task_completion",
+      "evaluation_name": "repository.tests_pass",
+      "chosen": {
+        "kind": "artifact_reference",
+        "value": "workspace-after-agent",
+        "digest": {
+          "algorithm": "sha256",
+          "digest": "2c26b46b68ffc68ff99b453c1d30413413422d706483bfa0f98a5e886266e7ae"
+        }
+      }
+    },
+    "subject": {
+      "harness": "ruflo",
+      "harness_version": "0.0.0-illustrative",
+      "run_id": "swarm-77",
+      "session_id": "session-3",
+      "agent_id": "coder-1",
+      "parent_agent_id": "orchestrator-0",
+      "model": "anthropic/claude-sonnet-4.6"
+    },
+    "correlation": {
+      "provider_response_id": null,
+      "trace_id": "1c1d2e3f405162738495a6b7c8d9e0f1",
+      "span_id": "1112131415161718",
+      "task_id": "repair-auth-017"
+    },
+    "evidence": [
+      {
+        "evidence_id": "ruflo:swarm-77:traj-11:2:command",
+        "kind": "command_result",
+        "command_name": "project-test-suite",
+        "exit_code": 0,
+        "duration_ms": 38210,
+        "artifact_digest": {
+          "algorithm": "sha256",
+          "digest": "2c26b46b68ffc68ff99b453c1d30413413422d706483bfa0f98a5e886266e7ae"
+        }
+      },
+      {
+        "evidence_id": "ruflo:swarm-77:task:repair-auth-017:claim",
+        "kind": "harness_claim",
+        "claim": {
+          "success": true,
+          "status": "completed"
+        }
+      }
+    ],
+    "usage_refs": [
+      "ruflo:swarm-77:session-total"
+    ],
+    "metadata": {
+      "environment": "benchmark"
+    }
+  }
+]

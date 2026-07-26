@@ -1,0 +1,187 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://augmentloop.dev/schemas/evaluation-manifest/1.0.json",
+  "title": "EvaluationManifest",
+  "description": "The independent source of truth for one task. Supplied SEPARATELY from harness evidence, by whoever owns the task rather than by the agent being graded. Without a manifest a decision cannot receive a math grade, no matter what the harness claims about itself. The evaluator set is deliberately small: this is a grading protocol, not a workflow engine.",
+  "type": "object",
+  "required": ["schema_version", "task_id", "decision_type", "evaluation_name", "authority", "evaluator"],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": { "const": "1.0" },
+    "task_id": { "$ref": "#/$defs/identifier" },
+    "decision_type": { "$ref": "#/$defs/identifier" },
+    "evaluation_name": { "$ref": "#/$defs/identifier" },
+    "authority": {
+      "enum": ["math", "reality", "ai_judge"],
+      "description": "Which Gradebook grade source a passing evaluation confers. A manifest CANNOT confer math authority with an evaluator that is not deterministic, which is enforced by the constraint below rather than by convention."
+    },
+    "evaluator": { "$ref": "#/$defs/evaluator" },
+    "description": { "type": "string", "maxLength": 2048 },
+    "ext": {
+      "type": "object",
+      "description": "Reserved forward-compatibility namespace, the only place unknown fields are permitted.",
+      "additionalProperties": true
+    }
+  },
+  "allOf": [
+    {
+      "description": "Structural enforcement of the protocol's most important rule. An ai_judge evaluator can never carry math authority, so a model's opinion cannot be laundered into the headline metric by editing one field of a manifest.",
+      "if": {
+        "properties": { "authority": { "const": "math" } },
+        "required": ["authority"]
+      },
+      "then": {
+        "properties": {
+          "evaluator": {
+            "allOf": [
+              {
+                "properties": {
+                  "kind": {
+                    "enum": [
+                      "exact_equality",
+                      "json_equality",
+                      "command_exit_code",
+                      "file_digest",
+                      "json_schema",
+                      "callback"
+                    ]
+                  }
+                }
+              },
+              {
+                "description": "The one arm above whose determinism is not visible in its shape. A callback may only carry math authority when it has explicitly declared itself deterministic, so a model-assisted checker cannot reach the headline metric by omission.",
+                "if": {
+                  "properties": { "kind": { "const": "callback" } },
+                  "required": ["kind"]
+                },
+                "then": {
+                  "required": ["determinism"],
+                  "properties": { "determinism": { "const": "deterministic" } }
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "description": "Reality authority is conferred by an outcome that arrives later, not by running a checker at decision time.",
+      "if": {
+        "properties": { "authority": { "const": "reality" } },
+        "required": ["authority"]
+      },
+      "then": {
+        "properties": { "evaluator": { "properties": { "kind": { "const": "outcome" } } } }
+      }
+    }
+  ],
+  "$defs": {
+    "identifier": { "type": "string", "minLength": 1, "maxLength": 512 },
+    "digest": {
+      "type": "object",
+      "required": ["algorithm", "digest"],
+      "additionalProperties": false,
+      "properties": {
+        "algorithm": { "enum": ["sha256"] },
+        "digest": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+        "byte_length": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "evaluator": {
+      "type": "object",
+      "required": ["kind"],
+      "oneOf": [
+        {
+          "title": "exact_equality",
+          "description": "The chosen value equals the expected value after normalization.",
+          "required": ["kind", "expected"],
+          "additionalProperties": false,
+          "properties": {
+            "kind": { "const": "exact_equality" },
+            "expected": {},
+            "case_sensitive": { "type": "boolean", "default": true },
+            "trim_whitespace": { "type": "boolean", "default": true }
+          }
+        },
+        {
+          "title": "json_equality",
+          "description": "Structural JSON equality, order-insensitive for object keys and order-sensitive for arrays.",
+          "required": ["kind", "expected"],
+          "additionalProperties": false,
+          "properties": {
+            "kind": { "const": "json_equality" },
+            "expected": {}
+          }
+        },
+        {
+          "title": "command_exit_code",
+          "description": "A command's exit status is the verdict. The command is declared here, in the manifest, and NOT taken from harness evidence, so the process being graded cannot choose the test that grades it.",
+          "required": ["kind", "command", "expected_exit_code"],
+          "additionalProperties": false,
+          "properties": {
+            "kind": { "const": "command_exit_code" },
+            "command": {
+              "type": "array",
+              "minItems": 1,
+              "items": { "type": "string" },
+              "description": "argv form, never a shell string, so there is no shell to inject into."
+            },
+            "expected_exit_code": { "type": "integer" },
+            "timeout_seconds": { "type": "number", "exclusiveMinimum": 0, "default": 120 },
+            "working_directory": { "type": "string", "maxLength": 2048 }
+          }
+        },
+        {
+          "title": "file_digest",
+          "description": "A file's content hash equals an expected hash.",
+          "required": ["kind", "path", "expected"],
+          "additionalProperties": false,
+          "properties": {
+            "kind": { "const": "file_digest" },
+            "path": { "type": "string", "minLength": 1, "maxLength": 2048 },
+            "expected": { "$ref": "#/$defs/digest" }
+          }
+        },
+        {
+          "title": "json_schema",
+          "description": "The chosen value validates against a schema. Proves shape, not truth, which is why it is a weaker but still deterministic authority.",
+          "required": ["kind", "schema"],
+          "additionalProperties": false,
+          "properties": {
+            "kind": { "const": "json_schema" },
+            "schema": { "type": "object" }
+          }
+        },
+        {
+          "title": "callback",
+          "description": "An application-provided checker resolved by name from a registry the application controls. The name is a lookup key, never an import path or callable, so a manifest cannot cause arbitrary code to load. A callback is the one evaluator whose determinism the schema cannot inspect, which is why `determinism` must be declared explicitly rather than assumed.",
+          "required": ["kind", "name", "determinism"],
+          "additionalProperties": false,
+          "properties": {
+            "kind": { "const": "callback" },
+            "name": { "$ref": "#/$defs/identifier" },
+            "determinism": {
+              "enum": ["deterministic", "model_assisted"],
+              "description": "Whether this checker computes its verdict or asks a model for one. Required, with no default, because a defaulted value is a guess about the one property that decides whether the result can reach the headline metric. Declaring `deterministic` for a checker that calls a model is a false statement in a reviewable file, which is the point: the schema cannot detect it, but it can force someone to write it down. The implementation enforces the same rule a second time at registration."
+            },
+            "options": {
+              "type": "object",
+              "additionalProperties": { "type": ["string", "number", "boolean", "null"] }
+            }
+          }
+        },
+        {
+          "title": "outcome",
+          "description": "No checker runs. The verdict arrives later as an OutcomeRecord and is graded with reality authority.",
+          "required": ["kind", "outcome_type"],
+          "additionalProperties": false,
+          "properties": {
+            "kind": { "const": "outcome" },
+            "outcome_type": { "$ref": "#/$defs/identifier" },
+            "observation_window_seconds": { "type": "number", "exclusiveMinimum": 0 }
+          }
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "schema_version": "1.0",
+  "task_id": "repair-auth-017",
+  "decision_type": "task_completion",
+  "evaluation_name": "repository.tests_pass",
+  "authority": "ai_judge",
+  "evaluator": {
+    "kind": "callback",
+    "name": "llm_pairwise_judge",
+    "determinism": "model_assisted"
+  }
+}

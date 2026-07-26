@@ -1,0 +1,376 @@
+{
+  "note": "Extra validation inputs, beyond the shared corpus. The corpus covers one authored violation per file and is deliberately readable; these cover the type-system edges where two hand written validators in two languages are most likely to drift apart without anyone noticing. Each case names the record kind it is validated as, and the only thing compared is accepted versus rejected.",
+  "escapes": {
+    "$parity=repeat": "{\"$parity\":\"repeat\",\"char\":\"a\",\"count\":513} expands to that many copies of the character, so length limits can be probed without a 513 character line in this file"
+  },
+  "cases": [
+    {
+      "id": "shape/bundle-is-null",
+      "kind": "decision-evidence-bundle",
+      "why": "A non-object at the root must be rejected, not crash.",
+      "record": null
+    },
+    {
+      "id": "shape/bundle-is-array",
+      "kind": "decision-evidence-bundle",
+      "why": "An array is not a record.",
+      "record": []
+    },
+    {
+      "id": "shape/bundle-is-string",
+      "kind": "decision-evidence-bundle",
+      "why": "A string is not a record.",
+      "record": "decision"
+    },
+    {
+      "id": "shape/bundle-is-number",
+      "kind": "decision-evidence-bundle",
+      "why": "A number is not a record.",
+      "record": 0
+    },
+    {
+      "id": "shape/usage-is-null",
+      "kind": "usage-record",
+      "why": "Same at the usage validator.",
+      "record": null
+    },
+    {
+      "id": "shape/manifest-is-null",
+      "kind": "evaluation-manifest",
+      "why": "Same at the manifest validator.",
+      "record": null
+    },
+    {
+      "id": "shape/outcome-is-null",
+      "kind": "outcome-record",
+      "why": "Same at the outcome validator.",
+      "record": null
+    },
+    {
+      "id": "shape/empty-object-as-bundle",
+      "kind": "decision-evidence-bundle",
+      "why": "Every required field missing at once.",
+      "record": {}
+    },
+
+    {
+      "id": "datetime/accepted-impossible-calendar-date",
+      "kind": "outcome-record",
+      "why": "PINNED, and pinned in python/tests/test_cross_language_rules.py too. Month 13 day 45 hour 99 is ACCEPTED on purpose: the schema asserts an RFC 3339 PATTERN and nothing more. A stricter calendar check in one language would mean the two implementations rejecting different documents, which is a worse failure than accepting a date no clock can produce.",
+      "record": { "schema_version": "1.0", "outcome_id": "outcome-88", "decision_id": "decision-017", "outcome_type": "pull_request_merged", "correct": true, "observed_at": "2026-13-45T99:00:00Z" }
+    },
+    {
+      "id": "datetime/plain-english",
+      "kind": "outcome-record",
+      "why": "PINNED: not a date at all, rejected by both.",
+      "record": { "schema_version": "1.0", "outcome_id": "outcome-88", "decision_id": "decision-017", "outcome_type": "pull_request_merged", "correct": true, "observed_at": "not-a-date" }
+    },
+    {
+      "id": "datetime/ordinary-utc",
+      "kind": "outcome-record",
+      "why": "Baseline.",
+      "record": { "schema_version": "1.0", "outcome_id": "outcome-88", "decision_id": "decision-017", "outcome_type": "pull_request_merged", "correct": true, "observed_at": "2026-07-26T12:00:00Z" }
+    },
+    {
+      "id": "datetime/fractional-seconds",
+      "kind": "outcome-record",
+      "why": "Sub-second precision.",
+      "record": { "schema_version": "1.0", "outcome_id": "outcome-88", "decision_id": "decision-017", "outcome_type": "pull_request_merged", "correct": true, "observed_at": "2026-07-26T12:00:00.123456Z" }
+    },
+    {
+      "id": "datetime/numeric-offset",
+      "kind": "outcome-record",
+      "why": "A non-UTC offset is legal RFC 3339.",
+      "record": { "schema_version": "1.0", "outcome_id": "outcome-88", "decision_id": "decision-017", "outcome_type": "pull_request_merged", "correct": true, "observed_at": "2026-07-26T12:00:00+05:30" }
+    },
+    {
+      "id": "datetime/negative-zero-offset",
+      "kind": "outcome-record",
+      "why": "-00:00 means unknown local offset and is legal.",
+      "record": { "schema_version": "1.0", "outcome_id": "outcome-88", "decision_id": "decision-017", "outcome_type": "pull_request_merged", "correct": true, "observed_at": "2026-07-26T12:00:00-00:00" }
+    },
+    {
+      "id": "datetime/lowercase-t-and-z",
+      "kind": "outcome-record",
+      "why": "RFC 3339 permits lowercase separators. Whichever way the two sides read it, they must read it the same way.",
+      "record": { "schema_version": "1.0", "outcome_id": "outcome-88", "decision_id": "decision-017", "outcome_type": "pull_request_merged", "correct": true, "observed_at": "2026-07-26t12:00:00z" }
+    },
+    {
+      "id": "datetime/space-separator",
+      "kind": "outcome-record",
+      "why": "The SQL spelling. Rejected by the corpus too, repeated here beside its neighbours.",
+      "record": { "schema_version": "1.0", "outcome_id": "outcome-88", "decision_id": "decision-017", "outcome_type": "pull_request_merged", "correct": true, "observed_at": "2026-07-26 12:00:00Z" }
+    },
+    {
+      "id": "datetime/no-offset",
+      "kind": "outcome-record",
+      "why": "A local time with no offset is not a point in time.",
+      "record": { "schema_version": "1.0", "outcome_id": "outcome-88", "decision_id": "decision-017", "outcome_type": "pull_request_merged", "correct": true, "observed_at": "2026-07-26T12:00:00" }
+    },
+    {
+      "id": "datetime/single-digit-month",
+      "kind": "outcome-record",
+      "why": "Unpadded fields.",
+      "record": { "schema_version": "1.0", "outcome_id": "outcome-88", "decision_id": "decision-017", "outcome_type": "pull_request_merged", "correct": true, "observed_at": "2026-7-26T12:00:00Z" }
+    },
+    {
+      "id": "datetime/empty-fraction",
+      "kind": "outcome-record",
+      "why": "A decimal point with no digits after it.",
+      "record": { "schema_version": "1.0", "outcome_id": "outcome-88", "decision_id": "decision-017", "outcome_type": "pull_request_merged", "correct": true, "observed_at": "2026-07-26T12:00:00.Z" }
+    },
+    {
+      "id": "datetime/trailing-space",
+      "kind": "outcome-record",
+      "why": "Anchoring. An unanchored regex in one language would accept this.",
+      "record": { "schema_version": "1.0", "outcome_id": "outcome-88", "decision_id": "decision-017", "outcome_type": "pull_request_merged", "correct": true, "observed_at": "2026-07-26T12:00:00Z " }
+    },
+    {
+      "id": "datetime/leading-space",
+      "kind": "outcome-record",
+      "why": "Anchoring at the other end.",
+      "record": { "schema_version": "1.0", "outcome_id": "outcome-88", "decision_id": "decision-017", "outcome_type": "pull_request_merged", "correct": true, "observed_at": " 2026-07-26T12:00:00Z" }
+    },
+    {
+      "id": "datetime/embedded-newline",
+      "kind": "outcome-record",
+      "why": "A newline after a valid date. Python's $ matches before a trailing newline and JavaScript's does not, so an unanchored or carelessly anchored pattern diverges exactly here.",
+      "record": { "schema_version": "1.0", "outcome_id": "outcome-88", "decision_id": "decision-017", "outcome_type": "pull_request_merged", "correct": true, "observed_at": "2026-07-26T12:00:00Z\n" }
+    },
+    {
+      "id": "datetime/empty-string",
+      "kind": "outcome-record",
+      "why": "Empty is not a timestamp.",
+      "record": { "schema_version": "1.0", "outcome_id": "outcome-88", "decision_id": "decision-017", "outcome_type": "pull_request_merged", "correct": true, "observed_at": "" }
+    },
+    {
+      "id": "datetime/is-a-number",
+      "kind": "outcome-record",
+      "why": "An epoch integer is not the wire format.",
+      "record": { "schema_version": "1.0", "outcome_id": "outcome-88", "decision_id": "decision-017", "outcome_type": "pull_request_merged", "correct": true, "observed_at": 1785000000 }
+    },
+    {
+      "id": "datetime/is-null",
+      "kind": "outcome-record",
+      "why": "observed_at is required and not nullable.",
+      "record": { "schema_version": "1.0", "outcome_id": "outcome-88", "decision_id": "decision-017", "outcome_type": "pull_request_merged", "correct": true, "observed_at": null }
+    },
+
+    {
+      "id": "number/token-count-as-integral-float",
+      "kind": "usage-record",
+      "why": "THE integer trap. JSON gives Python the int 5 and JavaScript the number 5 for '5', but '5.0' gives Python a float and JavaScript the same number as before. If one side asks isinstance(int) and the other asks Number.isInteger, they disagree here and nowhere else.",
+      "record": { "schema_version": "1.0", "usage_id": "usage-1", "run_id": "run-1", "scope": "model_invocation", "cost_provenance": "unknown", "input_tokens": 5.0, "output_tokens": null, "cost_usd": null }
+    },
+    {
+      "id": "number/token-count-fractional",
+      "kind": "usage-record",
+      "why": "Half a token is not a token count.",
+      "record": { "schema_version": "1.0", "usage_id": "usage-1", "run_id": "run-1", "scope": "model_invocation", "cost_provenance": "unknown", "input_tokens": 5.5, "output_tokens": null, "cost_usd": null }
+    },
+    {
+      "id": "number/token-count-boolean",
+      "kind": "usage-record",
+      "why": "THE boolean trap. In Python True IS an int, so a validator that only asks isinstance(value, int) accepts this while JavaScript's typeof check rejects it.",
+      "record": { "schema_version": "1.0", "usage_id": "usage-1", "run_id": "run-1", "scope": "model_invocation", "cost_provenance": "unknown", "input_tokens": true, "output_tokens": null, "cost_usd": null }
+    },
+    {
+      "id": "number/cost-boolean",
+      "kind": "usage-record",
+      "why": "The same trap at a float-typed field.",
+      "record": { "schema_version": "1.0", "usage_id": "usage-1", "run_id": "run-1", "scope": "model_invocation", "cost_provenance": "provider_reported", "input_tokens": null, "output_tokens": null, "cost_usd": true }
+    },
+    {
+      "id": "number/token-count-numeric-string",
+      "kind": "usage-record",
+      "why": "A quoted number is a string in both languages and must be rejected by both.",
+      "record": { "schema_version": "1.0", "usage_id": "usage-1", "run_id": "run-1", "scope": "model_invocation", "cost_provenance": "unknown", "input_tokens": "5", "output_tokens": null, "cost_usd": null }
+    },
+    {
+      "id": "number/cost-negative-zero",
+      "kind": "usage-record",
+      "why": "-0.0 is not below zero in either language, so a minimum-zero check must accept it in both.",
+      "record": { "schema_version": "1.0", "usage_id": "usage-1", "run_id": "run-1", "scope": "model_invocation", "cost_provenance": "provider_reported", "input_tokens": null, "output_tokens": null, "cost_usd": -0.0 }
+    },
+    {
+      "id": "number/cost-tiny",
+      "kind": "usage-record",
+      "why": "A cost below the canonical six-decimal floor is still a legal cost. Validation and canonicalization are different rules and must not be confused for each other.",
+      "record": { "schema_version": "1.0", "usage_id": "usage-1", "run_id": "run-1", "scope": "model_invocation", "cost_provenance": "provider_reported", "input_tokens": null, "output_tokens": null, "cost_usd": 1e-9 }
+    },
+    {
+      "id": "number/cost-overflows-to-infinity",
+      "kind": "usage-record",
+      "why": "1e400 is a legal JSON literal that BOTH parsers turn into infinity. Whatever the validators then decide, they must decide it together.",
+      "record": { "schema_version": "1.0", "usage_id": "usage-1", "run_id": "run-1", "scope": "model_invocation", "cost_provenance": "provider_reported", "input_tokens": null, "output_tokens": null, "cost_usd": 1e400 }
+    },
+    {
+      "id": "number/token-count-huge",
+      "kind": "usage-record",
+      "why": "Beyond 2^53 Python keeps an exact int and JavaScript rounds. Both must still treat it as an integer token count.",
+      "record": { "schema_version": "1.0", "usage_id": "usage-1", "run_id": "run-1", "scope": "model_invocation", "cost_provenance": "unknown", "input_tokens": 9007199254740993, "output_tokens": null, "cost_usd": null }
+    },
+    {
+      "id": "number/token-count-negative-zero-int",
+      "kind": "usage-record",
+      "why": "Zero tokens is a measurement and is legal.",
+      "record": { "schema_version": "1.0", "usage_id": "usage-1", "run_id": "run-1", "scope": "model_invocation", "cost_provenance": "unknown", "input_tokens": 0, "output_tokens": 0, "cost_usd": null }
+    },
+
+    {
+      "id": "string/identifier-at-length-limit",
+      "kind": "usage-record",
+      "why": "512 characters, the documented identifier ceiling. Both sides must count the same way.",
+      "record": { "schema_version": "1.0", "usage_id": { "$parity": "repeat", "char": "a", "count": 512 }, "run_id": "run-1", "scope": "model_invocation", "cost_provenance": "unknown", "input_tokens": null, "output_tokens": null, "cost_usd": null }
+    },
+    {
+      "id": "string/identifier-one-over-limit",
+      "kind": "usage-record",
+      "why": "513 characters. The off-by-one either side of a limit is where two hand written validators drift.",
+      "record": { "schema_version": "1.0", "usage_id": { "$parity": "repeat", "char": "a", "count": 513 }, "run_id": "run-1", "scope": "model_invocation", "cost_provenance": "unknown", "input_tokens": null, "output_tokens": null, "cost_usd": null }
+    },
+    {
+      "id": "string/identifier-length-counted-in-astral-characters",
+      "kind": "usage-record",
+      "why": "THE length trap. 300 emoji are 300 code points to Python and 600 code units to JavaScript. If the limit is applied to the raw length, one side rejects a record the other accepts.",
+      "record": { "schema_version": "1.0", "usage_id": { "$parity": "repeat", "char": "😀", "count": 300 }, "run_id": "run-1", "scope": "model_invocation", "cost_provenance": "unknown", "input_tokens": null, "output_tokens": null, "cost_usd": null }
+    },
+    {
+      "id": "string/identifier-empty",
+      "kind": "usage-record",
+      "why": "An empty identifier identifies nothing.",
+      "record": { "schema_version": "1.0", "usage_id": "", "run_id": "run-1", "scope": "model_invocation", "cost_provenance": "unknown", "input_tokens": null, "output_tokens": null, "cost_usd": null }
+    },
+    {
+      "id": "string/identifier-non-ascii",
+      "kind": "usage-record",
+      "why": "Identifiers are not restricted to ASCII, and neither side may quietly restrict them.",
+      "record": { "schema_version": "1.0", "usage_id": "使用-1", "run_id": "run-1", "scope": "model_invocation", "cost_provenance": "unknown", "input_tokens": null, "output_tokens": null, "cost_usd": null }
+    },
+
+    {
+      "id": "schema-version/missing",
+      "kind": "usage-record",
+      "why": "schema_version is required.",
+      "record": { "usage_id": "usage-1", "run_id": "run-1", "scope": "model_invocation", "cost_provenance": "unknown", "input_tokens": null, "output_tokens": null, "cost_usd": null }
+    },
+    {
+      "id": "schema-version/wrong-value",
+      "kind": "usage-record",
+      "why": "A version this implementation does not speak.",
+      "record": { "schema_version": "2.0", "usage_id": "usage-1", "run_id": "run-1", "scope": "model_invocation", "cost_provenance": "unknown", "input_tokens": null, "output_tokens": null, "cost_usd": null }
+    },
+    {
+      "id": "schema-version/numeric",
+      "kind": "usage-record",
+      "why": "1.0 the number is not \"1.0\" the string.",
+      "record": { "schema_version": 1.0, "usage_id": "usage-1", "run_id": "run-1", "scope": "model_invocation", "cost_provenance": "unknown", "input_tokens": null, "output_tokens": null, "cost_usd": null }
+    },
+
+    {
+      "id": "closed/unknown-field-at-root",
+      "kind": "usage-record",
+      "why": "Records are closed. Unknown fields belong under ext.",
+      "record": { "schema_version": "1.0", "usage_id": "usage-1", "run_id": "run-1", "scope": "model_invocation", "cost_provenance": "unknown", "input_tokens": null, "output_tokens": null, "cost_usd": null, "surprise": 1 }
+    },
+    {
+      "id": "closed/ext-carries-anything",
+      "kind": "usage-record",
+      "why": "ext is the ONE reserved extension namespace, so arbitrary nesting under it is legal.",
+      "record": { "schema_version": "1.0", "usage_id": "usage-1", "run_id": "run-1", "scope": "model_invocation", "cost_provenance": "unknown", "input_tokens": null, "output_tokens": null, "cost_usd": null, "ext": { "anything": { "nested": [1, 2, { "deep": true }] } } }
+    },
+    {
+      "id": "closed/ext-is-an-array",
+      "kind": "usage-record",
+      "why": "ext is an object namespace, not a list.",
+      "record": { "schema_version": "1.0", "usage_id": "usage-1", "run_id": "run-1", "scope": "model_invocation", "cost_provenance": "unknown", "input_tokens": null, "output_tokens": null, "cost_usd": null, "ext": [1, 2] }
+    },
+
+    {
+      "id": "authority/math-with-model-assisted-callback",
+      "kind": "evaluation-manifest",
+      "why": "PINNED INVARIANT: a model's opinion must never reach the headline metric, so math authority refuses a callback that declares itself model assisted.",
+      "record": { "schema_version": "1.0", "evaluation_name": "route-the-query", "decision_type": "tool_call", "authority": "math", "evaluator": { "kind": "callback", "callback": "checkers.route", "determinism": "model_assisted" } }
+    },
+    {
+      "id": "authority/math-with-deterministic-callback",
+      "kind": "evaluation-manifest",
+      "why": "The same shape with the honest declaration is legal.",
+      "record": { "schema_version": "1.0", "evaluation_name": "route-the-query", "decision_type": "tool_call", "authority": "math", "evaluator": { "kind": "callback", "callback": "checkers.route", "determinism": "deterministic" } }
+    },
+    {
+      "id": "authority/ai-judge-with-deterministic-callback",
+      "kind": "evaluation-manifest",
+      "why": "PINNED INVARIANT: authority may be given up, never taken. Claiming less than the evaluator could support is legal on purpose.",
+      "record": { "schema_version": "1.0", "evaluation_name": "route-the-query", "decision_type": "tool_call", "authority": "ai_judge", "evaluator": { "kind": "callback", "callback": "checkers.route", "determinism": "deterministic" } }
+    },
+    {
+      "id": "authority/callback-without-determinism",
+      "kind": "evaluation-manifest",
+      "why": "PINNED INVARIANT: silence is not a declaration. A callback must say which it is.",
+      "record": { "schema_version": "1.0", "evaluation_name": "route-the-query", "decision_type": "tool_call", "authority": "math", "evaluator": { "kind": "callback", "callback": "checkers.route" } }
+    },
+
+    {
+      "id": "cross-kind/bundle-validated-as-usage",
+      "kind": "usage-record",
+      "why": "A legal record of the WRONG kind must be rejected, and by both. Two validators disagreeing about a misrouted record is how a mixed JSONL stream silently loses records.",
+      "record": { "schema_version": "1.0", "decision": { "decision_type": "tool_call", "evaluation_name": "route-the-query", "chosen": { "kind": "absent", "reason": "not_captured" } }, "subject": { "harness": "hermes", "run_id": "run-1" }, "evidence": [] }
+    },
+    {
+      "id": "cross-kind/usage-validated-as-bundle",
+      "kind": "decision-evidence-bundle",
+      "why": "The same misrouting in the other direction.",
+      "record": { "schema_version": "1.0", "usage_id": "usage-1", "run_id": "run-1", "scope": "model_invocation", "cost_provenance": "unknown", "input_tokens": null, "output_tokens": null, "cost_usd": null }
+    },
+
+    {
+      "id": "metadata/scalar-values-only",
+      "kind": "decision-evidence-bundle",
+      "why": "metadata is a flat label map. Scalars of every type are legal.",
+      "record": { "schema_version": "1.0", "decision": { "decision_type": "tool_call", "evaluation_name": "route-the-query", "chosen": { "kind": "absent", "reason": "not_captured" } }, "subject": { "harness": "hermes", "run_id": "run-1" }, "evidence": [], "metadata": { "a": "text", "b": 1, "c": 1.5, "d": true, "e": null } }
+    },
+    {
+      "id": "metadata/array-value",
+      "kind": "decision-evidence-bundle",
+      "why": "An array is not a scalar, and the corpus pins the nested-object case rather than this one.",
+      "record": { "schema_version": "1.0", "decision": { "decision_type": "tool_call", "evaluation_name": "route-the-query", "chosen": { "kind": "absent", "reason": "not_captured" } }, "subject": { "harness": "hermes", "run_id": "run-1" }, "evidence": [], "metadata": { "a": [1, 2] } }
+    },
+    {
+      "id": "value-union/inline-null-is-a-captured-value",
+      "kind": "decision-evidence-bundle",
+      "why": "An inline null is a value that was captured and happened to be null. It is NOT the absent arm, and conflating the two is the whole reason the union is tagged.",
+      "record": { "schema_version": "1.0", "decision": { "decision_type": "tool_call", "evaluation_name": "route-the-query", "chosen": { "kind": "inline", "value": null } }, "subject": { "harness": "hermes", "run_id": "run-1" }, "evidence": [] }
+    },
+    {
+      "id": "value-union/inline-without-value-key",
+      "kind": "decision-evidence-bundle",
+      "why": "The inline arm requires its value key to be present, since absent and present-and-null mean different things.",
+      "record": { "schema_version": "1.0", "decision": { "decision_type": "tool_call", "evaluation_name": "route-the-query", "chosen": { "kind": "inline" } }, "subject": { "harness": "hermes", "run_id": "run-1" }, "evidence": [] }
+    },
+    {
+      "id": "anchoring/trace-id-trailing-newline",
+      "kind": "decision-evidence-bundle",
+      "why": "The same anchoring question as datetime/embedded-newline, at a different field. Python's $ matches before a trailing newline and ECMAScript's does not, so ^...$ means two different things in the two languages and every pattern in the protocol inherits the difference.",
+      "record": { "schema_version": "1.0", "decision": { "decision_type": "tool_call", "evaluation_name": "route-the-query", "chosen": { "kind": "absent", "reason": "not_captured" } }, "subject": { "harness": "hermes", "run_id": "run-1" }, "evidence": [], "correlation": { "trace_id": "1c1d2e3f405162738495a6b7c8d9e0f1\n" } }
+    },
+    {
+      "id": "anchoring/span-id-trailing-newline",
+      "kind": "decision-evidence-bundle",
+      "why": "As above, at the span id.",
+      "record": { "schema_version": "1.0", "decision": { "decision_type": "tool_call", "evaluation_name": "route-the-query", "chosen": { "kind": "absent", "reason": "not_captured" } }, "subject": { "harness": "hermes", "run_id": "run-1" }, "evidence": [], "correlation": { "span_id": "0102030405060708\n" } }
+    },
+    {
+      "id": "anchoring/sha256-digest-trailing-newline",
+      "kind": "decision-evidence-bundle",
+      "why": "As above, at a content digest, where accepting a stray byte means accepting an identifier that names different bytes from the ones it claims.",
+      "record": { "schema_version": "1.0", "decision": { "decision_type": "tool_call", "evaluation_name": "route-the-query", "chosen": { "kind": "digest", "algorithm": "sha256", "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\n" } }, "subject": { "harness": "hermes", "run_id": "run-1" }, "evidence": [] }
+    },
+    {
+      "id": "value-union/digest-uppercase-hex",
+      "kind": "decision-evidence-bundle",
+      "why": "Digests are lowercase hex. An uppercase digest would hash to a different id while naming the same bytes.",
+      "record": { "schema_version": "1.0", "decision": { "decision_type": "tool_call", "evaluation_name": "route-the-query", "chosen": { "kind": "digest", "algorithm": "sha256", "digest": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855" } }, "subject": { "harness": "hermes", "run_id": "run-1" }, "evidence": [] }
+    }
+  ]
+}

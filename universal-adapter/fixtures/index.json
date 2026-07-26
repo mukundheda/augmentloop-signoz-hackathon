@@ -1,0 +1,690 @@
+{
+  "schema_version": "1.0",
+  "cases": [
+    {
+      "file": "valid/bundle-minimal.json",
+      "schema": "decision-evidence-bundle",
+      "expect": "valid",
+      "container": "single",
+      "role": "conformance_case",
+      "note": "Smallest legal bundle. Only the four required top-level fields, an empty evidence array which is legal and honest, and a chosen value of kind absent."
+    },
+    {
+      "file": "valid/bundle-all-optional-fields.json",
+      "schema": "decision-evidence-bundle",
+      "expect": "valid",
+      "container": "single",
+      "role": "conformance_case",
+      "note": "Every optional field populated at once: decision_id, all subject fields, all correlation fields, all seven evidence kinds, usage_refs, metadata and ext."
+    },
+    {
+      "file": "valid/bundle-evidence-command-result.json",
+      "schema": "decision-evidence-bundle",
+      "expect": "valid",
+      "container": "single",
+      "role": "conformance_case",
+      "note": "Evidence kind command_result. Exit status is the gradeable fact and the command that produced it is named, not quoted."
+    },
+    {
+      "file": "valid/bundle-evidence-file-state.json",
+      "schema": "decision-evidence-bundle",
+      "expect": "valid",
+      "container": "single",
+      "role": "conformance_case",
+      "note": "Evidence kind file_state. Repository state carried as a path plus a sha256 digest rather than as file contents."
+    },
+    {
+      "file": "valid/bundle-evidence-test-report.json",
+      "schema": "decision-evidence-bundle",
+      "expect": "valid",
+      "container": "single",
+      "role": "conformance_case",
+      "note": "Evidence kind test_report. passed and failed are required, skipped is optional."
+    },
+    {
+      "file": "valid/bundle-evidence-structured-output.json",
+      "schema": "decision-evidence-bundle",
+      "expect": "valid",
+      "container": "single",
+      "role": "conformance_case",
+      "note": "Evidence kind structured_output. The output is itself a tagged value union, so it can be carried by digest as well as inline."
+    },
+    {
+      "file": "valid/bundle-evidence-otel-span.json",
+      "schema": "decision-evidence-bundle",
+      "expect": "valid",
+      "container": "single",
+      "role": "conformance_case",
+      "note": "Evidence kind otel_span. Correlation only. It proves a call happened and never that the call was right."
+    },
+    {
+      "file": "valid/bundle-evidence-log-reference.json",
+      "schema": "decision-evidence-bundle",
+      "expect": "valid",
+      "container": "single",
+      "role": "conformance_case",
+      "note": "Evidence kind log_reference. A pointer to a log, not the log body."
+    },
+    {
+      "file": "valid/bundle-evidence-harness-claim.json",
+      "schema": "decision-evidence-bundle",
+      "expect": "valid",
+      "container": "single",
+      "role": "conformance_case",
+      "note": "Evidence kind harness_claim carrying success=true. Schema-valid and deliberately non-authoritative: it can trigger evaluation but never conclude it."
+    },
+    {
+      "file": "valid/bundle-chosen-inline.json",
+      "schema": "decision-evidence-bundle",
+      "expect": "valid",
+      "container": "single",
+      "role": "conformance_case",
+      "note": "chosen value union arm inline. Any JSON is permitted as the inline value."
+    },
+    {
+      "file": "valid/bundle-chosen-digest.json",
+      "schema": "decision-evidence-bundle",
+      "expect": "valid",
+      "container": "single",
+      "role": "conformance_case",
+      "note": "chosen value union arm digest. The value is proven by hash without being disclosed."
+    },
+    {
+      "file": "valid/bundle-chosen-artifact-reference.json",
+      "schema": "decision-evidence-bundle",
+      "expect": "valid",
+      "container": "single",
+      "role": "conformance_case",
+      "note": "chosen value union arm artifact_reference, with the optional digest sub-object populated."
+    },
+    {
+      "file": "valid/bundle-chosen-absent.json",
+      "schema": "decision-evidence-bundle",
+      "expect": "valid",
+      "container": "single",
+      "role": "conformance_case",
+      "note": "chosen value union arm absent. Distinguishable from an empty inline value, which would be a real zero-length answer."
+    },
+    {
+      "file": "valid/bundle-ext-unknown-field.json",
+      "schema": "decision-evidence-bundle",
+      "expect": "valid",
+      "container": "single",
+      "role": "conformance_case",
+      "note": "Matched pair, accepted half. The unknown field harness_specific_thing is ACCEPTED here because it sits inside ext, the only open namespace in the protocol. Its rejected twin is invalid/bundle-unknown-top-level-field.json.",
+      "pair_with": "invalid/bundle-unknown-top-level-field.json"
+    },
+    {
+      "file": "valid/usage-scope-model-invocation.json",
+      "schema": "usage-record",
+      "expect": "valid",
+      "container": "single",
+      "role": "conformance_case",
+      "note": "Usage scope model_invocation, the narrowest scope: one provider call. cost_provenance is unknown, so no cost constraint applies and missing cost stays missing."
+    },
+    {
+      "file": "valid/usage-scope-decision.json",
+      "schema": "usage-record",
+      "expect": "valid",
+      "container": "single",
+      "role": "conformance_case",
+      "note": "Usage scope decision: consumption attributed to a single decision rather than to a single call. cost_provenance is unknown, so no cost constraint applies and missing cost stays missing."
+    },
+    {
+      "file": "valid/usage-scope-agent.json",
+      "schema": "usage-record",
+      "expect": "valid",
+      "container": "single",
+      "role": "conformance_case",
+      "note": "Usage scope agent: one agent total, which may already contain its children and therefore declares contains_usage_ids. cost_provenance is unknown, so no cost constraint applies and missing cost stays missing."
+    },
+    {
+      "file": "valid/usage-scope-run.json",
+      "schema": "usage-record",
+      "expect": "valid",
+      "container": "single",
+      "role": "conformance_case",
+      "note": "Usage scope run, the broadest scope. It covers everything inside the run and must not be summed with narrower records from the same run. cost_provenance is unknown, so no cost constraint applies and missing cost stays missing."
+    },
+    {
+      "file": "valid/usage-provenance-provider-reported.json",
+      "schema": "usage-record",
+      "expect": "valid",
+      "container": "single",
+      "role": "conformance_case",
+      "note": "cost_provenance provider_reported in its only legal combination, with provider_cost_usd present. Provider cost wins over any calculated figure."
+    },
+    {
+      "file": "valid/usage-provenance-provider-token-estimate.json",
+      "schema": "usage-record",
+      "expect": "valid",
+      "container": "single",
+      "role": "conformance_case",
+      "note": "cost_provenance provider_token_estimate with the mandatory pricing_table_id, and provider_cost_usd explicitly null rather than zero."
+    },
+    {
+      "file": "valid/usage-provenance-harness-token-estimate.json",
+      "schema": "usage-record",
+      "expect": "valid",
+      "container": "single",
+      "role": "conformance_case",
+      "note": "cost_provenance harness_token_estimate with the mandatory pricing_table_id. Harness-counted tokens are a weaker source than provider-counted ones but still traceable to rates."
+    },
+    {
+      "file": "valid/usage-provenance-run-aggregate.json",
+      "schema": "usage-record",
+      "expect": "valid",
+      "container": "single",
+      "role": "conformance_case",
+      "note": "cost_provenance run_aggregate in its only legal combination, with scope run. A run total is assigned once and never copied onto every child."
+    },
+    {
+      "file": "valid/usage-provenance-unknown.json",
+      "schema": "usage-record",
+      "expect": "valid",
+      "container": "single",
+      "role": "conformance_case",
+      "note": "cost_provenance unknown. Every cost and token field is null, which is the honest representation of missing data. Zero would be a measurement."
+    },
+    {
+      "file": "valid/usage-parent-contains-children.json",
+      "schema": "usage-record",
+      "expect": "valid",
+      "container": "single",
+      "role": "conformance_case",
+      "note": "Parent aggregate that explicitly declares which child records it already contains, so the costing layer charges the parent and skips the children instead of guessing."
+    },
+    {
+      "file": "valid/manifest-exact-equality.json",
+      "schema": "evaluation-manifest",
+      "expect": "valid",
+      "container": "single",
+      "role": "conformance_case",
+      "note": "Evaluator kind exact_equality under math authority."
+    },
+    {
+      "file": "valid/manifest-json-equality.json",
+      "schema": "evaluation-manifest",
+      "expect": "valid",
+      "container": "single",
+      "role": "conformance_case",
+      "note": "Evaluator kind json_equality under math authority. Object keys are order-insensitive, arrays are order-sensitive."
+    },
+    {
+      "file": "valid/manifest-command-exit-code.json",
+      "schema": "evaluation-manifest",
+      "expect": "valid",
+      "container": "single",
+      "role": "conformance_case",
+      "note": "Evaluator kind command_exit_code under math authority. argv form, declared in the manifest so the graded process cannot choose the test that grades it."
+    },
+    {
+      "file": "valid/manifest-file-digest.json",
+      "schema": "evaluation-manifest",
+      "expect": "valid",
+      "container": "single",
+      "role": "conformance_case",
+      "note": "Evaluator kind file_digest under math authority."
+    },
+    {
+      "file": "valid/manifest-json-schema.json",
+      "schema": "evaluation-manifest",
+      "expect": "valid",
+      "container": "single",
+      "role": "conformance_case",
+      "note": "Evaluator kind json_schema under math authority. Proves shape rather than truth, which is a weaker but still deterministic authority."
+    },
+    {
+      "file": "valid/manifest-callback.json",
+      "schema": "evaluation-manifest",
+      "expect": "valid",
+      "container": "single",
+      "role": "conformance_case",
+      "note": "Evaluator kind callback under math authority. The name is a registry lookup key, never an import path. Updated for the amended contract: determinism is now REQUIRED on every callback and must be deterministic to carry math authority. This is the evaluator-kind coverage case; the dedicated determinism quartet is the group callback-determinism.",
+      "group": "callback-determinism-related"
+    },
+    {
+      "file": "valid/manifest-outcome-reality.json",
+      "schema": "evaluation-manifest",
+      "expect": "valid",
+      "container": "single",
+      "role": "conformance_case",
+      "note": "Evaluator kind outcome under reality authority, the only combination the schema permits for reality."
+    },
+    {
+      "file": "valid/manifest-ai-judge-callback.json",
+      "schema": "evaluation-manifest",
+      "expect": "valid",
+      "container": "single",
+      "role": "conformance_case",
+      "note": "An ai_judge authority manifest. Valid, and kept distinguishable from a machine-authoritative grade by the authority field. Updated for the amended contract: its callback now declares determinism model_assisted, which is honest and legal precisely because it is not claiming math.",
+      "group": "callback-determinism-related"
+    },
+    {
+      "file": "valid/outcome-minimal.json",
+      "schema": "outcome-record",
+      "expect": "valid",
+      "container": "single",
+      "role": "conformance_case",
+      "note": "Smallest legal outcome record. correct is a real JSON boolean."
+    },
+    {
+      "file": "valid/outcome-all-optional-fields.json",
+      "schema": "outcome-record",
+      "expect": "valid",
+      "container": "single",
+      "role": "conformance_case",
+      "note": "Outcome record with every optional field populated, including a non-UTC RFC 3339 offset and an ext namespace."
+    },
+    {
+      "file": "valid/outcome-incorrect.json",
+      "schema": "outcome-record",
+      "expect": "valid",
+      "container": "single",
+      "role": "conformance_case",
+      "note": "Reality disagreeing with the decision. correct=false is a graded result, not a missing one."
+    },
+    {
+      "file": "invalid/bundle-wrong-schema-version.json",
+      "schema": "decision-evidence-bundle",
+      "expect": "invalid",
+      "container": "single",
+      "role": "conformance_case",
+      "note": "VIOLATION: unknown schema_version. schema_version is const 1.0, so a consumer must reject 1.1 rather than guess at it. Everything else in this bundle is legal."
+    },
+    {
+      "file": "invalid/bundle-unknown-top-level-field.json",
+      "schema": "decision-evidence-bundle",
+      "expect": "invalid",
+      "container": "single",
+      "role": "conformance_case",
+      "note": "VIOLATION: unknown top-level field. Protocol objects are closed (additionalProperties false), so harness_specific_thing is rejected at the root. Its accepted twin carries the identical field inside ext.",
+      "pair_with": "valid/bundle-ext-unknown-field.json"
+    },
+    {
+      "file": "invalid/bundle-trace-id-number.json",
+      "schema": "decision-evidence-bundle",
+      "expect": "invalid",
+      "container": "single",
+      "role": "conformance_case",
+      "note": "VIOLATION: trace_id supplied as a JSON number instead of a hex string. A 128-bit id must be a string, because an IEEE double silently loses precision on it."
+    },
+    {
+      "file": "invalid/bundle-trace-id-wrong-length.json",
+      "schema": "decision-evidence-bundle",
+      "expect": "invalid",
+      "container": "single",
+      "role": "conformance_case",
+      "note": "VIOLATION: trace_id is 31 hex characters. A W3C trace id must be exactly 32 lowercase hex characters."
+    },
+    {
+      "file": "invalid/bundle-span-id-uppercase.json",
+      "schema": "decision-evidence-bundle",
+      "expect": "invalid",
+      "container": "single",
+      "role": "conformance_case",
+      "note": "VIOLATION: span_id uses uppercase hex. The pattern requires lowercase, so two spellings of one id cannot both exist as distinct correlation keys."
+    },
+    {
+      "file": "invalid/bundle-missing-subject.json",
+      "schema": "decision-evidence-bundle",
+      "expect": "invalid",
+      "container": "single",
+      "role": "conformance_case",
+      "note": "VIOLATION: a required top-level field is missing. Without subject there is no run_id and no harness, so the decision cannot be correlated to usage."
+    },
+    {
+      "file": "invalid/bundle-decision-missing-chosen.json",
+      "schema": "decision-evidence-bundle",
+      "expect": "invalid",
+      "container": "single",
+      "role": "conformance_case",
+      "note": "VIOLATION: required field chosen missing inside decision. A decision with no chosen value has nothing to grade."
+    },
+    {
+      "file": "invalid/bundle-chosen-matches-no-union-arm.json",
+      "schema": "decision-evidence-bundle",
+      "expect": "invalid",
+      "container": "single",
+      "role": "conformance_case",
+      "note": "VIOLATION: the chosen value matches ZERO arms of the value union. It mixes the inline arm's value with the digest arm's digest; inline is a closed object so the extra key fails it, and every other arm pins a different kind const. See index note UNION-AMBIGUITY in the corpus report: a value matching TWO arms at once is not constructible under this frozen schema, because each arm fixes kind to a distinct const."
+    },
+    {
+      "file": "invalid/bundle-evidence-unknown-field.json",
+      "schema": "decision-evidence-bundle",
+      "expect": "invalid",
+      "container": "single",
+      "role": "conformance_case",
+      "note": "VIOLATION: unknown field inside an evidence item. Every evidence arm is closed, and stdout is exactly the kind of raw payload the privacy rules keep out by default. There is no ext namespace inside an evidence item."
+    },
+    {
+      "file": "invalid/bundle-evidence-unknown-kind.json",
+      "schema": "decision-evidence-bundle",
+      "expect": "invalid",
+      "container": "single",
+      "role": "conformance_case",
+      "note": "VIOLATION: unknown evidence kind. screenshot matches none of the seven declared arms, so the item satisfies zero branches of the oneOf."
+    },
+    {
+      "file": "invalid/bundle-test-report-negative-passed.json",
+      "schema": "decision-evidence-bundle",
+      "expect": "invalid",
+      "container": "single",
+      "role": "conformance_case",
+      "note": "VIOLATION: negative count in test_report. passed has minimum 0."
+    },
+    {
+      "file": "invalid/bundle-usage-refs-duplicate.json",
+      "schema": "decision-evidence-bundle",
+      "expect": "invalid",
+      "container": "single",
+      "role": "conformance_case",
+      "note": "VIOLATION: duplicate entry in usage_refs, which declares uniqueItems. A usage id listed twice on one decision is the first step toward charging it twice."
+    },
+    {
+      "file": "invalid/bundle-metadata-nested-object.json",
+      "schema": "decision-evidence-bundle",
+      "expect": "invalid",
+      "container": "single",
+      "role": "conformance_case",
+      "note": "VIOLATION: metadata value is a nested object. metadata takes only string, number, boolean or null, because nothing high-cardinality or structured may be copied into metric attributes."
+    },
+    {
+      "file": "invalid/usage-provider-reported-without-cost.json",
+      "schema": "usage-record",
+      "expect": "invalid",
+      "container": "single",
+      "role": "conformance_case",
+      "note": "VIOLATION: cost_provenance provider_reported with no provider_cost_usd. Claiming the strongest cost authority without the provider figure behind it is the exact dishonesty the field exists to prevent."
+    },
+    {
+      "file": "invalid/usage-provider-reported-null-cost.json",
+      "schema": "usage-record",
+      "expect": "invalid",
+      "container": "single",
+      "role": "conformance_case",
+      "note": "VIOLATION: cost_provenance provider_reported with provider_cost_usd explicitly null. The conditional narrows the type to number, so present-but-null does not satisfy it either."
+    },
+    {
+      "file": "invalid/usage-provider-token-estimate-without-pricing-table.json",
+      "schema": "usage-record",
+      "expect": "invalid",
+      "container": "single",
+      "role": "conformance_case",
+      "note": "VIOLATION: cost_provenance provider_token_estimate with no pricing_table_id. A token-estimated cost is untraceable without the rates that produced it."
+    },
+    {
+      "file": "invalid/usage-harness-token-estimate-without-pricing-table.json",
+      "schema": "usage-record",
+      "expect": "invalid",
+      "container": "single",
+      "role": "conformance_case",
+      "note": "VIOLATION: cost_provenance harness_token_estimate with no pricing_table_id. Same rule as the provider estimate, applied to the weaker token source."
+    },
+    {
+      "file": "invalid/usage-run-aggregate-non-run-scope.json",
+      "schema": "usage-record",
+      "expect": "invalid",
+      "container": "single",
+      "role": "conformance_case",
+      "note": "VIOLATION: cost_provenance run_aggregate with scope agent. A run total covers the whole run and must not be scoped to one agent, which is how a run figure gets copied onto every child and double counted."
+    },
+    {
+      "file": "invalid/usage-negative-input-tokens.json",
+      "schema": "usage-record",
+      "expect": "invalid",
+      "container": "single",
+      "role": "conformance_case",
+      "note": "VIOLATION: negative input_tokens. Token counts have minimum 0. Null means not reported; a negative number is neither."
+    },
+    {
+      "file": "invalid/usage-missing-cost-provenance.json",
+      "schema": "usage-record",
+      "expect": "invalid",
+      "container": "single",
+      "role": "conformance_case",
+      "note": "VIOLATION: required field cost_provenance is missing. Every usage record must state where its money figure's authority comes from, even when that answer is unknown."
+    },
+    {
+      "file": "invalid/usage-unknown-scope.json",
+      "schema": "usage-record",
+      "expect": "invalid",
+      "container": "single",
+      "role": "conformance_case",
+      "note": "VIOLATION: scope tool_call is not one of the four declared scopes. Inventing a scope would break the narrow-to-broad ordering the deduplication rules depend on."
+    },
+    {
+      "file": "invalid/usage-cost-as-string.json",
+      "schema": "usage-record",
+      "expect": "invalid",
+      "container": "single",
+      "role": "conformance_case",
+      "note": "VIOLATION: provider_cost_usd carried as a string. Money must be a JSON number so it can never be concatenated instead of summed."
+    },
+    {
+      "file": "invalid/manifest-math-authority-with-outcome-evaluator.json",
+      "schema": "evaluation-manifest",
+      "expect": "invalid",
+      "container": "single",
+      "role": "conformance_case",
+      "note": "VIOLATION: authority math with a non-deterministic evaluator. The outcome evaluator runs no checker and returns a later human or real-world judgement, so the math conditional rejects it. This is the structural block on laundering a soft verdict into the headline metric. See index note MATH-AI-JUDGE in the corpus report."
+    },
+    {
+      "file": "invalid/manifest-math-authority-with-ai-judge-kind.json",
+      "schema": "evaluation-manifest",
+      "expect": "invalid",
+      "container": "single",
+      "role": "conformance_case",
+      "note": "VIOLATION: an evaluator whose kind is literally ai_judge. There is no such arm in the evaluator union, so a model opinion cannot be declared as a math evaluator. One authored mistake, but note for implementers that it trips TWO schema constraints at once: the evaluator oneOf matches no arm, and the math-authority conditional also rejects the kind. Expect more than one error message here; the single-constraint version of this case is manifest-math-authority-with-outcome-evaluator.json."
+    },
+    {
+      "file": "invalid/manifest-reality-authority-with-command-evaluator.json",
+      "schema": "evaluation-manifest",
+      "expect": "invalid",
+      "container": "single",
+      "role": "conformance_case",
+      "note": "VIOLATION: authority reality with a checker that runs at decision time. Reality authority is conferred only by an outcome that arrives later, so the evaluator kind must be outcome."
+    },
+    {
+      "file": "invalid/manifest-missing-evaluator.json",
+      "schema": "evaluation-manifest",
+      "expect": "invalid",
+      "container": "single",
+      "role": "conformance_case",
+      "note": "VIOLATION: required field evaluator is missing. Missing evaluator authority must prevent authoritative grading, so the manifest cannot even be parsed as one."
+    },
+    {
+      "file": "invalid/manifest-unknown-authority.json",
+      "schema": "evaluation-manifest",
+      "expect": "invalid",
+      "container": "single",
+      "role": "conformance_case",
+      "note": "VIOLATION: authority harness_success is not one of math, reality or ai_judge. A harness claim can never be promoted to a grade source."
+    },
+    {
+      "file": "invalid/manifest-command-evaluator-empty-command.json",
+      "schema": "evaluation-manifest",
+      "expect": "invalid",
+      "container": "single",
+      "role": "conformance_case",
+      "note": "VIOLATION: command_exit_code evaluator with an empty argv array, which declares minItems 1. There is no command to run and therefore no verdict."
+    },
+    {
+      "file": "invalid/outcome-correct-as-one.json",
+      "schema": "outcome-record",
+      "expect": "invalid",
+      "container": "single",
+      "role": "conformance_case",
+      "note": "VIOLATION: correct carried as the number 1 rather than the boolean true. This exact coercion has corrupted a headline metric in this codebase before, so it must be rejected and never coerced. Note for implementers: a language whose validator treats 1 as truthy will WRONGLY pass this case."
+    },
+    {
+      "file": "invalid/outcome-correct-as-string.json",
+      "schema": "outcome-record",
+      "expect": "invalid",
+      "container": "single",
+      "role": "conformance_case",
+      "note": "VIOLATION: correct carried as the string true. Same rule as the numeric case, guarding the other common coercion."
+    },
+    {
+      "file": "invalid/outcome-missing-decision-id.json",
+      "schema": "outcome-record",
+      "expect": "invalid",
+      "container": "single",
+      "role": "conformance_case",
+      "note": "VIOLATION: required field decision_id is missing. An outcome that cannot be linked back to a decision is an unattributable claim, not evidence, and is discarded rather than counted."
+    },
+    {
+      "file": "invalid/outcome-unknown-top-level-field.json",
+      "schema": "outcome-record",
+      "expect": "invalid",
+      "container": "single",
+      "role": "conformance_case",
+      "note": "VIOLATION: unknown top-level field on a closed object. It also happens to be personal data, which is why the closed-object rule matters for privacy and not only for versioning."
+    },
+    {
+      "file": "hermes/raw-hermes-session.json",
+      "schema": null,
+      "expect": "not_validated",
+      "container": "single",
+      "role": "raw_harness_input",
+      "note": "Raw harness-shaped input, ILLUSTRATIVE not captured. Structure A: one nested event stream, tool events nested under the model call that requested them, cost reported per model call. Not an instance of any protocol schema, so it is never validated. It is the input a Hermes adapter must normalize.",
+      "normalizes_to": [
+        "hermes/expected-hermes-session.bundles.json",
+        "hermes/expected-hermes-session.usage.json"
+      ]
+    },
+    {
+      "file": "hermes/expected-hermes-session.bundles.json",
+      "schema": "decision-evidence-bundle",
+      "expect": "valid",
+      "container": "array",
+      "role": "expected_normalized_bundles",
+      "note": "Canonical bundles that raw-hermes-session.json MUST normalize to, in this order. Two decisions: one tool_choice and one task_completion. The harness success flag is carried only as a harness_claim evidence item and is never allowed to become a verdict.",
+      "normalized_from": "hermes/raw-hermes-session.json"
+    },
+    {
+      "file": "hermes/expected-hermes-session.usage.json",
+      "schema": "usage-record",
+      "expect": "valid",
+      "container": "array",
+      "role": "expected_normalized_usage",
+      "note": "Canonical usage ledger for the Hermes fixture. Per-call granularity, so cost provenance is a token estimate against a named pricing table and no dollar figure is invented. The first record is referenced by two decisions and must still be charged once.",
+      "normalized_from": "hermes/raw-hermes-session.json"
+    },
+    {
+      "file": "ruflo/raw-ruflo-swarm.json",
+      "schema": null,
+      "expect": "not_validated",
+      "container": "single",
+      "role": "raw_harness_input",
+      "note": "Raw harness-shaped input, ILLUSTRATIVE not captured. Structure B: a flat unordered list of typed records with no nesting, joined only by run_id and task_id, with cost available only as a session total. Not an instance of any protocol schema, so it is never validated.",
+      "normalizes_to": [
+        "ruflo/expected-ruflo-swarm.bundles.json",
+        "ruflo/expected-ruflo-swarm.usage.json"
+      ]
+    },
+    {
+      "file": "ruflo/expected-ruflo-swarm.bundles.json",
+      "schema": "decision-evidence-bundle",
+      "expect": "valid",
+      "container": "array",
+      "role": "expected_normalized_bundles",
+      "note": "Canonical bundles that raw-ruflo-swarm.json MUST normalize to, in this order. This is the convergence proof: a flat record log and a nested event stream produce the SAME two decision_type and evaluation_name pairs, the same chosen value kinds and the same evidence kinds. Only the identifiers and the cost shape differ. provider_response_id is null because this harness shape never exposes one, and a null is honest where an invented id would not be.",
+      "normalized_from": "ruflo/raw-ruflo-swarm.json",
+      "converges_with": "hermes/expected-hermes-session.bundles.json"
+    },
+    {
+      "file": "ruflo/expected-ruflo-swarm.usage.json",
+      "schema": "usage-record",
+      "expect": "valid",
+      "container": "array",
+      "role": "expected_normalized_usage",
+      "note": "Canonical usage ledger for the Ruflo fixture. Only session totals exist in the raw shape, so exactly ONE run-scoped record is emitted and it is attributed to the terminal task decision rather than copied onto every decision. model is null because a run total spans possibly several models and guessing one would be fabrication.",
+      "normalized_from": "ruflo/raw-ruflo-swarm.json"
+    },
+    {
+      "file": "valid/manifest-callback-math-deterministic.json",
+      "schema": "evaluation-manifest",
+      "expect": "valid",
+      "container": "single",
+      "role": "conformance_case",
+      "note": "Quartet baseline. math authority with a callback that explicitly declares determinism deterministic. The only legal way a callback reaches the headline metric. Every other member of this group differs from this file in exactly one field.",
+      "group": "callback-determinism"
+    },
+    {
+      "file": "invalid/manifest-callback-math-model-assisted.json",
+      "schema": "evaluation-manifest",
+      "expect": "invalid",
+      "container": "single",
+      "role": "conformance_case",
+      "note": "VIOLATION: math authority with a callback declaring determinism model_assisted. This is the hole the corpus flagged in its first pass and the amended schema now closes: a model-assisted checker can no longer carry math authority. Differs from the quartet baseline in one field.",
+      "group": "callback-determinism",
+      "pair_with": "valid/manifest-callback-math-deterministic.json"
+    },
+    {
+      "file": "invalid/manifest-callback-math-missing-determinism.json",
+      "schema": "evaluation-manifest",
+      "expect": "invalid",
+      "container": "single",
+      "role": "conformance_case",
+      "note": "VIOLATION: math authority with a callback that omits determinism entirely. The silent-pass-by-omission case, and the one that matters most: before the amendment this document validated. There is no default, so silence is now an error rather than an assumption. One authored omission, but it trips TWO constraints at once, the callback arm's required list and the math conditional's required list, so implementers must expect more than one error message here.",
+      "group": "callback-determinism",
+      "pair_with": "valid/manifest-callback-math-deterministic.json"
+    },
+    {
+      "file": "valid/manifest-callback-ai-judge-model-assisted.json",
+      "schema": "evaluation-manifest",
+      "expect": "valid",
+      "container": "single",
+      "role": "conformance_case",
+      "note": "ai_judge authority with a callback declaring determinism model_assisted. Valid: a model-assisted checker is legitimate as long as it is not claiming math. Differs from the quartet baseline in two fields, authority and determinism, because the pair only makes sense together.",
+      "group": "callback-determinism"
+    },
+    {
+      "file": "valid/outcome-observed-at-utc-z.json",
+      "schema": "outcome-record",
+      "expect": "valid",
+      "container": "single",
+      "role": "conformance_case",
+      "note": "observed_at with a Z offset, the plainest RFC 3339 form. Now guaranteed to be checked by every validator, because the amended schema carries a pattern alongside format rather than relying on format assertion being switched on.",
+      "group": "observed-at"
+    },
+    {
+      "file": "valid/outcome-observed-at-numeric-offset-fractional.json",
+      "schema": "outcome-record",
+      "expect": "valid",
+      "container": "single",
+      "role": "conformance_case",
+      "note": "observed_at with fractional seconds and a numeric non-UTC offset. Both are legal RFC 3339 and both must be accepted, so a harness in a non-UTC timezone is not forced to normalize before reporting.",
+      "group": "observed-at"
+    },
+    {
+      "file": "invalid/outcome-observed-at-not-a-date.json",
+      "schema": "outcome-record",
+      "expect": "invalid",
+      "container": "single",
+      "role": "conformance_case",
+      "note": "VIOLATION: observed_at is not a timestamp at all. Before the amendment this document PASSED under a Python validator with no format checker and failed under a TypeScript validator with formats enabled. The pattern removes that configuration-dependent split.",
+      "group": "observed-at",
+      "pair_with": "valid/outcome-observed-at-utc-z.json"
+    },
+    {
+      "file": "invalid/outcome-observed-at-space-separator.json",
+      "schema": "outcome-record",
+      "expect": "invalid",
+      "container": "single",
+      "role": "conformance_case",
+      "note": "VIOLATION: observed_at uses a space instead of T between date and time. A common SQL and log rendering, readable by humans and not RFC 3339, so it is rejected rather than repaired.",
+      "group": "observed-at"
+    },
+    {
+      "file": "valid/manifest-callback-ai-judge-deterministic-downgrade.json",
+      "schema": "evaluation-manifest",
+      "expect": "valid",
+      "container": "single",
+      "role": "conformance_case",
+      "group": "callback-determinism",
+      "note": "A DELIBERATE AUTHORITY DOWNGRADE, legal by design. ai_judge authority with a callback that declares determinism deterministic: the same checker as the quartet baseline, routed into the secondary view instead of the headline metric. The governing principle is that a manifest may always claim LESS authority than its evaluator could support. Downgrades are safe and upgrades are what the protocol polices, so this combination is constrained nowhere and must NOT be tightened into a rejection by a future reader who sees deterministic next to ai_judge and assumes it is a mistake. It differs from valid/manifest-callback-math-deterministic.json in the authority field alone."
+    }
+  ]
+}

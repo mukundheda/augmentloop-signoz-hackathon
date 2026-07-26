@@ -1,0 +1,13 @@
+{
+  "schema_version": "1.0",
+  "task_id": "repair-auth-017",
+  "decision_type": "task_completion",
+  "evaluation_name": "repository.tests_pass",
+  "authority": "math",
+  "evaluator": {
+    "kind": "exact_equality",
+    "expected": "PARIS",
+    "case_sensitive": false,
+    "trim_whitespace": true
+  }
+}

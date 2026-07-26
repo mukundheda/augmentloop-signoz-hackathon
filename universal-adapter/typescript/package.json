@@ -1,0 +1,17 @@
+{
+  "name": "@augmentloop/universal-adapter",
+  "version": "1.0.0",
+  "description": "TypeScript reference implementation of the Universal Agent Evidence Protocol. Zero npm dependencies, Node built-ins only.",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "test": "node --test"
+  },
+  "license": "MIT"
+}

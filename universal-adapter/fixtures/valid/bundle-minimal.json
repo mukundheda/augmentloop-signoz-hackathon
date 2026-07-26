@@ -1,0 +1,16 @@
+{
+  "schema_version": "1.0",
+  "decision": {
+    "decision_type": "task_completion",
+    "evaluation_name": "repository.tests_pass",
+    "chosen": {
+      "kind": "absent",
+      "reason": "not_captured"
+    }
+  },
+  "subject": {
+    "harness": "generic-jsonl",
+    "run_id": "run-0001"
+  },
+  "evidence": []
+}

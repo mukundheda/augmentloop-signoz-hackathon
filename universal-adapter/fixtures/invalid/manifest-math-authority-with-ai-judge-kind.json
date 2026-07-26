@@ -1,0 +1,12 @@
+{
+  "schema_version": "1.0",
+  "task_id": "summarise-ticket-88",
+  "decision_type": "content_generation",
+  "evaluation_name": "summary.faithful",
+  "authority": "math",
+  "evaluator": {
+    "kind": "ai_judge",
+    "model": "anthropic/claude-sonnet-4.6",
+    "rubric": "faithfulness"
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "schema_version": "1.0",
+  "usage_id": "usage-scope-model_invocation",
+  "scope": "model_invocation",
+  "run_id": "run-42",
+  "cost_provenance": "unknown",
+  "agent_id": "coder-1",
+  "provider_response_id": "response-abc",
+  "model": "anthropic/claude-sonnet-4.6",
+  "input_tokens": 1200,
+  "output_tokens": 340,
+  "cached_input_tokens": 800,
+  "decision_ids": [
+    "decision-017"
+  ]
+}

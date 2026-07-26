@@ -1,0 +1,114 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://augmentloop.dev/schemas/usage-record/1.0.json",
+  "title": "UsageRecord",
+  "description": "One unit of resource consumption, kept SEPARATE from decision evidence so the same model call can be referenced by several decisions and still be charged exactly once. Absent cost is represented as null or an omitted field and MUST NOT be represented as zero: zero is a measurement, null is an admission.",
+  "type": "object",
+  "required": ["schema_version", "usage_id", "scope", "run_id", "cost_provenance"],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": { "const": "1.0" },
+    "usage_id": {
+      "$ref": "#/$defs/identifier",
+      "description": "Stable within a run. Two records sharing a usage_id are the SAME consumption and are charged once. This is the primary defence against multi-agent double counting."
+    },
+    "scope": {
+      "enum": ["model_invocation", "decision", "agent", "run"],
+      "description": "What this record measures. Ordered narrow to broad. A run-scoped record covers everything inside it, so it MUST NOT be summed with narrower records from the same run."
+    },
+    "run_id": { "$ref": "#/$defs/identifier" },
+    "agent_id": { "$ref": "#/$defs/nullableIdentifier" },
+    "parent_agent_id": {
+      "$ref": "#/$defs/nullableIdentifier",
+      "description": "Set when this usage was consumed by a child agent. Lets the costing layer drop a parent aggregate that already contains its children rather than adding both."
+    },
+    "contains_usage_ids": {
+      "type": "array",
+      "description": "Explicit declaration that this record's totals ALREADY INCLUDE the listed records. When present the costing layer charges this record and skips the listed ones, which removes the guesswork from parent/child deduplication.",
+      "items": { "$ref": "#/$defs/identifier" },
+      "uniqueItems": true
+    },
+    "decision_ids": {
+      "type": "array",
+      "description": "Decisions this usage is attributable to. Empty means the usage is real but not yet attributable, which lowers cost coverage rather than being silently dropped.",
+      "items": { "$ref": "#/$defs/identifier" },
+      "uniqueItems": true
+    },
+    "provider_response_id": { "$ref": "#/$defs/nullableString" },
+    "model": { "$ref": "#/$defs/nullableString" },
+    "input_tokens": { "$ref": "#/$defs/nullableTokenCount" },
+    "output_tokens": { "$ref": "#/$defs/nullableTokenCount" },
+    "cached_input_tokens": {
+      "$ref": "#/$defs/nullableTokenCount",
+      "description": "Subset of input_tokens served from a provider cache. Informational in version 1.0: the pricing table carries one input rate, so a cached-token discount is NOT modelled and MUST NOT be inferred."
+    },
+    "provider_cost_usd": {
+      "type": ["number", "null"],
+      "minimum": 0,
+      "description": "Cost as reported by the provider itself. When present this WINS over any calculated figure, because it is the only source that reflects the actual contract, discounts and rounding."
+    },
+    "cost_provenance": {
+      "enum": [
+        "provider_reported",
+        "provider_token_estimate",
+        "harness_token_estimate",
+        "run_aggregate",
+        "unknown"
+      ],
+      "description": "Where the money figure's authority comes from, in strict precedence order. The same honesty rule Gradebook applies to grades, applied to cost: an estimate is never presented as a measurement."
+    },
+    "pricing_table_id": {
+      "$ref": "#/$defs/nullableString",
+      "description": "Identity of the pricing table used, required whenever cost_provenance is a token estimate. Format gradebook.pricing@<first 12 hex of the table digest>, so a figure can always be traced to the exact rates that produced it."
+    },
+    "ext": {
+      "type": "object",
+      "description": "Reserved forward-compatibility namespace, the only place unknown fields are permitted.",
+      "additionalProperties": true
+    }
+  },
+  "allOf": [
+    {
+      "description": "A token-estimated cost is meaningless without the rates behind it, so the pricing table identity is mandatory in exactly those cases.",
+      "if": {
+        "properties": {
+          "cost_provenance": { "enum": ["provider_token_estimate", "harness_token_estimate"] }
+        },
+        "required": ["cost_provenance"]
+      },
+      "then": {
+        "required": ["pricing_table_id"],
+        "properties": { "pricing_table_id": { "type": "string", "minLength": 1 } }
+      }
+    },
+    {
+      "description": "Claiming provider_reported provenance without a provider figure is the exact dishonesty this field exists to prevent.",
+      "if": {
+        "properties": { "cost_provenance": { "const": "provider_reported" } },
+        "required": ["cost_provenance"]
+      },
+      "then": {
+        "required": ["provider_cost_usd"],
+        "properties": { "provider_cost_usd": { "type": "number", "minimum": 0 } }
+      }
+    },
+    {
+      "description": "A run_aggregate record covers a whole run and cannot also be scoped to a single call or agent.",
+      "if": {
+        "properties": { "cost_provenance": { "const": "run_aggregate" } },
+        "required": ["cost_provenance"]
+      },
+      "then": { "properties": { "scope": { "const": "run" } } }
+    }
+  ],
+  "$defs": {
+    "identifier": { "type": "string", "minLength": 1, "maxLength": 512 },
+    "nullableString": { "type": ["string", "null"], "maxLength": 2048 },
+    "nullableIdentifier": { "type": ["string", "null"], "minLength": 1, "maxLength": 512 },
+    "nullableTokenCount": {
+      "type": ["integer", "null"],
+      "minimum": 0,
+      "description": "Null means not reported. Zero means reported as zero. The distinction is load-bearing and MUST be preserved."
+    }
+  }
+}

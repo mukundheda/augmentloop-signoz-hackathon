@@ -1,0 +1,8 @@
+{
+  "schema_version": "1.0",
+  "usage_id": "usage-209",
+  "scope": "model_invocation",
+  "run_id": "run-42",
+  "cost_provenance": "provider_reported",
+  "provider_cost_usd": "0.0184"
+}

@@ -1,0 +1,8 @@
+{
+  "schema_version": "1.0",
+  "usage_id": "usage-scope-run",
+  "scope": "run",
+  "run_id": "run-42",
+  "cost_provenance": "unknown",
+  "agent_id": null
+}

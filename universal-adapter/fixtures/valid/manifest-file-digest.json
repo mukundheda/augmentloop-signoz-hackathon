@@ -1,0 +1,15 @@
+{
+  "schema_version": "1.0",
+  "task_id": "repair-auth-017",
+  "decision_type": "task_completion",
+  "evaluation_name": "repository.tests_pass",
+  "authority": "math",
+  "evaluator": {
+    "kind": "file_digest",
+    "path": "dist/bundle.js",
+    "expected": {
+      "algorithm": "sha256",
+      "digest": "2c26b46b68ffc68ff99b453c1d30413413422d706483bfa0f98a5e886266e7ae"
+    }
+  }
+}

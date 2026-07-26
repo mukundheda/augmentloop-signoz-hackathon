@@ -1,0 +1,12 @@
+{
+  "schema_version": "1.0",
+  "usage_id": "usage-204",
+  "scope": "decision",
+  "run_id": "run-42",
+  "cost_provenance": "harness_token_estimate",
+  "input_tokens": 4100,
+  "output_tokens": 760,
+  "decision_ids": [
+    "decision-017"
+  ]
+}
