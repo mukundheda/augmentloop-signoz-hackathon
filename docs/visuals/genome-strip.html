@@ -62,6 +62,7 @@
   .key .count { margin-left: auto; font-family: var(--mono); font-size: 13px; color: var(--text-dim); }
   .key .verdict { margin-top: 5px; font-size: 11px; }
   .counts-in { color: var(--bg-forest-500); }
+  .counts-beside { color: var(--bg-amber-500); }
   .counts-out { color: var(--bg-sienna-500); }
 
   .ribbon {
@@ -155,10 +156,36 @@
   // Grade sources, in the order the conventions doc lists them. ai_judge is
   // declared even when the run contains none - a zero here is the point, not an
   // omission (ADR 0001: an opinion never enters the headline).
+  // Two different properties, deliberately not one flag. `machineChecked` is
+  // whether a human or a model had an opinion in it, and math and reality are
+  // both machine-checked. `standing` is where the grade sits relative to the
+  // headline number, and only math is inside it: ADR 0001's 2026-07-26
+  // amendment scopes the headline to `math` and gives reality adjacent panels,
+  // because every reality grade is a second grade on a decision the math count
+  // already holds, so blending them double counts. Collapsing the two into one
+  // boolean is how this strip came to claim reality counts in the headline.
   const SOURCES = [
-    { id: 'math', blurb: 'a checker computed the provably-correct answer', headline: true },
-    { id: 'reality', blurb: 'the real world proved it, later', headline: true },
-    { id: 'ai_judge', blurb: 'another model scored it - an opinion', headline: false },
+    {
+      id: 'math',
+      blurb: 'a checker computed the provably-correct answer',
+      machineChecked: true,
+      standing: 'counts in the headline',
+      tone: 'counts-in',
+    },
+    {
+      id: 'reality',
+      blurb: 'the world confirmed the journey landed in time',
+      machineChecked: true,
+      standing: 'adjacent, never blended in',
+      tone: 'counts-beside',
+    },
+    {
+      id: 'ai_judge',
+      blurb: 'another model scored it - an opinion',
+      machineChecked: false,
+      standing: 'never in the headline',
+      tone: 'counts-out',
+    },
   ];
 
   const grades = RUN.spans
@@ -193,8 +220,8 @@
           <span class="src">${s.id}</span>
           <span class="count">${of.length}</span>
         </div>
-        <div class="verdict ${s.headline ? 'counts-in' : 'counts-out'}">
-          ${s.headline ? 'counts in the headline' : 'never in the headline'}
+        <div class="verdict ${s.tone}">
+          ${s.standing}
           <span style="color: var(--text-faint)"> - ${s.blurb}</span>
           ${of.length ? `<span style="color: var(--text-faint)"> - ${wrong} wrong</span>` : ''}
         </div>
@@ -240,7 +267,9 @@
   }
 
   function renderNote() {
-    const counted = grades.filter((g) => SOURCES.find((s) => s.id === g.source).headline);
+    const counted = grades.filter(
+      (g) => SOURCES.find((s) => s.id === g.source).machineChecked
+    );
     const opinions = grades.length - counted.length;
     document.getElementById('note').innerHTML =
       `<b>${counted.length} of ${grades.length}</b> grades in this run are machine-checked, and

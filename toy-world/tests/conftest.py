@@ -26,7 +26,12 @@ from opentelemetry.sdk.trace.export.in_memory_span_exporter import (
 
 from gradebook.logs import LOGGER_NAME
 
-RECORDING = Path(__file__).resolve().parents[1] / "recordings" / "replay-v1.jsonl"
+# Deliberately imported rather than spelled out again. These tests exist to
+# guard the recording a judge actually replays, so pinning a filename here lets
+# the two drift silently: when the committed run moved from replay-v1 to
+# replay-v2 this fixture stayed on v1, and the whole committed-recording suite
+# went on validating the superseded roster while staying green.
+from toyworld.__main__ import RECORDING
 
 # `gradebook` is also a real, unrelated project on PyPI. Installing toy-world
 # without `-e reference-library` in the SAME pip invocation resolves against

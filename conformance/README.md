@@ -1,14 +1,14 @@
-# Conformance: the contract is language-agnostic, executably (ticket #44)
+# Conformance: the contract is language-agnostic, executably
 
 ADR 0002's moat is that Gradebook extends a **cross-language** OpenTelemetry
 standard. That was only ever proven in one language (the Python reference
 library). This directory makes it real two ways:
 
-1. **A second-language emitter** (`ts-emitter/emit.ts`) — TypeScript, **zero npm
+1. **A second-language emitter** (`ts-emitter/emit.ts`): TypeScript, **zero npm
    dependencies** (Node built-ins only), POSTing the OTLP/HTTP JSON the
    collector already accepts. It emits one conforming `gen_ai.evaluation.result`
    event with the two mandatory extension attributes.
-2. **A conformance checker** (`check_conformance.py`) — the real artifact. It
+2. **A conformance checker** (`check_conformance.py`): the real artifact. It
    validates *any* implementation's emitted event against the frozen field
    table in [`docs/conventions.md`](../docs/conventions.md) §9, and depends on
    nothing but the standard library, so it can judge an emitter it did not
@@ -23,8 +23,8 @@ node conformance/ts-emitter/emit.ts
 ```
 
 It POSTs the event to `$OTEL_EXPORTER_OTLP_ENDPOINT` (default
-`http://localhost:4318`) — find it in SigNoz Traces under service `gradebook-ts`
-— and prints the same event as language-neutral JSON on stdout.
+`http://localhost:4318`): find it in SigNoz Traces under service `gradebook-ts`
+- and prints the same event as language-neutral JSON on stdout.
 
 ## Check any implementation's event
 

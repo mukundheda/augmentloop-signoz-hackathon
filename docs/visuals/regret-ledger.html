@@ -58,8 +58,9 @@
   }
   .section-note { margin: -4px 0 10px; font-size: 12px; color: var(--text-faint); max-width: 68ch; }
 
-  /* A book can hold well over a hundred rows (this run's open book has 120) -
-     without a cap it runs the whole page off the bottom of the viewport. */
+  /* A book can hold well over a hundred rows - this run's open book is well
+     into that range - without a cap it runs the whole page off the bottom of
+     the viewport. */
   .book {
     border: 1px solid var(--line); border-radius: 3px; background: var(--line);
     display: flex; flex-direction: column; gap: 1px;
@@ -281,9 +282,10 @@
   }
 
   // OVERTURNED - a position that closes against its own math grade - is the
-  // ledger's most interesting state, and this run has none. State that as a
-  // fact about the run rather than letting the state quietly never appear:
-  // same reasoning as the genome strip's ai_judge = 0 (ADR 0001).
+  // ledger's most interesting state, whether or not this run happens to have
+  // one. State the count as a fact about the run rather than letting the
+  // state quietly never appear: same reasoning as the genome strip's
+  // ai_judge = 0 (ADR 0001).
   function renderClosedNote() {
     const overturned = closed.filter((p) => p.overturned).length;
     document.getElementById('closed-note').innerHTML =
@@ -317,9 +319,9 @@
         if (b) renderDetail(positions[Number(b.dataset.i)]);
       }));
     // Open on the one position that closed against its own math grade, if this
-    // run has one - that is the most interesting row a ledger can show. This
-    // run has none (0 overturned), so this falls through to the first position;
-    // the branch stays live for a run where reality does disagree with math.
+    // run has one - that is the most interesting row a ledger can show. Falls
+    // through to the first position when a run has zero overturned, which is
+    // why the fallback stays live rather than being asserted away.
     renderDetail(positions.find((p) => p.overturned) || positions[0]);
   }
 

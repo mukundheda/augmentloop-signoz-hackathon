@@ -48,7 +48,7 @@ We emit the **real** standardized event, never a private schema (ADR 0002). Sour
 
 ### Where the event attaches
 
-- The event **SHOULD be parented to the decision's operation span** (the span the LLM instrumentation created for the model call) whenever the grade is produced in the same flow.
+- The event **SHOULD be parented to the decision's operation span** (the span your own code opens around the model call, e.g. `tracer.start_as_current_span(...)` in the caller - see `toy-world/src/toyworld/live.py`) whenever the grade is produced in the same flow. This build wires no LLM auto-instrumentation (no Traceloop/OpenLLMetry; provider SDKs are called directly and unwrapped): a span the instrumentation itself opens for the model call is a future direction, not part of this contract today.
 - When you cannot parent it (the grade arrives later, or in a different process), you **MUST** set `gen_ai.response.id`, and for later-arriving grades you also add a span link (Section 6).
 
 ---

@@ -17,6 +17,18 @@ The consequence for this project is specific: a judge model that is a sibling of
 
 The foundation layer records grades from all three sources, and every grade carries its source. The headline metric (cost per correct decision) and every "correct" claim in dashboards, blog, and screencast count ONLY math and reality grades. AI-judge grades may appear as a clearly labeled secondary view ("AI-estimated quality"), never inside the headline number.
 
+## Amendment (2026-07-26): the headline is scoped to `math`, and reality sits adjacent
+
+The Decision above sets a **ceiling** (no AI-judge grade ever enters the headline). It was read for a while as also setting a **floor** requiring both provable sources to be summed, and the shipped dashboard and CLI do not do that: both scope the headline to `augmentloop.grade.source = 'math'` and give reality its own adjacent panels. Issue #84 filed the disagreement between the documents and the code. The code is right and this ADR is what changes.
+
+The reason is structural rather than editorial. A `route_choice` decision is graded **twice**: once by the checker at decision time, and once later by the outcome. The metrics carry no per-decision id, deliberately, because that is unbounded cardinality, so nothing downstream can dedupe the two grades back into one decision. Summing both sources therefore counts those decisions twice and inflates the denominator.
+
+It is worth being precise about how much. Over the committed run, blending gives **$0.403804 / 389 = $0.001038** against the **$0.001507** we publish. That denominator of 389 is 268 math-correct plus 121 reality-correct, and every one of those 121 is a second grade on a decision already counted in the 268, because only `route_choice` decisions carry a reality grade. Blending inflates the denominator by a third while adding no new decisions, and it is the same class of double count behind a flattering figure this project already retracted once, when a defective grader reported more correct answers than there were decisions to be correct about.
+
+So: the headline counts `math`. Reality is not demoted and not discarded. It is the only source that can overturn a checker, and in the committed run it overturns 43 of its 140 verdicts, every one of them in the same direction: the checker called the route wrong because it was not the shortest, and the journey still arrived inside tolerance. Zero went the other way. That is a real and legible disagreement between two provable sources, and averaging it into a single total would erase exactly the thing worth looking at, which is why reality gets adjacent panels instead.
+
+If a future substrate has decision types where reality is the *only* provable source, the headline for those types scopes to `reality` on the same principle: one source per number, named in the query, never blended.
+
 ## Consequences
 
 - The core claim is machine-checkable all the way down; nothing to poke.

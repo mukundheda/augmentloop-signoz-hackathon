@@ -21,7 +21,7 @@ not a reason to say no. Grading logic is pure functions
 ([`gradebook.checkers`](src/gradebook/checkers.py)); the reusable checkers and
 reason codes add no dependency either.
 
-## Reusable checkers + reason codes (ticket #42)
+## Reusable checkers + reason codes
 
 Ready-made checkers for the decision shapes worth not hand-rolling -
 `verbatim_substring`, `fact_match`, `tool_choice`, `completed` - each returning a
@@ -57,7 +57,7 @@ ref = capture_decision(response_id="resp_123")
 record_reality_grade(ref, name="clip.kept", correct=True)
 ```
 
-## A reality grade needs no checker (ticket #43)
+## A reality grade needs no checker
 
 The common criticism of a portable grading layer is that it "standardizes the
 shape of a verdict it cannot itself produce" - the graders are the hard,

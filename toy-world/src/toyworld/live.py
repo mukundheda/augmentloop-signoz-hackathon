@@ -46,9 +46,17 @@ TRACER_NAME = "toyworld"
 # retirement). Old slugs stay in gradebook.pricing.PRICES so the committed
 # replay recording still prices - see that module's comment.
 DEFAULT_ROSTER: tuple[str, ...] = (
+    # Ordered cheapest to most expensive on input price. Six providers, roughly
+    # 100x apart, all answering the identical question, so "which model should
+    # own this decision type" is a cross-vendor question rather than a
+    # pick-your-Claude-tier question. Rates in gradebook.pricing.
+    "mistralai/mistral-small-24b-instruct-2501",
+    "google/gemini-2.5-flash-lite",
+    "meta-llama/llama-3.3-70b-instruct",
+    "openai/gpt-4o-mini",
+    "deepseek/deepseek-chat",
     "anthropic/claude-haiku-4.5",
     "anthropic/claude-sonnet-4.6",
-    "google/gemini-2.5-flash-lite",
 )
 
 # The output cap sent to every model, shared by both clients (openrouter.py,
@@ -116,8 +124,12 @@ class LiveSummary:
 def default_pairs(
     roster: Sequence[str] = DEFAULT_ROSTER, queries: Sequence[Query] = ALL_QUERIES
 ) -> tuple[tuple[str, Query], ...]:
-    """The comparison-mode run: every roster model over every query (spec
-    ticket #33: 3 decision types x 3 roster models x 20 queries = 180)."""
+    """The comparison-mode run: every roster model over every query.
+
+    The grid is deliberately complete and balanced, 3 decision types x 20
+    queries per model, because the result is read by comparing models down a
+    column. The committed run is 7 models, so 420 decisions.
+    """
     return tuple((model, query) for model in roster for query in queries)
 
 

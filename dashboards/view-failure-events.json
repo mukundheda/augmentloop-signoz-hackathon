@@ -1,0 +1,44 @@
+{
+  "name": "Judge Run: Failure Events",
+  "category": "judge-run",
+  "sourcePage": "logs",
+  "tags": [
+    "judge-run",
+    "logs",
+    "failures"
+  ],
+  "compositeQuery": {
+    "queryType": "builder",
+    "panelType": "list",
+    "queries": [
+      {
+        "type": "builder_query",
+        "spec": {
+          "name": "A",
+          "signal": "logs",
+          "stepInterval": 60,
+          "aggregations": [
+            {
+              "expression": "count()"
+            }
+          ],
+          "filter": {
+            "expression": "augmentloop.failure.class EXISTS AND service.name != 'agent-gradebook-test'"
+          },
+          "groupBy": [],
+          "order": [
+            {
+              "key": {
+                "name": "timestamp"
+              },
+              "direction": "desc"
+            }
+          ],
+          "limit": 100,
+          "legend": "failure events"
+        }
+      }
+    ]
+  },
+  "extraData": "{\"description\":\"The logs half of the judge run. Gradebook emits exactly three failure classes as structured WARN records: budget_guard_tripped when a call would breach the per-run cap, unknown_model_pricing_miss when a model has no entry in the pricing table, and missing_response_id when a provider returns no id to correlate on. The filter matches the augmentloop.failure.class attribute rather than text in the message body, so rewording a warning does not break this view. Every record is emitted through the OTLP LoggingHandler bridge while the decision span is current, so each line carries that decision's trace id and span id and clicking through to the decision works. This is the click-through that does NOT work from a metric data point, because SigNoz drops metric exemplars before ClickHouse (docs/conventions.md section 10.1). An empty list is the honest and expected result on a clean replay: these are discrete failures, not a gauge, and a keyless replay trips none of them.\"}"
+}

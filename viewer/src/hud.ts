@@ -30,7 +30,7 @@ export function createHud(parent: HTMLElement, run: RaceRun): Hud {
   hud.innerHTML = `
     <div class="eyebrow">GRADEBOOK · TOY WORLD / PUNE</div>
     <div class="hud-title-row">
-      <div><h1>AGENT ROAD NETWORK</h1><p>20 junctions · 180 decisions · real road geometry</p></div>
+      <div><h1>AGENT ROAD NETWORK</h1><p>20 junctions · ${run.totals.decisions} decisions · real road geometry</p></div>
       <span class="live-pill"><i></i><span data-state>READY</span></span>
     </div>
     <div class="metrics">

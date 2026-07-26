@@ -1,5 +1,5 @@
 {
-  "description": "T10 (#13) meta panel: Gradebook grades our own build-agent sessions in this repo, applying the same recording contract (docs/conventions.md, ADR 0001/0002) the toy-world dashboard (#7) applies to simulated decisions - a third proof surface, capped at exactly one bounded panel, never a substitute for the substrate. One decision = one ticket's Claude Code build-agent session (team convention: one ticket = one branch = one PR). The reality grade is whether the ticket shipped correctly, per this repo's own definition of done (CLAUDE.md: '/spec-review passes both axes AND the full test suite is green') - a merged PR is the recorded fact that gate cleared. HONEST SCOPE (verified, not an oversight): only Mukund's own Claude Code sessions land claude_code.* telemetry in this live stack as of this ticket - Rutik's tunnel died 2026-07-19 with nothing since, Vedant/Anish have zero samples, never connected. This is Mukund's own build-agent telemetry, not yet a genuine team-fleet view. Historical tickets (recorded via dashboards/scripts/record_build_fleet_sessions.py) carry NO cost attribute: claude_code.* metrics carry no repo/project/cwd label anywhere in their schema (verified against the live attrs/scope_attrs/resource_attrs on claude_code.cost.usage), so a day's or a PR-window's cost figure would blend every project Mukund worked on, not just this repo - and this repo's PRs are frequently on stacked/concurrent branches (see PR #21: 'Stacked on 6-toy-world'), so a wall-clock-window split across tickets was tried and rejected as a guess dressed as precision. The one exception is the current ticket's own session (#13): its session.id is directly knowable, so its cost is queried from claude_code.cost.usage filtered to that exact session.id - genuinely attributable, not window-guessed. Panel shows two facts side by side rather than a blended average, exactly because averaging a known-cost subset over an all-decisions count would misrepresent the gap the same way panel-1 in #7 already documents its own numerator/denominator caveat. OPEN QUESTION FOR THE TEAM (flagged, not unilaterally resolved on #7's already-shipped dashboard): gradebook.decisions.graded / gradebook.decision.cost.usd are shared instruments (conventions doc section 10) - these build_session decisions will also be counted by #7's headline panels, which filter only on grade.source + score.label, not augmentloop.decision.type. Whether #7's panels should add an explicit decision_type != 'build_session' filter to keep the toy-world headline pure is a call for the team, not made here.",
+  "description": "This dashboard turns the grading system on our own work. It grades the coding-agent sessions that built this repo using the same pass/fail rules we apply to the simulated decisions elsewhere in the project. A ticket counts as shipped correctly only if its pull request passed review and the full test suite. Cost is shown only where it can be tied to one specific session with certainty; where an older ticket's cost cannot be separated from other work done at the same time, we leave it blank rather than guess. Scope, stated plainly: this reflects one developer's build sessions, not the whole team's.",
   "layout": [
     {
       "h": 5,
@@ -17,7 +17,7 @@
     "signoz-hackathon",
     "meta"
   ],
-  "title": "Gradebook Meta: Grading Our Own Build Fleet (T10, self-referential proof surface)",
+  "title": "Gradebook Meta: Grading Our Own Build Sessions",
   "variables": {},
   "version": "v5",
   "widgets": [
@@ -25,7 +25,7 @@
       "contextLinks": {
         "linksData": null
       },
-      "description": "Two facts, not a blended average (see dashboard description for why): (1) how many of our own build-agent tickets shipped correctly (merged = cleared this repo's spec-review + green-tests gate), and (2) how much of that is honestly cost-attributable right now (only the current ticket's own session.id - historical tickets are correct but carry no cost, and that is intentional, not a bug; see dashboard description). Filter: augmentloop.decision.type = 'build_session' AND gen_ai.evaluation.score.label = 'correct' AND augmentloop.grade.source IN ('math','reality') - the same ADR 0001 headline rule #7 uses, scoped to our own build-fleet decision type so this never blends into the toy-world's numbers (and vice versa, modulo the open cross-cutting question noted in the dashboard description).",
+      "description": "Two honest numbers rather than one blended average: how many of our own build tickets shipped correctly, and how much of that work has a cost figure we can trace with certainty. They sit side by side on purpose. Older tickets are correctly counted as shipped, but their cost cannot be separated from other work running at the same time, so no number is invented for them.",
       "id": "panel-1-build-fleet-meta",
       "legendPosition": "bottom",
       "nullZeroValues": "zero",
@@ -127,7 +127,7 @@
       "softMax": 0,
       "softMin": 0,
       "timePreferance": "GLOBAL_TIME",
-      "title": "Build Fleet: Shipped Correctly vs. Cost-Attributable (self-referential)",
+      "title": "Build Sessions: Shipped Correctly vs Cost-Attributable",
       "yAxisUnit": "none"
     }
   ]

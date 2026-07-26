@@ -527,8 +527,8 @@ def _eta_estimate_query(start: str, end: str) -> Query:
     )
 
 
-# Twenty queries per decision type (spec ticket #33: "roughly 180 decisions
-# behind a single run" = 3 decision types x 3 roster models x 20 queries).
+# Twenty queries per decision type (spec ticket #33: "roughly 420 decisions
+# behind a single run" = 3 decision types x 7 roster models x 20 queries).
 _ROUTE_PAIRS = _route_pairs(20)
 
 NEXT_HOP_QUERIES: tuple[Query, ...] = tuple(_next_hop_query(name) for name in sorted(GRAPH))

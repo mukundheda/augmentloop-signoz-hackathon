@@ -6,6 +6,7 @@ Assertions use the literal frozen attribute names from docs/conventions.md
 section 9, on emitted telemetry only - same discipline as the library tests.
 """
 
+import collections
 import json
 
 import pytest
@@ -40,9 +41,25 @@ def _metrics_by_name(metric_reader) -> dict:
     return out
 
 
-def test_committed_recording_has_roughly_180_decisions(recording_path):
+def test_committed_recording_covers_a_complete_balanced_grid(recording_path):
+    """The recording must be the full roster crossed with every decision type,
+    20 queries in each cell.
+
+    This replaces an assertion on a literal decision count, which only held for
+    one roster size and said nothing about shape. Balance is the property that
+    actually matters: an unbalanced grid would let one model's easy cell inflate
+    a per-model total, and the right-sizing comparison reads down the columns.
+    """
     decisions, _ = load_recording(recording_path)
-    assert 170 <= len(decisions) <= 190
+    models = {d.model for d in decisions}
+    types = {d.decision_type for d in decisions}
+    assert types == {"route_choice", "eta_estimate", "next_hop"}
+    assert len(models) >= 3
+
+    per_cell = collections.Counter((d.model, d.decision_type) for d in decisions)
+    assert len(per_cell) == len(models) * len(types), "grid has a missing cell"
+    assert set(per_cell.values()) == {20}, f"unbalanced grid: {per_cell}"
+    assert len(decisions) == len(models) * len(types) * 20
 
 
 def test_committed_recording_has_one_outcome_per_route_choice_decision(recording_path):
@@ -269,8 +286,19 @@ def test_cost_per_correct_is_the_headline_division(world, outcomes, recording_pa
     assert summary.cost_per_correct_usd == pytest.approx(
         summary.total_cost_usd / summary.correct
     )
-    assert set(summary.by_model) == {
-        "anthropic/claude-haiku-4.5",
-        "anthropic/claude-sonnet-4.6",
-        "google/gemini-2.5-flash-lite",
-    }
+
+
+def test_summary_reports_every_model_in_the_recording(world, outcomes, recording_path):
+    """Named as a property, not as a hardcoded roster.
+
+    This used to assert one literal set of three model slugs, which meant it
+    only ever confirmed that the roster had not changed. What matters is that
+    the breakdown loses nobody: a model present in the recording but missing
+    from `by_model` would silently drop out of the right-sizing comparison
+    while every total still added up.
+    """
+    summary, _, _ = _run(world, outcomes, recording_path)
+    decisions, _ = load_recording(recording_path)
+    assert set(summary.by_model) == {d.model for d in decisions}
+    assert sum(row["decisions"] for row in summary.by_model.values()) == len(decisions)
+    assert sum(row["correct"] for row in summary.by_model.values()) == summary.correct

@@ -21,11 +21,11 @@ the model-run trace that made it.
 
 ![Verdict attribution, rendered from the committed replay recording on 2026-07-25: the reality verdict for route_choice-J1-J9, decided by anthropic/claude-haiku-4.5, span-links back across trace and service to the decision it judges, both graded correct](span-link.png)
 
-**60 reality verdicts, all 60 judging a `route_choice` decision, 45 of them
-agreeing with that decision's math grade and 15 overturning it.** That is the
+**140 reality verdicts, all 140 judging a `route_choice` decision, 97 of them
+agreeing with that decision's math grade and 43 overturning it.** That is the
 whole population recorded in this run, not a sample chosen to look good. Each verdict lives in
 a different trace and a different service, and is still attributable to it by
-the span link alone. Pick any of the 60 verdicts in the rail to see both ends
+the span link alone. Pick any of the 140 verdicts in the rail to see both ends
 of its hop: the decision's model, cost, math grade and explanation, and the
 verdict's own explanation.
 
@@ -52,7 +52,7 @@ Every graded decision in the run is one glyph, in the order it was graded.
 **Hue is where the grade's authority came from**, saturation is whether it was
 right, height is what it cost.
 
-![Grade provenance strip: 240 glyphs, blue for math grades and amber for reality grades, wrong decisions carrying a red foot along the baseline, with a legend showing 180 math (53 wrong), 60 reality (10 wrong) and 0 ai_judge](genome-strip.png)
+![Grade provenance strip: 560 glyphs, blue for math grades and amber for reality grades, wrong decisions carrying a red foot along the baseline, with a legend showing 420 math (152 wrong), 140 reality (19 wrong) and 0 ai_judge](genome-strip.png)
 
 Blue is a `math` grade, amber is a `reality` grade, and sienna is reserved for
 `ai_judge`. A wrong decision washes out and keeps a fully saturated cherry foot,
@@ -60,7 +60,7 @@ so bad runs read as red streaks along the baseline without inspecting a single
 glyph. The dashed divider is where the run crosses into `toy-world-outcomes` -
 the late grades that arrive after the decisions they judge.
 
-**180 math (53 wrong), 60 reality (10 wrong), 0 ai_judge.** The zero is the
+**420 math (152 wrong), 140 reality (19 wrong), 0 ai_judge.** The zero is the
 point, not an omission: an AI's opinion never silently enters the headline
 number ([ADR
 0001](../adr/0001-machine-checked-grades-only-in-the-headline-metric.md)), and
@@ -69,7 +69,7 @@ Click any glyph for its model, cost and reasoning.
 
 The glyph-width formula clamps between 6px and 30px so the strip scales from a
 handful of decisions up to the thousands the idea is really for. At this run's
-240 real glyphs it has already packed down to the 6px floor - checked directly
+560 real glyphs it has already packed down to the 6px floor - checked directly
 against this data rather than a simulated clone: still clickable, and hue and
 the red baseline still read at a glance.
 
@@ -79,31 +79,81 @@ An options-book framing: a decision that has been math-graded but has no
 real-world verdict yet is an open position carrying unrealized risk. When
 reality arrives it closes that position green or red.
 
-![Regret ledger, rendered from the committed replay recording on 2026-07-25: 180 positions, 120 open and 60 closed (50 green, 10 red), the open and closed books each capped in their own scroll container, with the closed book showing route_choice-J1-J9's position, math-graded correct and closed correct by its reality verdict](regret-ledger.png)
+![Regret ledger, rendered from the committed replay recording on 2026-07-25: 420 positions, 280 open and 140 closed (121 green, 19 red), the open and closed books each capped in their own scroll container, with the closed book showing route_choice-J1-J10's position, math-graded incorrect but closed correct by its reality verdict - one of the run's overturned positions](regret-ledger.png)
 
-**180 positions, 120 open, 60 closed - 50 green, 10 red.** $0.319381 sits in
-open positions, unrealized; $0.048113 in positions reality confirmed correct;
-$0.010059 in positions reality found wrong. The book closes both ways in this
+**420 positions, 280 open, 140 closed - 121 green, 19 red.** $0.338955 sits in
+open positions, unrealized; $0.053996 in positions reality confirmed correct;
+$0.010853 in positions reality found wrong. The book closes both ways in this
 run, so the red state is exercised rather than merely implemented. In the open
-book, $0.276440 sits in `eta_estimate` decisions the checker grades **23/60
-wrong**, and not one of the 60 has a real-world verdict. That is unrealized
+book, $0.290447 sits in `eta_estimate` decisions the checker grades **76/140
+wrong**, and not one of the 140 has a real-world verdict. That is unrealized
 risk in the literal sense: an opinion the world has not weighed in on.
 
 The `OVERTURNED` state - a position that closes against its own math grade -
-fires **15 times** in this run, and every instance runs the same direction:
+fires **43 times** in this run, and every instance runs the same direction:
 math graded the route choice wrong, reality still closed it green. Those are
 decisions where the model picked the slower of two routes and the journey
 arrived inside the 20% real-world tolerance anyway. That is the case the two
 grade sources exist to separate. A system that derived its reality grade from
-its math grade would report 60 agreements and learn nothing; carrying an
+its math grade would report 140 agreements and learn nothing; carrying an
 independently sourced second signal is what makes the disagreement visible at
-all. Fifteen positions where "wrong" and "fine in practice" are both true is a
-more useful artifact than sixty where they never diverge.
+all. Forty-three positions where "wrong" and "fine in practice" are both true
+is a more useful artifact than a hundred forty where they never diverge.
 
-180 decisions is well past the 8-row open book the page was first built
+420 decisions is well past the 8-row open book the page was first built
 against, so both books now scroll inside a capped rail instead of running the
 page off the bottom. Click any position for its full detail, including the
 reality verdict's explanation where one has arrived.
+
+## Half-life
+
+A Geiger-counter framing, one lane per decision type: a decision lands at the
+real moment its `gen_ai.response.id` says it happened, then keeps losing
+height for every second it stands unconfirmed. A reality verdict locks a mark
+at full height for good; nothing else ever raises one back up.
+
+![Half-life timeline at run end, rendered from the committed replay recording on 2026-07-25: three lanes over a 1172s window, route_choice's 140 marks amber and at full height because every one is confirmed, eta_estimate and next_hop's 280 marks blue and decayed down to the dashed floor because none of them ever confirm, with stat tiles reading 280 (66.7%) never confirmed and $0.338955 (83.9%) of spend never confirmed](half-life.png)
+
+**420 decisions, $0.403804 total, over a 1172s (about 19.5 min) window - 140
+confirmed by reality, 280 (66.7%) never confirmed.** $0.064849 of the spend sits in
+decisions reality confirmed; $0.338955 (83.9%) sits in decisions it never
+touched. At run end the oldest unconfirmed decision has stood for 1157s, the
+median for 613.5s. Per type: `route_choice` confirms all 140 of 140, $0.064849,
+spanning 0s to 981s. `eta_estimate` confirms 0 of 140, $0.290447, spanning 15s to
+1132s, oldest unconfirmed 1157s, median 621.5s. `next_hop` confirms 0 of 140,
+$0.048508, spanning 372s to 1172s, oldest unconfirmed 800s, median 604.5s. Every
+model confirms at exactly 20 of 60 - all seven of them
+(`mistralai/mistral-small-24b-instruct-2501`, `google/gemini-2.5-flash-lite`,
+`meta-llama/llama-3.3-70b-instruct`, `openai/gpt-4o-mini`,
+`deepseek/deepseek-chat`, `anthropic/claude-haiku-4.5`,
+`anthropic/claude-sonnet-4.6`) - because confirmation is decided by decision
+type, not by model. Read the lanes, not the vendors.
+
+A reality verdict in this run carries no timestamp of its own. The
+recording's outcome row is `{graded_response_id, on_time, model}` - no clock
+reading - so the page places a decision in time and a verdict not at all: a
+confirmed mark is drawn settled at the decision's own moment, and the wait
+before that verdict landed is unrecorded. A decision's moment is real, taken
+from the epoch OpenRouter embeds in `gen_ai.response.id`. That is also where
+the run's 1172s window comes from - not the capture script's wall-clock time,
+which is not a property of the simulated run: `capture_run.py` replays the
+whole recording in milliseconds, so a span-timestamp window would read as a
+fraction of a second and say nothing about how long the modeled run actually
+spans. The decay rate shown is not real, either: the page draws it with a
+display half-life of 120s, a parameter chosen for legibility rather than fit
+to data, because no verdict in this run carries a timestamp for a rate to be
+fit to - and it says so on screen rather than let the animation imply a
+confirmation rate nobody measured.
+
+The floor two of the three lanes decay to and never leave is structural, not
+a backlog. `eta_estimate` and `next_hop` are never confirmed because the toy
+world has no outcome signal for them: the replay only ever converts a
+`route_choice` outcome into a reality grade, since `journey_on_time` is the
+only real-world signal this world has. Their confirmation is not late, it is
+never coming, and 83.9% of the run's spend sits in decisions the world will
+never weigh in on. What confirmation said when it did land - including the 43
+decisions it overturned - is the regret ledger's story; this page only shows
+whether and how long a decision waited.
 
 ## Regenerating
 
@@ -112,7 +162,7 @@ pip install -e reference-library -e toy-world
 python docs/visuals/capture_run.py     # rewrites run-data.js from a fresh run
 ```
 
-Then open `docs/visuals/span-link.html`, `docs/visuals/genome-strip.html`, or
-`docs/visuals/regret-ledger.html`. All three read the same `run-data.js`. The
-replay is deterministic, so the numbers do not move between runs; only the
-trace and span ids do.
+Then open `docs/visuals/span-link.html`, `docs/visuals/genome-strip.html`,
+`docs/visuals/regret-ledger.html`, or `docs/visuals/half-life.html`. All four
+read the same `run-data.js`. The replay is deterministic, so the numbers do
+not move between runs; only the trace and span ids do.
