@@ -101,9 +101,10 @@
   <div class="caption"></div>
 </main>
 <script type="module">
-  const q=new URLSearchParams(location.search), frame=Number(q.get("frame")||0);
   const cues=await fetch("/timeline/cues.json").then(r=>r.json());
   const clamp=n=>Math.max(0,Math.min(1,n)), ease=n=>1-Math.pow(1-clamp(n),4);
+  window.renderFrame=frame=>{
+  document.querySelectorAll(".scene.active").forEach(x=>x.classList.remove("active"));
   const scene=cues.scenes.find(s=>frame>=s.startFrame&&frame<s.endFrame);
   const p=(frame-scene.startFrame)/(scene.endFrame-scene.startFrame), el=document.querySelector(`[data-scene="${scene.id}"]`);
   el.classList.add("active"); el.style.opacity=String(Math.min(ease(p*7),ease((1-p)*8)));
@@ -126,6 +127,8 @@
   }
   if(scene.id==="payoff"||scene.id==="identity"){const box=el.firstElementChild.firstElementChild||el.firstElementChild;box.style.transform=`translateY(${(1-ease(p*4))*35}px) scale(${.98+.02*ease(p*4)})`}
   const caption=document.querySelector(".caption"); caption.textContent=scene.caption; const capIn=ease((frame-scene.startFrame-12)/14),capOut=ease((scene.endFrame-frame-5)/12);caption.style.opacity=String(Math.min(capIn,capOut));
+  };
+  window.renderFrame(Number(new URLSearchParams(location.search).get("frame")||0));
 </script>
 </body>
 </html>
