@@ -1263,7 +1263,7 @@
               "disabled": false,
               "expression": "A",
               "filter": {
-                "expression": "augmentloop.decision.type != 'build_session' AND service.name != 'agent-gradebook-test'"
+                "expression": "augmentloop.decision.type != 'build_session' AND service.name != 'agent-gradebook-test' AND service.name != 'gradebook-bench'"
               },
               "functions": [],
               "groupBy": [
