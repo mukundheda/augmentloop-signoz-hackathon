@@ -1,0 +1,256 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://augmentloop.dev/schemas/decision-evidence-bundle/1.0.json",
+  "title": "DecisionEvidenceBundle",
+  "description": "Evidence about ONE decision produced by an agent harness. This record never states whether the decision was correct. Correctness is determined by Gradebook from an evaluation manifest and an independent evaluator; a harness can only supply evidence and correlation. Any claim the harness makes about its own success belongs in an evidence item of kind 'harness_claim', which carries no grading authority.",
+  "type": "object",
+  "required": ["schema_version", "decision", "subject", "evidence"],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": "1.0",
+      "description": "Exact protocol version. A consumer MUST reject a version it does not implement rather than guess."
+    },
+    "decision": {
+      "type": "object",
+      "required": ["decision_type", "evaluation_name", "chosen"],
+      "additionalProperties": false,
+      "properties": {
+        "decision_id": {
+          "$ref": "#/$defs/identifier",
+          "description": "Optional. When absent, the consumer derives it deterministically from immutable identity fields so that replaying the same bundle is idempotent. When present it is used as given and recorded as adapter-supplied."
+        },
+        "decision_type": {
+          "$ref": "#/$defs/identifier",
+          "description": "The unit of decision, e.g. tool_choice, task_completion, route_choice. Only decisions of the SAME decision_type may be compared, because harnesses draw decision boundaries differently."
+        },
+        "evaluation_name": {
+          "$ref": "#/$defs/identifier",
+          "description": "Maps to the standard OpenTelemetry gen_ai.evaluation.name. Names the question being graded, e.g. repository.tests_pass."
+        },
+        "chosen": {
+          "$ref": "#/$defs/value",
+          "description": "What the agent actually chose or produced. Privacy: prefer a digest or artifact reference over an inline payload."
+        }
+      }
+    },
+    "subject": {
+      "type": "object",
+      "description": "Who produced the decision. parent_agent_id is what makes multi-agent cost deduplication possible.",
+      "required": ["harness", "run_id"],
+      "additionalProperties": false,
+      "properties": {
+        "harness": {
+          "$ref": "#/$defs/identifier",
+          "description": "Harness name, e.g. hermes, ruflo, autogen. Free-form on purpose: an unknown future harness needs no registry entry."
+        },
+        "harness_version": { "$ref": "#/$defs/nullableString" },
+        "run_id": { "$ref": "#/$defs/identifier" },
+        "session_id": { "$ref": "#/$defs/nullableIdentifier" },
+        "agent_id": { "$ref": "#/$defs/nullableIdentifier" },
+        "parent_agent_id": {
+          "$ref": "#/$defs/nullableIdentifier",
+          "description": "Null means this agent is a root. A non-null value lets the costing layer detect a parent whose usage already contains this child's calls."
+        },
+        "model": {
+          "$ref": "#/$defs/nullableString",
+          "description": "Provider model slug. Null when genuinely unknown; MUST NOT be guessed."
+        }
+      }
+    },
+    "correlation": {
+      "type": "object",
+      "description": "Keys that let this decision be joined to usage records, OpenTelemetry spans and later reality outcomes. Every field is optional and every field MUST be omitted or null rather than invented.",
+      "additionalProperties": false,
+      "properties": {
+        "provider_response_id": { "$ref": "#/$defs/nullableString" },
+        "trace_id": { "$ref": "#/$defs/nullableTraceId" },
+        "span_id": { "$ref": "#/$defs/nullableSpanId" },
+        "task_id": { "$ref": "#/$defs/nullableIdentifier" }
+      }
+    },
+    "evidence": {
+      "type": "array",
+      "description": "Zero or more evidence items. An empty array is legal and honest: it means the harness exposed nothing gradeable, and the decision will not receive an authoritative grade.",
+      "items": { "$ref": "#/$defs/evidenceItem" }
+    },
+    "usage_refs": {
+      "type": "array",
+      "description": "usage_id values in a usage ledger. Cost lives in usage records, never here, so the same model call can be referenced by several decisions without being charged twice.",
+      "items": { "$ref": "#/$defs/identifier" },
+      "uniqueItems": true
+    },
+    "metadata": {
+      "type": "object",
+      "description": "Low-cardinality descriptive labels, e.g. environment. MUST NOT carry payloads; nothing here is copied into metric attributes.",
+      "additionalProperties": { "type": ["string", "number", "boolean", "null"] }
+    },
+    "ext": {
+      "type": "object",
+      "description": "Reserved forward-compatibility namespace. The only place unknown fields are permitted anywhere in this protocol. A harness adds fields here without waiting for a protocol version bump, and a consumer that does not understand them ignores them.",
+      "additionalProperties": true
+    }
+  },
+  "$defs": {
+    "identifier": { "type": "string", "minLength": 1, "maxLength": 512 },
+    "nullableString": { "type": ["string", "null"], "maxLength": 2048 },
+    "nullableIdentifier": { "type": ["string", "null"], "minLength": 1, "maxLength": 512 },
+    "nullableTraceId": {
+      "type": ["string", "null"],
+      "pattern": "^[0-9a-f]{32}$",
+      "description": "W3C trace id, 32 lowercase hex characters. Carried as a STRING so that a 128-bit id survives JSON parsers whose numbers are IEEE doubles."
+    },
+    "nullableSpanId": {
+      "type": ["string", "null"],
+      "pattern": "^[0-9a-f]{16}$",
+      "description": "W3C span id, 16 lowercase hex characters. String for the same reason as trace_id."
+    },
+    "digest": {
+      "type": "object",
+      "required": ["algorithm", "digest"],
+      "additionalProperties": false,
+      "properties": {
+        "algorithm": { "enum": ["sha256"] },
+        "digest": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+        "byte_length": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "value": {
+      "description": "A tagged union so that a value can be carried by reference or by digest instead of inline. Present from version 1.0 on purpose: changing how values are represented later would be a breaking schema change, and privacy cannot be retrofitted.",
+      "type": "object",
+      "required": ["kind"],
+      "oneOf": [
+        {
+          "title": "inline",
+          "required": ["kind", "value"],
+          "additionalProperties": false,
+          "properties": {
+            "kind": { "const": "inline" },
+            "value": {}
+          }
+        },
+        {
+          "title": "digest",
+          "required": ["kind", "algorithm", "digest"],
+          "additionalProperties": false,
+          "properties": {
+            "kind": { "const": "digest" },
+            "algorithm": { "enum": ["sha256"] },
+            "digest": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+            "byte_length": { "type": "integer", "minimum": 0 }
+          }
+        },
+        {
+          "title": "artifact_reference",
+          "required": ["kind", "value"],
+          "additionalProperties": false,
+          "properties": {
+            "kind": { "const": "artifact_reference" },
+            "value": { "type": "string", "minLength": 1, "maxLength": 2048 },
+            "digest": { "$ref": "#/$defs/digest" }
+          }
+        },
+        {
+          "title": "absent",
+          "description": "Explicitly withheld or unavailable. Distinguishable from an empty inline value, which would be a real answer of zero length.",
+          "required": ["kind", "reason"],
+          "additionalProperties": false,
+          "properties": {
+            "kind": { "const": "absent" },
+            "reason": { "enum": ["redacted", "not_captured", "too_large", "unknown"] }
+          }
+        }
+      ]
+    },
+    "evidenceItem": {
+      "type": "object",
+      "required": ["evidence_id", "kind"],
+      "oneOf": [
+        {
+          "title": "command_result",
+          "required": ["evidence_id", "kind", "command_name", "exit_code"],
+          "additionalProperties": false,
+          "properties": {
+            "evidence_id": { "$ref": "#/$defs/identifier" },
+            "kind": { "const": "command_result" },
+            "command_name": { "$ref": "#/$defs/identifier" },
+            "exit_code": { "type": "integer" },
+            "duration_ms": { "type": "integer", "minimum": 0 },
+            "artifact_digest": { "$ref": "#/$defs/digest" }
+          }
+        },
+        {
+          "title": "file_state",
+          "required": ["evidence_id", "kind", "path", "artifact_digest"],
+          "additionalProperties": false,
+          "properties": {
+            "evidence_id": { "$ref": "#/$defs/identifier" },
+            "kind": { "const": "file_state" },
+            "path": { "type": "string", "minLength": 1, "maxLength": 2048 },
+            "artifact_digest": { "$ref": "#/$defs/digest" }
+          }
+        },
+        {
+          "title": "test_report",
+          "required": ["evidence_id", "kind", "passed", "failed"],
+          "additionalProperties": false,
+          "properties": {
+            "evidence_id": { "$ref": "#/$defs/identifier" },
+            "kind": { "const": "test_report" },
+            "passed": { "type": "integer", "minimum": 0 },
+            "failed": { "type": "integer", "minimum": 0 },
+            "skipped": { "type": "integer", "minimum": 0 },
+            "artifact_digest": { "$ref": "#/$defs/digest" }
+          }
+        },
+        {
+          "title": "structured_output",
+          "required": ["evidence_id", "kind", "output"],
+          "additionalProperties": false,
+          "properties": {
+            "evidence_id": { "$ref": "#/$defs/identifier" },
+            "kind": { "const": "structured_output" },
+            "output": { "$ref": "#/$defs/value" }
+          }
+        },
+        {
+          "title": "otel_span",
+          "description": "Correlation evidence only. A span proves a call happened; it does not prove the call was right.",
+          "required": ["evidence_id", "kind", "trace_id", "span_id"],
+          "additionalProperties": false,
+          "properties": {
+            "evidence_id": { "$ref": "#/$defs/identifier" },
+            "kind": { "const": "otel_span" },
+            "trace_id": { "type": "string", "pattern": "^[0-9a-f]{32}$" },
+            "span_id": { "type": "string", "pattern": "^[0-9a-f]{16}$" }
+          }
+        },
+        {
+          "title": "log_reference",
+          "required": ["evidence_id", "kind", "ref"],
+          "additionalProperties": false,
+          "properties": {
+            "evidence_id": { "$ref": "#/$defs/identifier" },
+            "kind": { "const": "log_reference" },
+            "ref": { "type": "string", "minLength": 1, "maxLength": 2048 },
+            "artifact_digest": { "$ref": "#/$defs/digest" }
+          }
+        },
+        {
+          "title": "harness_claim",
+          "description": "The harness asserting something about its own run, e.g. success=true. Deliberately its own evidence kind so it is impossible to mistake for a verdict: no evaluator accepts this kind as authority for a math grade. It may trigger evaluation; it may never conclude it.",
+          "required": ["evidence_id", "kind", "claim"],
+          "additionalProperties": false,
+          "properties": {
+            "evidence_id": { "$ref": "#/$defs/identifier" },
+            "kind": { "const": "harness_claim" },
+            "claim": {
+              "type": "object",
+              "additionalProperties": { "type": ["string", "number", "boolean", "null"] }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

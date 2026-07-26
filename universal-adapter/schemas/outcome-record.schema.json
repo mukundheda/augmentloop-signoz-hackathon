@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://augmentloop.dev/schemas/outcome-record/1.0.json",
+  "title": "OutcomeRecord",
+  "description": "A real-world result that arrives AFTER the decision it judges, and that can overturn the checker. Carries reality authority. It must name the decision it belongs to, because a reality grade that cannot be linked back to a decision is an unattributable claim rather than evidence.",
+  "type": "object",
+  "required": ["schema_version", "outcome_id", "decision_id", "outcome_type", "correct", "observed_at"],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": { "const": "1.0" },
+    "outcome_id": {
+      "$ref": "#/$defs/identifier",
+      "description": "Stable. Replaying the same outcome_id MUST NOT record a second grade."
+    },
+    "decision_id": {
+      "$ref": "#/$defs/identifier",
+      "description": "The decision this outcome judges. Required: an unlinked outcome is discarded rather than counted, since Gradebook's reality grades are defined by their span link back to the decision."
+    },
+    "provider_response_id": {
+      "$ref": "#/$defs/nullableString",
+      "description": "Secondary correlation key, used when the emitter needs to resolve a decision whose span reference is no longer held in memory."
+    },
+    "outcome_type": {
+      "$ref": "#/$defs/identifier",
+      "description": "What kind of real-world result this is, e.g. pull_request_merged, change_reverted, deployment_survived_window. Free-form: the set of things reality can say is open-ended."
+    },
+    "correct": {
+      "type": "boolean",
+      "description": "Whether reality agreed with the decision. Strictly boolean: a JSON number MUST be rejected rather than coerced, because a truthy 1 silently becoming a passing grade is a known way to corrupt a headline metric."
+    },
+    "observed_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the outcome was observed, RFC 3339. This is the observation time and NOT the decision time; the gap between them is the whole point of a deferred grade."
+    },
+    "evidence_ref": {
+      "$ref": "#/$defs/nullableString",
+      "description": "Pointer to what makes this outcome checkable by a third party, e.g. a pull request URL or a record id."
+    },
+    "explanation": {
+      "type": ["string", "null"],
+      "maxLength": 2048,
+      "description": "Human-readable reason, carried through to the standard gen_ai.evaluation.explanation attribute."
+    },
+    "ext": {
+      "type": "object",
+      "description": "Reserved forward-compatibility namespace, the only place unknown fields are permitted.",
+      "additionalProperties": true
+    }
+  },
+  "$defs": {
+    "identifier": { "type": "string", "minLength": 1, "maxLength": 512 },
+    "nullableString": { "type": ["string", "null"], "maxLength": 2048 }
+  }
+}
