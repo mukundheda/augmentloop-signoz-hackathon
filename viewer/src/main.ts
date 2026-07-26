@@ -10,6 +10,61 @@ async function loadJson<T>(url: string): Promise<T> {
   return response.json() as Promise<T>;
 }
 
+const INTRO_STORAGE_KEY = "toyworld-intro-dismissed-v1";
+
+function readIntroDismissed(): boolean {
+  try {
+    return window.localStorage.getItem(INTRO_STORAGE_KEY) === "1";
+  } catch {
+    return false;
+  }
+}
+
+function writeIntroDismissed(): void {
+  try {
+    window.localStorage.setItem(INTRO_STORAGE_KEY, "1");
+  } catch {
+    // Private browsing / storage disabled: overlay just reappears next visit, which is fine.
+  }
+}
+
+/**
+ * First-ten-seconds orientation overlay. Shows once per browser (via localStorage)
+ * so repeat visitors are not nagged; a small "?" button always re-opens it on demand.
+ * Never blocks interaction permanently: dismissible by button, backdrop click, or Escape,
+ * and the replay keeps running underneath it the whole time.
+ */
+function setupIntro(app: HTMLElement): void {
+  const overlay = app.querySelector<HTMLElement>("[data-intro-overlay]");
+  const helpButton = app.querySelector<HTMLButtonElement>("[data-intro-help]");
+  const dismissButton = app.querySelector<HTMLButtonElement>("[data-intro-dismiss]");
+  const skipButton = app.querySelector<HTMLButtonElement>("[data-intro-skip]");
+  if (!overlay || !helpButton || !dismissButton || !skipButton) return;
+
+  const close = () => {
+    overlay.hidden = true;
+    writeIntroDismissed();
+  };
+  const open = () => {
+    overlay.hidden = false;
+    const card = overlay.querySelector<HTMLElement>(".intro-card");
+    if (card) card.scrollTop = 0;
+    dismissButton.focus({ preventScroll: true });
+  };
+
+  dismissButton.addEventListener("click", close);
+  skipButton.addEventListener("click", close);
+  helpButton.addEventListener("click", open);
+  overlay.addEventListener("click", (event) => {
+    if (event.target === overlay) close();
+  });
+  window.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && !overlay.hidden) close();
+  });
+
+  if (!readIntroDismissed()) open();
+}
+
 async function boot() {
   const app = document.querySelector<HTMLElement>("#app")!;
   app.innerHTML = `
@@ -47,7 +102,28 @@ async function boot() {
       </div>
       <a class="attribution" href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer">© OpenStreetMap contributors</a>
     </main>
+    <button class="intro-help" type="button" data-intro-help title="What am I looking at?" aria-label="Show orientation overlay">?</button>
+    <div class="intro-overlay" data-intro-overlay hidden role="dialog" aria-modal="true" aria-labelledby="intro-title">
+      <div class="intro-card">
+        <div class="eyebrow">FIRST TIME HERE?</div>
+        <h1 id="intro-title">You're watching 420 real AI routing decisions replay on actual Pune roads</h1>
+        <p class="intro-lede">This is a recorded run, not a live simulation - every agent, route, and dollar figure below already happened once and is being replayed so you can watch it unfold.</p>
+        <ul class="intro-list">
+          <li><i>AI</i><span>Each moving dot is one AI model answering a routing question. 7 models, 420 decisions total, replaying in waves of 24.</span></li>
+          <li><i>3x</i><span><b>Route choice</b> (pick the full path), <b>ETA estimate</b> (guess the fastest travel time), or <b>next hop</b> (pick one road to turn onto) - click any agent to see which, in the drawer on the right.</span></li>
+          <li><i>&#9679;</i><span>Routes resolve <span class="intro-dot correct"></span><b>green</b> when the model got it right, <span class="intro-dot wrong"></span><b>red</b> when wrong, with a <span class="intro-dot ghost"></span><b>yellow ghost</b> line showing the optimal path it should have taken.</span></li>
+          <li><i>$</i><span>The panel on the right keeps score live: decisions completed, correct rate, total spend, and the number that matters most - <b>cost per correct decision</b>.</span></li>
+          <li><i>&#9654;</i><span>PLAY / PAUSE / SPEED / CAMERA controls sit bottom-left. The replay is already running behind this card.</span></li>
+        </ul>
+        <div class="intro-actions">
+          <button type="button" class="intro-skip" data-intro-skip>Skip</button>
+          <button type="button" class="intro-dismiss" data-intro-dismiss>GOT IT - WATCH</button>
+        </div>
+      </div>
+    </div>
   `;
+
+  setupIntro(app);
 
   try {
     const [rawRun, map, roads] = await Promise.all([
