@@ -1,0 +1,47 @@
+{
+  "started_at_utc": "2026-07-26T15:29:19.735663+00:00",
+  "completed_at_utc": "2026-07-26T15:30:49.645252+00:00",
+  "processed_items": 45,
+  "total_items": 45,
+  "decisions": 90,
+  "correct": 43,
+  "cost_usd": 0.0456716,
+  "by_model": {
+    "openai/gpt-4o": {
+      "decisions": 45,
+      "correct": 23,
+      "cost_usd": 0.04309999999999999
+    },
+    "openai/gpt-4o-mini": {
+      "decisions": 45,
+      "correct": 20,
+      "cost_usd": 0.002571599999999999
+    }
+  },
+  "by_model_type": {
+    "openai/gpt-4o|performance_prediction": {
+      "decisions": 45,
+      "correct": 23,
+      "cost_usd": 0.04309999999999999
+    },
+    "openai/gpt-4o-mini|performance_prediction": {
+      "decisions": 45,
+      "correct": 20,
+      "cost_usd": 0.002571599999999999
+    }
+  },
+  "confusion_by_model": {
+    "openai/gpt-4o": {
+      "tp": 16,
+      "tn": 7,
+      "fp": 16,
+      "fn": 6
+    },
+    "openai/gpt-4o-mini": {
+      "tp": 16,
+      "tn": 4,
+      "fp": 19,
+      "fn": 6
+    }
+  }
+}

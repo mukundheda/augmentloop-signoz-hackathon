@@ -53,6 +53,12 @@ PRICES: dict[str, ModelRate] = {
     "meta-llama/llama-3.3-70b-instruct": ModelRate(0.13, 0.40),
     "openai/gpt-4o-mini": ModelRate(0.15, 0.60),
     "deepseek/deepseek-chat": ModelRate(0.20, 0.80),
+    # Premium OpenAI tier, added for the CleanCut real-substrate capture. That
+    # capture runs on the keys the CleanCut product itself already holds
+    # (OpenAI + Google) rather than OpenRouter, so its cheap-vs-premium
+    # contrast is gpt-4o-mini against gpt-4o. Same list-price basis as the rows
+    # above; re-check before submission like every other rate here.
+    "openai/gpt-4o": ModelRate(2.50, 10.00),
 }
 
 
