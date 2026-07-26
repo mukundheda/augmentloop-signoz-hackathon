@@ -10,6 +10,8 @@ import json
 import os
 import re
 import sys
+import time
+import urllib.error
 from collections import defaultdict
 from datetime import datetime, timezone
 from pathlib import Path
@@ -142,7 +144,27 @@ def main() -> int:
 
     recording_path.parent.mkdir(parents=True, exist_ok=True)
     live = direct_caller(budget_usd=budget)
-    caller = recording_caller(recording_path, record_from=live)
+    record_live = recording_caller(recording_path, record_from=live)
+    replay = (
+        recording_caller(recording_path)
+        if recording_path.exists() and recording_path.stat().st_size
+        else None
+    )
+    live_calls = 0
+
+    def caller(model: str, prompt: str):  # type: ignore[no-untyped-def]
+        """Replay completed calls and append only responses still missing."""
+        nonlocal live_calls
+        if replay is not None:
+            try:
+                return replay(model, prompt)
+            except KeyError:
+                pass
+        live_calls += 1
+        return record_live(model, prompt)
+
+    throttle = float(os.environ.get("PROOF_THROTTLE", "6"))
+    rate_limit_sleep = float(os.environ.get("PROOF_RATE_LIMIT_SLEEP", "65"))
     proof_traces, proof_metrics = _providers("cleancut-proof", endpoint)
     outcome_traces, outcome_metrics = _providers("cleancut-outcomes", endpoint)
 
@@ -160,9 +182,22 @@ def main() -> int:
     try:
         for item_id in sorted(truth):
             replies: dict[str, str] = {}
+            live_calls_before = live_calls
 
             def capture(model: str, prompt: str):  # type: ignore[no-untyped-def]
-                reply = caller(model, prompt)
+                for attempt in range(3):
+                    try:
+                        reply = caller(model, prompt)
+                        break
+                    except urllib.error.HTTPError as error:
+                        if error.code != 429 or attempt == 2:
+                            raise
+                        print(
+                            f"rate_limit model={model} "
+                            f"sleep={rate_limit_sleep:.0f}s",
+                            flush=True,
+                        )
+                        time.sleep(rate_limit_sleep)
                 replies[model] = reply.text
                 return reply
 
@@ -206,6 +241,8 @@ def main() -> int:
                 f"correct={summary.correct} cost=${summary.total_cost_usd:.6f}",
                 flush=True,
             )
+            if live_calls > live_calls_before and throttle:
+                time.sleep(throttle)
     finally:
         for provider in (
             proof_traces,
