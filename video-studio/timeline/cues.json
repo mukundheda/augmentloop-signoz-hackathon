@@ -1,0 +1,94 @@
+{
+  "fps": 30,
+  "totalFrames": 1800,
+  "width": 1920,
+  "height": 1080,
+  "voice": "af_heart",
+  "scenes": [
+    {
+      "id": "opening",
+      "startFrame": 0,
+      "endFrame": 180,
+      "headline": "Learning starts with play.",
+      "caption": "Learning starts with play.",
+      "narration": {
+        "text": "Learning starts with play.",
+        "startFrame": 35,
+        "speed": 0.98
+      }
+    },
+    {
+      "id": "toyworld",
+      "startFrame": 180,
+      "endFrame": 540,
+      "headline": "Every moment means something.",
+      "caption": "Every choice, challenge, and breakthrough becomes a meaningful signal.",
+      "narration": {
+        "text": "Inside ToyWorld, every choice, challenge, and breakthrough becomes a meaningful signal.",
+        "startFrame": 205,
+        "speed": 1
+      }
+    },
+    {
+      "id": "signals",
+      "startFrame": 540,
+      "endFrame": 1020,
+      "headline": "Activity becomes understanding.",
+      "caption": "Gradebook turns real activity into a clear view of progress.",
+      "narration": {
+        "text": "Gradebook brings those signals together, turning real activity into a clear view of progress.",
+        "startFrame": 575,
+        "speed": 0.98
+      }
+    },
+    {
+      "id": "insights",
+      "startFrame": 1020,
+      "endFrame": 1440,
+      "headline": "See what matters next.",
+      "caption": "See strengths, spot gaps, and know where support matters most.",
+      "narration": {
+        "text": "Teachers can see strengths, spot gaps, and understand exactly where support will make the biggest difference.",
+        "startFrame": 1050,
+        "speed": 1.02
+      }
+    },
+    {
+      "id": "payoff",
+      "startFrame": 1440,
+      "endFrame": 1680,
+      "headline": "Less grading. More guiding.",
+      "caption": "Less time grading. More time helping every learner move forward.",
+      "narration": {
+        "text": "Less time grading. More time helping every learner move forward.",
+        "startFrame": 1465,
+        "speed": 1.02
+      }
+    },
+    {
+      "id": "identity",
+      "startFrame": 1680,
+      "endFrame": 1800,
+      "headline": "Play becomes progress.",
+      "caption": "ToyWorld and Gradebook. Play becomes progress.",
+      "narration": {
+        "text": "ToyWorld and Gradebook. Play becomes progress.",
+        "startFrame": 1688,
+        "speed": 1.06
+      }
+    }
+  ],
+  "music": {
+    "assetId": "music-main",
+    "startFrame": 0,
+    "endFrame": 1800
+  },
+  "effects": [
+    {"assetId": "sfx-open", "startFrame": 8, "gainDb": -15},
+    {"assetId": "sfx-ui-1", "startFrame": 300, "gainDb": -22},
+    {"assetId": "sfx-ui-2", "startFrame": 430, "gainDb": -22},
+    {"assetId": "sfx-transition", "startFrame": 548, "gainDb": -18},
+    {"assetId": "sfx-insight", "startFrame": 1180, "gainDb": -20},
+    {"assetId": "sfx-close", "startFrame": 1740, "gainDb": -16}
+  ]
+}
