@@ -1,0 +1,33 @@
+<!doctype html>
+<html>
+  <body>
+    <div id="status">Loading Kokoro WebAssembly…</div>
+    <script type="module">
+      import {KokoroTTS, env} from '/vendor/kokoro.web.js';
+
+      env.wasmPaths = '/ort/';
+      const status = document.querySelector('#status');
+      const ttsPromise = KokoroTTS.from_pretrained(
+        'onnx-community/Kokoro-82M-v1.0-ONNX',
+        {dtype: 'q8', device: 'wasm'},
+      );
+
+      window.kokoroReady = ttsPromise.then(() => {
+        status.textContent = 'Kokoro ready';
+        return true;
+      });
+
+      window.generateVoice = async ({text, voice, speed = 1}) => {
+        const tts = await ttsPromise;
+        const audio = await tts.generate(text, {voice, speed});
+        const bytes = new Uint8Array(audio.toWav());
+        let binary = '';
+        const block = 0x8000;
+        for (let offset = 0; offset < bytes.length; offset += block) {
+          binary += String.fromCharCode(...bytes.subarray(offset, offset + block));
+        }
+        return btoa(binary);
+      };
+    </script>
+  </body>
+</html>
