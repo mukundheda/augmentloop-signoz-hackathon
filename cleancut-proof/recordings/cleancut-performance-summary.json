@@ -1,63 +1,63 @@
 {
-  "started_at_utc": "2026-07-26T15:21:30.449352+00:00",
+  "started_at_utc": "2026-07-26T15:24:50.162203+00:00",
   "completed_at_utc": null,
-  "processed_items": 10,
+  "processed_items": 21,
   "total_items": 45,
-  "decisions": 30,
-  "correct": 22,
-  "cost_usd": 0.0099724,
+  "decisions": 63,
+  "correct": 44,
+  "cost_usd": 0.0218648,
   "by_model": {
     "openai/gpt-4o": {
-      "decisions": 10,
-      "correct": 7,
-      "cost_usd": 0.009049999999999999
+      "decisions": 21,
+      "correct": 15,
+      "cost_usd": 0.01984
     },
     "openai/gpt-4o-mini": {
-      "decisions": 10,
-      "correct": 6,
-      "cost_usd": 0.0005405999999999999
+      "decisions": 21,
+      "correct": 15,
+      "cost_usd": 0.0011844
     },
     "google/gemini-2.5-flash-lite": {
-      "decisions": 10,
-      "correct": 9,
-      "cost_usd": 0.00038180000000000006
+      "decisions": 21,
+      "correct": 14,
+      "cost_usd": 0.0008404
     }
   },
   "by_model_type": {
     "openai/gpt-4o|performance_prediction": {
-      "decisions": 10,
-      "correct": 7,
-      "cost_usd": 0.009049999999999999
+      "decisions": 21,
+      "correct": 15,
+      "cost_usd": 0.01984
     },
     "openai/gpt-4o-mini|performance_prediction": {
-      "decisions": 10,
-      "correct": 6,
-      "cost_usd": 0.0005405999999999999
+      "decisions": 21,
+      "correct": 15,
+      "cost_usd": 0.0011844
     },
     "google/gemini-2.5-flash-lite|performance_prediction": {
-      "decisions": 10,
-      "correct": 9,
-      "cost_usd": 0.00038180000000000006
+      "decisions": 21,
+      "correct": 14,
+      "cost_usd": 0.0008404
     }
   },
   "confusion_by_model": {
     "openai/gpt-4o": {
-      "tp": 5,
-      "tn": 2,
-      "fp": 2,
-      "fn": 1
+      "tp": 10,
+      "tn": 5,
+      "fp": 4,
+      "fn": 2
     },
     "openai/gpt-4o-mini": {
-      "tp": 5,
-      "tn": 1,
-      "fp": 3,
+      "tp": 11,
+      "tn": 4,
+      "fp": 5,
       "fn": 1
     },
     "google/gemini-2.5-flash-lite": {
-      "tp": 6,
+      "tp": 11,
       "tn": 3,
-      "fp": 1,
-      "fn": 0
+      "fp": 6,
+      "fn": 1
     }
   }
 }
