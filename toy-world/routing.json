@@ -1,5 +1,5 @@
 {
   "route_choice": "anthropic/claude-sonnet-4.6",
   "eta_estimate": "anthropic/claude-sonnet-4.6",
-  "next_hop": "anthropic/claude-sonnet-4.6"
+  "next_hop": "google/gemini-2.5-flash-lite"
 }
