@@ -1,0 +1,25 @@
+{
+ "recording": "/Users/mukundheda/Desktop/AugmentLoop/projects/augmentloop-signoz-hackathon/toy-world/recordings/replay-v2.jsonl",
+ "judge_model": "qwen/qwen-2.5-72b-instruct",
+ "decisions_judged": 420,
+ "errors": 0,
+ "elapsed_seconds": 335.7,
+ "confusion_matrix": {
+  "correct_x_correct": 244,
+  "correct_x_incorrect": 114,
+  "incorrect_x_correct": 24,
+  "incorrect_x_incorrect": 38,
+  "unparseable_x_correct": 0,
+  "unparseable_x_incorrect": 0
+ },
+ "judge_correct_count": 358,
+ "checker_correct_count": 268,
+ "agree_count": 282,
+ "disagree_count": 138,
+ "unparseable_count": 0,
+ "ai_judge_cost_per_correct_usd": 0.001128,
+ "experiment_api_spend_usd": 0.130141,
+ "total_decision_cost_usd": 0.403804,
+ "checker_cost_per_correct_usd": 0.001507,
+ "methodology_note": "cost per correct decision = ALL decision spend divided by the number of correct decisions. Not the cost of correct decisions alone; see the README retraction."
+}
