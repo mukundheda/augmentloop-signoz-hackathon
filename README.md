@@ -36,13 +36,24 @@ substrates report into the same dashboard: `toy-world`, where we compute the
 answer key ourselves, and `cleancut-proof`, a real revenue-generating product
 where we do not.
 
-![The Gradebook cost-per-correct-decision dashboard running in SigNoz: the decision type, grade source and model variables across the top, a cost per 1,000 correct decisions panel, a cost per correct decision by model panel broken down across claude-sonnet-4.6, claude-haiku-4.5, openai/gpt-4o and deepseek-chat, cost over time by grade source, and correct rate percent by model](docs/screenshots/dashboard-headline.png)
+Each screenshot below is a clickable link to the exact live SigNoz panel it
+shows (`http://localhost:8080/...`). Those links only resolve on a machine
+running this stack. If you've followed [the judge run](docs/judge-run.md), your
+own cast will provision its own dashboard under a different UUID than the one
+hardcoded here, so our specific links will 404 for you — but the widget IDs
+are pinned in `dashboards/gradebook-cost-per-correct-decision.json` and stay
+the same, so open your own "Gradebook: Cost per Correct Decision" dashboard and
+the equivalent panel is one click away. The screenshots are the durable
+evidence either way; the links are a bonus for anyone driving the same
+instance we captured these from.
+
+[![The Gradebook cost-per-correct-decision dashboard running in SigNoz: the decision type, grade source and model variables across the top, a cost per 1,000 correct decisions panel, a cost per correct decision by model panel broken down across claude-sonnet-4.6, claude-haiku-4.5, openai/gpt-4o and deepseek-chat, cost over time by grade source, and correct rate percent by model](docs/screenshots/dashboard-headline.png)](http://localhost:8080/dashboard/019f8d8a-eeaf-7bc0-a981-43196af8a781)
 
 *The headline dashboard. The `$grade_source` selector at the top is the whole
 argument in one control: set it to `math` and the number counts only grades a
 checker proved, and a model's opinion has no way in.*
 
-![The right-sizing grid panel in SigNoz: a table of decision type by model with correct, graded and cost columns, showing filler_detection at 102 of 110 for openai/gpt-4o at $0.15 against 26 of 110 for gpt-4o-mini, quote_extraction at 70 of 110 for gpt-4o-mini at $0.00971 against 53 of 110 for gpt-4o at $0.17, and next_hop at 20 of 20 for deepseek-chat, gpt-4o-mini and gemini-2.5-flash-lite, alongside the failure-events-by-class and recent-failure-events log panels](docs/screenshots/right-sizing-grid.png)
+[![The right-sizing grid panel in SigNoz: a table of decision type by model with correct, graded and cost columns, showing filler_detection at 102 of 110 for openai/gpt-4o at $0.15 against 26 of 110 for gpt-4o-mini, quote_extraction at 70 of 110 for gpt-4o-mini at $0.00971 against 53 of 110 for gpt-4o at $0.17, and next_hop at 20 of 20 for deepseek-chat, gpt-4o-mini and gemini-2.5-flash-lite, alongside the failure-events-by-class and recent-failure-events log panels](docs/screenshots/right-sizing-grid.png)](http://localhost:8080/dashboard/019f8d8a-eeaf-7bc0-a981-43196af8a781?expandedWidgetId=panel-8-right-sizing-table)
 
 *The right-sizing grid, and the reason this project keys on decision type rather
 than on model. Read the two CleanCut rows against each other: on `filler_detection`
@@ -51,7 +62,7 @@ the expensive model earns its money, 102 of 110 against 26 of 110. On
 about a seventeenth of the cost. One roster, one run, opposite answers, decided
 only by which decision was being made.*
 
-![The CleanCut Decisions by Type panel in SigNoz: a stacked bar chart over 24 hours showing filler_detection, quote_extraction, performance_prediction and clip_scoring decision volumes](docs/screenshots/cleancut-decisions.png)
+[![The CleanCut Decisions by Type panel in SigNoz: a stacked bar chart over 24 hours showing filler_detection, quote_extraction, performance_prediction and clip_scoring decision volumes](docs/screenshots/cleancut-decisions.png)](http://localhost:8080/dashboard/019f8d8a-eeaf-7bc0-a981-43196af8a781?expandedWidgetId=panel-13-cleancut-decision-types)
 
 *The same recording contract on a real product. `performance_prediction` is the
 newest decision type, graded against a ground-truth CSV built from real
@@ -59,7 +70,7 @@ views-per-day data across 45 items.*
 
 ### The same dashboard, scoped to CleanCut
 
-![The Gradebook dashboard with the decision type variable set to filler_detection: the cost per correct decision by model panel now shows only CleanCut's roster of openai/gpt-4o, openai/gpt-4o-mini and google/gemini-2.5-flash-lite, with cost over time by grade source and correct rate percent by model below](docs/screenshots/cleancut-dashboard-filtered.png)
+[![The Gradebook dashboard with the decision type variable set to filler_detection: the cost per correct decision by model panel now shows only CleanCut's roster of openai/gpt-4o, openai/gpt-4o-mini and google/gemini-2.5-flash-lite, with cost over time by grade source and correct rate percent by model below](docs/screenshots/cleancut-dashboard-filtered.png)](http://localhost:8080/dashboard/019f8d8a-eeaf-7bc0-a981-43196af8a781?variables=%257B%2522decision_type%2522%253A%2522filler_detection%2522%257D)
 
 *One control does the whole two-act story. Set `$decision_type` to
 `filler_detection` and every panel re-scopes from the toy world to CleanCut: the
