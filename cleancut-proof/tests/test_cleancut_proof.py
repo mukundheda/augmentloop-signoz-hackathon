@@ -191,3 +191,65 @@ def test_none_sentinel_stripped_wherever_it_appears():
     assert not filler_checker(
         _strip_none_sentinel("er uh uh uh um uh um uh um NONE"), truth
     )
+
+
+# --- performance_prediction: leak guard + recording (round 2) ---------------
+
+
+def test_performance_prompt_is_clean_but_guard_catches_a_leak():
+    from cleancutproof.runner import (
+        PERFORMANCE_PROMPT, PromptLeakError, assert_no_performance_leak)
+
+    t = "So today we talk about compounding. It works over time."
+    # The shipped prompt must pass.
+    assert_no_performance_leak(PERFORMANCE_PROMPT.format(transcript=t), t)
+    # Scaffolding that hands over the answer must fail loudly, before spending.
+    with pytest.raises(PromptLeakError):
+        assert_no_performance_leak("This video got 13059 views. Predict.\n" + t, t)
+
+
+def test_leak_guard_ignores_the_transcript_itself():
+    """A creator saying "views" on camera is content, not a leak.
+
+    Checking the transcript would reject most real material and quietly shrink
+    the corpus, so only the scaffolding we wrap around it is scanned.
+    """
+    from cleancutproof.runner import PERFORMANCE_PROMPT, assert_no_performance_leak
+
+    t = "I always say views do not matter and subscribers do not matter."
+    assert_no_performance_leak(PERFORMANCE_PROMPT.format(transcript=t), t)
+
+
+def test_recording_caller_replays_without_calling_the_model(tmp_path):
+    from cleancutproof.runner import ModelReply, recording_caller
+
+    path = tmp_path / "rec.jsonl"
+    live = {"n": 0}
+
+    def fake(model, prompt):
+        live["n"] += 1
+        return ModelReply(text="0.73", input_tokens=100, output_tokens=3, response_id="r1")
+
+    rec = recording_caller(path, record_from=fake)
+    first = rec("openai/gpt-4o", "predict this")
+    assert live["n"] == 1
+
+    replay = recording_caller(path)
+    again = replay("openai/gpt-4o", "predict this")
+    assert live["n"] == 1, "replay must make no model call, that is the point"
+    assert (again.text, again.input_tokens, again.response_id) == (
+        first.text, first.input_tokens, first.response_id)
+
+
+def test_recording_caller_refuses_when_prompts_drift(tmp_path):
+    """A silent miss would let a replay quietly grade a different question."""
+    from cleancutproof.runner import ModelReply, recording_caller
+
+    path = tmp_path / "rec.jsonl"
+    rec = recording_caller(
+        path,
+        record_from=lambda m, p: ModelReply(text="0.5", input_tokens=1, output_tokens=1, response_id="x"),
+    )
+    rec("openai/gpt-4o", "prompt A")
+    with pytest.raises(KeyError):
+        recording_caller(path)("openai/gpt-4o", "prompt B")

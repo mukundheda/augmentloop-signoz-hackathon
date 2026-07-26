@@ -69,7 +69,13 @@ _RETRY_DELAYS_S: tuple[float, ...] = (2.0, 5.0, 12.0)
 
 
 def _post_with_retry(req, timeout: int):  # type: ignore[no-untyped-def]
-    """POST with backoff on 429 and 5xx; raise immediately on 4xx."""
+    """POST with backoff on 429 and 5xx; raise immediately on 4xx or a timeout.
+
+    Timeouts are deliberately NOT retried. In a batch, retrying a timeout three
+    times turns one slow call into four full timeout windows and stalls the
+    whole run: observed live, one transcript consumed 29 minutes that way. A
+    timeout is better spent failing fast so the batch moves to the next item.
+    """
     import time
     import urllib.error
     import urllib.request
@@ -84,15 +90,15 @@ def _post_with_retry(req, timeout: int):  # type: ignore[no-untyped-def]
             if exc.code != 429 and exc.code < 500:
                 raise
             last = exc
-        except TimeoutError as exc:
-            last = exc
         if attempt < len(_RETRY_DELAYS_S):
             time.sleep(_RETRY_DELAYS_S[attempt])
     assert last is not None
     raise last
 
 
-def direct_caller(*, budget_usd: float = 0.50, timeout: int = 120) -> ModelCaller:
+def direct_caller(
+    *, budget_usd: float = 0.50, timeout: int = 45, max_output_tokens: int = 700
+) -> ModelCaller:
     """A `ModelCaller` that reaches OpenAI and Gemini directly.
 
     Drop-in replacement for `openrouter_caller`; same budget semantics, plus
@@ -114,6 +120,12 @@ def direct_caller(*, budget_usd: float = 0.50, timeout: int = 120) -> ModelCalle
                 "model": bare,
                 "messages": [{"role": "user", "content": prompt}],
                 "temperature": 0,
+                # Bound the response. Without this, conversational transcripts
+                # (podcast audio, as opposed to tight YouTube captions) can walk
+                # a model into a very long enumeration and straight into a
+                # timeout. Both jobs here need a short answer: a filler list or
+                # a single quote.
+                "max_tokens": max_output_tokens,
             }
         ).encode()
         req = urllib.request.Request(
