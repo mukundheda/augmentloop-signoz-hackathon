@@ -52,10 +52,14 @@ jobs:
       # it. `--json` skips the OTLP POST, so this needs no collector and no
       # network. The emitter has zero npm dependencies, so there is nothing to
       # install beyond Node itself.
+      # 24, not 22: emit.ts is executed directly with no build step, and Node
+      # only strips TypeScript types without an explicit flag from 22.18 on.
+      # Pinning bare '22' would resolve to whatever 22.x is current and could
+      # go red on a machine older than that.
       - name: Set up Node (for the TypeScript emitter)
         uses: actions/setup-node@v4
         with:
-          node-version: '22'
+          node-version: '24'
 
       - name: Conformance across languages (TypeScript emitter -> Python checker)
         run: node conformance/ts-emitter/emit.ts --json | python conformance/check_conformance.py -
