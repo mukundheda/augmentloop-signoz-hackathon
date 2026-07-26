@@ -130,6 +130,34 @@ describe("command_exit_code", () => {
     assert.ok(!result.graded && result.reason === "no_ground_truth");
   });
 
+  test("an unrelated command_result does not grade the declared command, because a fallback would let the harness choose its own grader", () => {
+    const unrelated: EvidenceItem = {
+      evidence_id: "e-lint",
+      kind: "command_result",
+      command_name: "eslint .",
+      exit_code: 0,
+    };
+    const result = evaluate({
+      bundle: bundle({ kind: "absent", reason: "not_captured" }, [unrelated]),
+      manifest: manifest(evaluator),
+    });
+    assert.ok(!result.graded, "a passing lint run must not become a verdict on `npm test`");
+    assert.ok(!result.graded && result.reason === "no_ground_truth");
+  });
+
+  test("matches on argv[0] as well as the joined argv, and on nothing else", () => {
+    const byHead = evaluate({
+      bundle: bundle({ kind: "absent", reason: "not_captured" }, [commandEvidence(0, "npm")]),
+      manifest: manifest(evaluator),
+    });
+    assertGraded(byHead, true, "math");
+    const byNeither = evaluate({
+      bundle: bundle({ kind: "absent", reason: "not_captured" }, [commandEvidence(0, "test")]),
+      manifest: manifest(evaluator),
+    });
+    assert.ok(!byNeither.graded && byNeither.reason === "no_ground_truth");
+  });
+
   test("two candidate command results are ambiguous rather than arbitrarily picked", () => {
     const result = evaluate({
       bundle: bundle({ kind: "absent", reason: "not_captured" }, [
@@ -164,10 +192,23 @@ describe("file_digest", () => {
     );
   });
 
-  test("a different path is not evidence about this file", () => {
+  test("a different path is not evidence about this file, and is not fallen back to", () => {
+    // Same reason as the command matcher: without exact matching the harness
+    // would get to nominate which file the manifest's expectation is tested on.
     const other: EvidenceItem = { ...fileEvidence(DIGEST_A), path: "src/other.ts" } as EvidenceItem;
     const result = evaluate({ bundle: bundle({ kind: "absent", reason: "not_captured" }, [other]), manifest: manifest(evaluator) });
     assert.ok(!result.graded && result.reason === "no_ground_truth");
+  });
+
+  test("two file_state items for the same path are ambiguous rather than arbitrarily picked", () => {
+    const result = evaluate({
+      bundle: bundle({ kind: "absent", reason: "not_captured" }, [
+        { ...fileEvidence(DIGEST_A), evidence_id: "e1" },
+        { ...fileEvidence(DIGEST_B), evidence_id: "e2" },
+      ]),
+      manifest: manifest(evaluator),
+    });
+    assert.ok(!result.graded && result.reason === "ambiguous");
   });
 });
 

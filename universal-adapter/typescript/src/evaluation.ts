@@ -346,23 +346,29 @@ function matchesJsonType(value: unknown, type: string): boolean {
 
 /**
  * The command_result item that answers the manifest's declared command.
- * Matching rule, pinned so both languages agree: an evidence item matches when
- * its command_name equals the argv joined by single spaces, or equals argv[0].
- * If no item matches, every command_result item is a candidate, so a collector
- * that names its command differently is still usable as long as it reported
- * exactly one command.
+ *
+ * Matching rule, pinned so both languages agree: an item matches when its
+ * command_name equals the argv joined by single spaces, or equals argv[0].
+ * Zero matches is no_ground_truth, more than one is ambiguous, and there is
+ * deliberately NO fallback to whatever command results happen to be present.
+ *
+ * The fallback is the tempting version and it is wrong. The manifest declares
+ * the command precisely so that the process being graded cannot choose its own
+ * grader; accepting any command_result when the declared one is absent hands
+ * that choice straight back to the harness. A harness emitting one unrelated
+ * command_result would then supply the verdict for whatever the manifest
+ * declared, which is the same hole as a model-assisted checker presenting
+ * itself as arithmetic, one layer down.
  */
 function selectCommandResults(
   evidence: readonly MathAdmissibleEvidence[],
   evaluator: CommandExitCodeEvaluator,
 ): MathAdmissibleEvidence[] {
-  const commandResults = evidence.filter((item) => item.kind === "command_result");
   const joined = evaluator.command.join(" ");
   const head = evaluator.command[0];
-  const named = commandResults.filter(
+  return evidence.filter(
     (item) => item.kind === "command_result" && (item.command_name === joined || item.command_name === head),
   );
-  return named.length > 0 ? named : commandResults;
 }
 
 // --- the seven evaluator kinds ---------------------------------------------
@@ -454,6 +460,10 @@ export function evaluate(input: EvaluationInput): EvaluationResult {
       if (independent !== undefined) {
         return graded(independent === evaluator.expected.digest, authority, evaluator.kind, []);
       }
+      // Exact path only, and no fallback to whatever file_state items exist,
+      // for the same reason as the command matcher above: the manifest names
+      // the file being graded so the graded process cannot nominate a different
+      // one. Zero matches is no_ground_truth, more than one is ambiguous.
       const candidates = evidence.filter(
         (item) => item.kind === "file_state" && item.path === evaluator.path,
       );
