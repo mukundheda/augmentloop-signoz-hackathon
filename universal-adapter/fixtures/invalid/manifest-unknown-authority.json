@@ -1,0 +1,15 @@
+{
+  "schema_version": "1.0",
+  "task_id": "repair-auth-017",
+  "decision_type": "task_completion",
+  "evaluation_name": "repository.tests_pass",
+  "authority": "harness_success",
+  "evaluator": {
+    "kind": "command_exit_code",
+    "command": [
+      "npm",
+      "test"
+    ],
+    "expected_exit_code": 0
+  }
+}

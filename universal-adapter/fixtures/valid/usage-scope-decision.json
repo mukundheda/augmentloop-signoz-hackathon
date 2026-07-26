@@ -1,0 +1,13 @@
+{
+  "schema_version": "1.0",
+  "usage_id": "usage-scope-decision",
+  "scope": "decision",
+  "run_id": "run-42",
+  "cost_provenance": "unknown",
+  "agent_id": "coder-1",
+  "decision_ids": [
+    "decision-017"
+  ],
+  "input_tokens": 2100,
+  "output_tokens": 460
+}

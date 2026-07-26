@@ -1,0 +1,16 @@
+{
+  "schema_version": "1.0",
+  "outcome_id": "outcome-89",
+  "decision_id": "decision-017",
+  "provider_response_id": "response-abc",
+  "outcome_type": "deployment_survived_window",
+  "correct": true,
+  "observed_at": "2026-07-27T10:00:00+05:30",
+  "evidence_ref": "github-pr-321",
+  "explanation": "Deployment stayed healthy for the full seven day observation window.",
+  "ext": {
+    "vendor.example": {
+      "window_seconds": 604800
+    }
+  }
+}

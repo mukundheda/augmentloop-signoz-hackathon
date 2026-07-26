@@ -1,0 +1,8 @@
+{
+  "schema_version": "1.0",
+  "usage_id": "usage-207",
+  "scope": "model_invocation",
+  "run_id": "run-42",
+  "input_tokens": 1200,
+  "output_tokens": 340
+}

@@ -1,0 +1,10 @@
+{
+  "schema_version": "1.0",
+  "usage_id": "usage-201",
+  "scope": "model_invocation",
+  "run_id": "run-42",
+  "cost_provenance": "provider_reported",
+  "model": "anthropic/claude-sonnet-4.6",
+  "input_tokens": 1200,
+  "output_tokens": 340
+}

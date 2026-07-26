@@ -1,0 +1,57 @@
+{
+  "_note": "ILLUSTRATIVE SHAPE, hand written for conformance testing. This is NOT captured output from any real installation and no harness package is imported, installed or required to use this fixture. Field names are modelled only on the hook families named in issue #101 and may not match any released version. The point of the file is the SHAPE of the normalization, not fidelity to a vendor API. Ruflo is described in issue #101 as exposing task, command, session and trajectory hooks, so this shape is a FLAT list of typed records with no nesting, joined only by run_id and task_id, with cost available only as a session total. It is deliberately structurally different from the Hermes fixture.",
+  "_format": "ruflo.flat_record_log.v0-illustrative",
+  "records": [
+    {
+      "record_type": "session",
+      "session_id": "session-3",
+      "run_id": "swarm-77",
+      "harness_version": "0.0.0-illustrative",
+      "total_input_tokens": 4100,
+      "total_output_tokens": 760,
+      "reported_cost_usd": null,
+      "environment": "benchmark"
+    },
+    {
+      "record_type": "trajectory",
+      "run_id": "swarm-77",
+      "trajectory_id": "traj-11",
+      "task_id": "repair-auth-017",
+      "step": 1,
+      "agent": "coder-1",
+      "spawned_by": "orchestrator-0",
+      "model": "anthropic/claude-sonnet-4.6",
+      "selected_command": "search_database",
+      "otel_trace": "1c1d2e3f405162738495a6b7c8d9e0f1",
+      "otel_span": "0102030405060708"
+    },
+    {
+      "record_type": "command",
+      "run_id": "swarm-77",
+      "task_id": "repair-auth-017",
+      "trajectory_id": "traj-11",
+      "step": 2,
+      "command_label": "project-test-suite",
+      "exit_code": 0,
+      "elapsed_ms": 38210,
+      "artifact_sha256": "2c26b46b68ffc68ff99b453c1d30413413422d706483bfa0f98a5e886266e7ae",
+      "otel_trace": "1c1d2e3f405162738495a6b7c8d9e0f1",
+      "otel_span": "1112131415161718"
+    },
+    {
+      "record_type": "task",
+      "run_id": "swarm-77",
+      "task_id": "repair-auth-017",
+      "trajectory_id": "traj-11",
+      "agent": "coder-1",
+      "spawned_by": "orchestrator-0",
+      "model": "anthropic/claude-sonnet-4.6",
+      "status": "completed",
+      "self_reported_success": true,
+      "result_workspace_ref": "workspace-after-agent",
+      "result_workspace_sha256": "2c26b46b68ffc68ff99b453c1d30413413422d706483bfa0f98a5e886266e7ae",
+      "otel_trace": "1c1d2e3f405162738495a6b7c8d9e0f1",
+      "otel_span": "1112131415161718"
+    }
+  ]
+}

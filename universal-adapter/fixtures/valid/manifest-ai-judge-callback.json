@@ -1,0 +1,15 @@
+{
+  "schema_version": "1.0",
+  "task_id": "summarise-ticket-88",
+  "decision_type": "content_generation",
+  "evaluation_name": "summary.faithful",
+  "authority": "ai_judge",
+  "evaluator": {
+    "kind": "callback",
+    "name": "llm_pairwise_judge",
+    "options": {
+      "judge_model": "anthropic/claude-sonnet-4.6"
+    },
+    "determinism": "model_assisted"
+  }
+}

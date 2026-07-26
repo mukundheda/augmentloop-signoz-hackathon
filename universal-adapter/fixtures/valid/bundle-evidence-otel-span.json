@@ -1,0 +1,23 @@
+{
+  "schema_version": "1.0",
+  "decision": {
+    "decision_type": "tool_choice",
+    "evaluation_name": "agent.tool_choice_appropriate",
+    "chosen": {
+      "kind": "inline",
+      "value": "search_database"
+    }
+  },
+  "subject": {
+    "harness": "generic-jsonl",
+    "run_id": "run-0002"
+  },
+  "evidence": [
+    {
+      "evidence_id": "evidence-1",
+      "kind": "otel_span",
+      "trace_id": "4bf92f3577b34da6a3ce929d0e0e4736",
+      "span_id": "00f067aa0ba902b7"
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+[
+  {
+    "schema_version": "1.0",
+    "usage_id": "ruflo:swarm-77:session-total",
+    "scope": "run",
+    "run_id": "swarm-77",
+    "agent_id": null,
+    "decision_ids": [
+      "ruflo:swarm-77:task:repair-auth-017"
+    ],
+    "provider_response_id": null,
+    "model": null,
+    "input_tokens": 4100,
+    "output_tokens": 760,
+    "cached_input_tokens": null,
+    "provider_cost_usd": null,
+    "cost_provenance": "harness_token_estimate",
+    "pricing_table_id": "gradebook.pricing@0a1b2c3d4e5f"
+  }
+]

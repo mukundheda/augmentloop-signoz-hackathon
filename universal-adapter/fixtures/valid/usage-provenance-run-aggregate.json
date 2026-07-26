@@ -1,0 +1,9 @@
+{
+  "schema_version": "1.0",
+  "usage_id": "usage-prov-run_aggregate",
+  "scope": "run",
+  "run_id": "run-42",
+  "cost_provenance": "run_aggregate",
+  "provider_cost_usd": 1.42,
+  "agent_id": null
+}

@@ -1,0 +1,7 @@
+{
+  "schema_version": "1.0",
+  "outcome_id": "outcome-93",
+  "outcome_type": "pull_request_merged",
+  "correct": true,
+  "observed_at": "2026-07-27T10:00:00Z"
+}

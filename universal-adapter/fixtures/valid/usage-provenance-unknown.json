@@ -1,0 +1,10 @@
+{
+  "schema_version": "1.0",
+  "usage_id": "usage-prov-unknown",
+  "scope": "model_invocation",
+  "run_id": "run-42",
+  "cost_provenance": "unknown",
+  "model": null,
+  "input_tokens": null,
+  "output_tokens": null
+}

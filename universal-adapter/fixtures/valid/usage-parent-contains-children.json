@@ -1,0 +1,17 @@
+{
+  "schema_version": "1.0",
+  "usage_id": "usage-parent-1",
+  "scope": "agent",
+  "run_id": "run-42",
+  "cost_provenance": "provider_reported",
+  "agent_id": "orchestrator-0",
+  "parent_agent_id": null,
+  "contains_usage_ids": [
+    "usage-101",
+    "usage-102"
+  ],
+  "decision_ids": [
+    "decision-017"
+  ],
+  "provider_cost_usd": 0.5521
+}

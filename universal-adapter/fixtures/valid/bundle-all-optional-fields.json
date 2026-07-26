@@ -1,0 +1,119 @@
+{
+  "schema_version": "1.0",
+  "decision": {
+    "decision_id": "decision-017",
+    "decision_type": "task_completion",
+    "evaluation_name": "repository.tests_pass",
+    "chosen": {
+      "kind": "artifact_reference",
+      "value": "workspace-after-agent",
+      "digest": {
+        "algorithm": "sha256",
+        "digest": "9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08",
+        "byte_length": 4096
+      }
+    }
+  },
+  "subject": {
+    "harness": "hermes",
+    "harness_version": "0.0.0-illustrative",
+    "run_id": "run-42",
+    "session_id": "session-9",
+    "agent_id": "coder-1",
+    "parent_agent_id": "orchestrator-0",
+    "model": "anthropic/claude-sonnet-4.6"
+  },
+  "correlation": {
+    "provider_response_id": "response-abc",
+    "trace_id": "4bf92f3577b34da6a3ce929d0e0e4736",
+    "span_id": "00f067aa0ba902b7",
+    "task_id": "repair-auth-017"
+  },
+  "evidence": [
+    {
+      "evidence_id": "evidence-tests-1",
+      "kind": "command_result",
+      "command_name": "project-test-suite",
+      "exit_code": 0,
+      "duration_ms": 41230,
+      "artifact_digest": {
+        "algorithm": "sha256",
+        "digest": "9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08",
+        "byte_length": 4096
+      }
+    },
+    {
+      "evidence_id": "evidence-file-1",
+      "kind": "file_state",
+      "path": "src/auth/session.py",
+      "artifact_digest": {
+        "algorithm": "sha256",
+        "digest": "9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08",
+        "byte_length": 4096
+      }
+    },
+    {
+      "evidence_id": "evidence-report-1",
+      "kind": "test_report",
+      "passed": 128,
+      "failed": 0,
+      "skipped": 3,
+      "artifact_digest": {
+        "algorithm": "sha256",
+        "digest": "9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08",
+        "byte_length": 4096
+      }
+    },
+    {
+      "evidence_id": "evidence-output-1",
+      "kind": "structured_output",
+      "output": {
+        "kind": "inline",
+        "value": {
+          "migrated": true,
+          "rows": 12
+        }
+      }
+    },
+    {
+      "evidence_id": "evidence-span-1",
+      "kind": "otel_span",
+      "trace_id": "4bf92f3577b34da6a3ce929d0e0e4736",
+      "span_id": "00f067aa0ba902b7"
+    },
+    {
+      "evidence_id": "evidence-log-1",
+      "kind": "log_reference",
+      "ref": "s3://run-artifacts/run-42/agent.log",
+      "artifact_digest": {
+        "algorithm": "sha256",
+        "digest": "9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08",
+        "byte_length": 4096
+      }
+    },
+    {
+      "evidence_id": "evidence-claim-1",
+      "kind": "harness_claim",
+      "claim": {
+        "success": true,
+        "reason": "tests_reported_green",
+        "attempts": 2
+      }
+    }
+  ],
+  "usage_refs": [
+    "usage-101",
+    "usage-102"
+  ],
+  "metadata": {
+    "environment": "benchmark",
+    "attempt": 2,
+    "retried": false,
+    "operator": null
+  },
+  "ext": {
+    "vendor.example": {
+      "queue_depth": 3
+    }
+  }
+}

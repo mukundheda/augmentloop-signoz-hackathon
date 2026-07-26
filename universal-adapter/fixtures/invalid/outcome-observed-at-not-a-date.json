@@ -1,0 +1,8 @@
+{
+  "schema_version": "1.0",
+  "outcome_id": "outcome-97",
+  "decision_id": "decision-017",
+  "outcome_type": "pull_request_merged",
+  "correct": true,
+  "observed_at": "not-a-date"
+}

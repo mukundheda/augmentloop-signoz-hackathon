@@ -1,0 +1,41 @@
+[
+  {
+    "schema_version": "1.0",
+    "usage_id": "hermes:run-42:llm:response-abc",
+    "scope": "model_invocation",
+    "run_id": "run-42",
+    "agent_id": "coder-1",
+    "parent_agent_id": "orchestrator-0",
+    "decision_ids": [
+      "hermes:run-42:toolcall-7",
+      "hermes:run-42:task:repair-auth-017"
+    ],
+    "provider_response_id": "response-abc",
+    "model": "anthropic/claude-sonnet-4.6",
+    "input_tokens": 1200,
+    "output_tokens": 340,
+    "cached_input_tokens": 800,
+    "provider_cost_usd": null,
+    "cost_provenance": "harness_token_estimate",
+    "pricing_table_id": "gradebook.pricing@0a1b2c3d4e5f"
+  },
+  {
+    "schema_version": "1.0",
+    "usage_id": "hermes:run-42:llm:response-def",
+    "scope": "model_invocation",
+    "run_id": "run-42",
+    "agent_id": "coder-1",
+    "parent_agent_id": "orchestrator-0",
+    "decision_ids": [
+      "hermes:run-42:task:repair-auth-017"
+    ],
+    "provider_response_id": "response-def",
+    "model": "anthropic/claude-sonnet-4.6",
+    "input_tokens": 900,
+    "output_tokens": 120,
+    "cached_input_tokens": 0,
+    "provider_cost_usd": null,
+    "cost_provenance": "harness_token_estimate",
+    "pricing_table_id": "gradebook.pricing@0a1b2c3d4e5f"
+  }
+]

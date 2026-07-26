@@ -1,0 +1,12 @@
+{
+  "schema_version": "1.0",
+  "task_id": "repair-auth-017",
+  "decision_type": "task_completion",
+  "evaluation_name": "repository.tests_pass",
+  "authority": "reality",
+  "evaluator": {
+    "kind": "outcome",
+    "outcome_type": "pull_request_merged",
+    "observation_window_seconds": 604800
+  }
+}
