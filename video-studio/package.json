@@ -10,12 +10,14 @@
     "world:record": "node scripts/record-toyworld.mjs",
     "world:mix": "node scripts/world-first-mix.mjs",
     "world:master": "node scripts/world-first-master.mjs",
+    "world:verify": "node scripts/world-first-verify.mjs",
+    "world:build": "npm run world:narrate && npm run world:record && npm run world:mix && npm run world:master && npm run world:verify",
     "studio": "node scripts/preview.mjs",
     "render": "node scripts/render.mjs",
     "capture:test": "node scripts/capture-test.mjs",
     "review:frames": "node scripts/contact-sheet.mjs",
     "mix": "node scripts/mix.mjs",
-    "check": "node --check scripts/render.mjs && node --check scripts/mix.mjs && node --check scripts/contact-sheet.mjs && node --check scripts/preview.mjs && node --check scripts/audition.mjs && node --check scripts/narrate.mjs",
+    "check": "node --check scripts/render.mjs && node --check scripts/mix.mjs && node --check scripts/contact-sheet.mjs && node --check scripts/preview.mjs && node --check scripts/audition.mjs && node --check scripts/narrate.mjs && node --check scripts/world-first-narrate.mjs && node --check scripts/record-toyworld.mjs && node --check scripts/world-first-mix.mjs && node --check scripts/world-first-master.mjs && node --check scripts/world-first-verify.mjs",
     "test": "node --test test/*.test.mjs"
   },
   "devDependencies": {
