@@ -2,9 +2,12 @@ export function frameToMilliseconds(frame, fps) {
   return Math.round((frame * 1000) / fps);
 }
 
-export function buildAudioGraph({fps, narration, effects}) {
+export function buildAudioGraph({fps, totalFrames = fps * 60, narration, effects}) {
+  const duration = totalFrames / fps;
+  const fadeOutStart = Math.max(0, duration - 4);
   const parts = [
-    "[0:a]atrim=0:60,aresample=48000,volume=0.085,afade=t=in:st=0:d=1.4,afade=t=out:st=56:d=4[music]",
+    `[0:a]atrim=0:${duration},aresample=48000,volume=0.085,` +
+      `afade=t=in:st=0:d=1.4,afade=t=out:st=${fadeOutStart}:d=4[music]`,
   ];
 
   narration.forEach((cue, index) => {
@@ -16,7 +19,10 @@ export function buildAudioGraph({fps, narration, effects}) {
     );
   });
   const voiceLabels = narration.map((_, index) => `[voice${index}]`).join("");
-  parts.push(`${voiceLabels}amix=inputs=${narration.length}:duration=longest:normalize=0,apad=whole_dur=60[voices]`);
+  parts.push(
+    `${voiceLabels}amix=inputs=${narration.length}:duration=longest:normalize=0,` +
+      `apad=whole_dur=${duration}[voices]`,
+  );
   parts.push("[voices]asplit=2[voicekey][voiceout]");
   parts.push(
     "[music][voicekey]sidechaincompress=threshold=0.018:ratio=8:attack=25:release=320:makeup=1[ducked]",
@@ -34,7 +40,8 @@ export function buildAudioGraph({fps, narration, effects}) {
   const effectLabels = effects.map((_, index) => `[sfx${index}]`).join("");
   parts.push(
     `[ducked][voiceout]${effectLabels}amix=inputs=${effects.length + 2}:duration=longest:normalize=0,` +
-    "apad=whole_dur=60,atrim=duration=60,asetpts=N/SR/TB,aresample=48000[mix]",
+    `apad=whole_dur=${duration},atrim=duration=${duration},` +
+      "asetpts=N/SR/TB,aresample=48000[mix]",
   );
   return parts.join(";");
 }

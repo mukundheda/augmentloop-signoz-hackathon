@@ -20,3 +20,15 @@ test("master graph ducks music, delays cues, and ends at sixty seconds", () => {
   assert.match(graph, /atrim=duration=60/);
   assert.match(graph, /aresample=48000/);
 });
+
+test("long-form mix pads and trims to the cue-sheet duration", () => {
+  const graph = buildAudioGraph({
+    fps: 30,
+    totalFrames: 3360,
+    narration: [{startFrame: 24}],
+    effects: [],
+  });
+  assert.match(graph, /apad=whole_dur=112/);
+  assert.match(graph, /atrim=duration=112/);
+  assert.match(graph, /sidechaincompress/);
+});
