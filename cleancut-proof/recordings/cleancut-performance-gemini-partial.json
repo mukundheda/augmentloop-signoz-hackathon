@@ -1,0 +1,65 @@
+{
+  "status": "partial",
+  "stop_reason": "Google returned HTTP 429 after two 65-second cooldowns",
+  "started_at_utc": "2026-07-26T15:24:50.162203+00:00",
+  "completed_at_utc": null,
+  "processed_items": 21,
+  "total_items": 45,
+  "decisions": 63,
+  "correct": 44,
+  "cost_usd": 0.0218648,
+  "by_model": {
+    "openai/gpt-4o": {
+      "decisions": 21,
+      "correct": 15,
+      "cost_usd": 0.01984
+    },
+    "openai/gpt-4o-mini": {
+      "decisions": 21,
+      "correct": 15,
+      "cost_usd": 0.0011844
+    },
+    "google/gemini-2.5-flash-lite": {
+      "decisions": 21,
+      "correct": 14,
+      "cost_usd": 0.0008404
+    }
+  },
+  "by_model_type": {
+    "openai/gpt-4o|performance_prediction": {
+      "decisions": 21,
+      "correct": 15,
+      "cost_usd": 0.01984
+    },
+    "openai/gpt-4o-mini|performance_prediction": {
+      "decisions": 21,
+      "correct": 15,
+      "cost_usd": 0.0011844
+    },
+    "google/gemini-2.5-flash-lite|performance_prediction": {
+      "decisions": 21,
+      "correct": 14,
+      "cost_usd": 0.0008404
+    }
+  },
+  "confusion_by_model": {
+    "openai/gpt-4o": {
+      "tp": 10,
+      "tn": 5,
+      "fp": 4,
+      "fn": 2
+    },
+    "openai/gpt-4o-mini": {
+      "tp": 11,
+      "tn": 4,
+      "fp": 5,
+      "fn": 1
+    },
+    "google/gemini-2.5-flash-lite": {
+      "tp": 11,
+      "tn": 3,
+      "fp": 6,
+      "fn": 1
+    }
+  }
+}
