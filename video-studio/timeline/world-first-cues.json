@@ -1,0 +1,113 @@
+{
+  "fps": 30,
+  "totalFrames": 3360,
+  "width": 1920,
+  "height": 1080,
+  "voice": "af_heart",
+  "results": {
+    "junctions": 20,
+    "models": 7,
+    "decisions": 420,
+    "correct": 268,
+    "outcomes": 140,
+    "totalCostUsd": 0.4038042399999995,
+    "costPerCorrectUsd": 0.0015067322388059683
+  },
+  "chapters": [
+    {"id": "world", "startFrame": 0, "endFrame": 420, "title": "Welcome to ToyWorld"},
+    {"id": "problem", "startFrame": 420, "endFrame": 840, "title": "The missing signal"},
+    {"id": "experiment", "startFrame": 840, "endFrame": 1260, "title": "A controlled experiment"},
+    {"id": "language", "startFrame": 1260, "endFrame": 1740, "title": "Every route tells a story"},
+    {"id": "decision", "startFrame": 1740, "endFrame": 2160, "title": "One decision, fully explained"},
+    {"id": "gradebook", "startFrame": 2160, "endFrame": 2640, "title": "From activity to evidence"},
+    {"id": "results", "startFrame": 2640, "endFrame": 3060, "title": "The result"},
+    {"id": "broader", "startFrame": 3060, "endFrame": 3360, "title": "Beyond ToyWorld"}
+  ],
+  "narration": [
+    {
+      "id": "world",
+      "startFrame": 24,
+      "endFrame": 420,
+      "speed": 0.92,
+      "text": "Welcome to ToyWorld: a living three-dimensional road network built from real streets in Pune. Twenty junctions form a compact world where autonomous agents can navigate, make choices, and reveal how they reason."
+    },
+    {
+      "id": "problem",
+      "startFrame": 438,
+      "endFrame": 840,
+      "speed": 0.92,
+      "text": "The problem is simple. Most AI observability tells us that a request happened, how long it took, and how many tokens it used. It still cannot tell us whether the decision was correct, or worth its cost."
+    },
+    {
+      "id": "experiment",
+      "startFrame": 852,
+      "endFrame": 1260,
+      "speed": 0.94,
+      "text": "ToyWorld turns that missing signal into a controlled experiment. Seven language models face the same journeys and produce four hundred and twenty decisions across route choice, arrival-time estimation, and the next road to take."
+    },
+    {
+      "id": "language",
+      "startFrame": 1272,
+      "endFrame": 1740,
+      "speed": 0.94,
+      "text": "Each color represents a different model moving through the same environment. Correct routes resolve in green. Wrong answers resolve in red, while the yellow ghost shows the optimal alternative the agent could have chosen."
+    },
+    {
+      "id": "decision",
+      "startFrame": 1752,
+      "endFrame": 2160,
+      "speed": 0.93,
+      "text": "Follow one agent and every choice becomes inspectable: the question it received, its selected path, the known correct answer, its token usage, price, difficulty, and whether the journey later succeeded in reality."
+    },
+    {
+      "id": "gradebook",
+      "startFrame": 2172,
+      "endFrame": 2640,
+      "speed": 0.94,
+      "text": "Gradebook captures that evidence as standard OpenTelemetry evaluation data. It records the source of truth, prices the decision, and links later real-world outcomes back to the exact choice that caused them."
+    },
+    {
+      "id": "results",
+      "startFrame": 2652,
+      "endFrame": 3060,
+      "speed": 0.93,
+      "text": "Now the run has an honest result: two hundred and sixty-eight correct decisions, one hundred and forty observed outcomes, forty cents in total cost, and a measurable cost for every correct decision."
+    },
+    {
+      "id": "broader",
+      "startFrame": 3072,
+      "endFrame": 3345,
+      "speed": 0.96,
+      "text": "ToyWorld makes the idea visible, but Gradebook is built for any AI system. When a decision has a deterministic check or an observable outcome, performance stops being an assertion and becomes evidence."
+    }
+  ],
+  "cameraActions": [
+    {"startFrame": 0, "operation": "camera", "camera": "orbit"},
+    {"startFrame": 0, "operation": "speed", "value": 4},
+    {"startFrame": 420, "operation": "camera", "camera": "top"},
+    {"startFrame": 600, "operation": "selectAgent"},
+    {"startFrame": 615, "operation": "camera", "camera": "follow"},
+    {"startFrame": 840, "operation": "restart"},
+    {"startFrame": 840, "operation": "camera", "camera": "chase"},
+    {"startFrame": 1200, "operation": "selectAgent"},
+    {"startFrame": 1215, "operation": "camera", "camera": "follow"},
+    {"startFrame": 1680, "operation": "camera", "camera": "overview"},
+    {"startFrame": 2160, "operation": "camera", "camera": "orbit"},
+    {"startFrame": 2640, "operation": "camera", "camera": "top"},
+    {"startFrame": 2940, "operation": "camera", "camera": "overview"},
+    {"startFrame": 3060, "operation": "completeRun"}
+  ],
+  "overlays": [
+    {"kind": "chapter", "text": "TOYWORLD · PUNE", "startFrame": 24, "endFrame": 180},
+    {"kind": "metric", "text": "20 junctions · 7 models · 420 decisions", "startFrame": 900, "endFrame": 1170},
+    {"kind": "metric", "text": "268 correct · $0.4038 total cost", "startFrame": 2700, "endFrame": 2940},
+    {"kind": "identity", "text": "GRADEBOOK · PERFORMANCE BECOMES EVIDENCE", "startFrame": 3150, "endFrame": 3350}
+  ],
+  "music": {"assetId": "music-main", "startFrame": 0, "endFrame": 3360},
+  "effects": [
+    {"assetId": "sfx-open", "startFrame": 8, "gainDb": -19},
+    {"assetId": "sfx-transition", "startFrame": 840, "gainDb": -23},
+    {"assetId": "sfx-insight", "startFrame": 2652, "gainDb": -24},
+    {"assetId": "sfx-close", "startFrame": 3240, "gainDb": -20}
+  ]
+}
