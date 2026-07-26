@@ -49,10 +49,15 @@ By decision type, the false passes fall as: `eta_estimate` 67, `route_choice`
 
 ## The part that should be on camera
 
-**Fifty-nine of the 114 false passes contain reasoning that contradicts its own
+**At least 44 of the 114 false passes contain reasoning that contradicts its own
 verdict.** The judge does the arithmetic, states the model was wrong, and then
-returns `VERDICT: correct` anyway. That is 52% of the false passes, not a
+returns `VERDICT: correct` anyway. That is 38% of the false passes, not a
 cherry-picked anecdote.
+
+The 44 is deliberately the conservative count. It requires the reasoning to
+explicitly call the answer incorrect or name a different correct answer. A
+looser pattern that also catches phrasings like "Route A is faster" without an
+explicit verdict word returns 59. The lower number is the one to quote.
 
 `route_choice-J3-J11`, model `mistralai/mistral-small-24b-instruct-2501`, chose
 A, truth is B:
