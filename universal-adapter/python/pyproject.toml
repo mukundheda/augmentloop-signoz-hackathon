@@ -1,0 +1,49 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "gradebook-adapter"
+version = "0.0.1"
+description = "Python reference implementation of the Universal Agent Evidence Protocol (issue #101): validate harness-neutral evidence, grade it with an independent evaluator, attribute cost without double counting, and emit through gradebook's existing record_decision contract."
+requires-python = ">=3.10"
+license = { text = "MIT" }
+# gradebook is THIS repo's reference library (../../reference-library), NOT the
+# unrelated PyPI project that owns the name, so it must be installed in the same
+# pip invocation:
+#   pip install -e reference-library -e universal-adapter/python[test]
+# tests/conftest.py fails loud with that diagnosis rather than an opaque
+# ImportError, for the same reason toy-world does (ticket #30).
+# opentelemetry-api only: the SDK is supplied by whoever wires telemetry (the
+# app, SigNoz setup, or the test), never by a library.
+dependencies = [
+  "gradebook",
+  "opentelemetry-api>=1.27",
+]
+
+[project.optional-dependencies]
+# The json_schema evaluator is the only runtime feature that needs a JSON Schema
+# engine, so it is an extra rather than a hard dependency: a harness that never
+# uses that evaluator should not install one.
+jsonschema = [
+  "jsonschema>=4",
+]
+test = [
+  "opentelemetry-sdk>=1.27",
+  "pytest>=8",
+  # Also the anti-drift check: tests/test_schema_parity.py runs every fixture
+  # through both the hand written validator and the real JSON Schemas, and fails
+  # if the two ever reach different verdicts.
+  "jsonschema>=4",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["gradebook_adapter"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.mypy]
+python_version = "3.10"
+packages = ["gradebook_adapter"]
+strict = true
