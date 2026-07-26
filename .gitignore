@@ -24,3 +24,7 @@ signoz-client-analysis-2026-07-22.md
 
 # playwright-mcp scratch
 .playwright-mcp/
+
+# local agent scratch notes, never for the public repo
+.claude-scratch-*.md
+.claude/worktrees/

@@ -29,6 +29,98 @@ The whole thing is proven on **toy-world** — a 20-junction road network where 
 
 ---
 
+## What this looks like in SigNoz
+
+Everything below is a live capture of this project running, not a mockup. Two
+substrates report into the same dashboard: `toy-world`, where we compute the
+answer key ourselves, and `cleancut-proof`, a real revenue-generating product
+where we do not.
+
+![The Gradebook cost-per-correct-decision dashboard running in SigNoz: the decision type, grade source and model variables across the top, a cost per 1,000 correct decisions panel, a cost per correct decision by model panel broken down across claude-sonnet-4.6, claude-haiku-4.5, openai/gpt-4o and deepseek-chat, cost over time by grade source, and correct rate percent by model](docs/screenshots/dashboard-headline.png)
+
+*The headline dashboard. The `$grade_source` selector at the top is the whole
+argument in one control: set it to `math` and the number counts only grades a
+checker proved, and a model's opinion has no way in.*
+
+![The right-sizing grid panel in SigNoz: a table of decision type by model with correct, graded and cost columns, showing filler_detection at 102 of 110 for openai/gpt-4o at $0.15 against 26 of 110 for gpt-4o-mini, quote_extraction at 70 of 110 for gpt-4o-mini at $0.00971 against 53 of 110 for gpt-4o at $0.17, and next_hop at 20 of 20 for deepseek-chat, gpt-4o-mini and gemini-2.5-flash-lite, alongside the failure-events-by-class and recent-failure-events log panels](docs/screenshots/right-sizing-grid.png)
+
+*The right-sizing grid, and the reason this project keys on decision type rather
+than on model. Read the two CleanCut rows against each other: on `filler_detection`
+the expensive model earns its money, 102 of 110 against 26 of 110. On
+`quote_extraction` the same cheap model **beats** it, 70 of 110 against 53, for
+about a seventeenth of the cost. One roster, one run, opposite answers, decided
+only by which decision was being made.*
+
+![The CleanCut Decisions by Type panel in SigNoz: a stacked bar chart over 24 hours showing filler_detection, quote_extraction, performance_prediction and clip_scoring decision volumes](docs/screenshots/cleancut-decisions.png)
+
+*The same recording contract on a real product. `performance_prediction` is the
+newest decision type, graded against a ground-truth CSV built from real
+views-per-day data across 45 items.*
+
+### What actually lands
+
+- **Services** — `toy-world` and `cleancut-proof` (the decisions), plus `toy-world-outcomes` and `cleancut-outcomes` (the late reality grades). The deferred grade demonstrably crosses a service boundary, as it would in a real system.
+- **Traces** — a waterfall of `<decision_type> <query_id> decision` → `gen_ai.evaluation.result`, with the later reality grade span-linked back rather than nested.
+- **Events** — every grade carries `augmentloop.grade.source`, `augmentloop.decision.type`, `augmentloop.cost.usd`, and the frozen standard attributes. Decision spans additionally carry `augmentloop.decision.difficulty`.
+- **Dashboards** — two, committed as JSON in [`dashboards/`](dashboards/), with `$decision_type` / `$model` / `$grade_source` variables rather than a hardcoded allowlist.
+- **Saved views** — decision traces, failure events, judge-run health.
+
+### Alerts, and what each one actually watches
+
+Five rules ship as JSON in [`dashboards/`](dashboards/), spanning **all three** of
+SigNoz's rule types. Each one watches a specific failure of this system, and its
+notification says what tripped and what to do about it rather than telling you to
+go and look somewhere.
+
+| Rule | Type | Fires when | Why it exists |
+| --- | --- | --- | --- |
+| **Grading Pipeline Silent** | threshold + `alertOnAbsent` | nothing has been graded, from any grade source, for 10 minutes | The worst failure here is silent. A grader that stops emitting looks exactly like a system with nothing to do |
+| **Grade Quality Drop** | threshold | the correct-decision rate falls below its threshold | This is the alert that catches a bad reroute. Quality falling after a model swap is the thing the whole loop is built to prevent |
+| **Grade Quality Anomaly** | anomaly | correct-decision volume is anomalously low against its own seasonal baseline | Catches the slow degradation a fixed threshold sails straight past |
+| **Spend Spike** | threshold | decision cost burns past its threshold in 30 minutes | Cost is half the headline metric. A runaway loop should page someone before the invoice does |
+| **Budget Guard Repeated Trips** | log-based | the in-process budget guard trips 3 or more times in 5 minutes | One trip is the guard working. Three in five minutes means something upstream is retrying into a wall |
+
+**Delivery is wired and confirmed, not assumed.** A webhook channel posts to
+Telegram, and the message is written to be read on a phone with no dashboard
+open: which rule fired, the metric and window behind it, what it means in plain
+words, and which panel answers the question next. Here is the body, verbatim:
+
+```
+SigNoz - ALERT FIRING
+
+Gradebook: Live Decision Volume
+severity critical - team gradebook
+
+WHAT IT WATCHES
+count(gradebook.decisions.graded) over a 15m rolling window, across
+services toy-world, toy-world-outcomes, cleancut-proof and cleancut-outcomes.
+
+CONDITION
+graded decisions in the window > 0
+
+WHAT IT MEANS
+AI decisions are being graded and priced right now. The recording path is
+alive end to end: a decision span, a gen_ai.evaluation.result carrying
+augmentloop.grade.source, and the cost in USD that goes with it.
+
+WHAT TO DO
+Open the "Gradebook: Cost per Correct Decision" dashboard in SigNoz and read
+cost per correct decision by model and by decision type. If a decision type's
+correct rate moved, the right-sizing grid is the panel that says which model
+to reroute it to.
+```
+
+That particular rule is a **deliberately low-bar liveness tripwire** built so the
+delivery path could be demonstrated end to end on a live stack; the five rules
+above are the production-shaped ones. Saying so is the point. Two of those five
+are also documented as **dormant on a cold stack** rather than quietly shipped:
+the anomaly rule cannot fire without seasonal history, and email delivery dies at
+the last hop because the stack runs no SMTP, which is exactly why the working
+channel is a webhook. Both are measured facts written into
+[docs/judge-run.md](docs/judge-run.md), not predictions.
+
+---
+
 ## The live demo
 
 **→ [gradebook-toy-world.vercel.app](https://gradebook-toy-world.vercel.app)**
@@ -263,23 +355,6 @@ flowchart LR
 ```
 
 A reroute is a **diff in a committed file**, not a flag and not an environment variable, for three reasons: a proposal becomes something you can read before you say yes; before-and-after is reproducible from git rather than from someone's shell history; and it keys on decision *type*, so a reroute of `next_hop` alone is directly comparable without the other two types' spend leaking in. An unpriceable or unknown model in that file **fails loudly at load**, before any model call is placed. A bad approval costs nothing. Full walkthrough: [docs/right-sizing-loop.md](docs/right-sizing-loop.md).
-
----
-
-## What lands in SigNoz
-
-![The Gradebook cost-per-correct-decision dashboard running in SigNoz: dashboard variables for decision type, grade source and model, a cost per 1,000 correct decisions panel, a cost per correct decision by model panel, cost over time by grade source, and correct rate percent by model](docs/screenshots/dashboard-headline.png)
-
-![The right-sizing grid panel in SigNoz: a table of decision type by model showing next_hop scoring 20 of 20 correct for gemini-2.5-flash-lite at $0.0011 against claude-sonnet-4.6 at $0.0314, alongside the failure-events-by-class and recent-failure-events log panels](docs/screenshots/right-sizing-grid.png)
-
-- **Services** — `toy-world` (the decisions) and `toy-world-outcomes` (the late, `route_choice`-only reality grades). The deferred grade demonstrably crosses a service boundary, as it would in a real system.
-- **Traces** — one per model (`model-run <model>`): a waterfall of `<decision_type> <query_id> decision` → `gen_ai.evaluation.result`.
-- **Events** — every grade carries `augmentloop.grade.source`, `augmentloop.decision.type`, `augmentloop.cost.usd`, and the frozen standard attributes. Decision spans additionally carry `augmentloop.decision.difficulty`.
-- **Dashboards** — two, committed as JSON in [`dashboards/`](dashboards/), with `$decision_type` / `$model` / `$grade_source` variables rather than a hardcoded allowlist.
-- **Alerts** — five rules spanning **all three** of SigNoz's rule types (threshold, anomaly, log-based).
-- **Saved views** — decision traces, failure events, judge-run health.
-
-Two of those five alert rules are documented as **dormant on a cold stack** rather than quietly shipped: the anomaly rule cannot fire without seasonal history, and a firing rule reaches the dispatcher but dies at the last hop because the stack runs no SMTP. Both are measured facts written into [docs/judge-run.md](docs/judge-run.md), not predictions.
 
 ---
 
