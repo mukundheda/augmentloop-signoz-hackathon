@@ -401,9 +401,10 @@ def run_performance_prediction(
                 ref = capture_decision(
                     response_id=f"perf-{item_id}-{reply.response_id}"
                 )
+                match = re.search(r"[01]?\.?\d+", reply.text)
                 try:
-                    score = float(re.search(r"[01]?\.?\d+", reply.text).group(0))
-                except (AttributeError, ValueError):
+                    score = float(match.group(0)) if match else -1.0
+                except ValueError:
                     score = -1.0  # unparseable answer counts as a wrong call
                 predicted_out = score >= PERFORMANCE_GATE
                 cost = price(model, reply.input_tokens, reply.output_tokens)

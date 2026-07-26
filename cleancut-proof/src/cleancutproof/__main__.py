@@ -100,6 +100,10 @@ def main() -> None:
 
         caller = direct_caller(budget_usd=budget)
     else:
+        if api_key is None:
+            raise SystemExit(
+                "OPENROUTER_API_KEY required when provider is not 'direct'"
+            )
         caller = openrouter_caller(api_key, budget_usd=budget)
     print(f"provider={provider}  roster={', '.join(roster)}")
     summary = run_detections(
@@ -118,9 +122,9 @@ def main() -> None:
         summary=summary,
     )
 
-    for provider in (proof, outcomes, proof_meters, outcomes_meters):
-        provider.force_flush()
-        provider.shutdown()
+    for otel_provider in (proof, outcomes, proof_meters, outcomes_meters):
+        otel_provider.force_flush()
+        otel_provider.shutdown()
 
     print(f"CleanCut proof run ({label}) -> {ENDPOINT}")
     print(
