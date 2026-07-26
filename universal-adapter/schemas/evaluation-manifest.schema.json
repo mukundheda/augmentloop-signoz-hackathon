@@ -33,18 +33,33 @@
       "then": {
         "properties": {
           "evaluator": {
-            "properties": {
-              "kind": {
-                "enum": [
-                  "exact_equality",
-                  "json_equality",
-                  "command_exit_code",
-                  "file_digest",
-                  "json_schema",
-                  "callback"
-                ]
+            "allOf": [
+              {
+                "properties": {
+                  "kind": {
+                    "enum": [
+                      "exact_equality",
+                      "json_equality",
+                      "command_exit_code",
+                      "file_digest",
+                      "json_schema",
+                      "callback"
+                    ]
+                  }
+                }
+              },
+              {
+                "description": "The one arm above whose determinism is not visible in its shape. A callback may only carry math authority when it has explicitly declared itself deterministic, so a model-assisted checker cannot reach the headline metric by omission.",
+                "if": {
+                  "properties": { "kind": { "const": "callback" } },
+                  "required": ["kind"]
+                },
+                "then": {
+                  "required": ["determinism"],
+                  "properties": { "determinism": { "const": "deterministic" } }
+                }
               }
-            }
+            ]
           }
         }
       }
@@ -139,12 +154,16 @@
         },
         {
           "title": "callback",
-          "description": "An application-provided checker resolved by name from a registry the application controls. The name is a lookup key, never an import path or callable, so a manifest cannot cause arbitrary code to load.",
-          "required": ["kind", "name"],
+          "description": "An application-provided checker resolved by name from a registry the application controls. The name is a lookup key, never an import path or callable, so a manifest cannot cause arbitrary code to load. A callback is the one evaluator whose determinism the schema cannot inspect, which is why `determinism` must be declared explicitly rather than assumed.",
+          "required": ["kind", "name", "determinism"],
           "additionalProperties": false,
           "properties": {
             "kind": { "const": "callback" },
             "name": { "$ref": "#/$defs/identifier" },
+            "determinism": {
+              "enum": ["deterministic", "model_assisted"],
+              "description": "Whether this checker computes its verdict or asks a model for one. Required, with no default, because a defaulted value is a guess about the one property that decides whether the result can reach the headline metric. Declaring `deterministic` for a checker that calls a model is a false statement in a reviewable file, which is the point: the schema cannot detect it, but it can force someone to write it down. The implementation enforces the same rule a second time at registration."
+            },
             "options": {
               "type": "object",
               "additionalProperties": { "type": ["string", "number", "boolean", "null"] }
