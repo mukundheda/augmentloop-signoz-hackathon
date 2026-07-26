@@ -4,6 +4,13 @@
 
 ### Cost per correct decision — the metric that turns *"our AI is doing well"* into a measurement
 
+<a href="https://youtu.be/OgwsdheTRD4">
+  <img src="https://img.youtube.com/vi/OgwsdheTRD4/maxresdefault.jpg" alt="Watch the 2:45 demo: we built an AI judge to prove we should never trust one" width="640">
+</a>
+
+### ▶ [**Watch the 2:45 demo**](https://youtu.be/OgwsdheTRD4)
+
+[![Demo video](https://img.shields.io/badge/▶%20demo%20video-2%3A45-red)](https://youtu.be/OgwsdheTRD4)
 [![CI](https://github.com/mukundheda/augmentloop-signoz-hackathon/actions/workflows/ci.yml/badge.svg)](https://github.com/mukundheda/augmentloop-signoz-hackathon/actions/workflows/ci.yml)
 [![Live demo](https://img.shields.io/badge/live%20demo-gradebook--toy--world-0ea5a4)](https://gradebook-toy-world.vercel.app)
 [![License](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
@@ -11,6 +18,7 @@
 
 **Team AugmentLoop** · Agents of SigNoz (WeMakeDevs × SigNoz), Track 01: AI & Agent Observability
 
+[Watch the demo](https://youtu.be/OgwsdheTRD4) ·
 [Live demo](https://gradebook-toy-world.vercel.app) ·
 [Judge walkthrough](docs/judge-run.md) ·
 [Recording contract](docs/conventions.md) ·
