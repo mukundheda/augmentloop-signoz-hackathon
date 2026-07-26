@@ -450,26 +450,32 @@ def _command_exit_code(bundle: DecisionEvidenceBundle,
     """Grade a command's exit status, which the MANIFEST named and the evidence
     merely reports.
 
-    The command comes from the manifest, so the process being graded cannot
-    choose the test that grades it. Matching is by name: argv joined by single
-    spaces, or argv[0], falling back to every command_result item when neither
-    matches. Zero candidates cannot be graded, and more than one is ambiguous,
-    because picking one of two exit codes would be picking the answer.
+    Matching is BY NAME ONLY: command_name equal to argv joined by single spaces,
+    or equal to argv[0]. There is deliberately no fallback to "whatever
+    command_result happens to be in the bundle". The manifest declares the command
+    precisely so the graded process cannot choose its own grader, and a fallback
+    that accepts any command result hands that choice straight back to the
+    harness: emit one command_result with an unrelated name and a zero exit code,
+    and it becomes the verdict for a test that never ran. That is the callback
+    determinism hole one layer down, and it is closed the same way.
+
+    Zero matches cannot be graded, and more than one is ambiguous, because picking
+    between two exit codes would be picking the answer.
     """
     joined = " ".join(evaluator.command)
     head = evaluator.command[0] if evaluator.command else ""
-    commands = [
+    candidates = [
         item for item in gradeable_evidence(bundle)
         if isinstance(item, CommandResultEvidence)
+        and item.command_name in (joined, head)
     ]
-    candidates = [item for item in commands if item.command_name in (joined, head)]
-    if not candidates:
-        candidates = commands
 
     if not candidates:
         return (
             CheckResult(False, ReasonCode.NO_GROUND_TRUTH),
-            f"no command_result evidence reports {joined!r}",
+            f"no command_result evidence names {joined!r} or {head!r}; an "
+            "unrelated command result is not a substitute, because the manifest "
+            "names the command so the graded process cannot pick its own grader",
         )
     if len(candidates) > 1:
         return (
@@ -489,10 +495,15 @@ def _file_digest(bundle: DecisionEvidenceBundle, evaluator: FileDigestEvaluator
                  ) -> tuple[CheckResult, str]:
     """Compare a file's reported digest to the digest the manifest expects.
 
-    Same shape as the command rule, for the same reason: the manifest names the
-    path and the expected hash, and the evidence only reports what was observed.
-    A digest is content-addressed, so a harness cannot fake a match without
-    producing the matching content.
+    Identical rule to the command evaluator, for the identical reason: match
+    file_state evidence by EXACT path, zero is no_ground_truth, more than one is
+    ambiguous, and there is no fallback to some other file that happens to be in
+    the bundle. The manifest names the path and the expected hash; the evidence
+    only reports what was observed. Accepting a different file's digest would let
+    the graded process choose which file gets graded.
+
+    A digest is content-addressed, so within that rule a harness cannot fake a
+    match without producing the matching content.
     """
     candidates = [
         item for item in gradeable_evidence(bundle)
@@ -623,6 +634,13 @@ def _schema_failure(value: Any, schema: Mapping[str, Any], path: str) -> Optiona
             return f"{where} is shorter than {schema['minLength']}"
         if "maxLength" in schema and len(value) > schema["maxLength"]:
             return f"{where} is longer than {schema['maxLength']}"
+        # Known non-conformance, recorded rather than silently lived with: this
+        # runs a manifest author's pattern through Python's `re`, whose `$` also
+        # matches before a trailing newline, while JSON Schema specifies ECMA-262
+        # where it does not. The patterns this package owns use `\Z` for that
+        # reason (see validation.py), but a pattern that arrives inside a manifest
+        # cannot be rewritten safely, so an author who anchors with `$` will get
+        # slightly different verdicts in the two languages.
         if "pattern" in schema and re.search(schema["pattern"], value) is None:
             return f"{where} does not match {schema['pattern']}"
 

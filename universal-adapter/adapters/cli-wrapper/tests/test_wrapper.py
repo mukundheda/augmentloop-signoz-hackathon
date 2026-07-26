@@ -27,6 +27,7 @@ from gradebook_adapter_cli import (
     CollectionResult,
     WrapperError,
     collect,
+    evaluate_locally,
     guard_self_grading,
     load_usage_export,
     main,
@@ -378,20 +379,59 @@ def test_the_written_file_is_readable_by_the_jsonl_adapter(tmp_path: Path) -> No
     assert any(isinstance(e, FileStateEvidence) for e in bundle.evidence)
 
 
-def test_a_secret_in_argv_is_redacted_out_of_process_identity() -> None:
-    """argv is process identity, and process identity routinely carries a token.
-
-    Redacted on the way into the record rather than on the way out of it: the
-    evidence file outlives whatever was going to filter it later.
-    """
-    observation = observe("pass")
-    leaky = observation.__class__(
-        command=(*observation.command, "--api-key", "sk-live-abcdef0123456789"),
+def _with_argv(observation, *extra: str):  # type: ignore[no-untyped-def]
+    return observation.__class__(
+        command=(*observation.command, *extra),
         pid=observation.pid, exit_code=0, started_at=observation.started_at,
         ended_at=observation.ended_at, duration_ms=1,
     )
+
+
+def test_a_secret_in_argv_falls_back_to_argv_zero_and_stays_matchable() -> None:
+    """argv is process identity, and process identity routinely carries a token.
+
+    Redacted on the way into the record rather than on the way out of it: the
+    evidence file outlives whatever was going to filter it later. But a redacted
+    joined argv matches no manifest command, so the decision would silently become
+    ungradeable, which trades a privacy bug for a correctness one. So when
+    redaction changes anything, command_name becomes argv[0] alone, which the
+    evaluator's matching rule already accepts.
+    """
+    leaky = _with_argv(observe("pass"), "--api-key", "sk-live-abcdef0123456789")
     result = collect(leaky, harness="hermes", evaluation_name="e")
 
     document = json.dumps(result.bundle.to_dict())
     assert "sk-live-abcdef0123456789" not in document
-    assert "[redacted]" in document
+
+    command = next(e for e in result.bundle.evidence
+                   if isinstance(e, CommandResultEvidence))
+    assert command.command_name == leaky.command[0]
+    assert "[redacted]" not in command.command_name
+    assert any("argv[0]" in note for note in result.notes)
+
+
+def test_the_fallback_still_grades_against_a_manifest_naming_argv_zero() -> None:
+    """The point of the fallback, proved end to end through the evaluator."""
+    leaky = _with_argv(observe("pass"), "--token", "sk-live-abcdef0123456789")
+    result = collect(leaky, harness="hermes",
+                     evaluation_name="repository.tests_pass",
+                     decision_type="task_completion")
+    manifest = EvaluationManifest.from_dict(
+        manifest_document([leaky.command[0], "--token", "sk-live-abcdef0123456789"])
+    )
+
+    verdict = evaluate_locally(result.bundle, manifest)
+
+    assert verdict.graded and verdict.passed
+
+
+def test_a_clean_command_keeps_the_full_command_line() -> None:
+    """No redaction, no fallback: the joined form is strictly more useful."""
+    observation = observe("pass")
+    result = collect(observation, harness="hermes", evaluation_name="e")
+
+    command = next(e for e in result.bundle.evidence
+                   if isinstance(e, CommandResultEvidence))
+    assert command.command_name == observation.command_name
+    assert " " in command.command_name
+    assert not any("argv[0]" in note for note in result.notes)

@@ -132,12 +132,51 @@ def test_command_exit_code_matches_on_argv_head_too() -> None:
     assert evaluate(bundle(evidence=evidence), manifest(evaluator)).passed
 
 
-def test_command_exit_code_falls_back_to_the_only_command_result() -> None:
+def test_an_unrelated_command_result_does_not_satisfy_the_manifest() -> None:
+    """No fallback to "any command result lying around".
+
+    The manifest names the command precisely so the graded process cannot pick
+    its own grader. A fallback that accepts an unrelated command_result hands
+    that choice straight back to the harness: emit one zero exit code under any
+    name and it becomes the verdict for a test that never ran. Same failure as
+    the callback determinism hole, one layer down.
+    """
     evidence = (CommandResultEvidence(evidence_id="e-1",
                                       command_name="project-test-suite",
                                       exit_code=0),)
     evaluator = CommandExitCodeEvaluator(command=("npm", "test"), expected_exit_code=0)
-    assert evaluate(bundle(evidence=evidence), manifest(evaluator)).passed
+
+    result = evaluate(bundle(evidence=evidence), manifest(evaluator))
+
+    assert not result.graded
+    assert not result.passed
+    assert result.reason is ReasonCode.NO_GROUND_TRUTH
+    assert "not a substitute" in result.detail
+
+
+def test_an_unrelated_file_state_does_not_satisfy_the_manifest() -> None:
+    """The identical rule for file_digest, for the identical reason."""
+    evaluator = FileDigestEvaluator(path="dist/app.js", expected=Digest(digest=SHA))
+    elsewhere = (FileStateEvidence(evidence_id="e-1", path="dist/vendor.js",
+                                   artifact_digest=Digest(digest=SHA)),)
+
+    result = evaluate(bundle(evidence=elsewhere), manifest(evaluator))
+
+    assert not result.graded
+    assert result.reason is ReasonCode.NO_GROUND_TRUTH
+
+
+def test_two_file_states_for_one_path_are_ambiguous() -> None:
+    evaluator = FileDigestEvaluator(path="dist/app.js", expected=Digest(digest=SHA))
+    twice = (
+        FileStateEvidence(evidence_id="e-1", path="dist/app.js",
+                          artifact_digest=Digest(digest=SHA)),
+        FileStateEvidence(evidence_id="e-2", path="dist/app.js",
+                          artifact_digest=Digest(digest="b" * 64)),
+    )
+    result = evaluate(bundle(evidence=twice), manifest(evaluator))
+    assert not result.graded
+    assert result.reason is ReasonCode.AMBIGUOUS
 
 
 def test_command_exit_code_cannot_decide_with_no_evidence_or_with_two() -> None:
@@ -148,8 +187,8 @@ def test_command_exit_code_cannot_decide_with_no_evidence_or_with_two() -> None:
     assert none_at_all.reason is ReasonCode.NO_GROUND_TRUTH
 
     two = (
-        CommandResultEvidence(evidence_id="e-1", command_name="lint", exit_code=0),
-        CommandResultEvidence(evidence_id="e-2", command_name="build", exit_code=1),
+        CommandResultEvidence(evidence_id="e-1", command_name="npm test", exit_code=0),
+        CommandResultEvidence(evidence_id="e-2", command_name="npm test", exit_code=1),
     )
     # Choosing between two exit codes would be choosing the answer.
     ambiguous = evaluate(bundle(evidence=two), manifest(evaluator))

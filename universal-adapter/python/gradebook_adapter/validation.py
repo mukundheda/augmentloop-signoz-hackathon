@@ -31,16 +31,30 @@ SCHEMA_VERSION = "1.0"
 _IDENTIFIER_MAX = 512
 _STRING_MAX = 2048
 
-_TRACE_ID_RE = re.compile(r"^[0-9a-f]{32}$")
-_SPAN_ID_RE = re.compile(r"^[0-9a-f]{16}$")
-_SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
+# `\Z` and NEVER `$`, in every pattern in this file.
+#
+# JSON Schema specifies ECMA-262 regex semantics, where `$` matches only at the
+# very end of the string. Python's `re` also matches `$` just before a trailing
+# newline, so "abc...\n" satisfies `^[0-9a-f]{64}$` in Python and fails the same
+# pattern in JavaScript. Python is the non-conformant one here, so `\Z`, which
+# means end-of-string and nothing else, is what actually implements the schema.
+#
+# This is invisible to tests/test_schema_parity.py, and that is the important
+# part: the `jsonschema` package uses Python's `re` too, so both sides of the
+# anti-drift check share the same wrong semantics and agree with each other. It
+# was caught by the cross-language parity runner and can only be caught there.
+# There is a targeted test per affected field type; do not "simplify" `\Z` back
+# to `$`.
+_TRACE_ID_RE = re.compile(r"^[0-9a-f]{32}\Z")
+_SPAN_ID_RE = re.compile(r"^[0-9a-f]{16}\Z")
+_SHA256_RE = re.compile(r"^[0-9a-f]{64}\Z")
 # RFC 3339 shape. Calendar validity is checked separately below, because a
 # regex happily accepts 2026-02-31.
 # [0-9] and not \d: Python's \d matches Unicode digits such as U+0660, the
 # schema's ECMA regex does not, and that difference alone would be a parity break.
 _RFC3339_RE = re.compile(
     r"^[0-9]{4}-[0-9]{2}-[0-9]{2}[Tt][0-9]{2}:[0-9]{2}:[0-9]{2}"
-    r"(\.[0-9]+)?([Zz]|[+-][0-9]{2}:[0-9]{2})$"
+    r"(\.[0-9]+)?([Zz]|[+-][0-9]{2}:[0-9]{2})\Z"
 )
 
 

@@ -28,6 +28,7 @@ the caller and not a data problem.
 
 from __future__ import annotations
 
+import copy
 import hashlib
 import json
 from dataclasses import dataclass, field
@@ -557,6 +558,19 @@ class DecisionEvidenceBundle:
     metadata: Optional[Mapping[str, Scalar]] = None
     ext: Optional[Mapping[str, Any]] = None
     schema_version: str = SCHEMA_VERSION
+    # The document exactly as it arrived, kept only so the content digest can
+    # hash what was actually sent rather than what this model re-emits. The two
+    # differ in one load-bearing way: a field written as an explicit null is
+    # decoded to None and then OMITTED on the way back out, so hashing the
+    # re-emitted form would make `"model": null` and a missing `model` produce
+    # the same digest. This whole package says in three places that absent and
+    # present-null are not interchangeable, and the content digest is what
+    # separates an idempotent replay from a conflicting duplicate, so it has to
+    # honour that too. Excluded from equality and repr: it is provenance about
+    # the bytes, not part of what the record means.
+    source: Optional[Mapping[str, Any]] = field(
+        default=None, compare=False, repr=False
+    )
 
     @classmethod
     def from_dict(cls, data: Mapping[str, Any]) -> "DecisionEvidenceBundle":
@@ -605,6 +619,7 @@ class DecisionEvidenceBundle:
             usage_refs=tuple(str(ref) for ref in data.get("usage_refs", ())),
             metadata=dict(data["metadata"]) if "metadata" in data else None,
             ext=dict(data["ext"]) if "ext" in data else None,
+            source=copy.deepcopy(dict(data)),
         )
 
     def to_dict(self) -> dict[str, Any]:
@@ -1136,12 +1151,25 @@ def derive_decision_id(bundle: DecisionEvidenceBundle) -> str:
 def bundle_content_digest(bundle: DecisionEvidenceBundle) -> str:
     """Digest of everything the bundle says, ignoring the id itself.
 
+    Hashes the document AS IT ARRIVED when there is one, so an explicit null and
+    an omitted key produce different digests. Re-emitting the model first would
+    collapse the two, and the content digest is exactly what decides whether a
+    re-sent bundle is an idempotent replay or a conflicting duplicate. Two
+    implementations disagreeing about that would disagree about which decisions
+    exist.
+
     Ignoring `decision_id` is what makes replay idempotent across the two id
     provenances: a bundle that omits the id and the same bundle carrying its
     derived id are the same content, not a conflict.
     """
-    payload = bundle.to_dict()
-    payload["decision"].pop("decision_id", None)
+    payload = dict(bundle.source) if bundle.source is not None else bundle.to_dict()
+    decision = payload.get("decision")
+    if isinstance(decision, Mapping):
+        # Rebuilt rather than mutated: `source` is provenance and must survive
+        # being hashed unchanged.
+        payload["decision"] = {
+            key: value for key, value in decision.items() if key != "decision_id"
+        }
     return sha256_hex(canonical_json(payload))
 
 
