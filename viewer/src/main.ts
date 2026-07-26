@@ -62,6 +62,8 @@ async function boot() {
     const panel = app.querySelector<HTMLElement>(".side-panel")!;
     const scene = new RaceScene(viewport, map, roads);
     const hud = createHud(panel, run);
+    const speedControl = app.querySelector<HTMLSelectElement>("[data-speed]");
+    const cameraControl = app.querySelector<HTMLSelectElement>("[data-camera]");
     let speed = 1;
     let state = "RUNNING";
     let progress: HudProgress = { completed: 0, correct: 0, cost: 0, wave: 0, waves: 0 };
@@ -105,16 +107,17 @@ async function boot() {
       hud.setState("PAUSED");
     });
     app.querySelector("[data-restart]")?.addEventListener("click", play);
-    app.querySelector<HTMLSelectElement>("[data-speed]")?.addEventListener("change", (event) => {
+    speedControl?.addEventListener("change", (event) => {
       speed = Number((event.target as HTMLSelectElement).value);
       play();
     });
-    app.querySelector<HTMLSelectElement>("[data-camera]")?.addEventListener("change", (event) => {
+    cameraControl?.addEventListener("change", (event) => {
       scene.setCameraPreset((event.target as HTMLSelectElement).value as CameraPreset);
     });
     window.addEventListener("resize", () => scene.resize());
     window.toyWorldDemo = {
       setCamera(camera: DemoCamera) {
+        if (cameraControl) cameraControl.value = camera;
         scene.setCameraPreset(camera);
       },
       setOrbit(enabled: boolean) {
@@ -122,6 +125,7 @@ async function boot() {
       },
       setSpeed(nextSpeed: DemoSpeed) {
         speed = nextSpeed;
+        if (speedControl) speedControl.value = String(nextSpeed);
         play();
       },
       selectFirstActiveAgent() {

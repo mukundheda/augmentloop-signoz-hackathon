@@ -97,7 +97,8 @@
     {"startFrame": 1860, "operation": "camera", "camera": "follow"},
     {"startFrame": 2296, "operation": "camera", "camera": "orbit"},
     {"startFrame": 2738, "operation": "completeRun"},
-    {"startFrame": 2738, "operation": "camera", "camera": "top"},
+    {"startFrame": 2738, "operation": "camera", "camera": "overview"},
+    {"startFrame": 3000, "operation": "camera", "camera": "orbit"},
     {"startFrame": 3163, "operation": "camera", "camera": "overview"},
     {"startFrame": 3590, "operation": "completeRun"}
   ],

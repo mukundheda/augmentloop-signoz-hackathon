@@ -46,7 +46,7 @@ function makeLabel(text: string, color = "#a8bad4"): THREE.Sprite {
   const sprite = new THREE.Sprite(
     new THREE.SpriteMaterial({ map: texture, transparent: true, depthTest: false })
   );
-  sprite.scale.set(7.5, 1.65, 1);
+  sprite.scale.set(4.2, 0.92, 1);
   return sprite;
 }
 
@@ -189,8 +189,8 @@ export class RaceScene {
     map: PuneMap,
     private roads: RoadMapping
   ) {
-    this.scene.background = new THREE.Color("#04070d");
-    this.scene.fog = new THREE.FogExp2("#04070d", 0.026);
+    this.scene.background = new THREE.Color("#060b13");
+    this.scene.fog = new THREE.FogExp2("#060b13", 0.019);
     this.camera = new THREE.PerspectiveCamera(
       42,
       container.clientWidth / container.clientHeight,
@@ -221,7 +221,7 @@ export class RaceScene {
   }
 
   private buildLighting() {
-    this.scene.add(new THREE.HemisphereLight("#8eb8ff", "#06101a", 2.5));
+    this.scene.add(new THREE.HemisphereLight("#a9c9ff", "#081521", 3.8));
     const moon = new THREE.DirectionalLight("#d9ecff", 3.2);
     moon.position.set(12, 32, 18);
     moon.castShadow = true;
@@ -234,7 +234,7 @@ export class RaceScene {
   private buildGround() {
     const ground = new THREE.Mesh(
       new THREE.PlaneGeometry(55, 65),
-      new THREE.MeshStandardMaterial({ color: "#07101a", roughness: 0.98 })
+      new THREE.MeshStandardMaterial({ color: "#0a1723", roughness: 0.98 })
     );
     ground.rotation.x = -Math.PI / 2;
     ground.position.y = -0.04;
@@ -245,12 +245,12 @@ export class RaceScene {
   private buildMap(map: PuneMap) {
     const road = new THREE.Mesh(
       ribbonGeometry(map.features),
-      new THREE.MeshStandardMaterial({ color: "#1a2633", roughness: 0.76, metalness: 0.08 })
+      new THREE.MeshStandardMaterial({ color: "#2a4056", roughness: 0.72, metalness: 0.08 })
     );
     this.scene.add(road);
     const lanes = new THREE.LineSegments(
       laneGeometry(map.features),
-      new THREE.LineBasicMaterial({ color: "#45576a", transparent: true, opacity: 0.34 })
+      new THREE.LineBasicMaterial({ color: "#8296ad", transparent: true, opacity: 0.48 })
     );
     this.scene.add(lanes);
 
@@ -259,9 +259,9 @@ export class RaceScene {
     );
     const geometry = new THREE.BoxGeometry(1, 1, 1);
     const material = new THREE.MeshStandardMaterial({
-      color: "#111d2a",
-      emissive: "#07101b",
-      emissiveIntensity: 0.5,
+      color: "#1a2b3d",
+      emissive: "#0b1b2a",
+      emissiveIntensity: 0.72,
       roughness: 0.72,
       metalness: 0.15
     });
@@ -308,7 +308,7 @@ export class RaceScene {
       marker.position.copy(point);
       this.scene.add(marker);
       const label = makeLabel(name, "#d5e3f7");
-      label.scale.set(2.3, 0.55, 1);
+      label.scale.set(1.45, 0.35, 1);
       label.position.copy(point).add(new THREE.Vector3(0, 0.72, 0));
       this.scene.add(label);
     });
