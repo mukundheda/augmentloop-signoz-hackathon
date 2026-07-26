@@ -18,6 +18,7 @@ __pycache__/
 .playwright-cli/
 # subagent-driven-development scratch (ledgers, briefs, review packages)
 .superpowers/
+.worktrees/
 
 # Local strategy notes - never publish when repo flips public
 signoz-client-analysis-2026-07-22.md
