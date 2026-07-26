@@ -1,0 +1,6 @@
+node_modules/
+dist/
+output/
+assets/audio/source/
+voice/.venv/
+voice/output/
