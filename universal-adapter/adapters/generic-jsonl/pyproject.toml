@@ -1,0 +1,35 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "gradebook-adapter-generic-jsonl"
+version = "0.0.1"
+description = "Generic JSONL adapter for the Universal Agent Evidence Protocol (issue #101): read a JSONL stream of harness records, validate each line independently, and emit protocol records. The fallback path for harnesses with weak extension APIs."
+requires-python = ">=3.10"
+license = { text = "MIT" }
+# gradebook-adapter is the reference implementation in ../../python, NOT a PyPI
+# package. Install both in one invocation:
+#   pip install -e reference-library -e universal-adapter/python \
+#               -e universal-adapter/adapters/generic-jsonl[test]
+# No harness dependency, by design: this adapter reads a log file, so a harness
+# needs no plugin API and no version pin to become gradeable.
+dependencies = [
+  "gradebook-adapter",
+]
+
+[project.optional-dependencies]
+test = [
+  "pytest>=8",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["gradebook_adapter_jsonl"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.mypy]
+python_version = "3.10"
+packages = ["gradebook_adapter_jsonl"]
+strict = true

@@ -29,3 +29,5 @@ signoz-client-analysis-2026-07-22.md
 # purpose (see universal-adapter/README.md), so neither should ever appear.
 universal-adapter/typescript/node_modules/
 universal-adapter/typescript/package-lock.json
+.pytest_cache/
+.mypy_cache/

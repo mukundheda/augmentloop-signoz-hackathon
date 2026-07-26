@@ -1,0 +1,43 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "gradebook-adapter-cli-wrapper"
+version = "0.0.1"
+description = "CLI wrapper for the Universal Agent Evidence Protocol (issue #101): supervise a harness process and write an evidence bundle. Collection only by default; it does not grade, per ADR 0006."
+requires-python = ">=3.10"
+license = { text = "MIT" }
+# Both dependencies are in this repo, not on PyPI. Install together:
+#   pip install -e reference-library -e universal-adapter/python \
+#               -e universal-adapter/adapters/generic-jsonl \
+#               -e universal-adapter/adapters/cli-wrapper[test]
+# generic-jsonl is a real dependency and not incidental reuse: this wrapper
+# WRITES the evidence file that adapter READS, so they share one writer rather
+# than each owning a copy of the format that can drift.
+# No harness dependency, by design: the wrapper observes a process from the
+# outside, so it works for a harness with no plugin API, including one that does
+# not exist yet.
+dependencies = [
+  "gradebook-adapter",
+  "gradebook-adapter-generic-jsonl",
+]
+
+[project.optional-dependencies]
+test = [
+  "pytest>=8",
+]
+
+[project.scripts]
+gradebook-run = "gradebook_adapter_cli.wrapper:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["gradebook_adapter_cli"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.mypy]
+python_version = "3.10"
+packages = ["gradebook_adapter_cli"]
+strict = true
