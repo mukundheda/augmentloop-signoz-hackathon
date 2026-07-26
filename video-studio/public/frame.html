@@ -1,0 +1,131 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width">
+  <style>
+    @font-face{font-family:Studio;src:local("Segoe UI Variable Display"),local("Segoe UI")}
+    *{box-sizing:border-box}html,body,#stage{width:100%;height:100%;margin:0;overflow:hidden}
+    body{font-family:Studio,Inter,sans-serif;background:#05070b;color:#f7f9fc}
+    #stage{position:relative;background:
+      radial-gradient(900px 600px at 82% 12%,rgba(90,112,255,.19),transparent 67%),
+      radial-gradient(800px 600px at 10% 100%,rgba(36,214,170,.10),transparent 65%),
+      linear-gradient(145deg,#070a10,#0b111c 55%,#070a11)}
+    .grain{position:absolute;inset:0;opacity:.035;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.8'/%3E%3C/svg%3E")}
+    .brand{position:absolute;left:72px;top:54px;display:flex;align-items:center;gap:14px;font-size:19px;font-weight:680;letter-spacing:.2px;z-index:20}
+    .mark{width:31px;height:31px;border-radius:9px;background:linear-gradient(140deg,#8d8cff,#52e1bd);box-shadow:0 0 28px rgba(100,222,194,.23);position:relative}
+    .mark:after{content:"";position:absolute;inset:8px;border:2px solid #071016;border-radius:4px}
+    .scene{position:absolute;inset:0;display:none;opacity:0}
+    .scene.active{display:block}
+    .eyebrow{font-size:17px;font-weight:700;letter-spacing:3.8px;text-transform:uppercase;color:#67dfc1;margin-bottom:22px}
+    h1{font-size:88px;line-height:.98;letter-spacing:-5.4px;margin:0;font-weight:690}
+    .sub{font-size:28px;line-height:1.42;color:#aab6ca;margin-top:28px;max-width:710px}
+    .copy{position:absolute;left:136px;top:285px;width:800px;z-index:3}
+    .caption{position:absolute;z-index:30;bottom:50px;left:50%;transform:translateX(-50%);font-size:22px;line-height:1.25;color:#e8edf6;background:rgba(7,10,16,.78);border:1px solid rgba(255,255,255,.12);padding:13px 22px 15px;border-radius:14px;box-shadow:0 14px 45px rgba(0,0,0,.24);white-space:nowrap}
+    .product{position:absolute;right:110px;top:190px;width:770px;height:640px;perspective:1200px}
+    .glass{background:linear-gradient(145deg,rgba(25,34,51,.94),rgba(12,18,29,.97));border:1px solid rgba(255,255,255,.12);box-shadow:0 45px 130px rgba(0,0,0,.5),inset 0 1px rgba(255,255,255,.06);border-radius:30px}
+    .window{width:100%;height:100%;overflow:hidden;transform:rotateY(-5deg) rotateX(2deg)}
+    .topbar{height:66px;border-bottom:1px solid rgba(255,255,255,.08);display:flex;align-items:center;padding:0 25px;gap:9px}
+    .dot{width:9px;height:9px;border-radius:50%;background:#384155}.dot:nth-child(1){background:#ff766f}.dot:nth-child(2){background:#f7c25c}.dot:nth-child(3){background:#52d69f}
+    .window-label{margin-left:13px;font-size:15px;color:#7f8da3;font-weight:650}
+    .world{position:relative;height:574px;background:radial-gradient(circle at 45% 40%,rgba(51,72,111,.35),transparent 56%)}
+    .road{position:absolute;height:5px;background:linear-gradient(90deg,rgba(110,132,170,.2),rgba(126,151,190,.7),rgba(110,132,170,.2));transform-origin:left center;border-radius:4px}
+    .r1{left:90px;top:160px;width:510px;transform:rotate(14deg)}.r2{left:176px;top:390px;width:460px;transform:rotate(-23deg)}.r3{left:340px;top:98px;width:365px;transform:rotate(52deg)}.r4{left:90px;top:160px;width:338px;transform:rotate(67deg)}
+    .node{position:absolute;width:21px;height:21px;border:4px solid #6d7e9d;background:#131c2a;border-radius:50%;box-shadow:0 0 0 8px rgba(115,137,177,.08)}
+    .n1{left:80px;top:150px}.n2{left:330px;top:215px}.n3{left:594px;top:282px}.n4{left:174px;top:381px}.n5{left:592px;top:205px}
+    .learner{position:absolute;width:54px;height:54px;border-radius:18px;background:linear-gradient(145deg,#8c8bff,#5a64e7);display:grid;place-items:center;font-weight:800;box-shadow:0 16px 40px rgba(79,84,231,.42);left:65px;top:131px}
+    .signal{position:absolute;width:12px;height:12px;border-radius:50%;background:#67e2c0;box-shadow:0 0 24px #67e2c0;opacity:0}
+    .s1{left:335px;top:220px}.s2{left:596px;top:286px}.s3{left:177px;top:385px}
+    .event{position:absolute;padding:13px 17px;border:1px solid rgba(105,226,191,.25);border-radius:12px;background:rgba(19,38,44,.88);color:#a9f2dd;font-size:15px;font-weight:650;opacity:0}
+    .e1{left:370px;top:170px}.e2{left:455px;top:335px}.e3{left:145px;top:430px}
+    .dash{position:absolute;left:170px;right:95px;top:145px;bottom:105px;padding:26px 28px;overflow:hidden}
+    .dash-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:22px}.dash-title{font-size:22px;font-weight:700}.live{font-size:13px;color:#7fe7c8;background:rgba(80,211,170,.1);border:1px solid rgba(99,225,188,.22);padding:7px 11px;border-radius:20px}
+    .metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:15px;margin-bottom:16px}.metric{background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.08);padding:17px;border-radius:16px}
+    .m-label{color:#8290a6;font-size:12px;text-transform:uppercase;letter-spacing:1.3px}.m-value{font-size:31px;font-weight:720;margin-top:7px;letter-spacing:-1px}.good{color:#72e3bf}
+    .chart{height:250px;border-radius:18px;background:linear-gradient(rgba(255,255,255,.025),rgba(255,255,255,.015));border:1px solid rgba(255,255,255,.07);position:relative;overflow:hidden;padding:20px}
+    .gridline{height:1px;background:rgba(255,255,255,.055);margin:45px 0}.bars{position:absolute;inset:25px 28px 29px;display:flex;align-items:flex-end;gap:20px}.bar{flex:1;border-radius:8px 8px 3px 3px;background:linear-gradient(#8387ff,#4c55b9);transform-origin:bottom}.bar.goodbar{background:linear-gradient(#67e2c0,#279679)}
+    .flow{position:absolute;left:100px;right:100px;top:230px;height:540px;display:flex;align-items:center;justify-content:center;gap:60px}
+    .flow-card{width:430px;height:320px;padding:34px;position:relative}.flow-icon{width:58px;height:58px;border-radius:17px;display:grid;place-items:center;background:rgba(125,130,255,.14);color:#a9acff;font-size:27px}.flow-card h2{font-size:33px;margin:27px 0 13px;letter-spacing:-1px}.flow-card p{color:#8f9cb0;font-size:19px;line-height:1.5;margin:0}.arrow{width:130px;height:2px;background:linear-gradient(90deg,#67718b,#6ee2c2);position:relative}.arrow:after{content:"";position:absolute;right:-2px;top:-5px;width:10px;height:10px;border-right:2px solid #6ee2c2;border-top:2px solid #6ee2c2;transform:rotate(45deg)}
+    .pulse{position:absolute;width:13px;height:13px;background:#72e4c4;border-radius:50%;top:-5px;box-shadow:0 0 23px #72e4c4}
+    .insight-wrap{position:absolute;left:108px;right:108px;top:180px;display:grid;grid-template-columns:1.15fr .85fr;gap:28px}
+    .student{height:620px;padding:35px}.student-head{display:flex;align-items:center;gap:18px}.avatar{width:58px;height:58px;border-radius:18px;background:linear-gradient(145deg,#ffc872,#ed8b69);display:grid;place-items:center;color:#18202d;font-weight:800}.student-name{font-size:24px;font-weight:700}.muted{color:#8290a5;font-size:14px;margin-top:4px}
+    .mastery{margin-top:34px}.master-row{margin-bottom:23px}.master-label{display:flex;justify-content:space-between;font-size:16px;margin-bottom:9px}.track{height:10px;background:#1b2433;border-radius:10px;overflow:hidden}.fill{height:100%;border-radius:10px;background:linear-gradient(90deg,#706fff,#8d91ff);transform-origin:left}.fill.teal{background:linear-gradient(90deg,#36b894,#71e0bf)}.fill.amber{background:linear-gradient(90deg,#e39553,#f1c276)}
+    .actions{display:grid;gap:20px}.action{height:190px;padding:28px;position:relative;overflow:hidden}.action-kicker{font-size:13px;text-transform:uppercase;letter-spacing:1.8px;color:#8190a6}.action h3{font-size:24px;margin:14px 0 0;max-width:330px}.badge{position:absolute;right:24px;bottom:22px;padding:8px 12px;border-radius:20px;font-size:13px;color:#85e6cb;background:rgba(65,203,161,.1);border:1px solid rgba(90,220,181,.2)}
+    .payoff{position:absolute;inset:0;display:grid;place-items:center;text-align:center}.payoff h1{font-size:112px;line-height:.95}.payoff .line2{color:#7be2c5}.payoff .sub{margin:34px auto 0}
+    .identity{position:absolute;inset:0;display:grid;place-items:center;text-align:center}.lockup{display:flex;align-items:center;justify-content:center;gap:24px;margin-bottom:37px}.lockup .mark{width:72px;height:72px;border-radius:21px}.lockup .mark:after{inset:18px;border-width:4px;border-radius:8px}.lockup-name{font-size:62px;font-weight:720;letter-spacing:-3px}.identity h1{font-size:79px}.identity .sub{margin:25px auto 0}
+  </style>
+</head>
+<body>
+<main id="stage">
+  <div class="grain"></div>
+  <div class="brand"><span class="mark"></span><span>Gradebook <span style="color:#657389">×</span> ToyWorld</span></div>
+
+  <section class="scene" data-scene="opening">
+    <div class="copy"><div class="eyebrow">Meet ToyWorld</div><h1>Learning starts<br>with play.</h1><p class="sub">A living environment where every decision creates a signal.</p></div>
+    <div class="product"><div class="window glass"><div class="topbar"><i class="dot"></i><i class="dot"></i><i class="dot"></i><span class="window-label">ToyWorld · Learning environment</span></div><div class="world"><i class="road r1"></i><i class="road r2"></i><i class="road r3"></i><i class="road r4"></i><i class="node n1"></i><i class="node n2"></i><i class="node n3"></i><i class="node n4"></i><i class="node n5"></i><div class="learner">A</div></div></div></div>
+  </section>
+
+  <section class="scene" data-scene="toyworld">
+    <div class="copy" style="top:230px;width:650px"><div class="eyebrow">Purposeful activity</div><h1 style="font-size:75px">Every moment<br>means something.</h1><p class="sub" style="max-width:570px">Choices, challenges, and breakthroughs become a rich stream of learning evidence.</p></div>
+    <div class="product"><div class="window glass"><div class="topbar"><i class="dot"></i><i class="dot"></i><i class="dot"></i><span class="window-label">ToyWorld · Live session</span></div><div class="world"><i class="road r1"></i><i class="road r2"></i><i class="road r3"></i><i class="road r4"></i><i class="node n1"></i><i class="node n2"></i><i class="node n3"></i><i class="node n4"></i><i class="node n5"></i><div class="learner">A</div><i class="signal s1"></i><i class="signal s2"></i><i class="signal s3"></i><div class="event e1">Route chosen · correct</div><div class="event e2">Challenge solved · +1</div><div class="event e3">Strategy changed</div></div></div></div>
+  </section>
+
+  <section class="scene" data-scene="signals">
+    <div class="flow">
+      <div class="flow-card glass"><div class="flow-icon">⌁</div><h2>ToyWorld activity</h2><p>Decisions, outcomes, cost, and real-world evidence—captured as they happen.</p></div>
+      <div class="arrow"><i class="pulse"></i></div>
+      <div class="flow-card glass"><div class="flow-icon" style="color:#79e2c4;background:rgba(72,213,171,.12)">✓</div><h2>Gradebook signals</h2><p>Standard evaluation events become a clear, trustworthy view of progress.</p></div>
+    </div>
+  </section>
+
+  <section class="scene" data-scene="insights">
+    <div class="insight-wrap">
+      <div class="student glass"><div class="student-head"><div class="avatar">AP</div><div><div class="student-name">Aarav Patel</div><div class="muted">ToyWorld learning journey · This week</div></div></div>
+        <div class="mastery">
+          <div class="master-row"><div class="master-label"><span>Route planning</span><b>92%</b></div><div class="track"><div class="fill teal" style="width:92%"></div></div></div>
+          <div class="master-row"><div class="master-label"><span>Cost awareness</span><b>78%</b></div><div class="track"><div class="fill" style="width:78%"></div></div></div>
+          <div class="master-row"><div class="master-label"><span>Uncertainty handling</span><b>54%</b></div><div class="track"><div class="fill amber" style="width:54%"></div></div></div>
+        </div>
+        <div class="chart" style="height:195px;margin-top:30px"><div class="m-label">Progress over 7 sessions</div><svg width="100%" height="135" viewBox="0 0 700 135"><path d="M0 115 C80 105 90 90 155 94 S245 75 305 80 S405 52 460 60 S565 35 700 19" fill="none" stroke="#6de1c0" stroke-width="5"/><path d="M0 115 C80 105 90 90 155 94 S245 75 305 80 S405 52 460 60 S565 35 700 19 L700 135 L0 135Z" fill="url(#g)" opacity=".2"/><defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#6de1c0"/><stop offset="1" stop-color="#6de1c0" stop-opacity="0"/></linearGradient></defs></svg></div>
+      </div>
+      <div class="actions">
+        <div class="action glass"><div class="action-kicker">Strength</div><h3>Adapts routes confidently when conditions change.</h3><span class="badge">Keep challenging</span></div>
+        <div class="action glass"><div class="action-kicker">Growth area</div><h3>Needs support estimating uncertainty before acting.</h3><span class="badge" style="color:#f2c184;background:rgba(225,158,82,.1);border-color:rgba(225,158,82,.2)">Review next</span></div>
+        <div class="action glass"><div class="action-kicker">Recommended action</div><h3>Assign “Foggy Junction” practice scenario.</h3><span class="badge">1-click assign</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="scene" data-scene="payoff"><div class="payoff"><div><div class="eyebrow">A clearer way forward</div><h1>Less grading.<br><span class="line2">More guiding.</span></h1><p class="sub">Turn evidence into the next best action for every learner.</p></div></div></section>
+  <section class="scene" data-scene="identity"><div class="identity"><div><div class="lockup"><span class="mark"></span><span class="lockup-name">Gradebook × ToyWorld</span></div><h1>Play becomes progress.</h1><p class="sub">Measure what matters. Guide what comes next.</p></div></div></section>
+  <div class="caption"></div>
+</main>
+<script type="module">
+  const q=new URLSearchParams(location.search), frame=Number(q.get("frame")||0);
+  const cues=await fetch("/timeline/cues.json").then(r=>r.json());
+  const clamp=n=>Math.max(0,Math.min(1,n)), ease=n=>1-Math.pow(1-clamp(n),4);
+  const scene=cues.scenes.find(s=>frame>=s.startFrame&&frame<s.endFrame);
+  const p=(frame-scene.startFrame)/(scene.endFrame-scene.startFrame), el=document.querySelector(`[data-scene="${scene.id}"]`);
+  el.classList.add("active"); el.style.opacity=String(Math.min(ease(p*7),ease((1-p)*8)));
+  const copy=el.querySelector(".copy"); if(copy) copy.style.transform=`translateY(${(1-ease(p*4))*42}px)`;
+  const product=el.querySelector(".product"); if(product) product.style.transform=`translateX(${(1-ease(p*3))*90}px) scale(${.97+.03*ease(p*3)})`;
+  if(scene.id==="toyworld"){
+    const learner=el.querySelector(".learner"); learner.style.left=`${65+535*ease(p)}px`; learner.style.top=`${131+145*Math.sin(p*Math.PI)}px`;
+    [...el.querySelectorAll(".signal")].forEach((x,i)=>x.style.opacity=String(clamp((p-(.22+i*.19))*8)*(1-clamp((p-(.38+i*.19))*8))));
+    [...el.querySelectorAll(".event")].forEach((x,i)=>{const v=ease((p-(.2+i*.2))*6);x.style.opacity=v;x.style.transform=`translateY(${(1-v)*18}px)`});
+  }
+  if(scene.id==="signals"){
+    const cards=[...el.querySelectorAll(".flow-card")], a=ease(p*4),b=ease((p-.38)*4);
+    cards[0].style.opacity=a;cards[0].style.transform=`translateX(${(1-a)*-60}px)`;
+    cards[1].style.opacity=b;cards[1].style.transform=`translateX(${(1-b)*60}px)`;
+    el.querySelector(".pulse").style.left=`${clamp((p-.2)*1.8)*120}px`;
+  }
+  if(scene.id==="insights"){
+    [...el.querySelectorAll(".student,.action")].forEach((x,i)=>{const v=ease((p-i*.08)*5);x.style.opacity=v;x.style.transform=`translateY(${(1-v)*38}px)`});
+    [...el.querySelectorAll(".fill")].forEach(x=>x.style.transform=`scaleX(${ease((p-.18)*3)})`);
+  }
+  if(scene.id==="payoff"||scene.id==="identity"){const box=el.firstElementChild.firstElementChild||el.firstElementChild;box.style.transform=`translateY(${(1-ease(p*4))*35}px) scale(${.98+.02*ease(p*4)})`}
+  const caption=document.querySelector(".caption"); caption.textContent=scene.caption; const capIn=ease((frame-scene.startFrame-12)/14),capOut=ease((scene.endFrame-frame-5)/12);caption.style.opacity=String(Math.min(capIn,capOut));
+</script>
+</body>
+</html>
