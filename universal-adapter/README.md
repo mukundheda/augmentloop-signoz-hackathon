@@ -156,6 +156,47 @@ protocol, which is what "harness neutral" has to mean if it means anything. Both
 are hand written illustrative shapes, labelled as such in the files themselves,
 and no harness package is imported anywhere in this directory.
 
+## Known limits
+
+Stated here rather than discovered later by whoever hits them.
+
+**A manifest author's own regex is not guaranteed portable.** The `json_schema`
+evaluator applies a `pattern` supplied inside a manifest, using the host
+language's regex engine. JSON Schema specifies ECMA-262 semantics, and Python's
+`re` differs from it in at least one way that matters: `$` matches before a
+trailing newline in Python and does not in ECMAScript. The implementations fix
+this for their own patterns by anchoring with `\Z`, but a pattern arriving inside
+a manifest cannot be rewritten safely, because doing so would change a rule
+somebody else wrote. A manifest author who anchors with `$` and cares about a
+trailing newline may therefore see different verdicts in the two languages.
+Anchor with `\z` or avoid trailing-newline-sensitive patterns if that matters to
+you.
+
+**Two attempts producing an identical chosen value collide.** Derived decision
+ids cover the eight immutable identity fields, and nothing in the protocol
+distinguishes two attempts that made the same choice. An adapter that needs
+identical retries counted separately must supply explicit decision ids. See
+[ADR 0004](../docs/adr/0004-decision-identity-is-derived-not-declared.md).
+
+**Three emission paths currently refuse rather than emit.** A provider-reported
+cost, a genuinely unknown cost, and an `ai_judge` grade cannot be expressed by
+`record_decision` as it stands, so the bridge fails loud rather than misreport.
+Tracked separately; the protocol is complete and correct without it, but those
+decisions do not reach SigNoz today.
+
+**Parity is agreement, not correctness.** The 336 comparisons in
+[`parity/`](parity/) prove the two implementations answer identically. They
+cannot prove either is right, and two implementations can agree on the same bug.
+The parity runner exists because a check built on one language's assumptions
+cannot see that language's assumptions: the anti-drift test comparing the hand
+written validator against real schema validation was blind to the `$` problem
+above, since the schema library uses the same regex engine and agreed with the
+bug.
+
+**Evaluation, cost attribution and emission are not compared across languages.**
+Only validation, canonical serialization, identity, content digests and the
+pricing table id are. Those three layers rest on each implementation's own tests.
+
 ## Where the schemas differ from the originating issue
 
 The spec in issue #101 carried illustrative JSON that the frozen schemas do not
