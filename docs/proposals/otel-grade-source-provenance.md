@@ -8,14 +8,27 @@ sources.
 **Where this stands right now:** we commented with this argument on
 [open-telemetry/semantic-conventions-genai#359](https://github.com/open-telemetry/semantic-conventions-genai/pull/359#issuecomment-5079243760)
 ("Add evaluator provenance attributes to `gen_ai.evaluation.*`") on
-2026-07-25. This document is that comment, written up properly, not a new
-claim. We have not opened a separate PR against the spec itself - the
-existing thread already proposes the mechanism we're extending, and adding a
-second competing PR would fragment the conversation rather than help it.
+2026-07-25. OpenTelemetry's own PR dashboard subsequently listed that comment
+as one of three outstanding review items the PR is waiting on the author to
+address, so it is tracked upstream rather than merely posted.
+
+On 2026-07-27 we turned the argument into an actual diff:
+[Mohnish-Srivats/semantic-conventions-genai#1](https://github.com/Mohnish-Srivats/semantic-conventions-genai/pull/1),
+which adds an `outcome` member to the enum plus the orthogonality note
+described below.
+
+It is deliberately opened **against the author's own branch**
+(`feat/issue-79-evaluator-provenance`) rather than as a competing PR into the
+spec's `main`. A second PR to `main` would fragment a conversation that is
+already live and already proposes the mechanism we are extending; a PR into
+the branch means that if the author takes it, the change lands *inside* #359
+as part of that work. If he would rather not carry it, the PR costs him one
+click and nothing is forked.
 
 ## The gap PR #359 doesn't quite close
 
-PR #359 proposes an `evaluator.type` enum on `gen_ai.evaluation.result` with
+PR #359 proposes a `gen_ai.evaluation.evaluator.type` enum on
+`gen_ai.evaluation.result` with
 four values: `deterministic`, `llm_judge`, `human`, `custom`. That's a real
 and useful gap-fill: right now, if a deterministic checker and an LLM judge
 grade the same trace, they emit identical-looking events, and nothing
@@ -59,15 +72,24 @@ or that disagreement.
 ## What we think the fix is
 
 Resolution timing is orthogonal to evaluator type, and the enum currently
-conflates them. Two ways to close the gap, in order of how much we'd want:
+conflates them. The PR linked above does both of these rather than picking one:
 
-1. **A fifth `evaluator.type` value** - something like `outcome` or
-   `realized` - for grades computed from a real-world result rather than a
-   check or an opinion.
-2. **Failing that, a line in the spec** noting explicitly that resolution
-   timing (at-eval-time vs. deferred) is a separate axis from evaluator type,
-   so an implementer knows a deferred grade isn't automatically
-   miscategorized as `custom`.
+1. **A fifth `gen_ai.evaluation.evaluator.type` value, `outcome`**, for grades
+   derived from an observed real-world result rather than from a check, a
+   model's opinion, or a reviewer's judgment.
+2. **A note in the spec** stating explicitly that resolution timing
+   (at-eval-time vs. deferred) is a separate axis from evaluator type, so an
+   implementer knows a deferred grade isn't automatically miscategorized as
+   `custom`. The note also distinguishes `outcome` from `human`, since that is
+   the boundary a reader is most likely to get wrong: `human` is a reviewer
+   asked to score the output, `outcome` is a downstream result observed and
+   recorded, whether or not a person produced it.
+
+The second point follows an argument the thread has already accepted. A
+reviewer raised that `scope`'s `human_interaction` value sat on a different
+axis from its other members, and the author resolved it by adding explicit
+orthogonality notes. Resolution timing looks like a third axis of exactly that
+kind.
 
 Either way, we handle the "arrives late" part today by re-emitting the event
 with a span link back to the original decision span, plus the same

@@ -289,7 +289,11 @@ flowchart TB
 | `reality` | the real world proved it, usually later | **provable, but adjacent**: its own panels, never summed into the headline |
 | `ai_judge` | another model scored it — an opinion | **no**, labelled secondary view only |
 
-Every evaluation event carries `augmentloop.grade.source`, so that filter lives in the query rather than in this paragraph ([ADR 0001](docs/adr/0001-machine-checked-grades-only-in-the-headline-metric.md)). We raised the same evaluator-provenance question upstream, in [a comment on OpenTelemetry semantic-conventions-genai PR #359](https://github.com/open-telemetry/semantic-conventions-genai/pull/359#issuecomment-5079243760).
+Every evaluation event carries `augmentloop.grade.source`, so that filter lives in the query rather than in this paragraph ([ADR 0001](docs/adr/0001-machine-checked-grades-only-in-the-headline-metric.md)).
+
+We took the same evaluator-provenance question upstream, first as [a comment on OpenTelemetry semantic-conventions-genai PR #359](https://github.com/open-telemetry/semantic-conventions-genai/pull/359#issuecomment-5079243760) — which OpenTelemetry's own PR dashboard then listed as one of three outstanding items that PR is waiting on — and then as [an actual diff](https://github.com/Mohnish-Srivats/semantic-conventions-genai/pull/1) adding an `outcome` member to the enum, opened against the author's branch so it lands inside #359 rather than competing with it. The argument is written up in [docs/proposals/otel-grade-source-provenance.md](docs/proposals/otel-grade-source-provenance.md).
+
+**And we tested our own `ai_judge` exclusion instead of only asserting it.** ADR 0001 refuses AI-judged grades on principle, citing bias research. So we built the judge, ran it once over all 420 committed decisions, and measured what trusting it would have cost: it agrees with the checker **67.1%** of the time, waves through **114 of the 152 decisions the checker proves wrong**, and would have produced a headline of **$0.001128 against the real $0.001507** — a 25% better number, and a fiction. In at least 44 of those 114 it states the answer is wrong in its own reasoning and returns `correct` anyway. Full method, confusion matrix and quoted failures in [experiments/ai-judge/WRITEUP.md](experiments/ai-judge/WRITEUP.md). It emits no telemetry, so the committed census stays 420 `math` / 140 `reality` / **0 `ai_judge`**.
 
 ### Why `reality` sits *beside* the headline and not inside it
 
@@ -378,6 +382,23 @@ flowchart LR
 
 A reroute is a **diff in a committed file**, not a flag and not an environment variable, for three reasons: a proposal becomes something you can read before you say yes; before-and-after is reproducible from git rather than from someone's shell history; and it keys on decision *type*, so a reroute of `next_hop` alone is directly comparable without the other two types' spend leaking in. An unpriceable or unknown model in that file **fails loudly at load**, before any model call is placed. A bad approval costs nothing. Full walkthrough: [docs/right-sizing-loop.md](docs/right-sizing-loop.md).
 
+### We ran this loop, and the example above is the run
+
+The `next_hop` reroute in the diagram is not illustrative. An agent read the numbers back through the SigNoz MCP server, proposed it, could not apply it, a human approved it, and the run was repeated:
+
+| `next_hop`, 20 live decisions each run | before | after |
+| --- | ---: | ---: |
+| model | `claude-sonnet-4.6` | `gemini-2.5-flash-lite` |
+| correct | 19 / 20 | **20 / 20** |
+| cost for the slice | $0.031380 | **$0.001101** |
+| cost per correct decision | $0.0016516 | **$0.0000551** |
+
+**30.0x cheaper, one more right answer**, against a proposal that predicted "~30x" before the run.
+
+The more informative half is what the agent *declined* to do. It proposed no change for `eta_estimate`, where that same cheap model scores **0/20**, and none for `route_choice`, where the cheapest alternative is both cheaper and worse. A right-sizing tool that only ever recommends "cheaper" is a cost tool wearing a quality costume.
+
+The whole-run headline moved $0.005196 to $0.004485, but **do not read that as the reroute's effect**: the two untouched decision types also drifted between runs from ordinary model non-determinism, and roughly two of the three extra correct answers are that drift. The slice table is the claim. Proposal: [right-sizing-next-hop-2026-07-27.md](docs/proposals/right-sizing-next-hop-2026-07-27.md). Outcome: [the RESULT companion](docs/proposals/right-sizing-next-hop-2026-07-27-RESULT.md).
+
 ---
 
 ## Run it — no API key required
@@ -438,6 +459,10 @@ The MCP server molding is enabled; after casting, mint an API key in the SigNoz 
 
 **A full cold-machine walkthrough** — install, cast, create the admin account, run the replay, import the dashboards and alert rules — is in [docs/judge-run.md](docs/judge-run.md), executed end to end on a clean Windows 11 machine. Creating the admin account is a required step, not a login formality: SigNoz has no organization until it exists, and the OTLP endpoint refuses connections until it does, so a replay run before that step exports nothing.
 
+### What the recording costs, measured rather than asserted
+
+Adding the OpenTelemetry SDK to the decision path costs **~25µs median and ~34µs p95 per decision** (5.7µs no-op against 30.6µs instrumented, 20,000 iterations, stable across three repeat runs). The number worth knowing is the third configuration: pointed at the live collector through a `BatchSpanProcessor`, real network export measured **30.33µs** against the in-memory case's 30.62µs — statistically indistinguishable, because batching absorbs the network entirely. Method, machine, versions and the reproduce command are in [benchmarks/RESULTS-decision-overhead.md](benchmarks/RESULTS-decision-overhead.md).
+
 ---
 
 ## Static visuals — no server, no API key
@@ -467,10 +492,15 @@ Three renders over the same committed run. `capture_run.py` runs the same replay
 ├── dashboards/                        2 dashboards, 5 alert rules, 3 saved views, as JSON
 ├── conformance/                       a zero-dependency TypeScript emitter + a checker
 │                                      that validates any implementation against the contract
+│                                      — CI runs the emitter through the checker on every push
+├── benchmarks/                        what the instrumentation actually costs per decision
+├── experiments/ai-judge/              the judge we refuse to trust, built and run once
+│                                      to measure what trusting it would have cost
 ├── docs/
 │   ├── conventions.md                 the recording contract — language-agnostic, the real spec
 │   ├── judge-run.md                   cold-machine walkthrough, executed end to end
 │   ├── right-sizing-loop.md           the propose → approve → prove loop
+│   ├── proposals/                     the upstream OTel proposal + the reroute, proposed and run
 │   ├── adr/                           architectural decisions, with their reasoning
 │   └── visuals/                       static renders over the committed run
 └── .claude/skills/                    the agent pipeline this team actually works with
