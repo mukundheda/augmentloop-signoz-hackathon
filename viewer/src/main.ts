@@ -1,5 +1,6 @@
 import "./styles.css";
 import type { PuneMap, RoadMapping } from "./domain";
+import type {DemoCamera, DemoSpeed} from "./demo-api";
 import { createHud, type HudProgress } from "./hud";
 import { parseRaceData } from "./replay";
 import { RaceScene, type CameraPreset } from "./scene";
@@ -39,6 +40,7 @@ async function boot() {
         <label>CAMERA
           <select data-camera>
             <option value="overview">OVERVIEW</option>
+            <option value="orbit">CINEMATIC ORBIT</option>
             <option value="top">TOP DOWN</option>
             <option value="chase">STREET</option>
             <option value="follow">FOLLOW SELECTED</option>
@@ -61,6 +63,7 @@ async function boot() {
     const scene = new RaceScene(viewport, map, roads);
     const hud = createHud(panel, run);
     let speed = 1;
+    let state = "RUNNING";
     let progress: HudProgress = { completed: 0, correct: 0, cost: 0, wave: 0, waves: 0 };
 
     const callbacks = {
@@ -76,6 +79,7 @@ async function boot() {
         hud.update(progress);
       },
       onComplete: () => {
+        state = "COMPLETE";
         hud.setState("COMPLETE");
         hud.update({
           completed: run.totals.decisions,
@@ -90,12 +94,14 @@ async function boot() {
     const play = () => {
       progress = { completed: 0, correct: 0, cost: 0, wave: 0, waves: Math.ceil(run.agents.length / 24) };
       hud.update(progress);
+      state = "RUNNING";
       hud.setState("RUNNING");
       scene.play(run, speed, callbacks);
     };
     app.querySelector("[data-play]")?.addEventListener("click", play);
     app.querySelector("[data-pause]")?.addEventListener("click", () => {
       scene.pause();
+      state = "PAUSED";
       hud.setState("PAUSED");
     });
     app.querySelector("[data-restart]")?.addEventListener("click", play);
@@ -107,6 +113,45 @@ async function boot() {
       scene.setCameraPreset((event.target as HTMLSelectElement).value as CameraPreset);
     });
     window.addEventListener("resize", () => scene.resize());
+    window.toyWorldDemo = {
+      setCamera(camera: DemoCamera) {
+        scene.setCameraPreset(camera);
+      },
+      setOrbit(enabled: boolean) {
+        scene.setOrbit(enabled);
+      },
+      setSpeed(nextSpeed: DemoSpeed) {
+        speed = nextSpeed;
+        play();
+      },
+      selectFirstActiveAgent() {
+        return scene.selectFirstActiveAgent();
+      },
+      restart() {
+        play();
+      },
+      completeRun() {
+        scene.pause();
+        progress = {
+          completed: run.totals.decisions,
+          correct: run.totals.correct,
+          cost: run.totals.total_cost_usd,
+          wave: Math.ceil(run.agents.length / 24),
+          waves: Math.ceil(run.agents.length / 24)
+        };
+        state = "COMPLETE";
+        hud.update(progress);
+        hud.setState(state);
+      },
+      getStatus() {
+        return {
+          decisions: progress.completed,
+          correct: progress.correct,
+          cost: progress.cost,
+          state
+        };
+      }
+    };
     play();
   } catch (error) {
     app.innerHTML = `

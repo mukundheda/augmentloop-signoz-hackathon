@@ -29,7 +29,7 @@ export interface PlaybackCallbacks {
   onComplete(): void;
 }
 
-export type CameraPreset = "overview" | "top" | "chase" | "follow";
+export type CameraPreset = "overview" | "orbit" | "top" | "chase" | "follow";
 
 function makeLabel(text: string, color = "#a8bad4"): THREE.Sprite {
   const canvas = document.createElement("canvas");
@@ -350,6 +350,7 @@ export class RaceScene {
   }
 
   setCameraPreset(preset: CameraPreset) {
+    this.setOrbit(preset === "orbit");
     if (preset === "top") {
       this.camera.position.set(0, 52, 0.01);
       this.controls.target.set(0, 0, 0);
@@ -364,6 +365,19 @@ export class RaceScene {
       this.camera.position.set(21, 31, 33);
       this.controls.target.set(0, 0, 0);
     }
+  }
+
+  setOrbit(enabled: boolean) {
+    this.controls.autoRotate = enabled;
+    this.controls.autoRotateSpeed = 0.55;
+  }
+
+  selectFirstActiveAgent(): boolean {
+    const candidate = this.active.find((record) => !record.completed);
+    if (!candidate) return false;
+    this.selected = candidate;
+    this.setCameraPreset("follow");
+    return true;
   }
 
   private spawn(agent: AgentDecision, started: number, wave: number, waves: number) {
