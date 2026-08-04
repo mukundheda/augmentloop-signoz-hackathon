@@ -1,0 +1,176 @@
+<p align="center">
+    <a href="https://signoz.io" target="_blank">
+        <img alt="Foundry" src="https://github.com/user-attachments/assets/ef9a33f7-12d7-4c94-8908-0a02b22f0c18" width="100" height="100">
+    </a>
+</p>
+
+<h1 align="center" style="border-bottom: none">Foundry</h1>
+
+<p align="center">
+<img alt="GitHub Release" src="https://img.shields.io/github/v/release/signoz/foundry?include_prereleases">
+  <a href="https://golang.org"><img src="https://img.shields.io/badge/Go-1.25+-blue.svg" alt="Go Version"></a>
+
+<p align="center">Foundry is a centralized hub for <a href="https://signoz.io">SigNoz</a> installation configurations and deployments: <strong>integrations for install</strong>. Select yours, configure, and run SigNoz.</p>
+
+## Overview
+
+Just as a metalworking foundry turns raw materials into finished products, Foundry forges your deployment from a single configuration and casts SigNoz to fit your environment.
+
+Foundry abstracts away the complexities of the installation process so you can spend time *using* SigNoz rather than *installing* it.
+
+<p align="center">
+  <img
+    src="docs/assets/cli.gif"
+    alt="Foundry CLI demo"
+    width="900"
+    loading="lazy"
+    style="border-radius: 8px; border: 1px solid #30363d;"
+  />
+</p>
+
+## Features
+
+- **Multi-platform support**: Deploy SigNoz using Docker Compose, Systemd (bare metal), or Render for flexible installation across environments.
+- **Single configuration file**: Configure your entire SigNoz stack with one concise file.
+- **Automatic dependency management**: Handles inter-service dependencies
+- **Tool validation**: Verify prerequisites before deployment
+
+## Quick start
+
+**1. Install foundryctl**
+
+```bash
+curl -fsSL https://signoz.io/foundry.sh | bash
+```
+
+See [Getting Started](docs/getting-started.md) for manual install options and PATH setup.
+
+**2. Create a casting**
+
+```yaml
+apiVersion: v1alpha1
+metadata:
+  name: signoz
+spec:
+  deployment:
+    mode: docker
+    flavor: compose
+```
+
+**3. Deploy**
+
+```bash
+foundryctl cast -f casting.yaml
+```
+
+## How it works
+
+```
+  +-------------------------------------------------------------+
+  |                       casting.yaml                          |
+  |              your single deployment config                  |
+  +-----------------------------+-------------------------------+
+                                |
+                +---------------+---------------+
+                |               |               |
+                v               v               v
+         +-----------+  +-----------+  +----------------+
+         |   gauge   |  |   forge   |  |     cast       |
+         |-----------|  |-----------|  |----------------|
+         | validate  |  | generate  |  | gauge + forge  |
+         | prereqs   |  | files     |  | + deploy       |
+         +-----------+  +-----+-----+  +-------+--------+
+                              |                 |
+                              v                 |
+         +----------------------------------+   |
+         |             pours/               |   |
+         |----------------------------------|   |
+         |  compose.yaml    manifests/      |   |
+         |  values.yaml     configs/        |   |
+         |  render.yaml     *.tf.json       |   |
+         +-----------------+----------------+   |
+                           |                    |
+                           +----------+---------+
+                                      v
+  +-------------------------------------------------------------+
+  |                      SigNoz Running                         |
+  |-------------------------------------------------------------|
+  |  Docker Compose - Swarm - Systemd - Kubernetes - ECS        |
+  |  Render - Railway - Coolify                                 |
+  +-------------------------------------------------------------+
+```
+
+`foundryctl cast` runs the full pipeline (gauge + forge + deploy) in one step.
+
+| Term | What it means |
+| --- | --- |
+| **Casting** | Your deployment config. One YAML file describing what you want. [Learn more](docs/concepts/casting.md) |
+| **Moldings** | The SigNoz components (ClickHouse, PostgreSQL, OTel Collector, etc.) that Foundry configures for you. [Learn more](docs/concepts/moldings.md) |
+| **Pours** | The generated output files in `pours/`. Structure varies by deployment mode. See [examples](docs/examples/) |
+
+## Examples
+
+| Platform | Mode | Flavor | Example |
+| --- | --- | --- | --- |
+| - | docker | compose | [docker/compose](docs/examples/docker/compose/) |
+| - | docker | swarm | [docker/swarm](docs/examples/docker/swarm/) |
+| - | kubernetes | helm | [kubernetes/helm](docs/examples/kubernetes/helm/) |
+| - | kubernetes | kustomize | [kubernetes/kustomize](docs/examples/kubernetes/kustomize/) |
+| - | systemd | binary | [systemd/binary](docs/examples/systemd/binary/) |
+| ecs | ec2 | terraform | [ecs/ec2/terraform](docs/examples/ecs/ec2/terraform/) |
+| coolify | - | stack | [coolify/stack](docs/examples/coolify/stack/) |
+| railway | - | template | [railway/template](docs/examples/railway/template/) |
+| render | - | blueprint | [render/blueprint](docs/examples/render/blueprint/) |
+
+## CLI reference
+
+```
+foundryctl [command]
+
+Commands:
+  gauge       Validate required tools for your deployment mode
+  forge       Generate deployment and configuration files
+  cast        Full pipeline: gauge + forge + deploy
+  gen         Generate example casting files for all modes
+
+Flags:
+  -d, --debug          Enable debug logging
+  -f, --file string    Casting file path (default "casting.yaml")
+  -p, --pours string   Output directory (default "./pours")
+      --format string  Output format for results and errors (json|text) (default "json")
+      --no-ledger      Disable anonymous usage ledger
+      --no-updater     Disable the update notifier
+```
+
+```bash
+# Validate tools
+foundryctl gauge -f casting.yaml
+
+# Generate files only
+foundryctl forge -f casting.yaml
+
+# Full deploy
+foundryctl cast -f casting.yaml
+
+# Generate examples for all deployment modes
+foundryctl gen
+```
+
+See [CLI Reference](docs/reference/cli.md) for the full command reference with all flags and examples.
+
+## What's next
+
+- [Getting Started](docs/getting-started.md) - install and deploy your first SigNoz instance
+- [Concepts](docs/concepts/) - understand castings, moldings, and patches
+- [Examples](docs/examples/) - deployment configurations for all supported platforms
+- [Reference](docs/reference/) - CLI commands and casting file spec
+- [SigNoz documentation](https://signoz.io/docs/) - learn more about SigNoz
+- [SigNoz Slack](https://signoz.io/slack) - community and support
+
+## How can I get help?
+
+- **Issues**: [GitHub Issues](https://github.com/signoz/foundry/issues)
+- **Documentation**: [SigNoz Docs](https://signoz.io/docs/)
+- **Community**: [SigNoz Slack](https://signoz.io/slack)
+
+**Made with ❤️ for the SigNoz community**

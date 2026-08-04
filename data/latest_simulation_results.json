@@ -1,0 +1,7148 @@
+{
+  "timestamp": 1784992690.0021658,
+  "summary": {
+    "mode": "simulated",
+    "total_agents": 1000,
+    "total_decisions": 2000,
+    "total_correct": 1748,
+    "overall_accuracy_pct": 87.4,
+    "total_cost_usd": 0.682937,
+    "cost_per_correct_usd": 0.000391,
+    "by_model": {
+      "anthropic/claude-sonnet-5": {
+        "agents_count": 250,
+        "decisions": 500,
+        "correct": 494,
+        "accuracy_pct": 98.8,
+        "total_cost_usd": 0.418515,
+        "cost_per_correct_usd": 0.000847,
+        "avg_time_min": 7.84,
+        "avg_latency_ms": 803.0
+      },
+      "anthropic/claude-haiku-4-5": {
+        "agents_count": 445,
+        "decisions": 890,
+        "correct": 793,
+        "accuracy_pct": 89.1,
+        "total_cost_usd": 0.248248,
+        "cost_per_correct_usd": 0.000313,
+        "avg_time_min": 7.1,
+        "avg_latency_ms": 726.4
+      },
+      "google/gemini-2.0-flash": {
+        "agents_count": 305,
+        "decisions": 610,
+        "correct": 461,
+        "accuracy_pct": 75.57,
+        "total_cost_usd": 0.016174,
+        "cost_per_correct_usd": 3.5e-05,
+        "avg_time_min": 6.25,
+        "avg_latency_ms": 640.8
+      }
+    }
+  },
+  "agents": [
+    {
+      "agent_id": "agent-0001",
+      "model": "anthropic/claude-sonnet-5",
+      "route_chosen": "Mountain Pass Beta",
+      "pacing_chosen": "Standard",
+      "total_time_min": 8.46,
+      "energy_consumed": 11.9,
+      "total_cost_usd": 0.001671,
+      "total_latency_ms": 774.7,
+      "decisions_count": 2,
+      "correct_count": 2,
+      "accuracy_pct": 100.0,
+      "cost_per_correct_usd": 0.000835,
+      "on_time": true,
+      "graded_response_id": "sim-claude-sonnet-5-0001-Choo",
+      "trajectory": [
+        {
+          "x": 60.0,
+          "y": 190.0
+        },
+        {
+          "x": 119.0,
+          "y": 185.4
+        },
+        {
+          "x": 178.0,
+          "y": 181.2
+        },
+        {
+          "x": 237.0,
+          "y": 177.9
+        },
+        {
+          "x": 296.0,
+          "y": 175.7
+        },
+        {
+          "x": 355.0,
+          "y": 175.0
+        },
+        {
+          "x": 414.0,
+          "y": 175.7
+        },
+        {
+          "x": 473.0,
+          "y": 177.9
+        },
+        {
+          "x": 532.0,
+          "y": 181.2
+        },
+        {
+          "x": 591.0,
+          "y": 185.4
+        },
+        {
+          "x": 650.0,
+          "y": 190.0
+        }
+      ]
+    },
+    {
+      "agent_id": "agent-0002",
+      "model": "anthropic/claude-haiku-4-5",
+      "route_chosen": "Mountain Pass Beta",
+      "pacing_chosen": "Standard",
+      "total_time_min": 7.42,
+      "energy_consumed": 11.9,
+      "total_cost_usd": 0.000538,
+      "total_latency_ms": 819.0,
+      "decisions_count": 2,
+      "correct_count": 2,
+      "accuracy_pct": 100.0,
+      "cost_per_correct_usd": 0.000269,
+      "on_time": true,
+      "graded_response_id": "sim-claude-haiku-4-5-0002-Choo",
+      "trajectory": [
+        {
+          "x": 60.0,
+          "y": 190.0
+        },
+        {
+          "x": 119.0,
+          "y": 185.4
+        },
+        {
+          "x": 178.0,
+          "y": 181.2
+        },
+        {
+          "x": 237.0,
+          "y": 177.9
+        },
+        {
+          "x": 296.0,
+          "y": 175.7
+        },
+        {
+          "x": 355.0,
+          "y": 175.0
+        },
+        {
+          "x": 414.0,
+          "y": 175.7
+        },
+        {
+          "x": 473.0,
+          "y": 177.9
+        },
+        {
+          "x": 532.0,
+          "y": 181.2
+        },
+        {
+          "x": 591.0,
+          "y": 185.4
+        },
+        {
+          "x": 650.0,
+          "y": 190.0
+        }
+      ]
+    },
+    {
+      "agent_id": "agent-0003",
+      "model": "google/gemini-2.0-flash",
+      "route_chosen": "Mountain Pass Beta",
+      "pacing_chosen": "Push",
+      "total_time_min": 5.14,
+      "energy_consumed": 14.28,
+      "total_cost_usd": 5.1e-05,
+      "total_latency_ms": 579.9,
+      "decisions_count": 2,
+      "correct_count": 1,
+      "accuracy_pct": 50.0,
+      "cost_per_correct_usd": 5.1e-05,
+      "on_time": true,
+      "graded_response_id": "sim-gemini-2.0-flash-0003-Choo",
+      "trajectory": [
+        {
+          "x": 60.0,
+          "y": 190.0
+        },
+        {
+          "x": 119.0,
+          "y": 185.4
+        },
+        {
+          "x": 178.0,
+          "y": 181.2
+        },
+        {
+          "x": 237.0,
+          "y": 177.9
+        },
+        {
+          "x": 296.0,
+          "y": 175.7
+        },
+        {
+          "x": 355.0,
+          "y": 175.0
+        },
+        {
+          "x": 414.0,
+          "y": 175.7
+        },
+        {
+          "x": 473.0,
+          "y": 177.9
+        },
+        {
+          "x": 532.0,
+          "y": 181.2
+        },
+        {
+          "x": 591.0,
+          "y": 185.4
+        },
+        {
+          "x": 650.0,
+          "y": 190.0
+        }
+      ]
+    },
+    {
+      "agent_id": "agent-0004",
+      "model": "google/gemini-2.0-flash",
+      "route_chosen": "Mountain Pass Beta",
+      "pacing_chosen": "Push",
+      "total_time_min": 5.46,
+      "energy_consumed": 14.28,
+      "total_cost_usd": 5.3e-05,
+      "total_latency_ms": 636.2,
+      "decisions_count": 2,
+      "correct_count": 1,
+      "accuracy_pct": 50.0,
+      "cost_per_correct_usd": 5.3e-05,
+      "on_time": true,
+      "graded_response_id": "sim-gemini-2.0-flash-0004-Choo",
+      "trajectory": [
+        {
+          "x": 60.0,
+          "y": 190.0
+        },
+        {
+          "x": 119.0,
+          "y": 185.4
+        },
+        {
+          "x": 178.0,
+          "y": 181.2
+        },
+        {
+          "x": 237.0,
+          "y": 177.9
+        },
+        {
+          "x": 296.0,
+          "y": 175.7
+        },
+        {
+          "x": 355.0,
+          "y": 175.0
+        },
+        {
+          "x": 414.0,
+          "y": 175.7
+        },
+        {
+          "x": 473.0,
+          "y": 177.9
+        },
+        {
+          "x": 532.0,
+          "y": 181.2
+        },
+        {
+          "x": 591.0,
+          "y": 185.4
+        },
+        {
+          "x": 650.0,
+          "y": 190.0
+        }
+      ]
+    },
+    {
+      "agent_id": "agent-0005",
+      "model": "anthropic/claude-haiku-4-5",
+      "route_chosen": "Mountain Pass Beta",
+      "pacing_chosen": "Standard",
+      "total_time_min": 7.63,
+      "energy_consumed": 11.9,
+      "total_cost_usd": 0.00051,
+      "total_latency_ms": 757.8,
+      "decisions_count": 2,
+      "correct_count": 2,
+      "accuracy_pct": 100.0,
+      "cost_per_correct_usd": 0.000255,
+      "on_time": true,
+      "graded_response_id": "sim-claude-haiku-4-5-0005-Choo",
+      "trajectory": [
+        {
+          "x": 60.0,
+          "y": 190.0
+        },
+        {
+          "x": 119.0,
+          "y": 185.4
+        },
+        {
+          "x": 178.0,
+          "y": 181.2
+        },
+        {
+          "x": 237.0,
+          "y": 177.9
+        },
+        {
+          "x": 296.0,
+          "y": 175.7
+        },
+        {
+          "x": 355.0,
+          "y": 175.0
+        },
+        {
+          "x": 414.0,
+          "y": 175.7
+        },
+        {
+          "x": 473.0,
+          "y": 177.9
+        },
+        {
+          "x": 532.0,
+          "y": 181.2
+        },
+        {
+          "x": 591.0,
+          "y": 185.4
+        },
+        {
+          "x": 650.0,
+          "y": 190.0
+        }
+      ]
+    },
+    {
+      "agent_id": "agent-0006",
+      "model": "anthropic/claude-haiku-4-5",
+      "route_chosen": "Mountain Pass Beta",
+      "pacing_chosen": "Standard",
+      "total_time_min": 7.13,
+      "energy_consumed": 11.9,
+      "total_cost_usd": 0.000627,
+      "total_latency_ms": 729.7,
+      "decisions_count": 2,
+      "correct_count": 2,
+      "accuracy_pct": 100.0,
+      "cost_per_correct_usd": 0.000313,
+      "on_time": true,
+      "graded_response_id": "sim-claude-haiku-4-5-0006-Choo",
+      "trajectory": [
+        {
+          "x": 60.0,
+          "y": 190.0
+        },
+        {
+          "x": 119.0,
+          "y": 185.4
+        },
+        {
+          "x": 178.0,
+          "y": 181.2
+        },
+        {
+          "x": 237.0,
+          "y": 177.9
+        },
+        {
+          "x": 296.0,
+          "y": 175.7
+        },
+        {
+          "x": 355.0,
+          "y": 175.0
+        },
+        {
+          "x": 414.0,
+          "y": 175.7
+        },
+        {
+          "x": 473.0,
+          "y": 177.9
+        },
+        {
+          "x": 532.0,
+          "y": 181.2
+        },
+        {
+          "x": 591.0,
+          "y": 185.4
+        },
+        {
+          "x": 650.0,
+          "y": 190.0
+        }
+      ]
+    },
+    {
+      "agent_id": "agent-0007",
+      "model": "anthropic/claude-haiku-4-5",
+      "route_chosen": "Mountain Pass Beta",
+      "pacing_chosen": "Standard",
+      "total_time_min": 7.45,
+      "energy_consumed": 11.9,
+      "total_cost_usd": 0.000618,
+      "total_latency_ms": 822.0,
+      "decisions_count": 2,
+      "correct_count": 2,
+      "accuracy_pct": 100.0,
+      "cost_per_correct_usd": 0.000309,
+      "on_time": true,
+      "graded_response_id": "sim-claude-haiku-4-5-0007-Choo",
+      "trajectory": [
+        {
+          "x": 60.0,
+          "y": 190.0
+        },
+        {
+          "x": 119.0,
+          "y": 185.4
+        },
+        {
+          "x": 178.0,
+          "y": 181.2
+        },
+        {
+          "x": 237.0,
+          "y": 177.9
+        },
+        {
+          "x": 296.0,
+          "y": 175.7
+        },
+        {
+          "x": 355.0,
+          "y": 175.0
+        },
+        {
+          "x": 414.0,
+          "y": 175.7
+        },
+        {
+          "x": 473.0,
+          "y": 177.9
+        },
+        {
+          "x": 532.0,
+          "y": 181.2
+        },
+        {
+          "x": 591.0,
+          "y": 185.4
+        },
+        {
+          "x": 650.0,
+          "y": 190.0
+        }
+      ]
+    },
+    {
+      "agent_id": "agent-0008",
+      "model": "anthropic/claude-sonnet-5",
+      "route_chosen": "Mountain Pass Beta",
+      "pacing_chosen": "Standard",
+      "total_time_min": 7.79,
+      "energy_consumed": 11.9,
+      "total_cost_usd": 0.001605,
+      "total_latency_ms": 799.6,
+      "decisions_count": 2,
+      "correct_count": 2,
+      "accuracy_pct": 100.0,
+      "cost_per_correct_usd": 0.000803,
+      "on_time": true,
+      "graded_response_id": "sim-claude-sonnet-5-0008-Choo",
+      "trajectory": [
+        {
+          "x": 60.0,
+          "y": 190.0
+        },
+        {
+          "x": 119.0,
+          "y": 185.4
+        },
+        {
+          "x": 178.0,
+          "y": 181.2
+        },
+        {
+          "x": 237.0,
+          "y": 177.9
+        },
+        {
+          "x": 296.0,
+          "y": 175.7
+        },
+        {
+          "x": 355.0,
+          "y": 175.0
+        },
+        {
+          "x": 414.0,
+          "y": 175.7
+        },
+        {
+          "x": 473.0,
+          "y": 177.9
+        },
+        {
+          "x": 532.0,
+          "y": 181.2
+        },
+        {
+          "x": 591.0,
+          "y": 185.4
+        },
+        {
+          "x": 650.0,
+          "y": 190.0
+        }
+      ]
+    },
+    {
+      "agent_id": "agent-0009",
+      "model": "anthropic/claude-haiku-4-5",
+      "route_chosen": "Metro Transit Grid Delta",
+      "pacing_chosen": "Standard",
+      "total_time_min": 8.06,
+      "energy_consumed": 14.56,
+      "total_cost_usd": 0.00055,
+      "total_latency_ms": 661.7,
+      "decisions_count": 2,
+      "correct_count": 1,
+      "accuracy_pct": 50.0,
+      "cost_per_correct_usd": 0.00055,
+      "on_time": false,
+      "graded_response_id": "sim-claude-haiku-4-5-0009-Choo",
+      "trajectory": [
+        {
+          "x": 60.0,
+          "y": 190.0
+        },
+        {
+          "x": 119.0,
+          "y": 202.4
+        },
+        {
+          "x": 178.0,
+          "y": 213.5
+        },
+        {
+          "x": 237.0,
+          "y": 222.4
+        },
+        {
+          "x": 296.0,
+          "y": 228.0
+        },
+        {
+          "x": 355.0,
+          "y": 230.0
+        },
+        {
+          "x": 414.0,
+          "y": 228.0
+        },
+        {
+          "x": 473.0,
+          "y": 222.4
+        },
+        {
+          "x": 532.0,
+          "y": 213.5
+        },
+        {
+          "x": 591.0,
+          "y": 202.4
+        },
+        {
+          "x": 650.0,
+          "y": 190.0
+        }
+      ]
+    },
+    {
+      "agent_id": "agent-0010",
+      "model": "google/gemini-2.0-flash",
+      "route_chosen": "Metro Transit Grid Delta",
+      "pacing_chosen": "Standard",
+      "total_time_min": 7.57,
+      "energy_consumed": 14.56,
+      "total_cost_usd": 5.6e-05,
+      "total_latency_ms": 720.6,
+      "decisions_count": 2,
+      "correct_count": 1,
+      "accuracy_pct": 50.0,
+      "cost_per_correct_usd": 5.6e-05,
+      "on_time": false,
+      "graded_response_id": "sim-gemini-2.0-flash-0010-Choo",
+      "trajectory": [
+        {
+          "x": 60.0,
+          "y": 190.0
+        },
+        {
+          "x": 119.0,
+          "y": 202.4
+        },
+        {
+          "x": 178.0,
+          "y": 213.5
+        },
+        {
+          "x": 237.0,
+          "y": 222.4
+        },
+        {
+          "x": 296.0,
+          "y": 228.0
+        },
+        {
+          "x": 355.0,
+          "y": 230.0
+        },
+        {
+          "x": 414.0,
+          "y": 228.0
+        },
+        {
+          "x": 473.0,
+          "y": 222.4
+        },
+        {
+          "x": 532.0,
+          "y": 213.5
+        },
+        {
+          "x": 591.0,
+          "y": 202.4
+        },
+        {
+          "x": 650.0,
+          "y": 190.0
+        }
+      ]
+    },
+    {
+      "agent_id": "agent-0011",
+      "model": "google/gemini-2.0-flash",
+      "route_chosen": "Mountain Pass Beta",
+      "pacing_chosen": "Conserve",
+      "total_time_min": 7.61,
+      "energy_consumed": 9.52,
+      "total_cost_usd": 4.7e-05,
+      "total_latency_ms": 653.8,
+      "decisions_count": 2,
+      "correct_count": 1,
+      "accuracy_pct": 50.0,
+      "cost_per_correct_usd": 4.7e-05,
+      "on_time": true,
+      "graded_response_id": "sim-gemini-2.0-flash-0011-Choo",
+      "trajectory": [
+        {
+          "x": 60.0,
+          "y": 190.0
+        },
+        {
+          "x": 119.0,
+          "y": 185.4
+        },
+        {
+          "x": 178.0,
+          "y": 181.2
+        },
+        {
+          "x": 237.0,
+          "y": 177.9
+        },
+        {
+          "x": 296.0,
+          "y": 175.7
+        },
+        {
+          "x": 355.0,
+          "y": 175.0
+        },
+        {
+          "x": 414.0,
+          "y": 175.7
+        },
+        {
+          "x": 473.0,
+          "y": 177.9
+        },
+        {
+          "x": 532.0,
+          "y": 181.2
+        },
+        {
+          "x": 591.0,
+          "y": 185.4
+        },
+        {
+          "x": 650.0,
+          "y": 190.0
+        }
+      ]
+    },
+    {
+      "agent_id": "agent-0012",
+      "model": "anthropic/claude-haiku-4-5",
+      "route_chosen": "Mountain Pass Beta",
+      "pacing_chosen": "Standard",
+      "total_time_min": 7.49,
+      "energy_consumed": 11.9,
+      "total_cost_usd": 0.000594,
+      "total_latency_ms": 744.1,
+      "decisions_count": 2,
+      "correct_count": 2,
+      "accuracy_pct": 100.0,
+      "cost_per_correct_usd": 0.000297,
+      "on_time": true,
+      "graded_response_id": "sim-claude-haiku-4-5-0012-Choo",
+      "trajectory": [
+        {
+          "x": 60.0,
+          "y": 190.0
+        },
+        {
+          "x": 119.0,
+          "y": 185.4
+        },
+        {
+          "x": 178.0,
+          "y": 181.2
+        },
+        {
+          "x": 237.0,
+          "y": 177.9
+        },
+        {
+          "x": 296.0,
+          "y": 175.7
+        },
+        {
+          "x": 355.0,
+          "y": 175.0
+        },
+        {
+          "x": 414.0,
+          "y": 175.7
+        },
+        {
+          "x": 473.0,
+          "y": 177.9
+        },
+        {
+          "x": 532.0,
+          "y": 181.2
+        },
+        {
+          "x": 591.0,
+          "y": 185.4
+        },
+        {
+          "x": 650.0,
+          "y": 190.0
+        }
+      ]
+    },
+    {
+      "agent_id": "agent-0013",
+      "model": "google/gemini-2.0-flash",
+      "route_chosen": "Mountain Pass Beta",
+      "pacing_chosen": "Standard",
+      "total_time_min": 6.41,
+      "energy_consumed": 11.9,
+      "total_cost_usd": 4.8e-05,
+      "total_latency_ms": 599.1,
+      "decisions_count": 2,
+      "correct_count": 2,
+      "accuracy_pct": 100.0,
+      "cost_per_correct_usd": 2.4e-05,
+      "on_time": true,
+      "graded_response_id": "sim-gemini-2.0-flash-0013-Choo",
+      "trajectory": [
+        {
+          "x": 60.0,
+          "y": 190.0
+        },
+        {
+          "x": 119.0,
+          "y": 185.4
+        },
+        {
+          "x": 178.0,
+          "y": 181.2
+        },
+        {
+          "x": 237.0,
+          "y": 177.9
+        },
+        {
+          "x": 296.0,
+          "y": 175.7
+        },
+        {
+          "x": 355.0,
+          "y": 175.0
+        },
+        {
+          "x": 414.0,
+          "y": 175.7
+        },
+        {
+          "x": 473.0,
+          "y": 177.9
+        },
+        {
+          "x": 532.0,
+          "y": 181.2
+        },
+        {
+          "x": 591.0,
+          "y": 185.4
+        },
+        {
+          "x": 650.0,
+          "y": 190.0
+        }
+      ]
+    },
+    {
+      "agent_id": "agent-0014",
+      "model": "anthropic/claude-haiku-4-5",
+      "route_chosen": "Mountain Pass Beta",
+      "pacing_chosen": "Standard",
+      "total_time_min": 7.56,
+      "energy_consumed": 11.9,
+      "total_cost_usd": 0.00059,
+      "total_latency_ms": 654.0,
+      "decisions_count": 2,
+      "correct_count": 2,
+      "accuracy_pct": 100.0,
+      "cost_per_correct_usd": 0.000295,
+      "on_time": true,
+      "graded_response_id": "sim-claude-haiku-4-5-0014-Choo",
+      "trajectory": [
+        {
+          "x": 60.0,
+          "y": 190.0
+        },
+        {
+          "x": 119.0,
+          "y": 185.4
+        },
+        {
+          "x": 178.0,
+          "y": 181.2
+        },
+        {
+          "x": 237.0,
+          "y": 177.9
+        },
+        {
+          "x": 296.0,
+          "y": 175.7
+        },
+        {
+          "x": 355.0,
+          "y": 175.0
+        },
+        {
+          "x": 414.0,
+          "y": 175.7
+        },
+        {
+          "x": 473.0,
+          "y": 177.9
+        },
+        {
+          "x": 532.0,
+          "y": 181.2
+        },
+        {
+          "x": 591.0,
+          "y": 185.4
+        },
+        {
+          "x": 650.0,
+          "y": 190.0
+        }
+      ]
+    },
+    {
+      "agent_id": "agent-0015",
+      "model": "google/gemini-2.0-flash",
+      "route_chosen": "Valley Highway Gamma",
+      "pacing_chosen": "Standard",
+      "total_time_min": 5.28,
+      "energy_consumed": 12.0,
+      "total_cost_usd": 5.6e-05,
+      "total_latency_ms": 534.8,
+      "decisions_count": 2,
+      "correct_count": 1,
+      "accuracy_pct": 50.0,
+      "cost_per_correct_usd": 5.6e-05,
+      "on_time": false,
+      "graded_response_id": "sim-gemini-2.0-flash-0015-Choo",
+      "trajectory": [
+        {
+          "x": 60.0,
+          "y": 190.0
+        },
+        {
+          "x": 119.0,
+          "y": 194.6
+        },
+        {
+          "x": 178.0,
+          "y": 198.8
+        },
+        {
+          "x": 237.0,
+          "y": 202.1
+        },
+        {
+          "x": 296.0,
+          "y": 204.3
+        },
+        {
+          "x": 355.0,
+          "y": 205.0
+        },
+        {
+          "x": 414.0,
+          "y": 204.3
+        },
+        {
+          "x": 473.0,
+          "y": 202.1
+        },
+        {
+          "x": 532.0,
+          "y": 198.8
+        },
+        {
+          "x": 591.0,
+          "y": 194.6
+        },
+        {
+          "x": 650.0,
+          "y": 190.0
+        }
+      ]
+    },
+    {
+      "agent_id": "agent-0016",
+      "model": "google/gemini-2.0-flash",
+      "route_chosen": "Mountain Pass Beta",
+      "pacing_chosen": "Push",
+      "total_time_min": 5.11,
+      "energy_consumed": 14.28,
+      "total_cost_usd": 5.1e-05,
+      "total_latency_ms": 721.2,
+      "decisions_count": 2,
+      "correct_count": 1,
+      "accuracy_pct": 50.0,
+      "cost_per_correct_usd": 5.1e-05,
+      "on_time": true,
+      "graded_response_id": "sim-gemini-2.0-flash-0016-Choo",
+      "trajectory": [
+        {
+          "x": 60.0,
+          "y": 190.0
+        },
+        {
+          "x": 119.0,
+          "y": 185.4
+        },
+        {
+          "x": 178.0,
+          "y": 181.2
+        },
+        {
+          "x": 237.0,
+          "y": 177.9
+        },
+        {
+          "x": 296.0,
+          "y": 175.7
+        },
+        {
+          "x": 355.0,
+          "y": 175.0
+        },
+        {
+          "x": 414.0,
+          "y": 175.7
+        },
+        {
+          "x": 473.0,
+          "y": 177.9
+        },
+        {
+          "x": 532.0,
+          "y": 181.2
+        },
+        {
+          "x": 591.0,
+          "y": 185.4
+        },
+        {
+          "x": 650.0,
+          "y": 190.0
+        }
+      ]
+    },
+    {
+      "agent_id": "agent-0017",
+      "model": "anthropic/claude-sonnet-5",
+      "route_chosen": "Mountain Pass Beta",
+      "pacing_chosen": "Standard",
+      "total_time_min": 7.31,
+      "energy_consumed": 11.9,
+      "total_cost_usd": 0.001689,
+      "total_latency_ms": 792.2,
+      "decisions_count": 2,
+      "correct_count": 2,
+      "accuracy_pct": 100.0,
+      "cost_per_correct_usd": 0.000844,
+      "on_time": true,
+      "graded_response_id": "sim-claude-sonnet-5-0017-Choo",
+      "trajectory": [
+        {
+          "x": 60.0,
+          "y": 190.0
+        },
+        {
+          "x": 119.0,
+          "y": 185.4
+        },
+        {
+          "x": 178.0,
+          "y": 181.2
+        },
+        {
+          "x": 237.0,
+          "y": 177.9
+        },
+        {
+          "x": 296.0,
+          "y": 175.7
+        },
+        {
+          "x": 355.0,
+          "y": 175.0
+        },
+        {
+          "x": 414.0,
+          "y": 175.7
+        },
+        {
+          "x": 473.0,
+          "y": 177.9
+        },
+        {
+          "x": 532.0,
+          "y": 181.2
+        },
+        {
+          "x": 591.0,
+          "y": 185.4
+        },
+        {
+          "x": 650.0,
+          "y": 190.0
+        }
+      ]
+    },
+    {
+      "agent_id": "agent-0018",
+      "model": "anthropic/claude-haiku-4-5",
+      "route_chosen": "Mountain Pass Beta",
+      "pacing_chosen": "Standard",
+      "total_time_min": 7.08,
+      "energy_consumed": 11.9,
+      "total_cost_usd": 0.000552,
+      "total_latency_ms": 820.7,
+      "decisions_count": 2,
+      "correct_count": 2,
+      "accuracy_pct": 100.0,
+      "cost_per_correct_usd": 0.000276,
+      "on_time": true,
+      "graded_response_id": "sim-claude-haiku-4-5-0018-Choo",
+      "trajectory": [
+        {
+          "x": 60.0,
+          "y": 190.0
+        },
+        {
+          "x": 119.0,
+          "y": 185.4
+        },
+        {
+          "x": 178.0,
+          "y": 181.2
+        },
+        {
+          "x": 237.0,
+          "y": 177.9
+        },
+        {
+          "x": 296.0,
+          "y": 175.7
+        },
+        {
+          "x": 355.0,
+          "y": 175.0
+        },
+        {
+          "x": 414.0,
+          "y": 175.7
+        },
+        {
+          "x": 473.0,
+          "y": 177.9
+        },
+        {
+          "x": 532.0,
+          "y": 181.2
+        },
+        {
+          "x": 591.0,
+          "y": 185.4
+        },
+        {
+          "x": 650.0,
+          "y": 190.0
+        }
+      ]
+    },
+    {
+      "agent_id": "agent-0019",
+      "model": "google/gemini-2.0-flash",
+      "route_chosen": "Mountain Pass Beta",
+      "pacing_chosen": "Standard",
+      "total_time_min": 6.19,
+      "energy_consumed": 11.9,
+      "total_cost_usd": 5.5e-05,
+      "total_latency_ms": 660.3,
+      "decisions_count": 2,
+      "correct_count": 2,
+      "accuracy_pct": 100.0,
+      "cost_per_correct_usd": 2.8e-05,
+      "on_time": true,
+      "graded_response_id": "sim-gemini-2.0-flash-0019-Choo",
+      "trajectory": [
+        {
+          "x": 60.0,
+          "y": 190.0
+        },
+        {
+          "x": 119.0,
+          "y": 185.4
+        },
+        {
+          "x": 178.0,
+          "y": 181.2
+        },
+        {
+          "x": 237.0,
+          "y": 177.9
+        },
+        {
+          "x": 296.0,
+          "y": 175.7
+        },
+        {
+          "x": 355.0,
+          "y": 175.0
+        },
+        {
+          "x": 414.0,
+          "y": 175.7
+        },
+        {
+          "x": 473.0,
+          "y": 177.9
+        },
+        {
+          "x": 532.0,
+          "y": 181.2
+        },
+        {
+          "x": 591.0,
+          "y": 185.4
+        },
+        {
+          "x": 650.0,
+          "y": 190.0
+        }
+      ]
+    },
+    {
+      "agent_id": "agent-0020",
+      "model": "google/gemini-2.0-flash",
+      "route_chosen": "Mountain Pass Beta",
+      "pacing_chosen": "Standard",
+      "total_time_min": 6.22,
+      "energy_consumed": 11.9,
+      "total_cost_usd": 5.2e-05,
+      "total_latency_ms": 662.4,
+      "decisions_count": 2,
+      "correct_count": 2,
+      "accuracy_pct": 100.0,
+      "cost_per_correct_usd": 2.6e-05,
+      "on_time": true,
+      "graded_response_id": "sim-gemini-2.0-flash-0020-Choo",
+      "trajectory": [
+        {
+          "x": 60.0,
+          "y": 190.0
+        },
+        {
+          "x": 119.0,
+          "y": 185.4
+        },
+        {
+          "x": 178.0,
+          "y": 181.2
+        },
+        {
+          "x": 237.0,
+          "y": 177.9
+        },
+        {
+          "x": 296.0,
+          "y": 175.7
+        },
+        {
+          "x": 355.0,
+          "y": 175.0
+        },
+        {
+          "x": 414.0,
+          "y": 175.7
+        },
+        {
+          "x": 473.0,
+          "y": 177.9
+        },
+        {
+          "x": 532.0,
+          "y": 181.2
+        },
+        {
+          "x": 591.0,
+          "y": 185.4
+        },
+        {
+          "x": 650.0,
+          "y": 190.0
+        }
+      ]
+    },
+    {
+      "agent_id": "agent-0021",
+      "model": "google/gemini-2.0-flash",
+      "route_chosen": "Mountain Pass Beta",
+      "pacing_chosen": "Push",
+      "total_time_min": 5.49,
+      "energy_consumed": 14.28,
+      "total_cost_usd": 5.3e-05,
+      "total_latency_ms": 608.9,
+      "decisions_count": 2,
+      "correct_count": 1,
+      "accuracy_pct": 50.0,
+      "cost_per_correct_usd": 5.3e-05,
+      "on_time": true,
+      "graded_response_id": "sim-gemini-2.0-flash-0021-Choo",
+      "trajectory": [
+        {
+          "x": 60.0,
+          "y": 190.0
+        },
+        {
+          "x": 119.0,
+          "y": 185.4
+        },
+        {
+          "x": 178.0,
+          "y": 181.2
+        },
+        {
+          "x": 237.0,
+          "y": 177.9
+        },
+        {
+          "x": 296.0,
+          "y": 175.7
+        },
+        {
+          "x": 355.0,
+          "y": 175.0
+        },
+        {
+          "x": 414.0,
+          "y": 175.7
+        },
+        {
+          "x": 473.0,
+          "y": 177.9
+        },
+        {
+          "x": 532.0,
+          "y": 181.2
+        },
+        {
+          "x": 591.0,
+          "y": 185.4
+        },
+        {
+          "x": 650.0,
+          "y": 190.0
+        }
+      ]
+    },
+    {
+      "agent_id": "agent-0022",
+      "model": "anthropic/claude-haiku-4-5",
+      "route_chosen": "Mountain Pass Beta",
+      "pacing_chosen": "Standard",
+      "total_time_min": 7.35,
+      "energy_consumed": 11.9,
+      "total_cost_usd": 0.000631,
+      "total_latency_ms": 711.8,
+      "decisions_count": 2,
+      "correct_count": 2,
+      "accuracy_pct": 100.0,
+      "cost_per_correct_usd": 0.000316,
+      "on_time": true,
+      "graded_response_id": "sim-claude-haiku-4-5-0022-Choo",
+      "trajectory": [
+        {
+          "x": 60.0,
+          "y": 190.0
+        },
+        {
+          "x": 119.0,
+          "y": 185.4
+        },
+        {
+          "x": 178.0,
+          "y": 181.2
+        },
+        {
+          "x": 237.0,
+          "y": 177.9
+        },
+        {
+          "x": 296.0,
+          "y": 175.7
+        },
+        {
+          "x": 355.0,
+          "y": 175.0
+        },
+        {
+          "x": 414.0,
+          "y": 175.7
+        },
+        {
+          "x": 473.0,
+          "y": 177.9
+        },
+        {
+          "x": 532.0,
+          "y": 181.2
+        },
+        {
+          "x": 591.0,
+          "y": 185.4
+        },
+        {
+          "x": 650.0,
+          "y": 190.0
+        }
+      ]
+    },
+    {
+      "agent_id": "agent-0023",
+      "model": "anthropic/claude-haiku-4-5",
+      "route_chosen": "Mountain Pass Beta",
+      "pacing_chosen": "Conserve",
+      "total_time_min": 9.35,
+      "energy_consumed": 9.52,
+      "total_cost_usd": 0.000534,
+      "total_latency_ms": 684.0,
+      "decisions_count": 2,
+      "correct_count": 1,
+      "accuracy_pct": 50.0,
+      "cost_per_correct_usd": 0.000534,
+      "on_time": true,
+      "graded_response_id": "sim-claude-haiku-4-5-0023-Choo",
+      "trajectory": [
+        {
+          "x": 60.0,
+          "y": 190.0
+        },
+        {
+          "x": 119.0,
+          "y": 185.4
+        },
+        {
+          "x": 178.0,
+          "y": 181.2
+        },
+        {
+          "x": 237.0,
+          "y": 177.9
+        },
+        {
+          "x": 296.0,
+          "y": 175.7
+        },
+        {
+          "x": 355.0,
+          "y": 175.0
+        },
+        {
+          "x": 414.0,
+          "y": 175.7
+        },
+        {
+          "x": 473.0,
+          "y": 177.9
+        },
+        {
+          "x": 532.0,
+          "y": 181.2
+        },
+        {
+          "x": 591.0,
+          "y": 185.4
+        },
+        {
+          "x": 650.0,
+          "y": 190.0
+        }
+      ]
+    },
+    {
+      "agent_id": "agent-0024",
+      "model": "anthropic/claude-haiku-4-5",
+      "route_chosen": "Mountain Pass Beta",
+      "pacing_chosen": "Standard",
+      "total_time_min": 7.36,
+      "energy_consumed": 11.9,
+      "total_cost_usd": 0.000533,
+      "total_latency_ms": 649.5,
+      "decisions_count": 2,
+      "correct_count": 2,
+      "accuracy_pct": 100.0,
+      "cost_per_correct_usd": 0.000267,
+      "on_time": true,
+      "graded_response_id": "sim-claude-haiku-4-5-0024-Choo",
+      "trajectory": [
+        {
+          "x": 60.0,
+          "y": 190.0
+        },
+        {
+          "x": 119.0,
+          "y": 185.4
+        },
+        {
+          "x": 178.0,
+          "y": 181.2
+        },
+        {
+          "x": 237.0,
+          "y": 177.9
+        },
+        {
+          "x": 296.0,
+          "y": 175.7
+        },
+        {
+          "x": 355.0,
+          "y": 175.0
+        },
+        {
+          "x": 414.0,
+          "y": 175.7
+        },
+        {
+          "x": 473.0,
+          "y": 177.9
+        },
+        {
+          "x": 532.0,
+          "y": 181.2
+        },
+        {
+          "x": 591.0,
+          "y": 185.4
+        },
+        {
+          "x": 650.0,
+          "y": 190.0
+        }
+      ]
+    },
+    {
+      "agent_id": "agent-0025",
+      "model": "anthropic/claude-sonnet-5",
+      "route_chosen": "Mountain Pass Beta",
+      "pacing_chosen": "Standard",
+      "total_time_min": 8.01,
+      "energy_consumed": 11.9,
+      "total_cost_usd": 0.001827,
+      "total_latency_ms": 791.7,
+      "decisions_count": 2,
+      "correct_count": 2,
+      "accuracy_pct": 100.0,
+      "cost_per_correct_usd": 0.000914,
+      "on_time": true,
+      "graded_response_id": "sim-claude-sonnet-5-0025-Choo",
+      "trajectory": [
+        {
+          "x": 60.0,
+          "y": 190.0
+        },
+        {
+          "x": 119.0,
+          "y": 185.4
+        },
+        {
+          "x": 178.0,
+          "y": 181.2
+        },
+        {
+          "x": 237.0,
+          "y": 177.9
+        },
+        {
+          "x": 296.0,
+          "y": 175.7
+        },
+        {
+          "x": 355.0,
+          "y": 175.0
+        },
+        {
+          "x": 414.0,
+          "y": 175.7
+        },
+        {
+          "x": 473.0,
+          "y": 177.9
+        },
+        {
+          "x": 532.0,
+          "y": 181.2
+        },
+        {
+          "x": 591.0,
+          "y": 185.4
+        },
+        {
+          "x": 650.0,
+          "y": 190.0
+        }
+      ]
+    },
+    {
+      "agent_id": "agent-0026",
+      "model": "anthropic/claude-haiku-4-5",
+      "route_chosen": "Mountain Pass Beta",
+      "pacing_chosen": "Standard",
+      "total_time_min": 7.43,
+      "energy_consumed": 11.9,
+      "total_cost_usd": 0.000521,
+      "total_latency_ms": 792.0,
+      "decisions_count": 2,
+      "correct_count": 2,
+      "accuracy_pct": 100.0,
+      "cost_per_correct_usd": 0.00026,
+      "on_time": true,
+      "graded_response_id": "sim-claude-haiku-4-5-0026-Choo",
+      "trajectory": [
+        {
+          "x": 60.0,
+          "y": 190.0
+        },
+        {
+          "x": 119.0,
+          "y": 185.4
+        },
+        {
+          "x": 178.0,
+          "y": 181.2
+        },
+        {
+          "x": 237.0,
+          "y": 177.9
+        },
+        {
+          "x": 296.0,
+          "y": 175.7
+        },
+        {
+          "x": 355.0,
+          "y": 175.0
+        },
+        {
+          "x": 414.0,
+          "y": 175.7
+        },
+        {
+          "x": 473.0,
+          "y": 177.9
+        },
+        {
+          "x": 532.0,
+          "y": 181.2
+        },
+        {
+          "x": 591.0,
+          "y": 185.4
+        },
+        {
+          "x": 650.0,
+          "y": 190.0
+        }
+      ]
+    },
+    {
+      "agent_id": "agent-0027",
+      "model": "anthropic/claude-haiku-4-5",
+      "route_chosen": "Mountain Pass Beta",
+      "pacing_chosen": "Standard",
+      "total_time_min": 6.72,
+      "energy_consumed": 11.9,
+      "total_cost_usd": 0.000583,
+      "total_latency_ms": 730.1,
+      "decisions_count": 2,
+      "correct_count": 2,
+      "accuracy_pct": 100.0,
+      "cost_per_correct_usd": 0.000291,
+      "on_time": true,
+      "graded_response_id": "sim-claude-haiku-4-5-0027-Choo",
+      "trajectory": [
+        {
+          "x": 60.0,
+          "y": 190.0
+        },
+        {
+          "x": 119.0,
+          "y": 185.4
+        },
+        {
+          "x": 178.0,
+          "y": 181.2
+        },
+        {
+          "x": 237.0,
+          "y": 177.9
+        },
+        {
+          "x": 296.0,
+          "y": 175.7
+        },
+        {
+          "x": 355.0,
+          "y": 175.0
+        },
+        {
+          "x": 414.0,
+          "y": 175.7
+        },
+        {
+          "x": 473.0,
+          "y": 177.9
+        },
+        {
+          "x": 532.0,
+          "y": 181.2
+        },
+        {
+          "x": 591.0,
+          "y": 185.4
+        },
+        {
+          "x": 650.0,
+          "y": 190.0
+        }
+      ]
+    },
+    {
+      "agent_id": "agent-0028",
+      "model": "anthropic/claude-sonnet-5",
+      "route_chosen": "Mountain Pass Beta",
+      "pacing_chosen": "Standard",
+      "total_time_min": 7.72,
+      "energy_consumed": 11.9,
+      "total_cost_usd": 0.001638,
+      "total_latency_ms": 744.6,
+      "decisions_count": 2,
+      "correct_count": 2,
+      "accuracy_pct": 100.0,
+      "cost_per_correct_usd": 0.000819,
+      "on_time": true,
+      "graded_response_id": "sim-claude-sonnet-5-0028-Choo",
+      "trajectory": [
+        {
+          "x": 60.0,
+          "y": 190.0
+        },
+        {
+          "x": 119.0,
+          "y": 185.4
+        },
+        {
+          "x": 178.0,
+          "y": 181.2
+        },
+        {
+          "x": 237.0,
+          "y": 177.9
+        },
+        {
+          "x": 296.0,
+          "y": 175.7
+        },
+        {
+          "x": 355.0,
+          "y": 175.0
+        },
+        {
+          "x": 414.0,
+          "y": 175.7
+        },
+        {
+          "x": 473.0,
+          "y": 177.9
+        },
+        {
+          "x": 532.0,
+          "y": 181.2
+        },
+        {
+          "x": 591.0,
+          "y": 185.4
+        },
+        {
+          "x": 650.0,
+          "y": 190.0
+        }
+      ]
+    },
+    {
+      "agent_id": "agent-0029",
+      "model": "anthropic/claude-haiku-4-5",
+      "route_chosen": "Valley Highway Gamma",
+      "pacing_chosen": "Standard",
+      "total_time_min": 5.92,
+      "energy_consumed": 12.0,
+      "total_cost_usd": 0.000485,
+      "total_latency_ms": 729.6,
+      "decisions_count": 2,
+      "correct_count": 1,
+      "accuracy_pct": 50.0,
+      "cost_per_correct_usd": 0.000485,
+      "on_time": false,
+      "graded_response_id": "sim-claude-haiku-4-5-0029-Choo",
+      "trajectory": [
+        {
+          "x": 60.0,
+          "y": 190.0
+        },
+        {
+          "x": 119.0,
+          "y": 194.6
+        },
+        {
+          "x": 178.0,
+          "y": 198.8
+        },
+        {
+          "x": 237.0,
+          "y": 202.1
+        },
+        {
+          "x": 296.0,
+          "y": 204.3
+        },
+        {
+          "x": 355.0,
+          "y": 205.0
+        },
+        {
+          "x": 414.0,
+          "y": 204.3
+        },
+        {
+          "x": 473.0,
+          "y": 202.1
+        },
+        {
+          "x": 532.0,
+          "y": 198.8
+        },
+        {
+          "x": 591.0,
+          "y": 194.6
+        },
+        {
+          "x": 650.0,
+          "y": 190.0
+        }
+      ]
+    },
+    {
+      "agent_id": "agent-0030",
+      "model": "anthropic/claude-haiku-4-5",
+      "route_chosen": "Expressway Alpha",
+      "pacing_chosen": "Standard",
+      "total_time_min": 6.01,
+      "energy_consumed": 13.2,
+      "total_cost_usd": 0.000545,
+      "total_latency_ms": 629.4,
+      "decisions_count": 2,
+      "correct_count": 1,
+      "accuracy_pct": 50.0,
+      "cost_per_correct_usd": 0.000545,
+      "on_time": false,
+      "graded_response_id": "sim-claude-haiku-4-5-0030-Choo",
+      "trajectory": [
+        {
+          "x": 60.0,
+          "y": 190.0
+        },
+        {
+          "x": 119.0,
+          "y": 177.6
+        },
+        {
+          "x": 178.0,
+          "y": 166.5
+        },
+        {
+          "x": 237.0,
+          "y": 157.6
+        },
+        {
+          "x": 296.0,
+          "y": 152.0
+        },
+        {
+          "x": 355.0,
+          "y": 150.0
+        },
+        {
+          "x": 414.0,
+          "y": 152.0
+        },
+        {
+          "x": 473.0,
+          "y": 157.6
+        },
+        {
+          "x": 532.0,
+          "y": 166.5
+        },
+        {
+          "x": 591.0,
+          "y": 177.6
+        },
+        {
+          "x": 650.0,
+          "y": 190.0
+        }
+      ]
+    },
+    {
+      "agent_id": "agent-0031",
+      "model": "google/gemini-2.0-flash",
+      "route_chosen": "Expressway Alpha",
+      "pacing_chosen": "Standard",
+      "total_time_min": 5.18,
+      "energy_consumed": 13.2,
+      "total_cost_usd": 5.7e-05,
+      "total_latency_ms": 584.1,
+      "decisions_count": 2,
+      "correct_count": 1,
+      "accuracy_pct": 50.0,
+      "cost_per_correct_usd": 5.7e-05,
+      "on_time": false,
+      "graded_response_id": "sim-gemini-2.0-flash-0031-Choo",
+      "trajectory": [
+        {
+          "x": 60.0,
+          "y": 190.0
+        },
+        {
+          "x": 119.0,
+          "y": 177.6
+        },
+        {
+          "x": 178.0,
+          "y": 166.5
+        },
+        {
+          "x": 237.0,
+          "y": 157.6
+        },
+        {
+          "x": 296.0,
+          "y": 152.0
+        },
+        {
+          "x": 355.0,
+          "y": 150.0
+        },
+        {
+          "x": 414.0,
+          "y": 152.0
+        },
+        {
+          "x": 473.0,
+          "y": 157.6
+        },
+        {
+          "x": 532.0,
+          "y": 166.5
+        },
+        {
+          "x": 591.0,
+          "y": 177.6
+        },
+        {
+          "x": 650.0,
+          "y": 190.0
+        }
+      ]
+    },
+    {
+      "agent_id": "agent-0032",
+      "model": "anthropic/claude-sonnet-5",
+      "route_chosen": "Mountain Pass Beta",
+      "pacing_chosen": "Standard",
+      "total_time_min": 7.63,
+      "energy_consumed": 11.9,
+      "total_cost_usd": 0.001722,
+      "total_latency_ms": 841.6,
+      "decisions_count": 2,
+      "correct_count": 2,
+      "accuracy_pct": 100.0,
+      "cost_per_correct_usd": 0.000861,
+      "on_time": true,
+      "graded_response_id": "sim-claude-sonnet-5-0032-Choo",
+      "trajectory": [
+        {
+          "x": 60.0,
+          "y": 190.0
+        },
+        {
+          "x": 119.0,
+          "y": 185.4
+        },
+        {
+          "x": 178.0,
+          "y": 181.2
+        },
+        {
+          "x": 237.0,
+          "y": 177.9
+        },
+        {
+          "x": 296.0,
+          "y": 175.7
+        },
+        {
+          "x": 355.0,
+          "y": 175.0
+        },
+        {
+          "x": 414.0,
+          "y": 175.7
+        },
+        {
+          "x": 473.0,
+          "y": 177.9
+        },
+        {
+          "x": 532.0,
+          "y": 181.2
+        },
+        {
+          "x": 591.0,
+          "y": 185.4
+        },
+        {
+          "x": 650.0,
+          "y": 190.0
+        }
+      ]
+    },
+    {
+      "agent_id": "agent-0033",
+      "model": "google/gemini-2.0-flash",
+      "route_chosen": "Mountain Pass Beta",
+      "pacing_chosen": "Standard",
+      "total_time_min": 6.07,
+      "energy_consumed": 11.9,
+      "total_cost_usd": 5e-05,
+      "total_latency_ms": 582.5,
+      "decisions_count": 2,
+      "correct_count": 2,
+      "accuracy_pct": 100.0,
+      "cost_per_correct_usd": 2.5e-05,
+      "on_time": true,
+      "graded_response_id": "sim-gemini-2.0-flash-0033-Choo",
+      "trajectory": [
+        {
+          "x": 60.0,
+          "y": 190.0
+        },
+        {
+          "x": 119.0,
+          "y": 185.4
+        },
+        {
+          "x": 178.0,
+          "y": 181.2
+        },
+        {
+          "x": 237.0,
+          "y": 177.9
+        },
+        {
+          "x": 296.0,
+          "y": 175.7
+        },
+        {
+          "x": 355.0,
+          "y": 175.0
+        },
+        {
+          "x": 414.0,
+          "y": 175.7
+        },
+        {
+          "x": 473.0,
+          "y": 177.9
+        },
+        {
+          "x": 532.0,
+          "y": 181.2
+        },
+        {
+          "x": 591.0,
+          "y": 185.4
+        },
+        {
+          "x": 650.0,
+          "y": 190.0
+        }
+      ]
+    },
+    {
+      "agent_id": "agent-0034",
+      "model": "anthropic/claude-haiku-4-5",
+      "route_chosen": "Mountain Pass Beta",
+      "pacing_chosen": "Standard",
+      "total_time_min": 7.63,
+      "energy_consumed": 11.9,
+      "total_cost_usd": 0.000586,
+      "total_latency_ms": 729.2,
+      "decisions_count": 2,
+      "correct_count": 2,
+      "accuracy_pct": 100.0,
+      "cost_per_correct_usd": 0.000293,
+      "on_time": true,
+      "graded_response_id": "sim-claude-haiku-4-5-0034-Choo",
+      "trajectory": [
+        {
+          "x": 60.0,
+          "y": 190.0
+        },
+        {
+          "x": 119.0,
+          "y": 185.4
+        },
+        {
+          "x": 178.0,
+          "y": 181.2
+        },
+        {
+          "x": 237.0,
+          "y": 177.9
+        },
+        {
+          "x": 296.0,
+          "y": 175.7
+        },
+        {
+          "x": 355.0,
+          "y": 175.0
+        },
+        {
+          "x": 414.0,
+          "y": 175.7
+        },
+        {
+          "x": 473.0,
+          "y": 177.9
+        },
+        {
+          "x": 532.0,
+          "y": 181.2
+        },
+        {
+          "x": 591.0,
+          "y": 185.4
+        },
+        {
+          "x": 650.0,
+          "y": 190.0
+        }
+      ]
+    },
+    {
+      "agent_id": "agent-0035",
+      "model": "anthropic/claude-haiku-4-5",
+      "route_chosen": "Mountain Pass Beta",
+      "pacing_chosen": "Standard",
+      "total_time_min": 7.37,
+      "energy_consumed": 11.9,
+      "total_cost_usd": 0.00052,
+      "total_latency_ms": 795.8,
+      "decisions_count": 2,
+      "correct_count": 2,
+      "accuracy_pct": 100.0,
+      "cost_per_correct_usd": 0.00026,
+      "on_time": true,
+      "graded_response_id": "sim-claude-haiku-4-5-0035-Choo",
+      "trajectory": [
+        {
+          "x": 60.0,
+          "y": 190.0
+        },
+        {
+          "x": 119.0,
+          "y": 185.4
+        },
+        {
+          "x": 178.0,
+          "y": 181.2
+        },
+        {
+          "x": 237.0,
+          "y": 177.9
+        },
+        {
+          "x": 296.0,
+          "y": 175.7
+        },
+        {
+          "x": 355.0,
+          "y": 175.0
+        },
+        {
+          "x": 414.0,
+          "y": 175.7
+        },
+        {
+          "x": 473.0,
+          "y": 177.9
+        },
+        {
+          "x": 532.0,
+          "y": 181.2
+        },
+        {
+          "x": 591.0,
+          "y": 185.4
+        },
+        {
+          "x": 650.0,
+          "y": 190.0
+        }
+      ]
+    },
+    {
+      "agent_id": "agent-0036",
+      "model": "anthropic/claude-haiku-4-5",
+      "route_chosen": "Mountain Pass Beta",
+      "pacing_chosen": "Standard",
+      "total_time_min": 6.72,
+      "energy_consumed": 11.9,
+      "total_cost_usd": 0.000514,
+      "total_latency_ms": 649.9,
+      "decisions_count": 2,
+      "correct_count": 2,
+      "accuracy_pct": 100.0,
+      "cost_per_correct_usd": 0.000257,
+      "on_time": true,
+      "graded_response_id": "sim-claude-haiku-4-5-0036-Choo",
+      "trajectory": [
+        {
+          "x": 60.0,
+          "y": 190.0
+        },
+        {
+          "x": 119.0,
+          "y": 185.4
+        },
+        {
+          "x": 178.0,
+          "y": 181.2
+        },
+        {
+          "x": 237.0,
+          "y": 177.9
+        },
+        {
+          "x": 296.0,
+          "y": 175.7
+        },
+        {
+          "x": 355.0,
+          "y": 175.0
+        },
+        {
+          "x": 414.0,
+          "y": 175.7
+        },
+        {
+          "x": 473.0,
+          "y": 177.9
+        },
+        {
+          "x": 532.0,
+          "y": 181.2
+        },
+        {
+          "x": 591.0,
+          "y": 185.4
+        },
+        {
+          "x": 650.0,
+          "y": 190.0
+        }
+      ]
+    },
+    {
+      "agent_id": "agent-0037",
+      "model": "google/gemini-2.0-flash",
+      "route_chosen": "Valley Highway Gamma",
+      "pacing_chosen": "Standard",
+      "total_time_min": 5.42,
+      "energy_consumed": 12.0,
+      "total_cost_usd": 5.1e-05,
+      "total_latency_ms": 637.4,
+      "decisions_count": 2,
+      "correct_count": 1,
+      "accuracy_pct": 50.0,
+      "cost_per_correct_usd": 5.1e-05,
+      "on_time": false,
+      "graded_response_id": "sim-gemini-2.0-flash-0037-Choo",
+      "trajectory": [
+        {
+          "x": 60.0,
+          "y": 190.0
+        },
+        {
+          "x": 119.0,
+          "y": 194.6
+        },
+        {
+          "x": 178.0,
+          "y": 198.8
+        },
+        {
+          "x": 237.0,
+          "y": 202.1
+        },
+        {
+          "x": 296.0,
+          "y": 204.3
+        },
+        {
+          "x": 355.0,
+          "y": 205.0
+        },
+        {
+          "x": 414.0,
+          "y": 204.3
+        },
+        {
+          "x": 473.0,
+          "y": 202.1
+        },
+        {
+          "x": 532.0,
+          "y": 198.8
+        },
+        {
+          "x": 591.0,
+          "y": 194.6
+        },
+        {
+          "x": 650.0,
+          "y": 190.0
+        }
+      ]
+    },
+    {
+      "agent_id": "agent-0038",
+      "model": "anthropic/claude-sonnet-5",
+      "route_chosen": "Mountain Pass Beta",
+      "pacing_chosen": "Standard",
+      "total_time_min": 7.97,
+      "energy_consumed": 11.9,
+      "total_cost_usd": 0.001713,
+      "total_latency_ms": 743.7,
+      "decisions_count": 2,
+      "correct_count": 2,
+      "accuracy_pct": 100.0,
+      "cost_per_correct_usd": 0.000857,
+      "on_time": true,
+      "graded_response_id": "sim-claude-sonnet-5-0038-Choo",
+      "trajectory": [
+        {
+          "x": 60.0,
+          "y": 190.0
+        },
+        {
+          "x": 119.0,
+          "y": 185.4
+        },
+        {
+          "x": 178.0,
+          "y": 181.2
+        },
+        {
+          "x": 237.0,
+          "y": 177.9
+        },
+        {
+          "x": 296.0,
+          "y": 175.7
+        },
+        {
+          "x": 355.0,
+          "y": 175.0
+        },
+        {
+          "x": 414.0,
+          "y": 175.7
+        },
+        {
+          "x": 473.0,
+          "y": 177.9
+        },
+        {
+          "x": 532.0,
+          "y": 181.2
+        },
+        {
+          "x": 591.0,
+          "y": 185.4
+        },
+        {
+          "x": 650.0,
+          "y": 190.0
+        }
+      ]
+    },
+    {
+      "agent_id": "agent-0039",
+      "model": "google/gemini-2.0-flash",
+      "route_chosen": "Mountain Pass Beta",
+      "pacing_chosen": "Push",
+      "total_time_min": 5.25,
+      "energy_consumed": 14.28,
+      "total_cost_usd": 4.8e-05,
+      "total_latency_ms": 628.9,
+      "decisions_count": 2,
+      "correct_count": 1,
+      "accuracy_pct": 50.0,
+      "cost_per_correct_usd": 4.8e-05,
+      "on_time": true,
+      "graded_response_id": "sim-gemini-2.0-flash-0039-Choo",
+      "trajectory": [
+        {
+          "x": 60.0,
+          "y": 190.0
+        },
+        {
+          "x": 119.0,
+          "y": 185.4
+        },
+        {
+          "x": 178.0,
+          "y": 181.2
+        },
+        {
+          "x": 237.0,
+          "y": 177.9
+        },
+        {
+          "x": 296.0,
+          "y": 175.7
+        },
+        {
+          "x": 355.0,
+          "y": 175.0
+        },
+        {
+          "x": 414.0,
+          "y": 175.7
+        },
+        {
+          "x": 473.0,
+          "y": 177.9
+        },
+        {
+          "x": 532.0,
+          "y": 181.2
+        },
+        {
+          "x": 591.0,
+          "y": 185.4
+        },
+        {
+          "x": 650.0,
+          "y": 190.0
+        }
+      ]
+    },
+    {
+      "agent_id": "agent-0040",
+      "model": "anthropic/claude-haiku-4-5",
+      "route_chosen": "Mountain Pass Beta",
+      "pacing_chosen": "Standard",
+      "total_time_min": 7.39,
+      "energy_consumed": 11.9,
+      "total_cost_usd": 0.000546,
+      "total_latency_ms": 644.4,
+      "decisions_count": 2,
+      "correct_count": 2,
+      "accuracy_pct": 100.0,
+      "cost_per_correct_usd": 0.000273,
+      "on_time": true,
+      "graded_response_id": "sim-claude-haiku-4-5-0040-Choo",
+      "trajectory": [
+        {
+          "x": 60.0,
+          "y": 190.0
+        },
+        {
+          "x": 119.0,
+          "y": 185.4
+        },
+        {
+          "x": 178.0,
+          "y": 181.2
+        },
+        {
+          "x": 237.0,
+          "y": 177.9
+        },
+        {
+          "x": 296.0,
+          "y": 175.7
+        },
+        {
+          "x": 355.0,
+          "y": 175.0
+        },
+        {
+          "x": 414.0,
+          "y": 175.7
+        },
+        {
+          "x": 473.0,
+          "y": 177.9
+        },
+        {
+          "x": 532.0,
+          "y": 181.2
+        },
+        {
+          "x": 591.0,
+          "y": 185.4
+        },
+        {
+          "x": 650.0,
+          "y": 190.0
+        }
+      ]
+    },
+    {
+      "agent_id": "agent-0041",
+      "model": "anthropic/claude-sonnet-5",
+      "route_chosen": "Mountain Pass Beta",
+      "pacing_chosen": "Standard",
+      "total_time_min": 8.14,
+      "energy_consumed": 11.9,
+      "total_cost_usd": 0.001686,
+      "total_latency_ms": 838.2,
+      "decisions_count": 2,
+      "correct_count": 2,
+      "accuracy_pct": 100.0,
+      "cost_per_correct_usd": 0.000843,
+      "on_time": true,
+      "graded_response_id": "sim-claude-sonnet-5-0041-Choo",
+      "trajectory": [
+        {
+          "x": 60.0,
+          "y": 190.0
+        },
+        {
+          "x": 119.0,
+          "y": 185.4
+        },
+        {
+          "x": 178.0,
+          "y": 181.2
+        },
+        {
+          "x": 237.0,
+          "y": 177.9
+        },
+        {
+          "x": 296.0,
+          "y": 175.7
+        },
+        {
+          "x": 355.0,
+          "y": 175.0
+        },
+        {
+          "x": 414.0,
+          "y": 175.7
+        },
+        {
+          "x": 473.0,
+          "y": 177.9
+        },
+        {
+          "x": 532.0,
+          "y": 181.2
+        },
+        {
+          "x": 591.0,
+          "y": 185.4
+        },
+        {
+          "x": 650.0,
+          "y": 190.0
+        }
+      ]
+    },
+    {
+      "agent_id": "agent-0042",
+      "model": "anthropic/claude-sonnet-5",
+      "route_chosen": "Mountain Pass Beta",
+      "pacing_chosen": "Standard",
+      "total_time_min": 7.39,
+      "energy_consumed": 11.9,
+      "total_cost_usd": 0.00162,
+      "total_latency_ms": 774.2,
+      "decisions_count": 2,
+      "correct_count": 2,
+      "accuracy_pct": 100.0,
+      "cost_per_correct_usd": 0.00081,
+      "on_time": true,
+      "graded_response_id": "sim-claude-sonnet-5-0042-Choo",
+      "trajectory": [
+        {
+          "x": 60.0,
+          "y": 190.0
+        },
+        {
+          "x": 119.0,
+          "y": 185.4
+        },
+        {
+          "x": 178.0,
+          "y": 181.2
+        },
+        {
+          "x": 237.0,
+          "y": 177.9
+        },
+        {
+          "x": 296.0,
+          "y": 175.7
+        },
+        {
+          "x": 355.0,
+          "y": 175.0
+        },
+        {
+          "x": 414.0,
+          "y": 175.7
+        },
+        {
+          "x": 473.0,
+          "y": 177.9
+        },
+        {
+          "x": 532.0,
+          "y": 181.2
+        },
+        {
+          "x": 591.0,
+          "y": 185.4
+        },
+        {
+          "x": 650.0,
+          "y": 190.0
+        }
+      ]
+    },
+    {
+      "agent_id": "agent-0043",
+      "model": "anthropic/claude-haiku-4-5",
+      "route_chosen": "Metro Transit Grid Delta",
+      "pacing_chosen": "Standard",
+      "total_time_min": 8.43,
+      "energy_consumed": 14.56,
+      "total_cost_usd": 0.000548,
+      "total_latency_ms": 659.7,
+      "decisions_count": 2,
+      "correct_count": 1,
+      "accuracy_pct": 50.0,
+      "cost_per_correct_usd": 0.000548,
+      "on_time": false,
+      "graded_response_id": "sim-claude-haiku-4-5-0043-Choo",
+      "trajectory": [
+        {
+          "x": 60.0,
+          "y": 190.0
+        },
+        {
+          "x": 119.0,
+          "y": 202.4
+        },
+        {
+          "x": 178.0,
+          "y": 213.5
+        },
+        {
+          "x": 237.0,
+          "y": 222.4
+        },
+        {
+          "x": 296.0,
+          "y": 228.0
+        },
+        {
+          "x": 355.0,
+          "y": 230.0
+        },
+        {
+          "x": 414.0,
+          "y": 228.0
+        },
+        {
+          "x": 473.0,
+          "y": 222.4
+        },
+        {
+          "x": 532.0,
+          "y": 213.5
+        },
+        {
+          "x": 591.0,
+          "y": 202.4
+        },
+        {
+          "x": 650.0,
+          "y": 190.0
+        }
+      ]
+    },
+    {
+      "agent_id": "agent-0044",
+      "model": "google/gemini-2.0-flash",
+      "route_chosen": "Metro Transit Grid Delta",
+      "pacing_chosen": "Standard",
+      "total_time_min": 7.16,
+      "energy_consumed": 14.56,
+      "total_cost_usd": 5.3e-05,
+      "total_latency_ms": 582.4,
+      "decisions_count": 2,
+      "correct_count": 1,
+      "accuracy_pct": 50.0,
+      "cost_per_correct_usd": 5.3e-05,
+      "on_time": false,
+      "graded_response_id": "sim-gemini-2.0-flash-0044-Choo",
+      "trajectory": [
+        {
+          "x": 60.0,
+          "y": 190.0
+        },
+        {
+          "x": 119.0,
+          "y": 202.4
+        },
+        {
+          "x": 178.0,
+          "y": 213.5
+        },
+        {
+          "x": 237.0,
+          "y": 222.4
+        },
+        {
+          "x": 296.0,
+          "y": 228.0
+        },
+        {
+          "x": 355.0,
+          "y": 230.0
+        },
+        {
+          "x": 414.0,
+          "y": 228.0
+        },
+        {
+          "x": 473.0,
+          "y": 222.4
+        },
+        {
+          "x": 532.0,
+          "y": 213.5
+        },
+        {
+          "x": 591.0,
+          "y": 202.4
+        },
+        {
+          "x": 650.0,
+          "y": 190.0
+        }
+      ]
+    },
+    {
+      "agent_id": "agent-0045",
+      "model": "anthropic/claude-haiku-4-5",
+      "route_chosen": "Mountain Pass Beta",
+      "pacing_chosen": "Standard",
+      "total_time_min": 7.62,
+      "energy_consumed": 11.9,
+      "total_cost_usd": 0.000595,
+      "total_latency_ms": 765.2,
+      "decisions_count": 2,
+      "correct_count": 2,
+      "accuracy_pct": 100.0,
+      "cost_per_correct_usd": 0.000298,
+      "on_time": true,
+      "graded_response_id": "sim-claude-haiku-4-5-0045-Choo",
+      "trajectory": [
+        {
+          "x": 60.0,
+          "y": 190.0
+        },
+        {
+          "x": 119.0,
+          "y": 185.4
+        },
+        {
+          "x": 178.0,
+          "y": 181.2
+        },
+        {
+          "x": 237.0,
+          "y": 177.9
+        },
+        {
+          "x": 296.0,
+          "y": 175.7
+        },
+        {
+          "x": 355.0,
+          "y": 175.0
+        },
+        {
+          "x": 414.0,
+          "y": 175.7
+        },
+        {
+          "x": 473.0,
+          "y": 177.9
+        },
+        {
+          "x": 532.0,
+          "y": 181.2
+        },
+        {
+          "x": 591.0,
+          "y": 185.4
+        },
+        {
+          "x": 650.0,
+          "y": 190.0
+        }
+      ]
+    },
+    {
+      "agent_id": "agent-0046",
+      "model": "anthropic/claude-haiku-4-5",
+      "route_chosen": "Metro Transit Grid Delta",
+      "pacing_chosen": "Standard",
+      "total_time_min": 8.02,
+      "energy_consumed": 14.56,
+      "total_cost_usd": 0.000546,
+      "total_latency_ms": 678.7,
+      "decisions_count": 2,
+      "correct_count": 1,
+      "accuracy_pct": 50.0,
+      "cost_per_correct_usd": 0.000546,
+      "on_time": false,
+      "graded_response_id": "sim-claude-haiku-4-5-0046-Choo",
+      "trajectory": [
+        {
+          "x": 60.0,
+          "y": 190.0
+        },
+        {
+          "x": 119.0,
+          "y": 202.4
+        },
+        {
+          "x": 178.0,
+          "y": 213.5
+        },
+        {
+          "x": 237.0,
+          "y": 222.4
+        },
+        {
+          "x": 296.0,
+          "y": 228.0
+        },
+        {
+          "x": 355.0,
+          "y": 230.0
+        },
+        {
+          "x": 414.0,
+          "y": 228.0
+        },
+        {
+          "x": 473.0,
+          "y": 222.4
+        },
+        {
+          "x": 532.0,
+          "y": 213.5
+        },
+        {
+          "x": 591.0,
+          "y": 202.4
+        },
+        {
+          "x": 650.0,
+          "y": 190.0
+        }
+      ]
+    },
+    {
+      "agent_id": "agent-0047",
+      "model": "google/gemini-2.0-flash",
+      "route_chosen": "Mountain Pass Beta",
+      "pacing_chosen": "Standard",
+      "total_time_min": 6.34,
+      "energy_consumed": 11.9,
+      "total_cost_usd": 5.9e-05,
+      "total_latency_ms": 702.7,
+      "decisions_count": 2,
+      "correct_count": 2,
+      "accuracy_pct": 100.0,
+      "cost_per_correct_usd": 2.9e-05,
+      "on_time": true,
+      "graded_response_id": "sim-gemini-2.0-flash-0047-Choo",
+      "trajectory": [
+        {
+          "x": 60.0,
+          "y": 190.0
+        },
+        {
+          "x": 119.0,
+          "y": 185.4
+        },
+        {
+          "x": 178.0,
+          "y": 181.2
+        },
+        {
+          "x": 237.0,
+          "y": 177.9
+        },
+        {
+          "x": 296.0,
+          "y": 175.7
+        },
+        {
+          "x": 355.0,
+          "y": 175.0
+        },
+        {
+          "x": 414.0,
+          "y": 175.7
+        },
+        {
+          "x": 473.0,
+          "y": 177.9
+        },
+        {
+          "x": 532.0,
+          "y": 181.2
+        },
+        {
+          "x": 591.0,
+          "y": 185.4
+        },
+        {
+          "x": 650.0,
+          "y": 190.0
+        }
+      ]
+    },
+    {
+      "agent_id": "agent-0048",
+      "model": "anthropic/claude-haiku-4-5",
+      "route_chosen": "Mountain Pass Beta",
+      "pacing_chosen": "Standard",
+      "total_time_min": 7.25,
+      "energy_consumed": 11.9,
+      "total_cost_usd": 0.000549,
+      "total_latency_ms": 672.2,
+      "decisions_count": 2,
+      "correct_count": 2,
+      "accuracy_pct": 100.0,
+      "cost_per_correct_usd": 0.000275,
+      "on_time": true,
+      "graded_response_id": "sim-claude-haiku-4-5-0048-Choo",
+      "trajectory": [
+        {
+          "x": 60.0,
+          "y": 190.0
+        },
+        {
+          "x": 119.0,
+          "y": 185.4
+        },
+        {
+          "x": 178.0,
+          "y": 181.2
+        },
+        {
+          "x": 237.0,
+          "y": 177.9
+        },
+        {
+          "x": 296.0,
+          "y": 175.7
+        },
+        {
+          "x": 355.0,
+          "y": 175.0
+        },
+        {
+          "x": 414.0,
+          "y": 175.7
+        },
+        {
+          "x": 473.0,
+          "y": 177.9
+        },
+        {
+          "x": 532.0,
+          "y": 181.2
+        },
+        {
+          "x": 591.0,
+          "y": 185.4
+        },
+        {
+          "x": 650.0,
+          "y": 190.0
+        }
+      ]
+    },
+    {
+      "agent_id": "agent-0049",
+      "model": "google/gemini-2.0-flash",
+      "route_chosen": "Mountain Pass Beta",
+      "pacing_chosen": "Standard",
+      "total_time_min": 6.25,
+      "energy_consumed": 11.9,
+      "total_cost_usd": 5.7e-05,
+      "total_latency_ms": 629.2,
+      "decisions_count": 2,
+      "correct_count": 2,
+      "accuracy_pct": 100.0,
+      "cost_per_correct_usd": 2.9e-05,
+      "on_time": true,
+      "graded_response_id": "sim-gemini-2.0-flash-0049-Choo",
+      "trajectory": [
+        {
+          "x": 60.0,
+          "y": 190.0
+        },
+        {
+          "x": 119.0,
+          "y": 185.4
+        },
+        {
+          "x": 178.0,
+          "y": 181.2
+        },
+        {
+          "x": 237.0,
+          "y": 177.9
+        },
+        {
+          "x": 296.0,
+          "y": 175.7
+        },
+        {
+          "x": 355.0,
+          "y": 175.0
+        },
+        {
+          "x": 414.0,
+          "y": 175.7
+        },
+        {
+          "x": 473.0,
+          "y": 177.9
+        },
+        {
+          "x": 532.0,
+          "y": 181.2
+        },
+        {
+          "x": 591.0,
+          "y": 185.4
+        },
+        {
+          "x": 650.0,
+          "y": 190.0
+        }
+      ]
+    },
+    {
+      "agent_id": "agent-0050",
+      "model": "google/gemini-2.0-flash",
+      "route_chosen": "Mountain Pass Beta",
+      "pacing_chosen": "Standard",
+      "total_time_min": 6.01,
+      "energy_consumed": 11.9,
+      "total_cost_usd": 5.2e-05,
+      "total_latency_ms": 565.7,
+      "decisions_count": 2,
+      "correct_count": 2,
+      "accuracy_pct": 100.0,
+      "cost_per_correct_usd": 2.6e-05,
+      "on_time": true,
+      "graded_response_id": "sim-gemini-2.0-flash-0050-Choo",
+      "trajectory": [
+        {
+          "x": 60.0,
+          "y": 190.0
+        },
+        {
+          "x": 119.0,
+          "y": 185.4
+        },
+        {
+          "x": 178.0,
+          "y": 181.2
+        },
+        {
+          "x": 237.0,
+          "y": 177.9
+        },
+        {
+          "x": 296.0,
+          "y": 175.7
+        },
+        {
+          "x": 355.0,
+          "y": 175.0
+        },
+        {
+          "x": 414.0,
+          "y": 175.7
+        },
+        {
+          "x": 473.0,
+          "y": 177.9
+        },
+        {
+          "x": 532.0,
+          "y": 181.2
+        },
+        {
+          "x": 591.0,
+          "y": 185.4
+        },
+        {
+          "x": 650.0,
+          "y": 190.0
+        }
+      ]
+    },
+    {
+      "agent_id": "agent-0051",
+      "model": "anthropic/claude-haiku-4-5",
+      "route_chosen": "Mountain Pass Beta",
+      "pacing_chosen": "Standard",
+      "total_time_min": 6.92,
+      "energy_consumed": 11.9,
+      "total_cost_usd": 0.000516,
+      "total_latency_ms": 742.0,
+      "decisions_count": 2,
+      "correct_count": 2,
+      "accuracy_pct": 100.0,
+      "cost_per_correct_usd": 0.000258,
+      "on_time": true,
+      "graded_response_id": "sim-claude-haiku-4-5-0051-Choo",
+      "trajectory": [
+        {
+          "x": 60.0,
+          "y": 190.0
+        },
+        {
+          "x": 119.0,
+          "y": 185.4
+        },
+        {
+          "x": 178.0,
+          "y": 181.2
+        },
+        {
+          "x": 237.0,
+          "y": 177.9
+        },
+        {
+          "x": 296.0,
+          "y": 175.7
+        },
+        {
+          "x": 355.0,
+          "y": 175.0
+        },
+        {
+          "x": 414.0,
+          "y": 175.7
+        },
+        {
+          "x": 473.0,
+          "y": 177.9
+        },
+        {
+          "x": 532.0,
+          "y": 181.2
+        },
+        {
+          "x": 591.0,
+          "y": 185.4
+        },
+        {
+          "x": 650.0,
+          "y": 190.0
+        }
+      ]
+    },
+    {
+      "agent_id": "agent-0052",
+      "model": "anthropic/claude-sonnet-5",
+      "route_chosen": "Mountain Pass Beta",
+      "pacing_chosen": "Standard",
+      "total_time_min": 7.8,
+      "energy_consumed": 11.9,
+      "total_cost_usd": 0.001554,
+      "total_latency_ms": 805.5,
+      "decisions_count": 2,
+      "correct_count": 2,
+      "accuracy_pct": 100.0,
+      "cost_per_correct_usd": 0.000777,
+      "on_time": true,
+      "graded_response_id": "sim-claude-sonnet-5-0052-Choo",
+      "trajectory": [
+        {
+          "x": 60.0,
+          "y": 190.0
+        },
+        {
+          "x": 119.0,
+          "y": 185.4
+        },
+        {
+          "x": 178.0,
+          "y": 181.2
+        },
+        {
+          "x": 237.0,
+          "y": 177.9
+        },
+        {
+          "x": 296.0,
+          "y": 175.7
+        },
+        {
+          "x": 355.0,
+          "y": 175.0
+        },
+        {
+          "x": 414.0,
+          "y": 175.7
+        },
+        {
+          "x": 473.0,
+          "y": 177.9
+        },
+        {
+          "x": 532.0,
+          "y": 181.2
+        },
+        {
+          "x": 591.0,
+          "y": 185.4
+        },
+        {
+          "x": 650.0,
+          "y": 190.0
+        }
+      ]
+    },
+    {
+      "agent_id": "agent-0053",
+      "model": "anthropic/claude-haiku-4-5",
+      "route_chosen": "Mountain Pass Beta",
+      "pacing_chosen": "Standard",
+      "total_time_min": 6.99,
+      "energy_consumed": 11.9,
+      "total_cost_usd": 0.000597,
+      "total_latency_ms": 721.3,
+      "decisions_count": 2,
+      "correct_count": 2,
+      "accuracy_pct": 100.0,
+      "cost_per_correct_usd": 0.000298,
+      "on_time": true,
+      "graded_response_id": "sim-claude-haiku-4-5-0053-Choo",
+      "trajectory": [
+        {
+          "x": 60.0,
+          "y": 190.0
+        },
+        {
+          "x": 119.0,
+          "y": 185.4
+        },
+        {
+          "x": 178.0,
+          "y": 181.2
+        },
+        {
+          "x": 237.0,
+          "y": 177.9
+        },
+        {
+          "x": 296.0,
+          "y": 175.7
+        },
+        {
+          "x": 355.0,
+          "y": 175.0
+        },
+        {
+          "x": 414.0,
+          "y": 175.7
+        },
+        {
+          "x": 473.0,
+          "y": 177.9
+        },
+        {
+          "x": 532.0,
+          "y": 181.2
+        },
+        {
+          "x": 591.0,
+          "y": 185.4
+        },
+        {
+          "x": 650.0,
+          "y": 190.0
+        }
+      ]
+    },
+    {
+      "agent_id": "agent-0054",
+      "model": "anthropic/claude-haiku-4-5",
+      "route_chosen": "Mountain Pass Beta",
+      "pacing_chosen": "Standard",
+      "total_time_min": 7.2,
+      "energy_consumed": 11.9,
+      "total_cost_usd": 0.000507,
+      "total_latency_ms": 835.9,
+      "decisions_count": 2,
+      "correct_count": 2,
+      "accuracy_pct": 100.0,
+      "cost_per_correct_usd": 0.000253,
+      "on_time": true,
+      "graded_response_id": "sim-claude-haiku-4-5-0054-Choo",
+      "trajectory": [
+        {
+          "x": 60.0,
+          "y": 190.0
+        },
+        {
+          "x": 119.0,
+          "y": 185.4
+        },
+        {
+          "x": 178.0,
+          "y": 181.2
+        },
+        {
+          "x": 237.0,
+          "y": 177.9
+        },
+        {
+          "x": 296.0,
+          "y": 175.7
+        },
+        {
+          "x": 355.0,
+          "y": 175.0
+        },
+        {
+          "x": 414.0,
+          "y": 175.7
+        },
+        {
+          "x": 473.0,
+          "y": 177.9
+        },
+        {
+          "x": 532.0,
+          "y": 181.2
+        },
+        {
+          "x": 591.0,
+          "y": 185.4
+        },
+        {
+          "x": 650.0,
+          "y": 190.0
+        }
+      ]
+    },
+    {
+      "agent_id": "agent-0055",
+      "model": "anthropic/claude-sonnet-5",
+      "route_chosen": "Mountain Pass Beta",
+      "pacing_chosen": "Standard",
+      "total_time_min": 7.33,
+      "energy_consumed": 11.9,
+      "total_cost_usd": 0.00168,
+      "total_latency_ms": 869.1,
+      "decisions_count": 2,
+      "correct_count": 2,
+      "accuracy_pct": 100.0,
+      "cost_per_correct_usd": 0.00084,
+      "on_time": true,
+      "graded_response_id": "sim-claude-sonnet-5-0055-Choo",
+      "trajectory": [
+        {
+          "x": 60.0,
+          "y": 190.0
+        },
+        {
+          "x": 119.0,
+          "y": 185.4
+        },
+        {
+          "x": 178.0,
+          "y": 181.2
+        },
+        {
+          "x": 237.0,
+          "y": 177.9
+        },
+        {
+          "x": 296.0,
+          "y": 175.7
+        },
+        {
+          "x": 355.0,
+          "y": 175.0
+        },
+        {
+          "x": 414.0,
+          "y": 175.7
+        },
+        {
+          "x": 473.0,
+          "y": 177.9
+        },
+        {
+          "x": 532.0,
+          "y": 181.2
+        },
+        {
+          "x": 591.0,
+          "y": 185.4
+        },
+        {
+          "x": 650.0,
+          "y": 190.0
+        }
+      ]
+    },
+    {
+      "agent_id": "agent-0056",
+      "model": "google/gemini-2.0-flash",
+      "route_chosen": "Mountain Pass Beta",
+      "pacing_chosen": "Standard",
+      "total_time_min": 6.47,
+      "energy_consumed": 11.9,
+      "total_cost_usd": 5.1e-05,
+      "total_latency_ms": 548.8,
+      "decisions_count": 2,
+      "correct_count": 2,
+      "accuracy_pct": 100.0,
+      "cost_per_correct_usd": 2.5e-05,
+      "on_time": true,
+      "graded_response_id": "sim-gemini-2.0-flash-0056-Choo",
+      "trajectory": [
+        {
+          "x": 60.0,
+          "y": 190.0
+        },
+        {
+          "x": 119.0,
+          "y": 185.4
+        },
+        {
+          "x": 178.0,
+          "y": 181.2
+        },
+        {
+          "x": 237.0,
+          "y": 177.9
+        },
+        {
+          "x": 296.0,
+          "y": 175.7
+        },
+        {
+          "x": 355.0,
+          "y": 175.0
+        },
+        {
+          "x": 414.0,
+          "y": 175.7
+        },
+        {
+          "x": 473.0,
+          "y": 177.9
+        },
+        {
+          "x": 532.0,
+          "y": 181.2
+        },
+        {
+          "x": 591.0,
+          "y": 185.4
+        },
+        {
+          "x": 650.0,
+          "y": 190.0
+        }
+      ]
+    },
+    {
+      "agent_id": "agent-0057",
+      "model": "anthropic/claude-sonnet-5",
+      "route_chosen": "Mountain Pass Beta",
+      "pacing_chosen": "Standard",
+      "total_time_min": 8.25,
+      "energy_consumed": 11.9,
+      "total_cost_usd": 0.001644,
+      "total_latency_ms": 804.7,
+      "decisions_count": 2,
+      "correct_count": 2,
+      "accuracy_pct": 100.0,
+      "cost_per_correct_usd": 0.000822,
+      "on_time": true,
+      "graded_response_id": "sim-claude-sonnet-5-0057-Choo",
+      "trajectory": [
+        {
+          "x": 60.0,
+          "y": 190.0
+        },
+        {
+          "x": 119.0,
+          "y": 185.4
+        },
+        {
+          "x": 178.0,
+          "y": 181.2
+        },
+        {
+          "x": 237.0,
+          "y": 177.9
+        },
+        {
+          "x": 296.0,
+          "y": 175.7
+        },
+        {
+          "x": 355.0,
+          "y": 175.0
+        },
+        {
+          "x": 414.0,
+          "y": 175.7
+        },
+        {
+          "x": 473.0,
+          "y": 177.9
+        },
+        {
+          "x": 532.0,
+          "y": 181.2
+        },
+        {
+          "x": 591.0,
+          "y": 185.4
+        },
+        {
+          "x": 650.0,
+          "y": 190.0
+        }
+      ]
+    },
+    {
+      "agent_id": "agent-0058",
+      "model": "google/gemini-2.0-flash",
+      "route_chosen": "Mountain Pass Beta",
+      "pacing_chosen": "Standard",
+      "total_time_min": 6.0,
+      "energy_consumed": 11.9,
+      "total_cost_usd": 5.1e-05,
+      "total_latency_ms": 680.2,
+      "decisions_count": 2,
+      "correct_count": 2,
+      "accuracy_pct": 100.0,
+      "cost_per_correct_usd": 2.5e-05,
+      "on_time": true,
+      "graded_response_id": "sim-gemini-2.0-flash-0058-Choo",
+      "trajectory": [
+        {
+          "x": 60.0,
+          "y": 190.0
+        },
+        {
+          "x": 119.0,
+          "y": 185.4
+        },
+        {
+          "x": 178.0,
+          "y": 181.2
+        },
+        {
+          "x": 237.0,
+          "y": 177.9
+        },
+        {
+          "x": 296.0,
+          "y": 175.7
+        },
+        {
+          "x": 355.0,
+          "y": 175.0
+        },
+        {
+          "x": 414.0,
+          "y": 175.7
+        },
+        {
+          "x": 473.0,
+          "y": 177.9
+        },
+        {
+          "x": 532.0,
+          "y": 181.2
+        },
+        {
+          "x": 591.0,
+          "y": 185.4
+        },
+        {
+          "x": 650.0,
+          "y": 190.0
+        }
+      ]
+    },
+    {
+      "agent_id": "agent-0059",
+      "model": "anthropic/claude-haiku-4-5",
+      "route_chosen": "Mountain Pass Beta",
+      "pacing_chosen": "Standard",
+      "total_time_min": 7.0,
+      "energy_consumed": 11.9,
+      "total_cost_usd": 0.000504,
+      "total_latency_ms": 835.0,
+      "decisions_count": 2,
+      "correct_count": 2,
+      "accuracy_pct": 100.0,
+      "cost_per_correct_usd": 0.000252,
+      "on_time": true,
+      "graded_response_id": "sim-claude-haiku-4-5-0059-Choo",
+      "trajectory": [
+        {
+          "x": 60.0,
+          "y": 190.0
+        },
+        {
+          "x": 119.0,
+          "y": 185.4
+        },
+        {
+          "x": 178.0,
+          "y": 181.2
+        },
+        {
+          "x": 237.0,
+          "y": 177.9
+        },
+        {
+          "x": 296.0,
+          "y": 175.7
+        },
+        {
+          "x": 355.0,
+          "y": 175.0
+        },
+        {
+          "x": 414.0,
+          "y": 175.7
+        },
+        {
+          "x": 473.0,
+          "y": 177.9
+        },
+        {
+          "x": 532.0,
+          "y": 181.2
+        },
+        {
+          "x": 591.0,
+          "y": 185.4
+        },
+        {
+          "x": 650.0,
+          "y": 190.0
+        }
+      ]
+    },
+    {
+      "agent_id": "agent-0060",
+      "model": "anthropic/claude-sonnet-5",
+      "route_chosen": "Mountain Pass Beta",
+      "pacing_chosen": "Standard",
+      "total_time_min": 8.29,
+      "energy_consumed": 11.9,
+      "total_cost_usd": 0.001791,
+      "total_latency_ms": 792.3,
+      "decisions_count": 2,
+      "correct_count": 2,
+      "accuracy_pct": 100.0,
+      "cost_per_correct_usd": 0.000896,
+      "on_time": true,
+      "graded_response_id": "sim-claude-sonnet-5-0060-Choo",
+      "trajectory": [
+        {
+          "x": 60.0,
+          "y": 190.0
+        },
+        {
+          "x": 119.0,
+          "y": 185.4
+        },
+        {
+          "x": 178.0,
+          "y": 181.2
+        },
+        {
+          "x": 237.0,
+          "y": 177.9
+        },
+        {
+          "x": 296.0,
+          "y": 175.7
+        },
+        {
+          "x": 355.0,
+          "y": 175.0
+        },
+        {
+          "x": 414.0,
+          "y": 175.7
+        },
+        {
+          "x": 473.0,
+          "y": 177.9
+        },
+        {
+          "x": 532.0,
+          "y": 181.2
+        },
+        {
+          "x": 591.0,
+          "y": 185.4
+        },
+        {
+          "x": 650.0,
+          "y": 190.0
+        }
+      ]
+    },
+    {
+      "agent_id": "agent-0061",
+      "model": "google/gemini-2.0-flash",
+      "route_chosen": "Mountain Pass Beta",
+      "pacing_chosen": "Standard",
+      "total_time_min": 6.25,
+      "energy_consumed": 11.9,
+      "total_cost_usd": 5.1e-05,
+      "total_latency_ms": 535.3,
+      "decisions_count": 2,
+      "correct_count": 2,
+      "accuracy_pct": 100.0,
+      "cost_per_correct_usd": 2.6e-05,
+      "on_time": true,
+      "graded_response_id": "sim-gemini-2.0-flash-0061-Choo",
+      "trajectory": [
+        {
+          "x": 60.0,
+          "y": 190.0
+        },
+        {
+          "x": 119.0,
+          "y": 185.4
+        },
+        {
+          "x": 178.0,
+          "y": 181.2
+        },
+        {
+          "x": 237.0,
+          "y": 177.9
+        },
+        {
+          "x": 296.0,
+          "y": 175.7
+        },
+        {
+          "x": 355.0,
+          "y": 175.0
+        },
+        {
+          "x": 414.0,
+          "y": 175.7
+        },
+        {
+          "x": 473.0,
+          "y": 177.9
+        },
+        {
+          "x": 532.0,
+          "y": 181.2
+        },
+        {
+          "x": 591.0,
+          "y": 185.4
+        },
+        {
+          "x": 650.0,
+          "y": 190.0
+        }
+      ]
+    },
+    {
+      "agent_id": "agent-0062",
+      "model": "google/gemini-2.0-flash",
+      "route_chosen": "Expressway Alpha",
+      "pacing_chosen": "Standard",
+      "total_time_min": 5.22,
+      "energy_consumed": 13.2,
+      "total_cost_usd": 5e-05,
+      "total_latency_ms": 663.6,
+      "decisions_count": 2,
+      "correct_count": 1,
+      "accuracy_pct": 50.0,
+      "cost_per_correct_usd": 5e-05,
+      "on_time": false,
+      "graded_response_id": "sim-gemini-2.0-flash-0062-Choo",
+      "trajectory": [
+        {
+          "x": 60.0,
+          "y": 190.0
+        },
+        {
+          "x": 119.0,
+          "y": 177.6
+        },
+        {
+          "x": 178.0,
+          "y": 166.5
+        },
+        {
+          "x": 237.0,
+          "y": 157.6
+        },
+        {
+          "x": 296.0,
+          "y": 152.0
+        },
+        {
+          "x": 355.0,
+          "y": 150.0
+        },
+        {
+          "x": 414.0,
+          "y": 152.0
+        },
+        {
+          "x": 473.0,
+          "y": 157.6
+        },
+        {
+          "x": 532.0,
+          "y": 166.5
+        },
+        {
+          "x": 591.0,
+          "y": 177.6
+        },
+        {
+          "x": 650.0,
+          "y": 190.0
+        }
+      ]
+    },
+    {
+      "agent_id": "agent-0063",
+      "model": "anthropic/claude-haiku-4-5",
+      "route_chosen": "Mountain Pass Beta",
+      "pacing_chosen": "Standard",
+      "total_time_min": 7.31,
+      "energy_consumed": 11.9,
+      "total_cost_usd": 0.000496,
+      "total_latency_ms": 678.7,
+      "decisions_count": 2,
+      "correct_count": 2,
+      "accuracy_pct": 100.0,
+      "cost_per_correct_usd": 0.000248,
+      "on_time": true,
+      "graded_response_id": "sim-claude-haiku-4-5-0063-Choo",
+      "trajectory": [
+        {
+          "x": 60.0,
+          "y": 190.0
+        },
+        {
+          "x": 119.0,
+          "y": 185.4
+        },
+        {
+          "x": 178.0,
+          "y": 181.2
+        },
+        {
+          "x": 237.0,
+          "y": 177.9
+        },
+        {
+          "x": 296.0,
+          "y": 175.7
+        },
+        {
+          "x": 355.0,
+          "y": 175.0
+        },
+        {
+          "x": 414.0,
+          "y": 175.7
+        },
+        {
+          "x": 473.0,
+          "y": 177.9
+        },
+        {
+          "x": 532.0,
+          "y": 181.2
+        },
+        {
+          "x": 591.0,
+          "y": 185.4
+        },
+        {
+          "x": 650.0,
+          "y": 190.0
+        }
+      ]
+    },
+    {
+      "agent_id": "agent-0064",
+      "model": "anthropic/claude-haiku-4-5",
+      "route_chosen": "Mountain Pass Beta",
+      "pacing_chosen": "Standard",
+      "total_time_min": 6.73,
+      "energy_consumed": 11.9,
+      "total_cost_usd": 0.000583,
+      "total_latency_ms": 781.4,
+      "decisions_count": 2,
+      "correct_count": 2,
+      "accuracy_pct": 100.0,
+      "cost_per_correct_usd": 0.000291,
+      "on_time": true,
+      "graded_response_id": "sim-claude-haiku-4-5-0064-Choo",
+      "trajectory": [
+        {
+          "x": 60.0,
+          "y": 190.0
+        },
+        {
+          "x": 119.0,
+          "y": 185.4
+        },
+        {
+          "x": 178.0,
+          "y": 181.2
+        },
+        {
+          "x": 237.0,
+          "y": 177.9
+        },
+        {
+          "x": 296.0,
+          "y": 175.7
+        },
+        {
+          "x": 355.0,
+          "y": 175.0
+        },
+        {
+          "x": 414.0,
+          "y": 175.7
+        },
+        {
+          "x": 473.0,
+          "y": 177.9
+        },
+        {
+          "x": 532.0,
+          "y": 181.2
+        },
+        {
+          "x": 591.0,
+          "y": 185.4
+        },
+        {
+          "x": 650.0,
+          "y": 190.0
+        }
+      ]
+    },
+    {
+      "agent_id": "agent-0065",
+      "model": "google/gemini-2.0-flash",
+      "route_chosen": "Mountain Pass Beta",
+      "pacing_chosen": "Standard",
+      "total_time_min": 6.03,
+      "energy_consumed": 11.9,
+      "total_cost_usd": 4.9e-05,
+      "total_latency_ms": 619.4,
+      "decisions_count": 2,
+      "correct_count": 2,
+      "accuracy_pct": 100.0,
+      "cost_per_correct_usd": 2.5e-05,
+      "on_time": true,
+      "graded_response_id": "sim-gemini-2.0-flash-0065-Choo",
+      "trajectory": [
+        {
+          "x": 60.0,
+          "y": 190.0
+        },
+        {
+          "x": 119.0,
+          "y": 185.4
+        },
+        {
+          "x": 178.0,
+          "y": 181.2
+        },
+        {
+          "x": 237.0,
+          "y": 177.9
+        },
+        {
+          "x": 296.0,
+          "y": 175.7
+        },
+        {
+          "x": 355.0,
+          "y": 175.0
+        },
+        {
+          "x": 414.0,
+          "y": 175.7
+        },
+        {
+          "x": 473.0,
+          "y": 177.9
+        },
+        {
+          "x": 532.0,
+          "y": 181.2
+        },
+        {
+          "x": 591.0,
+          "y": 185.4
+        },
+        {
+          "x": 650.0,
+          "y": 190.0
+        }
+      ]
+    },
+    {
+      "agent_id": "agent-0066",
+      "model": "anthropic/claude-haiku-4-5",
+      "route_chosen": "Mountain Pass Beta",
+      "pacing_chosen": "Push",
+      "total_time_min": 6.27,
+      "energy_consumed": 14.28,
+      "total_cost_usd": 0.000564,
+      "total_latency_ms": 729.5,
+      "decisions_count": 2,
+      "correct_count": 1,
+      "accuracy_pct": 50.0,
+      "cost_per_correct_usd": 0.000564,
+      "on_time": true,
+      "graded_response_id": "sim-claude-haiku-4-5-0066-Choo",
+      "trajectory": [
+        {
+          "x": 60.0,
+          "y": 190.0
+        },
+        {
+          "x": 119.0,
+          "y": 185.4
+        },
+        {
+          "x": 178.0,
+          "y": 181.2
+        },
+        {
+          "x": 237.0,
+          "y": 177.9
+        },
+        {
+          "x": 296.0,
+          "y": 175.7
+        },
+        {
+          "x": 355.0,
+          "y": 175.0
+        },
+        {
+          "x": 414.0,
+          "y": 175.7
+        },
+        {
+          "x": 473.0,
+          "y": 177.9
+        },
+        {
+          "x": 532.0,
+          "y": 181.2
+        },
+        {
+          "x": 591.0,
+          "y": 185.4
+        },
+        {
+          "x": 650.0,
+          "y": 190.0
+        }
+      ]
+    },
+    {
+      "agent_id": "agent-0067",
+      "model": "google/gemini-2.0-flash",
+      "route_chosen": "Mountain Pass Beta",
+      "pacing_chosen": "Standard",
+      "total_time_min": 5.95,
+      "energy_consumed": 11.9,
+      "total_cost_usd": 6e-05,
+      "total_latency_ms": 682.7,
+      "decisions_count": 2,
+      "correct_count": 2,
+      "accuracy_pct": 100.0,
+      "cost_per_correct_usd": 3e-05,
+      "on_time": true,
+      "graded_response_id": "sim-gemini-2.0-flash-0067-Choo",
+      "trajectory": [
+        {
+          "x": 60.0,
+          "y": 190.0
+        },
+        {
+          "x": 119.0,
+          "y": 185.4
+        },
+        {
+          "x": 178.0,
+          "y": 181.2
+        },
+        {
+          "x": 237.0,
+          "y": 177.9
+        },
+        {
+          "x": 296.0,
+          "y": 175.7
+        },
+        {
+          "x": 355.0,
+          "y": 175.0
+        },
+        {
+          "x": 414.0,
+          "y": 175.7
+        },
+        {
+          "x": 473.0,
+          "y": 177.9
+        },
+        {
+          "x": 532.0,
+          "y": 181.2
+        },
+        {
+          "x": 591.0,
+          "y": 185.4
+        },
+        {
+          "x": 650.0,
+          "y": 190.0
+        }
+      ]
+    },
+    {
+      "agent_id": "agent-0068",
+      "model": "anthropic/claude-haiku-4-5",
+      "route_chosen": "Mountain Pass Beta",
+      "pacing_chosen": "Standard",
+      "total_time_min": 7.15,
+      "energy_consumed": 11.9,
+      "total_cost_usd": 0.000544,
+      "total_latency_ms": 766.8,
+      "decisions_count": 2,
+      "correct_count": 2,
+      "accuracy_pct": 100.0,
+      "cost_per_correct_usd": 0.000272,
+      "on_time": true,
+      "graded_response_id": "sim-claude-haiku-4-5-0068-Choo",
+      "trajectory": [
+        {
+          "x": 60.0,
+          "y": 190.0
+        },
+        {
+          "x": 119.0,
+          "y": 185.4
+        },
+        {
+          "x": 178.0,
+          "y": 181.2
+        },
+        {
+          "x": 237.0,
+          "y": 177.9
+        },
+        {
+          "x": 296.0,
+          "y": 175.7
+        },
+        {
+          "x": 355.0,
+          "y": 175.0
+        },
+        {
+          "x": 414.0,
+          "y": 175.7
+        },
+        {
+          "x": 473.0,
+          "y": 177.9
+        },
+        {
+          "x": 532.0,
+          "y": 181.2
+        },
+        {
+          "x": 591.0,
+          "y": 185.4
+        },
+        {
+          "x": 650.0,
+          "y": 190.0
+        }
+      ]
+    },
+    {
+      "agent_id": "agent-0069",
+      "model": "anthropic/claude-haiku-4-5",
+      "route_chosen": "Mountain Pass Beta",
+      "pacing_chosen": "Standard",
+      "total_time_min": 6.88,
+      "energy_consumed": 11.9,
+      "total_cost_usd": 0.000637,
+      "total_latency_ms": 806.5,
+      "decisions_count": 2,
+      "correct_count": 2,
+      "accuracy_pct": 100.0,
+      "cost_per_correct_usd": 0.000318,
+      "on_time": true,
+      "graded_response_id": "sim-claude-haiku-4-5-0069-Choo",
+      "trajectory": [
+        {
+          "x": 60.0,
+          "y": 190.0
+        },
+        {
+          "x": 119.0,
+          "y": 185.4
+        },
+        {
+          "x": 178.0,
+          "y": 181.2
+        },
+        {
+          "x": 237.0,
+          "y": 177.9
+        },
+        {
+          "x": 296.0,
+          "y": 175.7
+        },
+        {
+          "x": 355.0,
+          "y": 175.0
+        },
+        {
+          "x": 414.0,
+          "y": 175.7
+        },
+        {
+          "x": 473.0,
+          "y": 177.9
+        },
+        {
+          "x": 532.0,
+          "y": 181.2
+        },
+        {
+          "x": 591.0,
+          "y": 185.4
+        },
+        {
+          "x": 650.0,
+          "y": 190.0
+        }
+      ]
+    },
+    {
+      "agent_id": "agent-0070",
+      "model": "google/gemini-2.0-flash",
+      "route_chosen": "Mountain Pass Beta",
+      "pacing_chosen": "Conserve",
+      "total_time_min": 8.32,
+      "energy_consumed": 9.52,
+      "total_cost_usd": 5e-05,
+      "total_latency_ms": 638.7,
+      "decisions_count": 2,
+      "correct_count": 1,
+      "accuracy_pct": 50.0,
+      "cost_per_correct_usd": 5e-05,
+      "on_time": true,
+      "graded_response_id": "sim-gemini-2.0-flash-0070-Choo",
+      "trajectory": [
+        {
+          "x": 60.0,
+          "y": 190.0
+        },
+        {
+          "x": 119.0,
+          "y": 185.4
+        },
+        {
+          "x": 178.0,
+          "y": 181.2
+        },
+        {
+          "x": 237.0,
+          "y": 177.9
+        },
+        {
+          "x": 296.0,
+          "y": 175.7
+        },
+        {
+          "x": 355.0,
+          "y": 175.0
+        },
+        {
+          "x": 414.0,
+          "y": 175.7
+        },
+        {
+          "x": 473.0,
+          "y": 177.9
+        },
+        {
+          "x": 532.0,
+          "y": 181.2
+        },
+        {
+          "x": 591.0,
+          "y": 185.4
+        },
+        {
+          "x": 650.0,
+          "y": 190.0
+        }
+      ]
+    },
+    {
+      "agent_id": "agent-0071",
+      "model": "anthropic/claude-sonnet-5",
+      "route_chosen": "Mountain Pass Beta",
+      "pacing_chosen": "Standard",
+      "total_time_min": 7.79,
+      "energy_consumed": 11.9,
+      "total_cost_usd": 0.001737,
+      "total_latency_ms": 837.4,
+      "decisions_count": 2,
+      "correct_count": 2,
+      "accuracy_pct": 100.0,
+      "cost_per_correct_usd": 0.000868,
+      "on_time": true,
+      "graded_response_id": "sim-claude-sonnet-5-0071-Choo",
+      "trajectory": [
+        {
+          "x": 60.0,
+          "y": 190.0
+        },
+        {
+          "x": 119.0,
+          "y": 185.4
+        },
+        {
+          "x": 178.0,
+          "y": 181.2
+        },
+        {
+          "x": 237.0,
+          "y": 177.9
+        },
+        {
+          "x": 296.0,
+          "y": 175.7
+        },
+        {
+          "x": 355.0,
+          "y": 175.0
+        },
+        {
+          "x": 414.0,
+          "y": 175.7
+        },
+        {
+          "x": 473.0,
+          "y": 177.9
+        },
+        {
+          "x": 532.0,
+          "y": 181.2
+        },
+        {
+          "x": 591.0,
+          "y": 185.4
+        },
+        {
+          "x": 650.0,
+          "y": 190.0
+        }
+      ]
+    },
+    {
+      "agent_id": "agent-0072",
+      "model": "anthropic/claude-haiku-4-5",
+      "route_chosen": "Mountain Pass Beta",
+      "pacing_chosen": "Standard",
+      "total_time_min": 6.78,
+      "energy_consumed": 11.9,
+      "total_cost_usd": 0.000547,
+      "total_latency_ms": 748.6,
+      "decisions_count": 2,
+      "correct_count": 2,
+      "accuracy_pct": 100.0,
+      "cost_per_correct_usd": 0.000273,
+      "on_time": true,
+      "graded_response_id": "sim-claude-haiku-4-5-0072-Choo",
+      "trajectory": [
+        {
+          "x": 60.0,
+          "y": 190.0
+        },
+        {
+          "x": 119.0,
+          "y": 185.4
+        },
+        {
+          "x": 178.0,
+          "y": 181.2
+        },
+        {
+          "x": 237.0,
+          "y": 177.9
+        },
+        {
+          "x": 296.0,
+          "y": 175.7
+        },
+        {
+          "x": 355.0,
+          "y": 175.0
+        },
+        {
+          "x": 414.0,
+          "y": 175.7
+        },
+        {
+          "x": 473.0,
+          "y": 177.9
+        },
+        {
+          "x": 532.0,
+          "y": 181.2
+        },
+        {
+          "x": 591.0,
+          "y": 185.4
+        },
+        {
+          "x": 650.0,
+          "y": 190.0
+        }
+      ]
+    },
+    {
+      "agent_id": "agent-0073",
+      "model": "anthropic/claude-haiku-4-5",
+      "route_chosen": "Mountain Pass Beta",
+      "pacing_chosen": "Standard",
+      "total_time_min": 7.43,
+      "energy_consumed": 11.9,
+      "total_cost_usd": 0.000564,
+      "total_latency_ms": 798.5,
+      "decisions_count": 2,
+      "correct_count": 2,
+      "accuracy_pct": 100.0,
+      "cost_per_correct_usd": 0.000282,
+      "on_time": true,
+      "graded_response_id": "sim-claude-haiku-4-5-0073-Choo",
+      "trajectory": [
+        {
+          "x": 60.0,
+          "y": 190.0
+        },
+        {
+          "x": 119.0,
+          "y": 185.4
+        },
+        {
+          "x": 178.0,
+          "y": 181.2
+        },
+        {
+          "x": 237.0,
+          "y": 177.9
+        },
+        {
+          "x": 296.0,
+          "y": 175.7
+        },
+        {
+          "x": 355.0,
+          "y": 175.0
+        },
+        {
+          "x": 414.0,
+          "y": 175.7
+        },
+        {
+          "x": 473.0,
+          "y": 177.9
+        },
+        {
+          "x": 532.0,
+          "y": 181.2
+        },
+        {
+          "x": 591.0,
+          "y": 185.4
+        },
+        {
+          "x": 650.0,
+          "y": 190.0
+        }
+      ]
+    },
+    {
+      "agent_id": "agent-0074",
+      "model": "anthropic/claude-sonnet-5",
+      "route_chosen": "Mountain Pass Beta",
+      "pacing_chosen": "Standard",
+      "total_time_min": 7.58,
+      "energy_consumed": 11.9,
+      "total_cost_usd": 0.001611,
+      "total_latency_ms": 859.2,
+      "decisions_count": 2,
+      "correct_count": 2,
+      "accuracy_pct": 100.0,
+      "cost_per_correct_usd": 0.000806,
+      "on_time": true,
+      "graded_response_id": "sim-claude-sonnet-5-0074-Choo",
+      "trajectory": [
+        {
+          "x": 60.0,
+          "y": 190.0
+        },
+        {
+          "x": 119.0,
+          "y": 185.4
+        },
+        {
+          "x": 178.0,
+          "y": 181.2
+        },
+        {
+          "x": 237.0,
+          "y": 177.9
+        },
+        {
+          "x": 296.0,
+          "y": 175.7
+        },
+        {
+          "x": 355.0,
+          "y": 175.0
+        },
+        {
+          "x": 414.0,
+          "y": 175.7
+        },
+        {
+          "x": 473.0,
+          "y": 177.9
+        },
+        {
+          "x": 532.0,
+          "y": 181.2
+        },
+        {
+          "x": 591.0,
+          "y": 185.4
+        },
+        {
+          "x": 650.0,
+          "y": 190.0
+        }
+      ]
+    },
+    {
+      "agent_id": "agent-0075",
+      "model": "anthropic/claude-haiku-4-5",
+      "route_chosen": "Mountain Pass Beta",
+      "pacing_chosen": "Push",
+      "total_time_min": 6.08,
+      "energy_consumed": 14.28,
+      "total_cost_usd": 0.000593,
+      "total_latency_ms": 690.8,
+      "decisions_count": 2,
+      "correct_count": 1,
+      "accuracy_pct": 50.0,
+      "cost_per_correct_usd": 0.000593,
+      "on_time": true,
+      "graded_response_id": "sim-claude-haiku-4-5-0075-Choo",
+      "trajectory": [
+        {
+          "x": 60.0,
+          "y": 190.0
+        },
+        {
+          "x": 119.0,
+          "y": 185.4
+        },
+        {
+          "x": 178.0,
+          "y": 181.2
+        },
+        {
+          "x": 237.0,
+          "y": 177.9
+        },
+        {
+          "x": 296.0,
+          "y": 175.7
+        },
+        {
+          "x": 355.0,
+          "y": 175.0
+        },
+        {
+          "x": 414.0,
+          "y": 175.7
+        },
+        {
+          "x": 473.0,
+          "y": 177.9
+        },
+        {
+          "x": 532.0,
+          "y": 181.2
+        },
+        {
+          "x": 591.0,
+          "y": 185.4
+        },
+        {
+          "x": 650.0,
+          "y": 190.0
+        }
+      ]
+    },
+    {
+      "agent_id": "agent-0076",
+      "model": "google/gemini-2.0-flash",
+      "route_chosen": "Mountain Pass Beta",
+      "pacing_chosen": "Standard",
+      "total_time_min": 6.16,
+      "energy_consumed": 11.9,
+      "total_cost_usd": 5.3e-05,
+      "total_latency_ms": 640.5,
+      "decisions_count": 2,
+      "correct_count": 2,
+      "accuracy_pct": 100.0,
+      "cost_per_correct_usd": 2.7e-05,
+      "on_time": true,
+      "graded_response_id": "sim-gemini-2.0-flash-0076-Choo",
+      "trajectory": [
+        {
+          "x": 60.0,
+          "y": 190.0
+        },
+        {
+          "x": 119.0,
+          "y": 185.4
+        },
+        {
+          "x": 178.0,
+          "y": 181.2
+        },
+        {
+          "x": 237.0,
+          "y": 177.9
+        },
+        {
+          "x": 296.0,
+          "y": 175.7
+        },
+        {
+          "x": 355.0,
+          "y": 175.0
+        },
+        {
+          "x": 414.0,
+          "y": 175.7
+        },
+        {
+          "x": 473.0,
+          "y": 177.9
+        },
+        {
+          "x": 532.0,
+          "y": 181.2
+        },
+        {
+          "x": 591.0,
+          "y": 185.4
+        },
+        {
+          "x": 650.0,
+          "y": 190.0
+        }
+      ]
+    },
+    {
+      "agent_id": "agent-0077",
+      "model": "anthropic/claude-haiku-4-5",
+      "route_chosen": "Mountain Pass Beta",
+      "pacing_chosen": "Conserve",
+      "total_time_min": 8.89,
+      "energy_consumed": 9.52,
+      "total_cost_usd": 0.000554,
+      "total_latency_ms": 670.1,
+      "decisions_count": 2,
+      "correct_count": 1,
+      "accuracy_pct": 50.0,
+      "cost_per_correct_usd": 0.000554,
+      "on_time": true,
+      "graded_response_id": "sim-claude-haiku-4-5-0077-Choo",
+      "trajectory": [
+        {
+          "x": 60.0,
+          "y": 190.0
+        },
+        {
+          "x": 119.0,
+          "y": 185.4
+        },
+        {
+          "x": 178.0,
+          "y": 181.2
+        },
+        {
+          "x": 237.0,
+          "y": 177.9
+        },
+        {
+          "x": 296.0,
+          "y": 175.7
+        },
+        {
+          "x": 355.0,
+          "y": 175.0
+        },
+        {
+          "x": 414.0,
+          "y": 175.7
+        },
+        {
+          "x": 473.0,
+          "y": 177.9
+        },
+        {
+          "x": 532.0,
+          "y": 181.2
+        },
+        {
+          "x": 591.0,
+          "y": 185.4
+        },
+        {
+          "x": 650.0,
+          "y": 190.0
+        }
+      ]
+    },
+    {
+      "agent_id": "agent-0078",
+      "model": "anthropic/claude-haiku-4-5",
+      "route_chosen": "Mountain Pass Beta",
+      "pacing_chosen": "Standard",
+      "total_time_min": 7.42,
+      "energy_consumed": 11.9,
+      "total_cost_usd": 0.00052,
+      "total_latency_ms": 678.9,
+      "decisions_count": 2,
+      "correct_count": 2,
+      "accuracy_pct": 100.0,
+      "cost_per_correct_usd": 0.00026,
+      "on_time": true,
+      "graded_response_id": "sim-claude-haiku-4-5-0078-Choo",
+      "trajectory": [
+        {
+          "x": 60.0,
+          "y": 190.0
+        },
+        {
+          "x": 119.0,
+          "y": 185.4
+        },
+        {
+          "x": 178.0,
+          "y": 181.2
+        },
+        {
+          "x": 237.0,
+          "y": 177.9
+        },
+        {
+          "x": 296.0,
+          "y": 175.7
+        },
+        {
+          "x": 355.0,
+          "y": 175.0
+        },
+        {
+          "x": 414.0,
+          "y": 175.7
+        },
+        {
+          "x": 473.0,
+          "y": 177.9
+        },
+        {
+          "x": 532.0,
+          "y": 181.2
+        },
+        {
+          "x": 591.0,
+          "y": 185.4
+        },
+        {
+          "x": 650.0,
+          "y": 190.0
+        }
+      ]
+    },
+    {
+      "agent_id": "agent-0079",
+      "model": "anthropic/claude-haiku-4-5",
+      "route_chosen": "Mountain Pass Beta",
+      "pacing_chosen": "Standard",
+      "total_time_min": 7.05,
+      "energy_consumed": 11.9,
+      "total_cost_usd": 0.000586,
+      "total_latency_ms": 689.2,
+      "decisions_count": 2,
+      "correct_count": 2,
+      "accuracy_pct": 100.0,
+      "cost_per_correct_usd": 0.000293,
+      "on_time": true,
+      "graded_response_id": "sim-claude-haiku-4-5-0079-Choo",
+      "trajectory": [
+        {
+          "x": 60.0,
+          "y": 190.0
+        },
+        {
+          "x": 119.0,
+          "y": 185.4
+        },
+        {
+          "x": 178.0,
+          "y": 181.2
+        },
+        {
+          "x": 237.0,
+          "y": 177.9
+        },
+        {
+          "x": 296.0,
+          "y": 175.7
+        },
+        {
+          "x": 355.0,
+          "y": 175.0
+        },
+        {
+          "x": 414.0,
+          "y": 175.7
+        },
+        {
+          "x": 473.0,
+          "y": 177.9
+        },
+        {
+          "x": 532.0,
+          "y": 181.2
+        },
+        {
+          "x": 591.0,
+          "y": 185.4
+        },
+        {
+          "x": 650.0,
+          "y": 190.0
+        }
+      ]
+    },
+    {
+      "agent_id": "agent-0080",
+      "model": "anthropic/claude-haiku-4-5",
+      "route_chosen": "Valley Highway Gamma",
+      "pacing_chosen": "Standard",
+      "total_time_min": 6.24,
+      "energy_consumed": 12.0,
+      "total_cost_usd": 0.000566,
+      "total_latency_ms": 717.9,
+      "decisions_count": 2,
+      "correct_count": 1,
+      "accuracy_pct": 50.0,
+      "cost_per_correct_usd": 0.000566,
+      "on_time": false,
+      "graded_response_id": "sim-claude-haiku-4-5-0080-Choo",
+      "trajectory": [
+        {
+          "x": 60.0,
+          "y": 190.0
+        },
+        {
+          "x": 119.0,
+          "y": 194.6
+        },
+        {
+          "x": 178.0,
+          "y": 198.8
+        },
+        {
+          "x": 237.0,
+          "y": 202.1
+        },
+        {
+          "x": 296.0,
+          "y": 204.3
+        },
+        {
+          "x": 355.0,
+          "y": 205.0
+        },
+        {
+          "x": 414.0,
+          "y": 204.3
+        },
+        {
+          "x": 473.0,
+          "y": 202.1
+        },
+        {
+          "x": 532.0,
+          "y": 198.8
+        },
+        {
+          "x": 591.0,
+          "y": 194.6
+        },
+        {
+          "x": 650.0,
+          "y": 190.0
+        }
+      ]
+    },
+    {
+      "agent_id": "agent-0081",
+      "model": "anthropic/claude-haiku-4-5",
+      "route_chosen": "Mountain Pass Beta",
+      "pacing_chosen": "Standard",
+      "total_time_min": 7.0,
+      "energy_consumed": 11.9,
+      "total_cost_usd": 0.000487,
+      "total_latency_ms": 731.1,
+      "decisions_count": 2,
+      "correct_count": 2,
+      "accuracy_pct": 100.0,
+      "cost_per_correct_usd": 0.000244,
+      "on_time": true,
+      "graded_response_id": "sim-claude-haiku-4-5-0081-Choo",
+      "trajectory": [
+        {
+          "x": 60.0,
+          "y": 190.0
+        },
+        {
+          "x": 119.0,
+          "y": 185.4
+        },
+        {
+          "x": 178.0,
+          "y": 181.2
+        },
+        {
+          "x": 237.0,
+          "y": 177.9
+        },
+        {
+          "x": 296.0,
+          "y": 175.7
+        },
+        {
+          "x": 355.0,
+          "y": 175.0
+        },
+        {
+          "x": 414.0,
+          "y": 175.7
+        },
+        {
+          "x": 473.0,
+          "y": 177.9
+        },
+        {
+          "x": 532.0,
+          "y": 181.2
+        },
+        {
+          "x": 591.0,
+          "y": 185.4
+        },
+        {
+          "x": 650.0,
+          "y": 190.0
+        }
+      ]
+    },
+    {
+      "agent_id": "agent-0082",
+      "model": "anthropic/claude-haiku-4-5",
+      "route_chosen": "Mountain Pass Beta",
+      "pacing_chosen": "Standard",
+      "total_time_min": 6.75,
+      "energy_consumed": 11.9,
+      "total_cost_usd": 0.000555,
+      "total_latency_ms": 681.8,
+      "decisions_count": 2,
+      "correct_count": 2,
+      "accuracy_pct": 100.0,
+      "cost_per_correct_usd": 0.000278,
+      "on_time": true,
+      "graded_response_id": "sim-claude-haiku-4-5-0082-Choo",
+      "trajectory": [
+        {
+          "x": 60.0,
+          "y": 190.0
+        },
+        {
+          "x": 119.0,
+          "y": 185.4
+        },
+        {
+          "x": 178.0,
+          "y": 181.2
+        },
+        {
+          "x": 237.0,
+          "y": 177.9
+        },
+        {
+          "x": 296.0,
+          "y": 175.7
+        },
+        {
+          "x": 355.0,
+          "y": 175.0
+        },
+        {
+          "x": 414.0,
+          "y": 175.7
+        },
+        {
+          "x": 473.0,
+          "y": 177.9
+        },
+        {
+          "x": 532.0,
+          "y": 181.2
+        },
+        {
+          "x": 591.0,
+          "y": 185.4
+        },
+        {
+          "x": 650.0,
+          "y": 190.0
+        }
+      ]
+    },
+    {
+      "agent_id": "agent-0083",
+      "model": "google/gemini-2.0-flash",
+      "route_chosen": "Mountain Pass Beta",
+      "pacing_chosen": "Push",
+      "total_time_min": 5.47,
+      "energy_consumed": 14.28,
+      "total_cost_usd": 5.4e-05,
+      "total_latency_ms": 583.3,
+      "decisions_count": 2,
+      "correct_count": 1,
+      "accuracy_pct": 50.0,
+      "cost_per_correct_usd": 5.4e-05,
+      "on_time": true,
+      "graded_response_id": "sim-gemini-2.0-flash-0083-Choo",
+      "trajectory": [
+        {
+          "x": 60.0,
+          "y": 190.0
+        },
+        {
+          "x": 119.0,
+          "y": 185.4
+        },
+        {
+          "x": 178.0,
+          "y": 181.2
+        },
+        {
+          "x": 237.0,
+          "y": 177.9
+        },
+        {
+          "x": 296.0,
+          "y": 175.7
+        },
+        {
+          "x": 355.0,
+          "y": 175.0
+        },
+        {
+          "x": 414.0,
+          "y": 175.7
+        },
+        {
+          "x": 473.0,
+          "y": 177.9
+        },
+        {
+          "x": 532.0,
+          "y": 181.2
+        },
+        {
+          "x": 591.0,
+          "y": 185.4
+        },
+        {
+          "x": 650.0,
+          "y": 190.0
+        }
+      ]
+    },
+    {
+      "agent_id": "agent-0084",
+      "model": "anthropic/claude-haiku-4-5",
+      "route_chosen": "Mountain Pass Beta",
+      "pacing_chosen": "Standard",
+      "total_time_min": 6.97,
+      "energy_consumed": 11.9,
+      "total_cost_usd": 0.000582,
+      "total_latency_ms": 718.6,
+      "decisions_count": 2,
+      "correct_count": 2,
+      "accuracy_pct": 100.0,
+      "cost_per_correct_usd": 0.000291,
+      "on_time": true,
+      "graded_response_id": "sim-claude-haiku-4-5-0084-Choo",
+      "trajectory": [
+        {
+          "x": 60.0,
+          "y": 190.0
+        },
+        {
+          "x": 119.0,
+          "y": 185.4
+        },
+        {
+          "x": 178.0,
+          "y": 181.2
+        },
+        {
+          "x": 237.0,
+          "y": 177.9
+        },
+        {
+          "x": 296.0,
+          "y": 175.7
+        },
+        {
+          "x": 355.0,
+          "y": 175.0
+        },
+        {
+          "x": 414.0,
+          "y": 175.7
+        },
+        {
+          "x": 473.0,
+          "y": 177.9
+        },
+        {
+          "x": 532.0,
+          "y": 181.2
+        },
+        {
+          "x": 591.0,
+          "y": 185.4
+        },
+        {
+          "x": 650.0,
+          "y": 190.0
+        }
+      ]
+    },
+    {
+      "agent_id": "agent-0085",
+      "model": "anthropic/claude-haiku-4-5",
+      "route_chosen": "Mountain Pass Beta",
+      "pacing_chosen": "Standard",
+      "total_time_min": 7.52,
+      "energy_consumed": 11.9,
+      "total_cost_usd": 0.000581,
+      "total_latency_ms": 732.9,
+      "decisions_count": 2,
+      "correct_count": 2,
+      "accuracy_pct": 100.0,
+      "cost_per_correct_usd": 0.00029,
+      "on_time": true,
+      "graded_response_id": "sim-claude-haiku-4-5-0085-Choo",
+      "trajectory": [
+        {
+          "x": 60.0,
+          "y": 190.0
+        },
+        {
+          "x": 119.0,
+          "y": 185.4
+        },
+        {
+          "x": 178.0,
+          "y": 181.2
+        },
+        {
+          "x": 237.0,
+          "y": 177.9
+        },
+        {
+          "x": 296.0,
+          "y": 175.7
+        },
+        {
+          "x": 355.0,
+          "y": 175.0
+        },
+        {
+          "x": 414.0,
+          "y": 175.7
+        },
+        {
+          "x": 473.0,
+          "y": 177.9
+        },
+        {
+          "x": 532.0,
+          "y": 181.2
+        },
+        {
+          "x": 591.0,
+          "y": 185.4
+        },
+        {
+          "x": 650.0,
+          "y": 190.0
+        }
+      ]
+    },
+    {
+      "agent_id": "agent-0086",
+      "model": "google/gemini-2.0-flash",
+      "route_chosen": "Mountain Pass Beta",
+      "pacing_chosen": "Standard",
+      "total_time_min": 6.22,
+      "energy_consumed": 11.9,
+      "total_cost_usd": 4.9e-05,
+      "total_latency_ms": 688.3,
+      "decisions_count": 2,
+      "correct_count": 2,
+      "accuracy_pct": 100.0,
+      "cost_per_correct_usd": 2.4e-05,
+      "on_time": true,
+      "graded_response_id": "sim-gemini-2.0-flash-0086-Choo",
+      "trajectory": [
+        {
+          "x": 60.0,
+          "y": 190.0
+        },
+        {
+          "x": 119.0,
+          "y": 185.4
+        },
+        {
+          "x": 178.0,
+          "y": 181.2
+        },
+        {
+          "x": 237.0,
+          "y": 177.9
+        },
+        {
+          "x": 296.0,
+          "y": 175.7
+        },
+        {
+          "x": 355.0,
+          "y": 175.0
+        },
+        {
+          "x": 414.0,
+          "y": 175.7
+        },
+        {
+          "x": 473.0,
+          "y": 177.9
+        },
+        {
+          "x": 532.0,
+          "y": 181.2
+        },
+        {
+          "x": 591.0,
+          "y": 185.4
+        },
+        {
+          "x": 650.0,
+          "y": 190.0
+        }
+      ]
+    },
+    {
+      "agent_id": "agent-0087",
+      "model": "anthropic/claude-sonnet-5",
+      "route_chosen": "Mountain Pass Beta",
+      "pacing_chosen": "Push",
+      "total_time_min": 6.31,
+      "energy_consumed": 14.28,
+      "total_cost_usd": 0.001764,
+      "total_latency_ms": 691.0,
+      "decisions_count": 2,
+      "correct_count": 1,
+      "accuracy_pct": 50.0,
+      "cost_per_correct_usd": 0.001764,
+      "on_time": true,
+      "graded_response_id": "sim-claude-sonnet-5-0087-Choo",
+      "trajectory": [
+        {
+          "x": 60.0,
+          "y": 190.0
+        },
+        {
+          "x": 119.0,
+          "y": 185.4
+        },
+        {
+          "x": 178.0,
+          "y": 181.2
+        },
+        {
+          "x": 237.0,
+          "y": 177.9
+        },
+        {
+          "x": 296.0,
+          "y": 175.7
+        },
+        {
+          "x": 355.0,
+          "y": 175.0
+        },
+        {
+          "x": 414.0,
+          "y": 175.7
+        },
+        {
+          "x": 473.0,
+          "y": 177.9
+        },
+        {
+          "x": 532.0,
+          "y": 181.2
+        },
+        {
+          "x": 591.0,
+          "y": 185.4
+        },
+        {
+          "x": 650.0,
+          "y": 190.0
+        }
+      ]
+    },
+    {
+      "agent_id": "agent-0088",
+      "model": "google/gemini-2.0-flash",
+      "route_chosen": "Mountain Pass Beta",
+      "pacing_chosen": "Standard",
+      "total_time_min": 6.53,
+      "energy_consumed": 11.9,
+      "total_cost_usd": 5.4e-05,
+      "total_latency_ms": 595.7,
+      "decisions_count": 2,
+      "correct_count": 2,
+      "accuracy_pct": 100.0,
+      "cost_per_correct_usd": 2.7e-05,
+      "on_time": true,
+      "graded_response_id": "sim-gemini-2.0-flash-0088-Choo",
+      "trajectory": [
+        {
+          "x": 60.0,
+          "y": 190.0
+        },
+        {
+          "x": 119.0,
+          "y": 185.4
+        },
+        {
+          "x": 178.0,
+          "y": 181.2
+        },
+        {
+          "x": 237.0,
+          "y": 177.9
+        },
+        {
+          "x": 296.0,
+          "y": 175.7
+        },
+        {
+          "x": 355.0,
+          "y": 175.0
+        },
+        {
+          "x": 414.0,
+          "y": 175.7
+        },
+        {
+          "x": 473.0,
+          "y": 177.9
+        },
+        {
+          "x": 532.0,
+          "y": 181.2
+        },
+        {
+          "x": 591.0,
+          "y": 185.4
+        },
+        {
+          "x": 650.0,
+          "y": 190.0
+        }
+      ]
+    },
+    {
+      "agent_id": "agent-0089",
+      "model": "anthropic/claude-haiku-4-5",
+      "route_chosen": "Valley Highway Gamma",
+      "pacing_chosen": "Standard",
+      "total_time_min": 6.1,
+      "energy_consumed": 12.0,
+      "total_cost_usd": 0.000543,
+      "total_latency_ms": 691.1,
+      "decisions_count": 2,
+      "correct_count": 1,
+      "accuracy_pct": 50.0,
+      "cost_per_correct_usd": 0.000543,
+      "on_time": false,
+      "graded_response_id": "sim-claude-haiku-4-5-0089-Choo",
+      "trajectory": [
+        {
+          "x": 60.0,
+          "y": 190.0
+        },
+        {
+          "x": 119.0,
+          "y": 194.6
+        },
+        {
+          "x": 178.0,
+          "y": 198.8
+        },
+        {
+          "x": 237.0,
+          "y": 202.1
+        },
+        {
+          "x": 296.0,
+          "y": 204.3
+        },
+        {
+          "x": 355.0,
+          "y": 205.0
+        },
+        {
+          "x": 414.0,
+          "y": 204.3
+        },
+        {
+          "x": 473.0,
+          "y": 202.1
+        },
+        {
+          "x": 532.0,
+          "y": 198.8
+        },
+        {
+          "x": 591.0,
+          "y": 194.6
+        },
+        {
+          "x": 650.0,
+          "y": 190.0
+        }
+      ]
+    },
+    {
+      "agent_id": "agent-0090",
+      "model": "anthropic/claude-haiku-4-5",
+      "route_chosen": "Mountain Pass Beta",
+      "pacing_chosen": "Standard",
+      "total_time_min": 7.17,
+      "energy_consumed": 11.9,
+      "total_cost_usd": 0.000551,
+      "total_latency_ms": 686.9,
+      "decisions_count": 2,
+      "correct_count": 2,
+      "accuracy_pct": 100.0,
+      "cost_per_correct_usd": 0.000276,
+      "on_time": true,
+      "graded_response_id": "sim-claude-haiku-4-5-0090-Choo",
+      "trajectory": [
+        {
+          "x": 60.0,
+          "y": 190.0
+        },
+        {
+          "x": 119.0,
+          "y": 185.4
+        },
+        {
+          "x": 178.0,
+          "y": 181.2
+        },
+        {
+          "x": 237.0,
+          "y": 177.9
+        },
+        {
+          "x": 296.0,
+          "y": 175.7
+        },
+        {
+          "x": 355.0,
+          "y": 175.0
+        },
+        {
+          "x": 414.0,
+          "y": 175.7
+        },
+        {
+          "x": 473.0,
+          "y": 177.9
+        },
+        {
+          "x": 532.0,
+          "y": 181.2
+        },
+        {
+          "x": 591.0,
+          "y": 185.4
+        },
+        {
+          "x": 650.0,
+          "y": 190.0
+        }
+      ]
+    },
+    {
+      "agent_id": "agent-0091",
+      "model": "google/gemini-2.0-flash",
+      "route_chosen": "Mountain Pass Beta",
+      "pacing_chosen": "Standard",
+      "total_time_min": 6.15,
+      "energy_consumed": 11.9,
+      "total_cost_usd": 4.9e-05,
+      "total_latency_ms": 689.8,
+      "decisions_count": 2,
+      "correct_count": 2,
+      "accuracy_pct": 100.0,
+      "cost_per_correct_usd": 2.5e-05,
+      "on_time": true,
+      "graded_response_id": "sim-gemini-2.0-flash-0091-Choo",
+      "trajectory": [
+        {
+          "x": 60.0,
+          "y": 190.0
+        },
+        {
+          "x": 119.0,
+          "y": 185.4
+        },
+        {
+          "x": 178.0,
+          "y": 181.2
+        },
+        {
+          "x": 237.0,
+          "y": 177.9
+        },
+        {
+          "x": 296.0,
+          "y": 175.7
+        },
+        {
+          "x": 355.0,
+          "y": 175.0
+        },
+        {
+          "x": 414.0,
+          "y": 175.7
+        },
+        {
+          "x": 473.0,
+          "y": 177.9
+        },
+        {
+          "x": 532.0,
+          "y": 181.2
+        },
+        {
+          "x": 591.0,
+          "y": 185.4
+        },
+        {
+          "x": 650.0,
+          "y": 190.0
+        }
+      ]
+    },
+    {
+      "agent_id": "agent-0092",
+      "model": "google/gemini-2.0-flash",
+      "route_chosen": "Mountain Pass Beta",
+      "pacing_chosen": "Conserve",
+      "total_time_min": 8.36,
+      "energy_consumed": 9.52,
+      "total_cost_usd": 5.3e-05,
+      "total_latency_ms": 715.3,
+      "decisions_count": 2,
+      "correct_count": 1,
+      "accuracy_pct": 50.0,
+      "cost_per_correct_usd": 5.3e-05,
+      "on_time": true,
+      "graded_response_id": "sim-gemini-2.0-flash-0092-Choo",
+      "trajectory": [
+        {
+          "x": 60.0,
+          "y": 190.0
+        },
+        {
+          "x": 119.0,
+          "y": 185.4
+        },
+        {
+          "x": 178.0,
+          "y": 181.2
+        },
+        {
+          "x": 237.0,
+          "y": 177.9
+        },
+        {
+          "x": 296.0,
+          "y": 175.7
+        },
+        {
+          "x": 355.0,
+          "y": 175.0
+        },
+        {
+          "x": 414.0,
+          "y": 175.7
+        },
+        {
+          "x": 473.0,
+          "y": 177.9
+        },
+        {
+          "x": 532.0,
+          "y": 181.2
+        },
+        {
+          "x": 591.0,
+          "y": 185.4
+        },
+        {
+          "x": 650.0,
+          "y": 190.0
+        }
+      ]
+    },
+    {
+      "agent_id": "agent-0093",
+      "model": "anthropic/claude-haiku-4-5",
+      "route_chosen": "Mountain Pass Beta",
+      "pacing_chosen": "Standard",
+      "total_time_min": 7.3,
+      "energy_consumed": 11.9,
+      "total_cost_usd": 0.000619,
+      "total_latency_ms": 677.5,
+      "decisions_count": 2,
+      "correct_count": 2,
+      "accuracy_pct": 100.0,
+      "cost_per_correct_usd": 0.000309,
+      "on_time": true,
+      "graded_response_id": "sim-claude-haiku-4-5-0093-Choo",
+      "trajectory": [
+        {
+          "x": 60.0,
+          "y": 190.0
+        },
+        {
+          "x": 119.0,
+          "y": 185.4
+        },
+        {
+          "x": 178.0,
+          "y": 181.2
+        },
+        {
+          "x": 237.0,
+          "y": 177.9
+        },
+        {
+          "x": 296.0,
+          "y": 175.7
+        },
+        {
+          "x": 355.0,
+          "y": 175.0
+        },
+        {
+          "x": 414.0,
+          "y": 175.7
+        },
+        {
+          "x": 473.0,
+          "y": 177.9
+        },
+        {
+          "x": 532.0,
+          "y": 181.2
+        },
+        {
+          "x": 591.0,
+          "y": 185.4
+        },
+        {
+          "x": 650.0,
+          "y": 190.0
+        }
+      ]
+    },
+    {
+      "agent_id": "agent-0094",
+      "model": "google/gemini-2.0-flash",
+      "route_chosen": "Mountain Pass Beta",
+      "pacing_chosen": "Standard",
+      "total_time_min": 6.48,
+      "energy_consumed": 11.9,
+      "total_cost_usd": 5.4e-05,
+      "total_latency_ms": 601.8,
+      "decisions_count": 2,
+      "correct_count": 2,
+      "accuracy_pct": 100.0,
+      "cost_per_correct_usd": 2.7e-05,
+      "on_time": true,
+      "graded_response_id": "sim-gemini-2.0-flash-0094-Choo",
+      "trajectory": [
+        {
+          "x": 60.0,
+          "y": 190.0
+        },
+        {
+          "x": 119.0,
+          "y": 185.4
+        },
+        {
+          "x": 178.0,
+          "y": 181.2
+        },
+        {
+          "x": 237.0,
+          "y": 177.9
+        },
+        {
+          "x": 296.0,
+          "y": 175.7
+        },
+        {
+          "x": 355.0,
+          "y": 175.0
+        },
+        {
+          "x": 414.0,
+          "y": 175.7
+        },
+        {
+          "x": 473.0,
+          "y": 177.9
+        },
+        {
+          "x": 532.0,
+          "y": 181.2
+        },
+        {
+          "x": 591.0,
+          "y": 185.4
+        },
+        {
+          "x": 650.0,
+          "y": 190.0
+        }
+      ]
+    },
+    {
+      "agent_id": "agent-0095",
+      "model": "anthropic/claude-haiku-4-5",
+      "route_chosen": "Mountain Pass Beta",
+      "pacing_chosen": "Standard",
+      "total_time_min": 7.18,
+      "energy_consumed": 11.9,
+      "total_cost_usd": 0.00052,
+      "total_latency_ms": 651.3,
+      "decisions_count": 2,
+      "correct_count": 2,
+      "accuracy_pct": 100.0,
+      "cost_per_correct_usd": 0.00026,
+      "on_time": true,
+      "graded_response_id": "sim-claude-haiku-4-5-0095-Choo",
+      "trajectory": [
+        {
+          "x": 60.0,
+          "y": 190.0
+        },
+        {
+          "x": 119.0,
+          "y": 185.4
+        },
+        {
+          "x": 178.0,
+          "y": 181.2
+        },
+        {
+          "x": 237.0,
+          "y": 177.9
+        },
+        {
+          "x": 296.0,
+          "y": 175.7
+        },
+        {
+          "x": 355.0,
+          "y": 175.0
+        },
+        {
+          "x": 414.0,
+          "y": 175.7
+        },
+        {
+          "x": 473.0,
+          "y": 177.9
+        },
+        {
+          "x": 532.0,
+          "y": 181.2
+        },
+        {
+          "x": 591.0,
+          "y": 185.4
+        },
+        {
+          "x": 650.0,
+          "y": 190.0
+        }
+      ]
+    },
+    {
+      "agent_id": "agent-0096",
+      "model": "anthropic/claude-haiku-4-5",
+      "route_chosen": "Mountain Pass Beta",
+      "pacing_chosen": "Conserve",
+      "total_time_min": 9.28,
+      "energy_consumed": 9.52,
+      "total_cost_usd": 0.000571,
+      "total_latency_ms": 735.9,
+      "decisions_count": 2,
+      "correct_count": 1,
+      "accuracy_pct": 50.0,
+      "cost_per_correct_usd": 0.000571,
+      "on_time": true,
+      "graded_response_id": "sim-claude-haiku-4-5-0096-Choo",
+      "trajectory": [
+        {
+          "x": 60.0,
+          "y": 190.0
+        },
+        {
+          "x": 119.0,
+          "y": 185.4
+        },
+        {
+          "x": 178.0,
+          "y": 181.2
+        },
+        {
+          "x": 237.0,
+          "y": 177.9
+        },
+        {
+          "x": 296.0,
+          "y": 175.7
+        },
+        {
+          "x": 355.0,
+          "y": 175.0
+        },
+        {
+          "x": 414.0,
+          "y": 175.7
+        },
+        {
+          "x": 473.0,
+          "y": 177.9
+        },
+        {
+          "x": 532.0,
+          "y": 181.2
+        },
+        {
+          "x": 591.0,
+          "y": 185.4
+        },
+        {
+          "x": 650.0,
+          "y": 190.0
+        }
+      ]
+    },
+    {
+      "agent_id": "agent-0097",
+      "model": "anthropic/claude-haiku-4-5",
+      "route_chosen": "Mountain Pass Beta",
+      "pacing_chosen": "Standard",
+      "total_time_min": 6.73,
+      "energy_consumed": 11.9,
+      "total_cost_usd": 0.000536,
+      "total_latency_ms": 660.6,
+      "decisions_count": 2,
+      "correct_count": 2,
+      "accuracy_pct": 100.0,
+      "cost_per_correct_usd": 0.000268,
+      "on_time": true,
+      "graded_response_id": "sim-claude-haiku-4-5-0097-Choo",
+      "trajectory": [
+        {
+          "x": 60.0,
+          "y": 190.0
+        },
+        {
+          "x": 119.0,
+          "y": 185.4
+        },
+        {
+          "x": 178.0,
+          "y": 181.2
+        },
+        {
+          "x": 237.0,
+          "y": 177.9
+        },
+        {
+          "x": 296.0,
+          "y": 175.7
+        },
+        {
+          "x": 355.0,
+          "y": 175.0
+        },
+        {
+          "x": 414.0,
+          "y": 175.7
+        },
+        {
+          "x": 473.0,
+          "y": 177.9
+        },
+        {
+          "x": 532.0,
+          "y": 181.2
+        },
+        {
+          "x": 591.0,
+          "y": 185.4
+        },
+        {
+          "x": 650.0,
+          "y": 190.0
+        }
+      ]
+    },
+    {
+      "agent_id": "agent-0098",
+      "model": "anthropic/claude-haiku-4-5",
+      "route_chosen": "Mountain Pass Beta",
+      "pacing_chosen": "Standard",
+      "total_time_min": 6.79,
+      "energy_consumed": 11.9,
+      "total_cost_usd": 0.00061,
+      "total_latency_ms": 751.4,
+      "decisions_count": 2,
+      "correct_count": 2,
+      "accuracy_pct": 100.0,
+      "cost_per_correct_usd": 0.000305,
+      "on_time": true,
+      "graded_response_id": "sim-claude-haiku-4-5-0098-Choo",
+      "trajectory": [
+        {
+          "x": 60.0,
+          "y": 190.0
+        },
+        {
+          "x": 119.0,
+          "y": 185.4
+        },
+        {
+          "x": 178.0,
+          "y": 181.2
+        },
+        {
+          "x": 237.0,
+          "y": 177.9
+        },
+        {
+          "x": 296.0,
+          "y": 175.7
+        },
+        {
+          "x": 355.0,
+          "y": 175.0
+        },
+        {
+          "x": 414.0,
+          "y": 175.7
+        },
+        {
+          "x": 473.0,
+          "y": 177.9
+        },
+        {
+          "x": 532.0,
+          "y": 181.2
+        },
+        {
+          "x": 591.0,
+          "y": 185.4
+        },
+        {
+          "x": 650.0,
+          "y": 190.0
+        }
+      ]
+    },
+    {
+      "agent_id": "agent-0099",
+      "model": "anthropic/claude-sonnet-5",
+      "route_chosen": "Mountain Pass Beta",
+      "pacing_chosen": "Standard",
+      "total_time_min": 8.43,
+      "energy_consumed": 11.9,
+      "total_cost_usd": 0.001659,
+      "total_latency_ms": 779.2,
+      "decisions_count": 2,
+      "correct_count": 2,
+      "accuracy_pct": 100.0,
+      "cost_per_correct_usd": 0.000829,
+      "on_time": true,
+      "graded_response_id": "sim-claude-sonnet-5-0099-Choo",
+      "trajectory": [
+        {
+          "x": 60.0,
+          "y": 190.0
+        },
+        {
+          "x": 119.0,
+          "y": 185.4
+        },
+        {
+          "x": 178.0,
+          "y": 181.2
+        },
+        {
+          "x": 237.0,
+          "y": 177.9
+        },
+        {
+          "x": 296.0,
+          "y": 175.7
+        },
+        {
+          "x": 355.0,
+          "y": 175.0
+        },
+        {
+          "x": 414.0,
+          "y": 175.7
+        },
+        {
+          "x": 473.0,
+          "y": 177.9
+        },
+        {
+          "x": 532.0,
+          "y": 181.2
+        },
+        {
+          "x": 591.0,
+          "y": 185.4
+        },
+        {
+          "x": 650.0,
+          "y": 190.0
+        }
+      ]
+    },
+    {
+      "agent_id": "agent-0100",
+      "model": "google/gemini-2.0-flash",
+      "route_chosen": "Mountain Pass Beta",
+      "pacing_chosen": "Standard",
+      "total_time_min": 6.03,
+      "energy_consumed": 11.9,
+      "total_cost_usd": 5.3e-05,
+      "total_latency_ms": 742.8,
+      "decisions_count": 2,
+      "correct_count": 2,
+      "accuracy_pct": 100.0,
+      "cost_per_correct_usd": 2.7e-05,
+      "on_time": true,
+      "graded_response_id": "sim-gemini-2.0-flash-0100-Choo",
+      "trajectory": [
+        {
+          "x": 60.0,
+          "y": 190.0
+        },
+        {
+          "x": 119.0,
+          "y": 185.4
+        },
+        {
+          "x": 178.0,
+          "y": 181.2
+        },
+        {
+          "x": 237.0,
+          "y": 177.9
+        },
+        {
+          "x": 296.0,
+          "y": 175.7
+        },
+        {
+          "x": 355.0,
+          "y": 175.0
+        },
+        {
+          "x": 414.0,
+          "y": 175.7
+        },
+        {
+          "x": 473.0,
+          "y": 177.9
+        },
+        {
+          "x": 532.0,
+          "y": 181.2
+        },
+        {
+          "x": 591.0,
+          "y": 185.4
+        },
+        {
+          "x": 650.0,
+          "y": 190.0
+        }
+      ]
+    }
+  ],
+  "sample_decisions": [
+    {
+      "agent_id": "agent-0001",
+      "node_id": "N1_RouteSelect",
+      "decision_type": "route_choice",
+      "model": "anthropic/claude-sonnet-5",
+      "chosen": "Mountain Pass Beta",
+      "correct": "Mountain Pass Beta",
+      "is_correct": true,
+      "input_tokens": 229,
+      "output_tokens": 13,
+      "cost_usd": 0.000882,
+      "latency_ms": 410.85910149388474,
+      "response_id": "sim-claude-sonnet-5-0001-Choo",
+      "explanation": "Chose Mountain Pass Beta (simulated)"
+    },
+    {
+      "agent_id": "agent-0001",
+      "node_id": "N2_PacingStrategy",
+      "decision_type": "pacing_choice",
+      "model": "anthropic/claude-sonnet-5",
+      "chosen": "Standard",
+      "correct": "Standard",
+      "is_correct": true,
+      "input_tokens": 163,
+      "output_tokens": 20,
+      "cost_usd": 0.000789,
+      "latency_ms": 363.8605180823978,
+      "response_id": "sim-claude-sonnet-5-0001-Choo",
+      "explanation": "Chose Standard (simulated)"
+    },
+    {
+      "agent_id": "agent-0002",
+      "node_id": "N1_RouteSelect",
+      "decision_type": "route_choice",
+      "model": "anthropic/claude-haiku-4-5",
+      "chosen": "Mountain Pass Beta",
+      "correct": "Mountain Pass Beta",
+      "is_correct": true,
+      "input_tokens": 179,
+      "output_tokens": 15,
+      "cost_usd": 0.000254,
+      "latency_ms": 418.50193230117736,
+      "response_id": "sim-claude-haiku-4-5-0002-Choo",
+      "explanation": "Chose Mountain Pass Beta (simulated)"
+    },
+    {
+      "agent_id": "agent-0002",
+      "node_id": "N2_PacingStrategy",
+      "decision_type": "pacing_choice",
+      "model": "anthropic/claude-haiku-4-5",
+      "chosen": "Standard",
+      "correct": "Standard",
+      "is_correct": true,
+      "input_tokens": 204,
+      "output_tokens": 16,
+      "cost_usd": 0.000284,
+      "latency_ms": 400.49175642928924,
+      "response_id": "sim-claude-haiku-4-5-0002-Choo",
+      "explanation": "Chose Standard (simulated)"
+    },
+    {
+      "agent_id": "agent-0003",
+      "node_id": "N1_RouteSelect",
+      "decision_type": "route_choice",
+      "model": "google/gemini-2.0-flash",
+      "chosen": "Mountain Pass Beta",
+      "correct": "Mountain Pass Beta",
+      "is_correct": true,
+      "input_tokens": 184,
+      "output_tokens": 13,
+      "cost_usd": 2.36e-05,
+      "latency_ms": 265.4989260386795,
+      "response_id": "sim-gemini-2.0-flash-0003-Choo",
+      "explanation": "Chose Mountain Pass Beta (simulated)"
+    },
+    {
+      "agent_id": "agent-0003",
+      "node_id": "N2_PacingStrategy",
+      "decision_type": "pacing_choice",
+      "model": "google/gemini-2.0-flash",
+      "chosen": "Push",
+      "correct": "Standard",
+      "is_correct": false,
+      "input_tokens": 208,
+      "output_tokens": 16,
+      "cost_usd": 2.7200000000000004e-05,
+      "latency_ms": 314.4092362842123,
+      "response_id": "sim-gemini-2.0-flash-0003-Choo",
+      "explanation": "Chose Push (simulated)"
+    },
+    {
+      "agent_id": "agent-0004",
+      "node_id": "N1_RouteSelect",
+      "decision_type": "route_choice",
+      "model": "google/gemini-2.0-flash",
+      "chosen": "Mountain Pass Beta",
+      "correct": "Mountain Pass Beta",
+      "is_correct": true,
+      "input_tokens": 228,
+      "output_tokens": 15,
+      "cost_usd": 2.8800000000000002e-05,
+      "latency_ms": 279.6082992514314,
+      "response_id": "sim-gemini-2.0-flash-0004-Choo",
+      "explanation": "Chose Mountain Pass Beta (simulated)"
+    },
+    {
+      "agent_id": "agent-0004",
+      "node_id": "N2_PacingStrategy",
+      "decision_type": "pacing_choice",
+      "model": "google/gemini-2.0-flash",
+      "chosen": "Push",
+      "correct": "Standard",
+      "is_correct": false,
+      "input_tokens": 189,
+      "output_tokens": 12,
+      "cost_usd": 2.3700000000000003e-05,
+      "latency_ms": 356.6054960925457,
+      "response_id": "sim-gemini-2.0-flash-0004-Choo",
+      "explanation": "Chose Push (simulated)"
+    },
+    {
+      "agent_id": "agent-0005",
+      "node_id": "N1_RouteSelect",
+      "decision_type": "route_choice",
+      "model": "anthropic/claude-haiku-4-5",
+      "chosen": "Mountain Pass Beta",
+      "correct": "Mountain Pass Beta",
+      "is_correct": true,
+      "input_tokens": 177,
+      "output_tokens": 15,
+      "cost_usd": 0.000252,
+      "latency_ms": 393.0350414873564,
+      "response_id": "sim-claude-haiku-4-5-0005-Choo",
+      "explanation": "Chose Mountain Pass Beta (simulated)"
+    },
+    {
+      "agent_id": "agent-0005",
+      "node_id": "N2_PacingStrategy",
+      "decision_type": "pacing_choice",
+      "model": "anthropic/claude-haiku-4-5",
+      "chosen": "Standard",
+      "correct": "Standard",
+      "is_correct": true,
+      "input_tokens": 188,
+      "output_tokens": 14,
+      "cost_usd": 0.000258,
+      "latency_ms": 364.7795188775394,
+      "response_id": "sim-claude-haiku-4-5-0005-Choo",
+      "explanation": "Chose Standard (simulated)"
+    },
+    {
+      "agent_id": "agent-0006",
+      "node_id": "N1_RouteSelect",
+      "decision_type": "route_choice",
+      "model": "anthropic/claude-haiku-4-5",
+      "chosen": "Mountain Pass Beta",
+      "correct": "Mountain Pass Beta",
+      "is_correct": true,
+      "input_tokens": 219,
+      "output_tokens": 20,
+      "cost_usd": 0.000319,
+      "latency_ms": 333.8060580341812,
+      "response_id": "sim-claude-haiku-4-5-0006-Choo",
+      "explanation": "Chose Mountain Pass Beta (simulated)"
+    },
+    {
+      "agent_id": "agent-0006",
+      "node_id": "N2_PacingStrategy",
+      "decision_type": "pacing_choice",
+      "model": "anthropic/claude-haiku-4-5",
+      "chosen": "Standard",
+      "correct": "Standard",
+      "is_correct": true,
+      "input_tokens": 228,
+      "output_tokens": 16,
+      "cost_usd": 0.000308,
+      "latency_ms": 395.8682115552571,
+      "response_id": "sim-claude-haiku-4-5-0006-Choo",
+      "explanation": "Chose Standard (simulated)"
+    },
+    {
+      "agent_id": "agent-0007",
+      "node_id": "N1_RouteSelect",
+      "decision_type": "route_choice",
+      "model": "anthropic/claude-haiku-4-5",
+      "chosen": "Mountain Pass Beta",
+      "correct": "Mountain Pass Beta",
+      "is_correct": true,
+      "input_tokens": 224,
+      "output_tokens": 13,
+      "cost_usd": 0.000289,
+      "latency_ms": 408.0985920167757,
+      "response_id": "sim-claude-haiku-4-5-0007-Choo",
+      "explanation": "Chose Mountain Pass Beta (simulated)"
+    },
+    {
+      "agent_id": "agent-0007",
+      "node_id": "N2_PacingStrategy",
+      "decision_type": "pacing_choice",
+      "model": "anthropic/claude-haiku-4-5",
+      "chosen": "Standard",
+      "correct": "Standard",
+      "is_correct": true,
+      "input_tokens": 229,
+      "output_tokens": 20,
+      "cost_usd": 0.000329,
+      "latency_ms": 413.8555829638479,
+      "response_id": "sim-claude-haiku-4-5-0007-Choo",
+      "explanation": "Chose Standard (simulated)"
+    },
+    {
+      "agent_id": "agent-0008",
+      "node_id": "N1_RouteSelect",
+      "decision_type": "route_choice",
+      "model": "anthropic/claude-sonnet-5",
+      "chosen": "Mountain Pass Beta",
+      "correct": "Mountain Pass Beta",
+      "is_correct": true,
+      "input_tokens": 170,
+      "output_tokens": 13,
+      "cost_usd": 0.000705,
+      "latency_ms": 427.82891138135534,
+      "response_id": "sim-claude-sonnet-5-0008-Choo",
+      "explanation": "Chose Mountain Pass Beta (simulated)"
+    },
+    {
+      "agent_id": "agent-0008",
+      "node_id": "N2_PacingStrategy",
+      "decision_type": "pacing_choice",
+      "model": "anthropic/claude-sonnet-5",
+      "chosen": "Standard",
+      "correct": "Standard",
+      "is_correct": true,
+      "input_tokens": 230,
+      "output_tokens": 14,
+      "cost_usd": 0.0009,
+      "latency_ms": 371.8067954728071,
+      "response_id": "sim-claude-sonnet-5-0008-Choo",
+      "explanation": "Chose Standard (simulated)"
+    },
+    {
+      "agent_id": "agent-0009",
+      "node_id": "N1_RouteSelect",
+      "decision_type": "route_choice",
+      "model": "anthropic/claude-haiku-4-5",
+      "chosen": "Metro Transit Grid Delta",
+      "correct": "Mountain Pass Beta",
+      "is_correct": false,
+      "input_tokens": 175,
+      "output_tokens": 15,
+      "cost_usd": 0.00025,
+      "latency_ms": 330.6000440801505,
+      "response_id": "sim-claude-haiku-4-5-0009-Choo",
+      "explanation": "Chose Metro Transit Grid Delta (simulated)"
+    },
+    {
+      "agent_id": "agent-0009",
+      "node_id": "N2_PacingStrategy",
+      "decision_type": "pacing_choice",
+      "model": "anthropic/claude-haiku-4-5",
+      "chosen": "Standard",
+      "correct": "Standard",
+      "is_correct": true,
+      "input_tokens": 240,
+      "output_tokens": 12,
+      "cost_usd": 0.0003,
+      "latency_ms": 331.10937769370213,
+      "response_id": "sim-claude-haiku-4-5-0009-Choo",
+      "explanation": "Chose Standard (simulated)"
+    },
+    {
+      "agent_id": "agent-0010",
+      "node_id": "N1_RouteSelect",
+      "decision_type": "route_choice",
+      "model": "google/gemini-2.0-flash",
+      "chosen": "Metro Transit Grid Delta",
+      "correct": "Mountain Pass Beta",
+      "is_correct": false,
+      "input_tokens": 191,
+      "output_tokens": 19,
+      "cost_usd": 2.6700000000000002e-05,
+      "latency_ms": 356.89963973199724,
+      "response_id": "sim-gemini-2.0-flash-0010-Choo",
+      "explanation": "Chose Metro Transit Grid Delta (simulated)"
+    },
+    {
+      "agent_id": "agent-0010",
+      "node_id": "N2_PacingStrategy",
+      "decision_type": "pacing_choice",
+      "model": "google/gemini-2.0-flash",
+      "chosen": "Standard",
+      "correct": "Standard",
+      "is_correct": true,
+      "input_tokens": 212,
+      "output_tokens": 19,
+      "cost_usd": 2.8800000000000005e-05,
+      "latency_ms": 363.6604098043524,
+      "response_id": "sim-gemini-2.0-flash-0010-Choo",
+      "explanation": "Chose Standard (simulated)"
+    },
+    {
+      "agent_id": "agent-0011",
+      "node_id": "N1_RouteSelect",
+      "decision_type": "route_choice",
+      "model": "google/gemini-2.0-flash",
+      "chosen": "Mountain Pass Beta",
+      "correct": "Mountain Pass Beta",
+      "is_correct": true,
+      "input_tokens": 183,
+      "output_tokens": 16,
+      "cost_usd": 2.4700000000000004e-05,
+      "latency_ms": 315.5153682081161,
+      "response_id": "sim-gemini-2.0-flash-0011-Choo",
+      "explanation": "Chose Mountain Pass Beta (simulated)"
+    },
+    {
+      "agent_id": "agent-0011",
+      "node_id": "N2_PacingStrategy",
+      "decision_type": "pacing_choice",
+      "model": "google/gemini-2.0-flash",
+      "chosen": "Conserve",
+      "correct": "Standard",
+      "is_correct": false,
+      "input_tokens": 172,
+      "output_tokens": 12,
+      "cost_usd": 2.2e-05,
+      "latency_ms": 338.25738727982264,
+      "response_id": "sim-gemini-2.0-flash-0011-Choo",
+      "explanation": "Chose Conserve (simulated)"
+    },
+    {
+      "agent_id": "agent-0012",
+      "node_id": "N1_RouteSelect",
+      "decision_type": "route_choice",
+      "model": "anthropic/claude-haiku-4-5",
+      "chosen": "Mountain Pass Beta",
+      "correct": "Mountain Pass Beta",
+      "is_correct": true,
+      "input_tokens": 208,
+      "output_tokens": 12,
+      "cost_usd": 0.000268,
+      "latency_ms": 421.87342488993073,
+      "response_id": "sim-claude-haiku-4-5-0012-Choo",
+      "explanation": "Chose Mountain Pass Beta (simulated)"
+    },
+    {
+      "agent_id": "agent-0012",
+      "node_id": "N2_PacingStrategy",
+      "decision_type": "pacing_choice",
+      "model": "anthropic/claude-haiku-4-5",
+      "chosen": "Standard",
+      "correct": "Standard",
+      "is_correct": true,
+      "input_tokens": 231,
+      "output_tokens": 19,
+      "cost_usd": 0.000326,
+      "latency_ms": 322.2119826692513,
+      "response_id": "sim-claude-haiku-4-5-0012-Choo",
+      "explanation": "Chose Standard (simulated)"
+    },
+    {
+      "agent_id": "agent-0013",
+      "node_id": "N1_RouteSelect",
+      "decision_type": "route_choice",
+      "model": "google/gemini-2.0-flash",
+      "chosen": "Mountain Pass Beta",
+      "correct": "Mountain Pass Beta",
+      "is_correct": true,
+      "input_tokens": 167,
+      "output_tokens": 20,
+      "cost_usd": 2.47e-05,
+      "latency_ms": 269.6133758288704,
+      "response_id": "sim-gemini-2.0-flash-0013-Choo",
+      "explanation": "Chose Mountain Pass Beta (simulated)"
+    },
+    {
+      "agent_id": "agent-0013",
+      "node_id": "N2_PacingStrategy",
+      "decision_type": "pacing_choice",
+      "model": "google/gemini-2.0-flash",
+      "chosen": "Standard",
+      "correct": "Standard",
+      "is_correct": true,
+      "input_tokens": 175,
+      "output_tokens": 15,
+      "cost_usd": 2.35e-05,
+      "latency_ms": 329.4702869008653,
+      "response_id": "sim-gemini-2.0-flash-0013-Choo",
+      "explanation": "Chose Standard (simulated)"
+    },
+    {
+      "agent_id": "agent-0014",
+      "node_id": "N1_RouteSelect",
+      "decision_type": "route_choice",
+      "model": "anthropic/claude-haiku-4-5",
+      "chosen": "Mountain Pass Beta",
+      "correct": "Mountain Pass Beta",
+      "is_correct": true,
+      "input_tokens": 198,
+      "output_tokens": 19,
+      "cost_usd": 0.000293,
+      "latency_ms": 341.5776271889861,
+      "response_id": "sim-claude-haiku-4-5-0014-Choo",
+      "explanation": "Chose Mountain Pass Beta (simulated)"
+    },
+    {
+      "agent_id": "agent-0014",
+      "node_id": "N2_PacingStrategy",
+      "decision_type": "pacing_choice",
+      "model": "anthropic/claude-haiku-4-5",
+      "chosen": "Standard",
+      "correct": "Standard",
+      "is_correct": true,
+      "input_tokens": 232,
+      "output_tokens": 13,
+      "cost_usd": 0.000297,
+      "latency_ms": 312.4276501683196,
+      "response_id": "sim-claude-haiku-4-5-0014-Choo",
+      "explanation": "Chose Standard (simulated)"
+    },
+    {
+      "agent_id": "agent-0015",
+      "node_id": "N1_RouteSelect",
+      "decision_type": "route_choice",
+      "model": "google/gemini-2.0-flash",
+      "chosen": "Valley Highway Gamma",
+      "correct": "Mountain Pass Beta",
+      "is_correct": false,
+      "input_tokens": 238,
+      "output_tokens": 20,
+      "cost_usd": 3.18e-05,
+      "latency_ms": 260.938772858259,
+      "response_id": "sim-gemini-2.0-flash-0015-Choo",
+      "explanation": "Chose Valley Highway Gamma (simulated)"
+    },
+    {
+      "agent_id": "agent-0015",
+      "node_id": "N2_PacingStrategy",
+      "decision_type": "pacing_choice",
+      "model": "google/gemini-2.0-flash",
+      "chosen": "Standard",
+      "correct": "Standard",
+      "is_correct": true,
+      "input_tokens": 177,
+      "output_tokens": 16,
+      "cost_usd": 2.4100000000000003e-05,
+      "latency_ms": 273.8514404502923,
+      "response_id": "sim-gemini-2.0-flash-0015-Choo",
+      "explanation": "Chose Standard (simulated)"
+    },
+    {
+      "agent_id": "agent-0016",
+      "node_id": "N1_RouteSelect",
+      "decision_type": "route_choice",
+      "model": "google/gemini-2.0-flash",
+      "chosen": "Mountain Pass Beta",
+      "correct": "Mountain Pass Beta",
+      "is_correct": true,
+      "input_tokens": 222,
+      "output_tokens": 16,
+      "cost_usd": 2.86e-05,
+      "latency_ms": 368.64037892951876,
+      "response_id": "sim-gemini-2.0-flash-0016-Choo",
+      "explanation": "Chose Mountain Pass Beta (simulated)"
+    },
+    {
+      "agent_id": "agent-0016",
+      "node_id": "N2_PacingStrategy",
+      "decision_type": "pacing_choice",
+      "model": "google/gemini-2.0-flash",
+      "chosen": "Push",
+      "correct": "Standard",
+      "is_correct": false,
+      "input_tokens": 160,
+      "output_tokens": 17,
+      "cost_usd": 2.2800000000000002e-05,
+      "latency_ms": 352.53430676235524,
+      "response_id": "sim-gemini-2.0-flash-0016-Choo",
+      "explanation": "Chose Push (simulated)"
+    },
+    {
+      "agent_id": "agent-0017",
+      "node_id": "N1_RouteSelect",
+      "decision_type": "route_choice",
+      "model": "anthropic/claude-sonnet-5",
+      "chosen": "Mountain Pass Beta",
+      "correct": "Mountain Pass Beta",
+      "is_correct": true,
+      "input_tokens": 179,
+      "output_tokens": 20,
+      "cost_usd": 0.000837,
+      "latency_ms": 344.32337656729965,
+      "response_id": "sim-claude-sonnet-5-0017-Choo",
+      "explanation": "Chose Mountain Pass Beta (simulated)"
+    },
+    {
+      "agent_id": "agent-0017",
+      "node_id": "N2_PacingStrategy",
+      "decision_type": "pacing_choice",
+      "model": "anthropic/claude-sonnet-5",
+      "chosen": "Standard",
+      "correct": "Standard",
+      "is_correct": true,
+      "input_tokens": 199,
+      "output_tokens": 17,
+      "cost_usd": 0.000852,
+      "latency_ms": 447.8777786491108,
+      "response_id": "sim-claude-sonnet-5-0017-Choo",
+      "explanation": "Chose Standard (simulated)"
+    },
+    {
+      "agent_id": "agent-0018",
+      "node_id": "N1_RouteSelect",
+      "decision_type": "route_choice",
+      "model": "anthropic/claude-haiku-4-5",
+      "chosen": "Mountain Pass Beta",
+      "correct": "Mountain Pass Beta",
+      "is_correct": true,
+      "input_tokens": 190,
+      "output_tokens": 14,
+      "cost_usd": 0.00026,
+      "latency_ms": 420.7810875880792,
+      "response_id": "sim-claude-haiku-4-5-0018-Choo",
+      "explanation": "Chose Mountain Pass Beta (simulated)"
+    },
+    {
+      "agent_id": "agent-0018",
+      "node_id": "N2_PacingStrategy",
+      "decision_type": "pacing_choice",
+      "model": "anthropic/claude-haiku-4-5",
+      "chosen": "Standard",
+      "correct": "Standard",
+      "is_correct": true,
+      "input_tokens": 202,
+      "output_tokens": 18,
+      "cost_usd": 0.000292,
+      "latency_ms": 399.9045803088203,
+      "response_id": "sim-claude-haiku-4-5-0018-Choo",
+      "explanation": "Chose Standard (simulated)"
+    },
+    {
+      "agent_id": "agent-0019",
+      "node_id": "N1_RouteSelect",
+      "decision_type": "route_choice",
+      "model": "google/gemini-2.0-flash",
+      "chosen": "Mountain Pass Beta",
+      "correct": "Mountain Pass Beta",
+      "is_correct": true,
+      "input_tokens": 218,
+      "output_tokens": 17,
+      "cost_usd": 2.86e-05,
+      "latency_ms": 296.62290408063205,
+      "response_id": "sim-gemini-2.0-flash-0019-Choo",
+      "explanation": "Chose Mountain Pass Beta (simulated)"
+    },
+    {
+      "agent_id": "agent-0019",
+      "node_id": "N2_PacingStrategy",
+      "decision_type": "pacing_choice",
+      "model": "google/gemini-2.0-flash",
+      "chosen": "Standard",
+      "correct": "Standard",
+      "is_correct": true,
+      "input_tokens": 202,
+      "output_tokens": 16,
+      "cost_usd": 2.6600000000000003e-05,
+      "latency_ms": 363.72235304363437,
+      "response_id": "sim-gemini-2.0-flash-0019-Choo",
+      "explanation": "Chose Standard (simulated)"
+    },
+    {
+      "agent_id": "agent-0020",
+      "node_id": "N1_RouteSelect",
+      "decision_type": "route_choice",
+      "model": "google/gemini-2.0-flash",
+      "chosen": "Mountain Pass Beta",
+      "correct": "Mountain Pass Beta",
+      "is_correct": true,
+      "input_tokens": 193,
+      "output_tokens": 14,
+      "cost_usd": 2.4900000000000002e-05,
+      "latency_ms": 329.67076804864496,
+      "response_id": "sim-gemini-2.0-flash-0020-Choo",
+      "explanation": "Chose Mountain Pass Beta (simulated)"
+    },
+    {
+      "agent_id": "agent-0020",
+      "node_id": "N2_PacingStrategy",
+      "decision_type": "pacing_choice",
+      "model": "google/gemini-2.0-flash",
+      "chosen": "Standard",
+      "correct": "Standard",
+      "is_correct": true,
+      "input_tokens": 200,
+      "output_tokens": 18,
+      "cost_usd": 2.72e-05,
+      "latency_ms": 332.7450623967372,
+      "response_id": "sim-gemini-2.0-flash-0020-Choo",
+      "explanation": "Chose Standard (simulated)"
+    },
+    {
+      "agent_id": "agent-0021",
+      "node_id": "N1_RouteSelect",
+      "decision_type": "route_choice",
+      "model": "google/gemini-2.0-flash",
+      "chosen": "Mountain Pass Beta",
+      "correct": "Mountain Pass Beta",
+      "is_correct": true,
+      "input_tokens": 185,
+      "output_tokens": 17,
+      "cost_usd": 2.5300000000000002e-05,
+      "latency_ms": 311.75568795499845,
+      "response_id": "sim-gemini-2.0-flash-0021-Choo",
+      "explanation": "Chose Mountain Pass Beta (simulated)"
+    },
+    {
+      "agent_id": "agent-0021",
+      "node_id": "N2_PacingStrategy",
+      "decision_type": "pacing_choice",
+      "model": "google/gemini-2.0-flash",
+      "chosen": "Push",
+      "correct": "Standard",
+      "is_correct": false,
+      "input_tokens": 198,
+      "output_tokens": 20,
+      "cost_usd": 2.78e-05,
+      "latency_ms": 297.11415946503837,
+      "response_id": "sim-gemini-2.0-flash-0021-Choo",
+      "explanation": "Chose Push (simulated)"
+    },
+    {
+      "agent_id": "agent-0022",
+      "node_id": "N1_RouteSelect",
+      "decision_type": "route_choice",
+      "model": "anthropic/claude-haiku-4-5",
+      "chosen": "Mountain Pass Beta",
+      "correct": "Mountain Pass Beta",
+      "is_correct": true,
+      "input_tokens": 232,
+      "output_tokens": 16,
+      "cost_usd": 0.000312,
+      "latency_ms": 352.36538388734317,
+      "response_id": "sim-claude-haiku-4-5-0022-Choo",
+      "explanation": "Chose Mountain Pass Beta (simulated)"
+    },
+    {
+      "agent_id": "agent-0022",
+      "node_id": "N2_PacingStrategy",
+      "decision_type": "pacing_choice",
+      "model": "anthropic/claude-haiku-4-5",
+      "chosen": "Standard",
+      "correct": "Standard",
+      "is_correct": true,
+      "input_tokens": 234,
+      "output_tokens": 17,
+      "cost_usd": 0.000319,
+      "latency_ms": 359.43494646600533,
+      "response_id": "sim-claude-haiku-4-5-0022-Choo",
+      "explanation": "Chose Standard (simulated)"
+    },
+    {
+      "agent_id": "agent-0023",
+      "node_id": "N1_RouteSelect",
+      "decision_type": "route_choice",
+      "model": "anthropic/claude-haiku-4-5",
+      "chosen": "Mountain Pass Beta",
+      "correct": "Mountain Pass Beta",
+      "is_correct": true,
+      "input_tokens": 190,
+      "output_tokens": 16,
+      "cost_usd": 0.00027,
+      "latency_ms": 330.5932435560382,
+      "response_id": "sim-claude-haiku-4-5-0023-Choo",
+      "explanation": "Chose Mountain Pass Beta (simulated)"
+    },
+    {
+      "agent_id": "agent-0023",
+      "node_id": "N2_PacingStrategy",
+      "decision_type": "pacing_choice",
+      "model": "anthropic/claude-haiku-4-5",
+      "chosen": "Conserve",
+      "correct": "Standard",
+      "is_correct": false,
+      "input_tokens": 169,
+      "output_tokens": 19,
+      "cost_usd": 0.000264,
+      "latency_ms": 353.3692849560899,
+      "response_id": "sim-claude-haiku-4-5-0023-Choo",
+      "explanation": "Chose Conserve (simulated)"
+    },
+    {
+      "agent_id": "agent-0024",
+      "node_id": "N1_RouteSelect",
+      "decision_type": "route_choice",
+      "model": "anthropic/claude-haiku-4-5",
+      "chosen": "Mountain Pass Beta",
+      "correct": "Mountain Pass Beta",
+      "is_correct": true,
+      "input_tokens": 173,
+      "output_tokens": 18,
+      "cost_usd": 0.000263,
+      "latency_ms": 329.89730005384195,
+      "response_id": "sim-claude-haiku-4-5-0024-Choo",
+      "explanation": "Chose Mountain Pass Beta (simulated)"
+    },
+    {
+      "agent_id": "agent-0024",
+      "node_id": "N2_PacingStrategy",
+      "decision_type": "pacing_choice",
+      "model": "anthropic/claude-haiku-4-5",
+      "chosen": "Standard",
+      "correct": "Standard",
+      "is_correct": true,
+      "input_tokens": 175,
+      "output_tokens": 19,
+      "cost_usd": 0.00027,
+      "latency_ms": 319.6370563032071,
+      "response_id": "sim-claude-haiku-4-5-0024-Choo",
+      "explanation": "Chose Standard (simulated)"
+    },
+    {
+      "agent_id": "agent-0025",
+      "node_id": "N1_RouteSelect",
+      "decision_type": "route_choice",
+      "model": "anthropic/claude-sonnet-5",
+      "chosen": "Mountain Pass Beta",
+      "correct": "Mountain Pass Beta",
+      "is_correct": true,
+      "input_tokens": 214,
+      "output_tokens": 20,
+      "cost_usd": 0.000942,
+      "latency_ms": 393.50963344920405,
+      "response_id": "sim-claude-sonnet-5-0025-Choo",
+      "explanation": "Chose Mountain Pass Beta (simulated)"
+    },
+    {
+      "agent_id": "agent-0025",
+      "node_id": "N2_PacingStrategy",
+      "decision_type": "pacing_choice",
+      "model": "anthropic/claude-sonnet-5",
+      "chosen": "Standard",
+      "correct": "Standard",
+      "is_correct": true,
+      "input_tokens": 195,
+      "output_tokens": 20,
+      "cost_usd": 0.000885,
+      "latency_ms": 398.151642048432,
+      "response_id": "sim-claude-sonnet-5-0025-Choo",
+      "explanation": "Chose Standard (simulated)"
+    },
+    {
+      "agent_id": "agent-0026",
+      "node_id": "N1_RouteSelect",
+      "decision_type": "route_choice",
+      "model": "anthropic/claude-haiku-4-5",
+      "chosen": "Mountain Pass Beta",
+      "correct": "Mountain Pass Beta",
+      "is_correct": true,
+      "input_tokens": 209,
+      "output_tokens": 14,
+      "cost_usd": 0.000279,
+      "latency_ms": 388.4066606397099,
+      "response_id": "sim-claude-haiku-4-5-0026-Choo",
+      "explanation": "Chose Mountain Pass Beta (simulated)"
+    },
+    {
+      "agent_id": "agent-0026",
+      "node_id": "N2_PacingStrategy",
+      "decision_type": "pacing_choice",
+      "model": "anthropic/claude-haiku-4-5",
+      "chosen": "Standard",
+      "correct": "Standard",
+      "is_correct": true,
+      "input_tokens": 167,
+      "output_tokens": 15,
+      "cost_usd": 0.000242,
+      "latency_ms": 403.58330395722214,
+      "response_id": "sim-claude-haiku-4-5-0026-Choo",
+      "explanation": "Chose Standard (simulated)"
+    },
+    {
+      "agent_id": "agent-0027",
+      "node_id": "N1_RouteSelect",
+      "decision_type": "route_choice",
+      "model": "anthropic/claude-haiku-4-5",
+      "chosen": "Mountain Pass Beta",
+      "correct": "Mountain Pass Beta",
+      "is_correct": true,
+      "input_tokens": 209,
+      "output_tokens": 18,
+      "cost_usd": 0.000299,
+      "latency_ms": 368.2228317495914,
+      "response_id": "sim-claude-haiku-4-5-0027-Choo",
+      "explanation": "Chose Mountain Pass Beta (simulated)"
+    },
+    {
+      "agent_id": "agent-0027",
+      "node_id": "N2_PacingStrategy",
+      "decision_type": "pacing_choice",
+      "model": "anthropic/claude-haiku-4-5",
+      "chosen": "Standard",
+      "correct": "Standard",
+      "is_correct": true,
+      "input_tokens": 194,
+      "output_tokens": 18,
+      "cost_usd": 0.000284,
+      "latency_ms": 361.9134028921837,
+      "response_id": "sim-claude-haiku-4-5-0027-Choo",
+      "explanation": "Chose Standard (simulated)"
+    },
+    {
+      "agent_id": "agent-0028",
+      "node_id": "N1_RouteSelect",
+      "decision_type": "route_choice",
+      "model": "anthropic/claude-sonnet-5",
+      "chosen": "Mountain Pass Beta",
+      "correct": "Mountain Pass Beta",
+      "is_correct": true,
+      "input_tokens": 210,
+      "output_tokens": 12,
+      "cost_usd": 0.00081,
+      "latency_ms": 350.07369545944005,
+      "response_id": "sim-claude-sonnet-5-0028-Choo",
+      "explanation": "Chose Mountain Pass Beta (simulated)"
+    },
+    {
+      "agent_id": "agent-0028",
+      "node_id": "N2_PacingStrategy",
+      "decision_type": "pacing_choice",
+      "model": "anthropic/claude-sonnet-5",
+      "chosen": "Standard",
+      "correct": "Standard",
+      "is_correct": true,
+      "input_tokens": 201,
+      "output_tokens": 15,
+      "cost_usd": 0.000828,
+      "latency_ms": 394.56391900197787,
+      "response_id": "sim-claude-sonnet-5-0028-Choo",
+      "explanation": "Chose Standard (simulated)"
+    },
+    {
+      "agent_id": "agent-0029",
+      "node_id": "N1_RouteSelect",
+      "decision_type": "route_choice",
+      "model": "anthropic/claude-haiku-4-5",
+      "chosen": "Valley Highway Gamma",
+      "correct": "Mountain Pass Beta",
+      "is_correct": false,
+      "input_tokens": 188,
+      "output_tokens": 13,
+      "cost_usd": 0.000253,
+      "latency_ms": 397.384329589671,
+      "response_id": "sim-claude-haiku-4-5-0029-Choo",
+      "explanation": "Chose Valley Highway Gamma (simulated)"
+    },
+    {
+      "agent_id": "agent-0029",
+      "node_id": "N2_PacingStrategy",
+      "decision_type": "pacing_choice",
+      "model": "anthropic/claude-haiku-4-5",
+      "chosen": "Standard",
+      "correct": "Standard",
+      "is_correct": true,
+      "input_tokens": 162,
+      "output_tokens": 14,
+      "cost_usd": 0.000232,
+      "latency_ms": 332.2617566630323,
+      "response_id": "sim-claude-haiku-4-5-0029-Choo",
+      "explanation": "Chose Standard (simulated)"
+    },
+    {
+      "agent_id": "agent-0030",
+      "node_id": "N1_RouteSelect",
+      "decision_type": "route_choice",
+      "model": "anthropic/claude-haiku-4-5",
+      "chosen": "Expressway Alpha",
+      "correct": "Mountain Pass Beta",
+      "is_correct": false,
+      "input_tokens": 180,
+      "output_tokens": 16,
+      "cost_usd": 0.00026,
+      "latency_ms": 316.6082135952764,
+      "response_id": "sim-claude-haiku-4-5-0030-Choo",
+      "explanation": "Chose Expressway Alpha (simulated)"
+    },
+    {
+      "agent_id": "agent-0030",
+      "node_id": "N2_PacingStrategy",
+      "decision_type": "pacing_choice",
+      "model": "anthropic/claude-haiku-4-5",
+      "chosen": "Standard",
+      "correct": "Standard",
+      "is_correct": true,
+      "input_tokens": 210,
+      "output_tokens": 15,
+      "cost_usd": 0.000285,
+      "latency_ms": 312.7559409775308,
+      "response_id": "sim-claude-haiku-4-5-0030-Choo",
+      "explanation": "Chose Standard (simulated)"
+    }
+  ]
+}
